@@ -4,12 +4,12 @@ import { Stripe } from "@stripe/stripe-js";
 import { InputBox, ErrorMessages } from "../../components";
 import { FundDonations } from ".";
 import { DonationPreviewModal } from "../modals/DonationPreviewModal";
-import { ApiHelper, CurrencyHelper, DateHelper } from "../../helpers";
+import { ApiHelper, CurrencyHelper, DateHelper, AppearanceInterface, AppearanceHelper } from "../../helpers";
 import { PersonInterface, StripePaymentMethod, StripeDonationInterface, FundDonationInterface, FundInterface, ChurchInterface } from "../../interfaces";
 import { Grid, InputLabel, MenuItem, Select, TextField, FormControl, Button, SelectChangeEvent, FormControlLabel, Checkbox, FormGroup, Typography } from "@mui/material"
 import { DonationHelper } from "../../helpers";
 
-interface Props { person: PersonInterface, customerId: string, paymentMethods: StripePaymentMethod[], stripePromise: Promise<Stripe>, donationSuccess: (message: string) => void, church?: ChurchInterface }
+interface Props { person: PersonInterface, customerId: string, paymentMethods: StripePaymentMethod[], stripePromise: Promise<Stripe>, donationSuccess: (message: string) => void, church?: ChurchInterface, appearance?: AppearanceInterface }
 
 export const DonationForm: React.FC<Props> = (props) => {
   const [errorMessage, setErrorMessage] = React.useState<string>();
@@ -112,8 +112,16 @@ export const DonationForm: React.FC<Props> = (props) => {
 
   const makeDonation = async (message: string) => {
     let results;
-    if (donationType === "once") results = await ApiHelper.post("/donate/charge/", {...donation, church: props?.church, churchURL: typeof window !== "undefined" && window.location.origin}, "GivingApi");
-    if (donationType === "recurring") results = await ApiHelper.post("/donate/subscribe/", {...donation, church: props?.church, churchURL: typeof window !== "undefined" && window.location.origin}, "GivingApi");
+
+    const churchObj = {
+      name: props?.church?.name,
+      subDomain: props?.church?.subDomain,
+      churchURL: typeof window !== "undefined" && window.location.origin,
+      logo: AppearanceHelper.getLogo(props?.appearance, "", "", props?.appearance?.primaryColor || "#FFF")
+    }
+
+    if (donationType === "once") results = await ApiHelper.post("/donate/charge/", {...donation, church: churchObj }, "GivingApi");
+    if (donationType === "recurring") results = await ApiHelper.post("/donate/subscribe/", {...donation, church: churchObj }, "GivingApi");
 
     if (results?.status === "succeeded" || results?.status === "pending" || results?.status === "active") {
       setShowDonationPreviewModal(false);
