@@ -2,13 +2,13 @@ import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import React, { useState, useRef } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { ErrorMessages, InputBox } from "../../components";
-import { ApiHelper, DateHelper, AppearanceInterface, AppearanceHelper } from "../../helpers";
+import { ApiHelper, DateHelper } from "../../helpers";
 import { FundDonationInterface, FundInterface, PersonInterface, StripeDonationInterface, StripePaymentMethod, UserInterface, ChurchInterface } from "../../interfaces";
 import { FundDonations } from "./FundDonations";
 import { Grid, Alert, TextField, Button, FormControl, InputLabel, Select, MenuItem, PaperProps } from "@mui/material"
 import { DonationHelper } from "../../helpers/DonationHelper";
 
-interface Props { churchId: string, mainContainerCssProps?: PaperProps, showHeader?: boolean, recaptchaSiteKey: string, appearance?: AppearanceInterface }
+interface Props { churchId: string, mainContainerCssProps?: PaperProps, showHeader?: boolean, recaptchaSiteKey: string, churchLogo?: string }
 
 export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, showHeader = true, ...props }) => {
   const stripe = useStripe();
@@ -105,7 +105,7 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
       name: church.name,
       subDomain: church.subDomain,
       churchURL: typeof window !== "undefined" && window.location.origin,
-      logo: AppearanceHelper.getLogo(props?.appearance, "", "", props?.appearance?.primaryColor || "#FFF")
+      logo: props?.churchLogo
     }
 
     let results;
