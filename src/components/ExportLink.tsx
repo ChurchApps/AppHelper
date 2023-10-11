@@ -28,7 +28,8 @@ export const ExportLink: React.FC<Props> = (props) => {
       let p = {...people[i]}
       p.birthDate = p.birthDate ? new Date(p.birthDate).toISOString() : null;
       p.anniversary = p.anniversary ? new Date(p.anniversary).toISOString() : null;
-      let propertyNames = getPropertyNames("", p);
+      people[i] = p;
+      let propertyNames = getPropertyNames("", people[i]);
       for (let j = 0; j < propertyNames.length; j++) if (result.indexOf(propertyNames[j]) === -1) result.push(propertyNames[j]);
     }
     return result.sort();
