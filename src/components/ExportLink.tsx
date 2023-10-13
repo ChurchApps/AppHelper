@@ -11,7 +11,7 @@ interface Props {
 
 export const ExportLink: React.FC<Props> = (props) => {
 
-  const people = [...props.data];
+  const people = props.data ? [...props.data] : [];
 
   const getHeaders = () => {
     let result = [];
