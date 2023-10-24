@@ -5,6 +5,7 @@ import { UserMenu } from "./UserMenu";
 import { UserContextInterface } from "../../interfaces";
 import { useMountedState } from "../../hooks/useMountedState";
 import { SocketHelper } from "../../helpers/SocketHelper";
+import { NotificationMenu } from "./NotificationMenu";
 
 
 interface Props {
@@ -117,6 +118,7 @@ export const SiteWrapper: React.FC<Props> = props => {
         </IconButton>
         <Typography variant="h6" noWrap>{UserHelper.currentUserChurch?.church?.name || ""}</Typography>
         <div style={{ flex: 1 }}></div>
+        {UserHelper.user && <NotificationMenu context={props.context} router={props.router} />}
         {UserHelper.user && <UserMenu profilePicture={PersonHelper.getPhotoUrl(props.context?.person)} userName={`${UserHelper.user?.firstName} ${UserHelper.user?.lastName}`} userChurches={UserHelper.userChurches} currentUserChurch={UserHelper.currentUserChurch} context={props.context} appName={props.appName} router={props.router} />}
         {!UserHelper.user && <Link href="/login" color="inherit" style={{ textDecoration: "none" }}>Login</Link>}
       </Toolbar>

@@ -1,41 +1,14 @@
 import React from "react";
 import { ApiHelper } from "../../helpers/ApiHelper";
 import { UserHelper } from "../../helpers/UserHelper";
-import { Avatar, Menu, Typography, Icon, Button, Box, Tabs, Tab, styled } from "@mui/material";
+import { Avatar, Menu, Typography, Icon, Button, Box, Tabs, Tab } from "@mui/material";
 import { NavItem, AppList } from "./";
 import { LoginUserChurchInterface, UserContextInterface } from "../../interfaces";
 import { ChurchList } from "./ChurchList";
 import { SupportModal } from "../SupportModal";
 import { CommonEnvironmentHelper } from "../../helpers/CommonEnvironmentHelper";
-import { PrivateMessages } from "./PrivateMessages";
+import { TabPanel } from "../TabPanel";
 
-interface TabPanelProps { children?: React.ReactNode; index: number; value: number; }
-
-const StyledMenuBox = styled(Box)(
-  ({ theme }) => ({
-    paddingTop: 10,
-    "& .MuiListItemButton-root": { paddingLeft: 30 },
-    "& .MuiListItemIcon-root": {
-      color: theme.palette.primary.main
-    },
-    "& .MuiListItemText-root": { color: theme.palette.text.primary },
-    "& .selected .MuiListItemText-root span": { fontWeight: "bold" }
-  })
-);
-
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index } = props;
-
-  return (
-    <div role="tabpanel" hidden={value !== index} id={`userMenuPanel-${index}`}>
-      {value === index && (
-        <StyledMenuBox>
-          <Box>{children}</Box>
-        </StyledMenuBox>
-      )}
-    </div>
-  );
-}
 
 interface Props {
   userName: string;
@@ -103,7 +76,6 @@ export const UserMenu: React.FC<Props> = (props) => {
     <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
       <Tabs variant="fullWidth" value={tabIndex} onChange={handleChange}>
         <Tab label="User" />
-        <Tab label="Messages" />
         {props.userChurches.length > 1 && <Tab label="Church" />}
         <Tab label="App" />
       </Tabs>
@@ -111,14 +83,11 @@ export const UserMenu: React.FC<Props> = (props) => {
       <TabPanel value={tabIndex} index={0}>
         {getMainLinks()}
       </TabPanel>
-      <TabPanel value={tabIndex} index={1}>
-        <PrivateMessages context={props.context} />
-      </TabPanel>
 
-      {props.userChurches.length > 1 && <TabPanel value={tabIndex} index={2}>
+      {props.userChurches.length > 1 && <TabPanel value={tabIndex} index={1}>
         <ChurchList userChurches={props.userChurches} currentUserChurch={props.currentUserChurch} context={props.context} />
       </TabPanel>}
-      <TabPanel value={tabIndex} index={(props.userChurches.length > 1) ? 3 : 2}>
+      <TabPanel value={tabIndex} index={(props.userChurches.length > 1) ? 2 : 1}>
         <AppList currentUserChurch={props.currentUserChurch} appName={props.appName} />
       </TabPanel>
     </Box>
