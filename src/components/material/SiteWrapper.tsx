@@ -102,7 +102,7 @@ export const SiteWrapper: React.FC<Props> = props => {
 
   React.useEffect(() => {
     if (!props.context.userChurch) SocketHelper.setPersonChurch({personId:null, churchId:null});
-    else SocketHelper.setPersonChurch({personId:props.context.userChurch?.person?.id, churchId:props.context.userChurch?.church.id});
+    else SocketHelper.setPersonChurch({personId:props.context.userChurch?.person?.id, churchId:props.context.userChurch?.church?.id});
   }, [props.context.userChurch]);
 
   React.useEffect(() => {
