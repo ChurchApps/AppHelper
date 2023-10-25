@@ -6,6 +6,7 @@ import { TabPanel } from "../TabPanel";
 import { Notifications } from "./Notifications";
 
 interface Props {
+  counts: { notificationCount: number, pmCount: number };
   context: UserContextInterface;
   router?: any;
 }
@@ -60,10 +61,13 @@ export const NotificationMenu: React.FC<Props> = (props) => {
     </Box>
   );
 
+  const totalCount = props.counts.notificationCount + props.counts.pmCount;
+  console.log("totalCount", totalCount, props.counts);
+
   return (
     <>
       <Button onClick={handleClick} color="inherit" aria-controls={open ? "account-menu" : undefined} aria-haspopup="true" aria-expanded={open ? "true" : undefined} style={{ textTransform: "none" }} startIcon={<Icon>notifications</Icon>}>
-        {(false) ? "1" : "" }
+        {(totalCount>0) ? totalCount : "" }
       </Button>
 
       <Menu anchorEl={anchorEl} id="account-menu" open={open} onClose={handleClose} onClick={(e) => { handleItemClick(e) }} PaperProps={paperProps} transformOrigin={{ horizontal: "right", vertical: "top" }} anchorOrigin={{ horizontal: "right", vertical: "bottom" }} sx={{ "& .MuiBox-root": { borderBottom: 0 } }}>
