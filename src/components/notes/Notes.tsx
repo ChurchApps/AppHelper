@@ -51,7 +51,7 @@ export function Notes(props: Props) {
   React.useEffect(() => { loadNotes() }, [props.conversationId]); //eslint-disable-line
 
   React.useEffect(() => {
-    if (props.maxHeight && messages.length>0) {
+    if (props.maxHeight && messages?.length>0) {
       setTimeout(() => {
         const element = window?.document?.getElementById("notesScroll");
         if (element) element.scrollTop = element.scrollHeight;
