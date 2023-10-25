@@ -2,7 +2,7 @@ import React from "react";
 import { ApiHelper } from "../../helpers/ApiHelper";
 import { UserHelper } from "../../helpers/UserHelper";
 import { Avatar, Menu, Typography, Icon, Button, Box, Tabs, Tab } from "@mui/material";
-import { NavItem, AppList } from "./";
+import { NavItem, AppList } from ".";
 import { LoginUserChurchInterface, UserContextInterface } from "../../interfaces";
 import { ChurchList } from "./ChurchList";
 import { SupportModal } from "../SupportModal";
