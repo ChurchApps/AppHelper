@@ -36,6 +36,8 @@ export const SiteWrapper: React.FC<Props> = props => {
     loadCounts();
   }
 
+
+
   React.useEffect(() => {
     const getChurchLogo = async () => {
       if (UserHelper.currentUserChurch) {
@@ -48,6 +50,7 @@ export const SiteWrapper: React.FC<Props> = props => {
     }
   }, [isMounted, props.appearance]);
 
+
   React.useEffect(() => {
     if (!props.context.userChurch) SocketHelper.setPersonChurch({personId:null, churchId:null});
     else SocketHelper.setPersonChurch({personId:props.context.userChurch?.person?.id, churchId:props.context.userChurch?.church?.id});
@@ -58,6 +61,8 @@ export const SiteWrapper: React.FC<Props> = props => {
     SocketHelper.init();
     loadCounts();
   }, []);
+
+
 
   return <>
     <CustomAppBar position="absolute">
