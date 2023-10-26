@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ApiHelper } from "../../helpers/ApiHelper";
-import { Box, Stack } from "@mui/material";
+import { Box, Icon, Stack } from "@mui/material";
 import { NotificationInterface, UserContextInterface } from "../../interfaces";
 import { ArrayHelper, DateHelper, PersonHelper } from "../../helpers";
 
@@ -29,9 +29,9 @@ export const Notifications: React.FC<Props> = (props) => {
         <div className="note" style={{ cursor: "pointer" }} onClick={(e) => { e.preventDefault(); }}>
           <Box sx={{ width: "100%" }} className="note-contents">
             <Stack direction="row" justifyContent="space-between">
-              <div>
-                <span className="text-grey">{displayDuration}</span>
-                <p>{notification.message}</p>
+              <div style={{width:"100%"}}>
+                <span className="text-grey" style={{float:"right"}}>{displayDuration}</span>
+                <p><Icon>notifications</Icon> {notification.message}</p>
               </div>
             </Stack>
           </Box>
