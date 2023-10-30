@@ -64,7 +64,8 @@ export function ImageEditor(props: Props) {
       } else {
         const imgHeight = cropper.getImageData().height;
         let l = (containerData.width - (imgHeight * desiredAspect)) / 2.0;
-        let t = 0;
+        //if the image is of correct size/dimensions, snap the crop box to the image with top aligned.
+        let t = scale === 1 ? cropper.canvasData.top : 0;
         cropper.setCropBoxData({ width: imgHeight * desiredAspect, height: imgHeight, left: l, top: t });
       }
     }
