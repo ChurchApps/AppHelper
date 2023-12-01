@@ -56,7 +56,8 @@ export const NotificationMenu: React.FC<Props> = (props) => {
 
   //const buttonStyle = (totalCount > 0) ? { color: "#FF3333" } : {  };
   let icon = <Icon>notifications</Icon>;
-  if (totalCount>0) icon = <Badge style={{backgroundColor:"#FF0000", padding:"0px 5px 0px 5px", borderRadius:5}} badgeContent={totalCount} color="error">{icon}</Badge>
+  //if (totalCount>0) icon = <Badge style={{backgroundColor:"#FF0000", padding:"0px 5px 0px 5px", borderRadius:5}} badgeContent={totalCount} color="error">{icon}</Badge>
+  if (totalCount>0) icon = <>{icon}<Badge style={{backgroundColor:"#FF0000", padding:"0px 5px 0px 5px", borderRadius:5}} badgeContent={totalCount} color="error" /></>
 
   React.useEffect(() => {
     console.log("THE COUNTS CHANGED")
@@ -86,8 +87,8 @@ export const NotificationMenu: React.FC<Props> = (props) => {
             <Tab label="Messages" icon={(props.counts.pmCount>0) ? <Icon style={{color:"#FF0000"}}>notifications</Icon> : <></>} iconPosition="end" />
             <Tab label="Notifications" icon={(props.counts.notificationCount>0) ? <Icon style={{color:"#FF0000"}}>notifications</Icon> : <></>} iconPosition="end"  />
           </Tabs>
-          {tabIndex === 0 && <PrivateMessages context={props.context} refreshKey={refreshKey} />}
-          {tabIndex === 1 && <Notifications context={props.context} />}
+          {tabIndex === 0 && <PrivateMessages context={props.context} refreshKey={refreshKey} onUpdate={props.onUpdate} />}
+          {tabIndex === 1 && <Notifications context={props.context} onUpdate={props.onUpdate} />}
         </Box>
       </Menu>
     </>

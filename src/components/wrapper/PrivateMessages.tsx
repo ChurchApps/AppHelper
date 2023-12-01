@@ -10,6 +10,7 @@ import { NewPrivateMessage } from "./NewPrivateMessage";
 interface Props {
   context: UserContextInterface;
   refreshKey: number;
+  onUpdate: () => void;
 }
 
 export const PrivateMessages: React.FC<Props> = (props) => {
@@ -34,6 +35,7 @@ export const PrivateMessages: React.FC<Props> = (props) => {
       })
     }
     setPrivateMessages(pms);
+    props.onUpdate();
   }
 
   React.useEffect(() => { loadData(); }, [props.refreshKey]); //eslint-disable-line
