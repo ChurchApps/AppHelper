@@ -9,6 +9,7 @@ import { NewPrivateMessage } from "./NewPrivateMessage";
 
 interface Props {
   context: UserContextInterface;
+  refreshKey: number;
 }
 
 export const PrivateMessages: React.FC<Props> = (props) => {
@@ -18,6 +19,7 @@ export const PrivateMessages: React.FC<Props> = (props) => {
   const [inAddMode, setInAddMode] = useState(false);
 
   const loadData = async () => {
+    console.log("loading data");
     const pms: PrivateMessageInterface[] = await ApiHelper.get("/privateMessages", "MessagingApi");
     const peopleIds: string[] = [];
     pms.forEach(pm => {
@@ -34,7 +36,8 @@ export const PrivateMessages: React.FC<Props> = (props) => {
     setPrivateMessages(pms);
   }
 
-  React.useEffect(() => { loadData(); }, []); //eslint-disable-line
+  React.useEffect(() => { loadData(); }, [props.refreshKey]); //eslint-disable-line
+  React.useEffect(() => { console.log("RELOADED PMS") }, []);
 
   const getMainLinks = () => {
     let result: JSX.Element[] = [];
@@ -49,7 +52,7 @@ export const PrivateMessages: React.FC<Props> = (props) => {
       const contents = message.content?.split("\n")[0];
       const privateMessage = pm;
       result.push(
-        <div className="note" style={{ cursor: "pointer" }} onClick={(e) => { e.preventDefault(); setSelectedMessage(privateMessage) }}>
+        <div key={pm.id} className="note" style={{ cursor: "pointer" }} onClick={(e) => { e.preventDefault(); setSelectedMessage(privateMessage) }}>
           <div className="postedBy">
             <img src={photoUrl} alt="avatar" />
           </div>
@@ -74,7 +77,7 @@ export const PrivateMessages: React.FC<Props> = (props) => {
   }
 
   if (inAddMode) return <NewPrivateMessage context={props.context} onSelectMessage={(pm: PrivateMessageInterface) => { setSelectedMessage(pm); setInAddMode(false); }} onBack={handleBack} />
-  if (selectedMessage) return <PrivateMessageDetails privateMessage={selectedMessage} context={props.context} onBack={handleBack} />
+  if (selectedMessage) return <PrivateMessageDetails privateMessage={selectedMessage} context={props.context} onBack={handleBack} refreshKey={props.refreshKey} />
   else return (
     <>
       <span style={{ float: "right" }}>

@@ -41,6 +41,7 @@ export const Notifications: React.FC<Props> = (props) => {
     return result;
   }
 
+  React.useEffect(() => { console.log("RELOADED NOTIFICATIONS") }, []);
 
   return (
     <>
