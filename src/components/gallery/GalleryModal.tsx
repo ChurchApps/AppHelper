@@ -56,10 +56,10 @@ export const GalleryModal: React.FC<Props> = (props: Props) => {
           <a href="about:blank" onClick={(e) => { e.preventDefault(); props.onSelect(CommonEnvironmentHelper.ContentRoot + "/" + img) }}>
             <Box component="img" src={CommonEnvironmentHelper.ContentRoot + "/" + img} className="img-fluid" alt="custom" />
           </a>
-          <Box id="deleteIcon" sx={{ position: "absolute", top: 0, right: 0, visibility: "hidden" }}>
+          <Box id="deleteIcon" sx={{ position: "absolute", top: 3, right: 3, visibility: "hidden", backgroundColor: "whitesmoke", borderRadius: 5 }}>
             <Tooltip title="Delete">
               <IconButton size="small" color="error" onClick={() => handleDelete(parts[2], parts[3])}>
-                <Icon>delete</Icon>
+                <Icon sx={{ fontSize: "17px !important" }}>delete_outline</Icon>
               </IconButton>
           </Tooltip>
           </Box>
