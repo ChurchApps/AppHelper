@@ -1,6 +1,6 @@
 {
   "name": "@churchapps/apphelper",
-  "version": "0.1.7",
+  "version": "0.1.9",
   "description": "Library of helper functions for React and NextJS ChurchApps",
   "main": "dist/index.js",
   "scripts": {
@@ -12,7 +12,8 @@
     "copy-assets": "npm-run-all copy-css copy-icons copy-emojis",
     "link": "link",
     "tsc": "tsc",
-    "build": "npm-run-all clean tsc copy-assets"
+    "build": "npm-run-all clean tsc copy-assets",
+    "updateLink": "npm-run-all clean tsc && npm rm @churchapps/apphelper -g && npm link"
   },
   "repository": {
     "type": "git",
