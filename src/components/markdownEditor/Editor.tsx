@@ -23,6 +23,10 @@ import { CustomLinkNode } from "./plugins/customLink/CustomLinkNode";
 import EmojisPlugin from "./plugins/emoji/EmojisPlugin";
 import { EmojiNode } from "./plugins/emoji/EmojiNode";
 import EmojiPickerPlugin from "./plugins/emoji/EmojiPickerPlugin";
+import TableCellResizer from "./plugins/table/TableCellResizer";
+import { TableContext } from "./plugins/table/TablePlugin";
+import { TablePlugin } from "@lexical/react/LexicalTablePlugin";
+import TableActionMenuPlugin from "./plugins/table/TableActionMenuPlugin";
 
 interface Props {
   value: string;
@@ -35,6 +39,8 @@ interface Props {
 
 function Editor({ value, onChange = () => { }, mode = "interactive", textAlign = "left", style, placeholder = "Enter some text..." }: Props) {
   const [fullScreen, setFullScreen] = React.useState(false);
+  const [floatingAnchorElem, setFloatingAnchorElem] = React.useState(null);
+
 
   const handleChange = (editorState: any) => {
     editorState.read(() => {
@@ -100,29 +106,42 @@ function Editor({ value, onChange = () => { }, mode = "interactive", textAlign =
   return (
     <>
       <LexicalComposer initialConfig={initialConfig}>
-        <div className={(mode === "preview") ? `editor-container preview ${textAlignClass}` : `editor-container ${textAlignClass}`} style={Object.assign({ border: mode === "preview" ? "none" : "1px solid lightgray" }, style)}>
-          {mode !== "preview" && <ToolbarPlugin goFullScreen={() => { setFullScreen(true) }} />}
-          <div className="editor-inner">
-            {!fullScreen && <RichTextPlugin
-              contentEditable={<ContentEditable className="editor-input" style={{ minHeight: mode === "preview" ? "auto" : "150px" }} />}
-              placeholder={mode !== "preview" ? <div className="editor-placeholder">{placeholder}</div> : null}
-              ErrorBoundary={LexicalErrorBoundary}
-            /> }
-            <CustomLinkNodePlugin />
-            {mode !== "preview" && <EmojiPickerPlugin />}
-            <EmojisPlugin />
-            <OnChangePlugin onChange={handleChange} />
-            {mode !== "preview" && <AutoFocusPlugin />}
-            <HistoryPlugin />
-            <ListPlugin />
-            <CustomAutoLinkPlugin />
+        <TableContext>
+          <>
+            <div className={(mode === "preview") ? `editor-container preview ${textAlignClass}` : `editor-container ${textAlignClass}`} style={Object.assign({ border: mode === "preview" ? "none" : "1px solid lightgray" }, style)}>
+              {mode !== "preview" && <>
+                <TablePlugin />
+                <TableCellResizer />
+                <ToolbarPlugin goFullScreen={() => { setFullScreen(true) }} />
+              </>}
+              <div className="editor-inner">
+                {!fullScreen && <RichTextPlugin
+                  contentEditable={<ContentEditable className="editor-input" style={{ minHeight: mode === "preview" ? "auto" : "150px" }} />}
+                  placeholder={mode !== "preview" ? <div className="editor-placeholder">{placeholder}</div> : null}
+                  ErrorBoundary={LexicalErrorBoundary}
+                /> }
+                <CustomLinkNodePlugin />
+                {mode !== "preview" && <EmojiPickerPlugin />}
+                <EmojisPlugin />
+                <OnChangePlugin onChange={handleChange} />
+                {mode !== "preview" && <AutoFocusPlugin />}
+                <HistoryPlugin />
+                <ListPlugin />
+                <CustomAutoLinkPlugin />
 
-            <ListMaxIndentLevelPlugin maxDepth={7} />
-            <ReadOnlyPlugin isDisabled={mode === "preview"} />
-            <ControlledEditorPlugin isFullscreen={fullScreen} value={value} isPreview={mode === "preview"} />
-            <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
-          </div>
-        </div>
+                <ListMaxIndentLevelPlugin maxDepth={7} />
+                <ReadOnlyPlugin isDisabled={mode === "preview"} />
+                <ControlledEditorPlugin isFullscreen={fullScreen} value={value} isPreview={mode === "preview"} />
+                <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
+              </div>
+            </div>
+            {floatingAnchorElem && (
+              <>
+                <TableActionMenuPlugin anchorElem={floatingAnchorElem} />
+              </>
+            )}
+          </>
+        </TableContext>
       </LexicalComposer>
       {fullScreen && <MarkdownModal onChange={handleModalOnChange} value={value} hideModal={handleCloseFullScreen} />}
     </>

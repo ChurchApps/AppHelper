@@ -11,6 +11,7 @@ import { $isCodeNode, getDefaultCodeLanguage, getCodeLanguages, $createCodeNode 
 import { Icon } from "@mui/material";
 import FloatingLinkEditor from "./customLink/FloatingLinkEditor";
 import { TOGGLE_CUSTOM_LINK_NODE_COMMAND, $isCustomLinkNode } from "./customLink/CustomLinkNode";
+import { INSERT_TABLE_COMMAND } from "./table/TablePlugin";
 
 const LowPriority = 1;
 
@@ -409,6 +410,9 @@ export function ToolbarPlugin(props: Props) {
           </button>
           <button onClick={() => { editor.dispatchCommand(FORMAT_TEXT_COMMAND, "code"); }} className={"toolbar-item spaced " + (isCode ? "active" : "")} aria-label="Format Code">
             <i className="format code" />
+          </button>
+          <button onClick={() => { editor.dispatchCommand(INSERT_TABLE_COMMAND, { columns: "4", rows: "3" }); }} className={"toolbar-item spaced"} aria-label="Insert Table">
+            <i className="format table" />
           </button>
           {isLink && createPortal(<FloatingLinkEditor selectedElementKey={selectedElementKey} linkUrl={linkUrl} setLinkUrl={setLinkUrl} classNamesList={classNamesList} setClassNamesList={setClassNamesList} targetAttribute={targetAttribute} setTargetAttribute={setTargetAttribute} />, document.body)}
         </>)}
