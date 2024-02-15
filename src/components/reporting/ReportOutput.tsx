@@ -89,8 +89,8 @@ export const ReportOutput = (props: Props) => {
     return (<>
       <Button size="small" title="Download Options" onClick={handleClick} key={key}><Icon>download</Icon></Button>
       <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
-        {reportResult.table.length > 0 && <MenuItem sx={{ padding: "5px" }} onClick={handleClose}><ExportLink data={reportResult.table} filename={props.report.displayName.replace(" ", "_") + ".csv"} text="Fund Summary" icon="volunteer_activism" /></MenuItem>}
-        {detailedPersonSummary.length > 0 && <MenuItem sx={{ padding: "5px" }} onClick={handleClose}><ExportLink data={detailedPersonSummary} filename="Detailed_Donation_Summary.csv" text="Detailed Summary" icon="person" customHeaders={customHeaders} spaceAfter={true} /></MenuItem>}
+        {reportResult?.table?.length > 0 && <MenuItem sx={{ padding: "5px" }} onClick={handleClose}><ExportLink data={reportResult.table} filename={props.report.displayName.replace(" ", "_") + ".csv"} text="Fund Summary" icon="volunteer_activism" /></MenuItem>}
+        {detailedPersonSummary?.length > 0 && <MenuItem sx={{ padding: "5px" }} onClick={handleClose}><ExportLink data={detailedPersonSummary} filename="Detailed_Donation_Summary.csv" text="Detailed Summary" icon="person" customHeaders={customHeaders} spaceAfter={true} /></MenuItem>}
       </Menu>
     </>)
   }
