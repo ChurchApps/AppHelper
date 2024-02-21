@@ -420,7 +420,7 @@ export function ToolbarPlugin(props: Props) {
           <button onClick={() => { editor.dispatchCommand(FORMAT_TEXT_COMMAND, "code"); }} className={"toolbar-item spaced " + (isCode ? "active" : "")} aria-label="Format Code">
             <i className="format code" />
           </button>
-          {isLink && createPortal(<FloatingLinkEditor selectedElementKey={selectedElementKey} linkUrl={linkUrl} setLinkUrl={setLinkUrl} classNamesList={classNamesList} setClassNamesList={setClassNamesList} targetAttribute={targetAttribute} setTargetAttribute={setTargetAttribute} />, document.body)}
+          {isLink && createPortal(<FloatingLinkEditor selectedElementKey={selectedElementKey} linkUrl={linkUrl} setLinkUrl={setLinkUrl} classNamesList={classNamesList} setClassNamesList={setClassNamesList} targetAttribute={targetAttribute} setTargetAttribute={setTargetAttribute} />, editorEl)}
         </>)}
       <Divider />
       <button onClick={() => { props.goFullScreen() }} className="toolbar-item spaced" aria-label="Full Screen">
