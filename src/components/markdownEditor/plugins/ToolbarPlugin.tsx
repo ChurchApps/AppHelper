@@ -84,9 +84,17 @@ function BlockOptionsDropdownList({ editor, blockType, toolbarRef, setShowBlockO
     const dropDown = dropDownRef.current;
 
     if (toolbar !== null && dropDown !== null) {
-      const { top, left } = toolbar.getBoundingClientRect();
-      dropDown.style.top = `${top + 40}px`;
-      dropDown.style.left = `${left}px`;
+      const onScroll = () => {
+        const { top, left } = toolbar.getBoundingClientRect();
+        dropDown.style.top = `${top + 40}px`;
+        dropDown.style.left = `20px`;
+      }
+      onScroll();
+      document.addEventListener("scroll", onScroll);
+      
+      return () => {
+        document.removeEventListener("scroll", onScroll);
+      }
     }
   }, [dropDownRef, toolbarRef]);
 
@@ -361,6 +369,8 @@ export function ToolbarPlugin(props: Props) {
     });
   }, [editor, isLink]); //eslint-disable-line
 
+  const editorEl = (typeof window !== 'undefined') && window.document.getElementById('elementDetailsBox');
+
   return (
     <div className="toolbar" ref={toolbarRef}>
       {supportedBlockTypes.has(blockType) && (
@@ -384,7 +394,7 @@ export function ToolbarPlugin(props: Props) {
                 toolbarRef={toolbarRef}
                 setShowBlockOptionsDropDown={setShowBlockOptionsDropDown}
               />,
-              document.body
+              editorEl
             )}
           <Divider />
         </>
