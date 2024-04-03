@@ -33,7 +33,8 @@ export const ChurchList: React.FC<Props> = props => {
         key={userChurch.church.id}
         selected={(uc.church.id === props.currentUserChurch.church.id) && true}
         onClick={() => UserHelper.selectChurch(props.context, userChurch.church.id, null)}
-        label={churchName} icon="church"
+        label={churchName}
+        icon="church"
         deleteIcon={uc.church.id !== props.currentUserChurch.church.id ? "delete" : null}
         deleteLabel="Delete church from the list"
         deleteFunction={() => { handleDelete(uc); }}
