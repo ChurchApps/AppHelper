@@ -1,6 +1,7 @@
 import React from "react";
 import { InputBox } from "../../components";
 import { TextField, Box, PaperProps } from "@mui/material";
+import { LocalHelper } from "../../helpers/LocalHelper";
 
 interface Props {
   //registerCallback: () => void,
@@ -33,7 +34,7 @@ export const Login: React.FC<Props> = ({ mainContainerCssProps = {}, ...props })
   }
 
   const getRegisterLink = () => (
-    <><a href="about:blank" className="text-decoration" onClick={handleShowRegister}>Register</a> &nbsp; | &nbsp; </>
+    <><a href="about:blank" className="text-decoration" onClick={handleShowRegister}>{LocalHelper.label("register")}</a> &nbsp; | &nbsp; </>
   )
 
   const handleShowRegister = (e: React.MouseEvent) => {
@@ -42,12 +43,12 @@ export const Login: React.FC<Props> = ({ mainContainerCssProps = {}, ...props })
   }
 
   return (
-    <InputBox headerText="Please Sign In" saveFunction={submitLogin} saveButtonType="submit" saveText={props.isSubmitting ? "Please wait..." : "Sign in"} isSubmitting={props.isSubmitting} mainContainerCssProps={mainContainerCssProps}>
+    <InputBox headerText={LocalHelper.label("sign_in_title")} saveFunction={submitLogin} saveButtonType="submit" saveText={props.isSubmitting ? "Please wait..." : "Sign in"} isSubmitting={props.isSubmitting} mainContainerCssProps={mainContainerCssProps}>
       <TextField fullWidth autoFocus name="email" type="email" label="Email" value={email} onChange={(e) => { e.preventDefault(); setEmail(e.target.value) }} />
       <TextField fullWidth name="email" type="password" label="Password" value={password} onChange={(e) => { e.preventDefault(); setPassword(e.target.value) }} />
       <Box sx={{ textAlign: "right", marginY: 1 }}>
         {getRegisterLink()}
-        <a href="about:blank" className="text-decoration" onClick={(e) => { e.preventDefault(); props.setShowForgot(true); }}>Forgot Password</a>&nbsp;
+        <a href="about:blank" className="text-decoration" onClick={(e) => { e.preventDefault(); props.setShowForgot(true); }}>{LocalHelper.label("login.forgot")}</a>&nbsp;
       </Box>
     </InputBox>
   );
