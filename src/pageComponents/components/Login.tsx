@@ -34,7 +34,7 @@ export const Login: React.FC<Props> = ({ mainContainerCssProps = {}, ...props })
   }
 
   const getRegisterLink = () => (
-    <><a href="about:blank" className="text-decoration" onClick={handleShowRegister}>{LocalHelper.label("register")}</a> &nbsp; | &nbsp; </>
+    <><a href="about:blank" className="text-decoration" onClick={handleShowRegister}>{LocalHelper.label("login.register")}</a> &nbsp; | &nbsp; </>
   )
 
   const handleShowRegister = (e: React.MouseEvent) => {
@@ -43,7 +43,7 @@ export const Login: React.FC<Props> = ({ mainContainerCssProps = {}, ...props })
   }
 
   return (
-    <InputBox headerText={LocalHelper.label("sign_in_title")} saveFunction={submitLogin} saveButtonType="submit" saveText={props.isSubmitting ? "Please wait..." : "Sign in"} isSubmitting={props.isSubmitting} mainContainerCssProps={mainContainerCssProps}>
+    <InputBox headerText={LocalHelper.label("login.sign_in_title")} saveFunction={submitLogin} saveButtonType="submit" saveText={props.isSubmitting ? LocalHelper.label("login.please_wait") : LocalHelper.label("login.sign_in")} isSubmitting={props.isSubmitting} mainContainerCssProps={mainContainerCssProps}>
       <TextField fullWidth autoFocus name="email" type="email" label="Email" value={email} onChange={(e) => { e.preventDefault(); setEmail(e.target.value) }} />
       <TextField fullWidth name="email" type="password" label="Password" value={password} onChange={(e) => { e.preventDefault(); setPassword(e.target.value) }} />
       <Box sx={{ textAlign: "right", marginY: 1 }}>

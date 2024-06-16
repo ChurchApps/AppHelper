@@ -1,0 +1,16 @@
+{
+  "common": {
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "save": "Guardar",
+    "submit": "Enviar",
+    "please_wait": "Por favor espera..."
+  },
+  "login": {
+    "forgot": "Olvidó su contraseña",
+    "sign_in_title": "Por favor inicie sesión",
+    "sign_in": "Iniciar sesión",
+    "register": "Registrarse"
+  }
+}

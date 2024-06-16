@@ -1,7 +1,16 @@
 {
+  "common": {
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "save": "Save",
+    "submit": "Submit",
+    "please_wait": "Please wait..."
+  },
   "login": {
     "forgot": "Forgot Password",
     "sign_in_title": "Please Sign In",
+    "sign_in": "Sign In",
     "register": "Register"
   }
 }
