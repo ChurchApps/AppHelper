@@ -5,12 +5,18 @@
     "edit": "Edit",
     "save": "Save",
     "submit": "Submit",
-    "please_wait": "Please wait..."
+    "pleaseWait": "Please wait..."
   },
   "login": {
+    "email": "Email",
+    "password": "Password",
     "forgot": "Forgot Password",
-    "sign_in_title": "Please Sign In",
-    "sign_in": "Sign In",
-    "register": "Register"
+    "signInTitle": "Please Sign In",
+    "signIn": "Sign In",
+    "register": "Register",
+    "validate": {
+      "email": "Please enter a valid email address.",
+      "password": "Please enter a password."
+    }
   }
 }

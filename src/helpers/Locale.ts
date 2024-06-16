@@ -6,18 +6,19 @@ import Backend from 'i18next-chained-backend';
 import HttpBackend from 'i18next-http-backend';
 */
 
-export class LocalHelper {
+export class Locale {
 
   private static keys:any = {}
 
   static init = async (backends:string[]) => {
     const l = navigator.language.split("-")[0];
-    const langs = (l==="en") ? [l] : [l, "en"];
+    const langs = (l==="en") ? [l] : ["en", l];
+    console.log("LANGUAGE", navigator.language, l, langs);
 
     let result = {};
     for (let lang of langs) {
       for (let backend of backends) {
-        let url = backend.replace("{{lng}}", "en");
+        let url = backend.replace("{{lng}}", lang);
         console.log(url);
         const data = await fetch(url).then((response) => response.json());
         result = {...result, ...data};

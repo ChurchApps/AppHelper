@@ -5,12 +5,18 @@
     "edit": "Editar",
     "save": "Guardar",
     "submit": "Enviar",
-    "please_wait": "Por favor espera..."
+    "pleaseWait": "Por favor, espere..."
   },
   "login": {
-    "forgot": "Olvidó su contraseña",
-    "sign_in_title": "Por favor inicie sesión",
-    "sign_in": "Iniciar sesión",
-    "register": "Registrarse"
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "forgot": "Olvidé la contraseña",
+    "signInTitle": "Por favor, inicie sesión",
+    "signIn": "Iniciar sesión",
+    "register": "Registrarse",
+    "validate": {
+      "email": "Por favor, introduzca una dirección de correo electrónico válida.",
+      "password": "Por favor, introduzca una contraseña."
+    }
   }
 }
