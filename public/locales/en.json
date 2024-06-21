@@ -248,5 +248,27 @@
       "selectingChurch": "Error in selecting church. Please verify and try again",
       "invalid": "Invalid login. Please check your email or password."
     }
+  },
+  "selectChurch": {
+    "selectChurch": "Select a Church",
+    "another": "Choose another church",
+    "register": "Register a New Church",
+    "name": "Church Name",
+    "address1": "Address Line 1",
+    "address2": "Address Line 2",
+    "city": "City",
+    "state": "State / Province",
+    "zip": "Zip / Postal Code",
+    "country": "Country",
+    "confirmRegister": "Are you sure you wish to register a new church?",
+    "noMatches": "No matches found.",
+    "validate": {
+      "name": "Church name cannot be blank.",
+      "city": "City cannot be blank.",
+      "state": "State/Province cannot be blank.",
+      "zip": "Zip/Postal code cannot be blank.",
+      "country": "Country cannot be blank.",
+      "address": "Address cannot be blank."
+    }
   }
 }
