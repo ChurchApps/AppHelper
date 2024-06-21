@@ -207,13 +207,13 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
           <Button aria-label="recurring-donation" size="small" fullWidth style={{ minHeight: "50px" }} variant={donationType === "recurring" ? "contained" : "outlined"} onClick={() => setDonationType("recurring")}>{Locale.label("donation.donationForm.makeRecurring")}</Button>
         </Grid>
         <Grid item md={6} xs={12}>
-          <TextField fullWidth label={Locale.label("donation.person.firstName")} name="firstName" value={firstName} onChange={handleChange} />
+          <TextField fullWidth label={Locale.label("person.firstName")} name="firstName" value={firstName} onChange={handleChange} />
         </Grid>
         <Grid item md={6} xs={12}>
-          <TextField fullWidth label={Locale.label("donation.person.lastName")} name="lastName" value={lastName} onChange={handleChange} />
+          <TextField fullWidth label={Locale.label("person.lastName")} name="lastName" value={lastName} onChange={handleChange} />
         </Grid>
         <Grid item md={6} xs={12}>
-          <TextField fullWidth label={Locale.label("donation.person.email")} name="email" value={email} onChange={handleChange} />
+          <TextField fullWidth label={Locale.label("person.email")} name="email" value={email} onChange={handleChange} />
         </Grid>
         <Grid item md={6} xs={12}>
           <ReCAPTCHA sitekey={props.recaptchaSiteKey} ref={captchaRef} onChange={handleCaptchaChange} />

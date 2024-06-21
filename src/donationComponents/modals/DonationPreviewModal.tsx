@@ -38,7 +38,7 @@ export const DonationPreviewModal: React.FC<Props> = (props) => {
       <DialogContent>
         <Table>
           <TableBody>
-            <TableRow><TableCell>{Locale.label("donation.person.name")}:</TableCell><TableCell>{props.donation.person.name}</TableCell></TableRow>
+            <TableRow><TableCell>{Locale.label("person.name")}:</TableCell><TableCell>{props.donation.person.name}</TableCell></TableRow>
             <TableRow><TableCell>{Locale.label("donation.preview.method")}:</TableCell><TableCell className="capitalize">{props.paymentMethodName}</TableCell></TableRow>
             <TableRow><TableCell>{Locale.label("donation.preview.type")}:</TableCell><TableCell>{donationType[props.donationType]}</TableCell></TableRow>
             {props.donationType === "once"
