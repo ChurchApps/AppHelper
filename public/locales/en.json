@@ -46,18 +46,6 @@
     "markdownEditor": "Markdown Editor",
     "content": "Content"
   },
-  "login": {
-    "email": "Email",
-    "password": "Password",
-    "forgot": "Forgot Password",
-    "signInTitle": "Please Sign In",
-    "signIn": "Sign In",
-    "register": "Register",
-    "validate": {
-      "email": "Please enter a valid email address.",
-      "password": "Please enter a password."
-    }
-  },
   "notes": {
     "comment": "comment",
     "comments": "comments",
@@ -229,6 +217,36 @@
       "amount": "Amount",
       "fund": "Fund",
       "method": "Method"
+    }
+  },
+  "login": {
+    "email": "Email",
+    "password": "Password",
+    "forgot": "Forgot Password",
+    "signInTitle": "Please Sign In",
+    "signIn": "Sign In",
+    "register": "Register",
+    "resetSent": "Password reset email sent!",
+    "goLogin": "Go to Login",
+    "resetInstructions": "Enter your email address to request a password reset.",
+    "reset": "Reset",
+    "resetPassword": "Reset Password",
+    "login": "Login",
+    "setPassword": "Set Password",
+    "verifyPassword": "Verify Password",
+    "welcomeBack": "Welcome back",
+    "registerThankYou": "Thank you for registering! Please check your email to verify your account.",
+    "createAccount": "Create an Account",
+    "welcomeName": "Welcome back, <b>{}</b>!  Please wait while we load your data.",
+    "validate": {
+      "email": "Please enter a valid email address.",
+      "password": "Please enter a password.",
+      "passwordLength": "Password must be at least 8 characters long.",
+      "passwordMatch": "Passwords do not match.",
+      "firstName": "Please enter your first name.",
+      "lastName": "Please enter your last name.",
+      "selectingChurch": "Error in selecting church. Please verify and try again",
+      "invalid": "Invalid login. Please check your email or password."
     }
   }
 }
