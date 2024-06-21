@@ -1,13 +1,16 @@
 {
   "common": {
+    "add": "Add",
     "cancel": "Cancel",
     "close": "Close",
     "delete": "Delete",
     "date": "Date",
     "edit": "Edit",
     "save": "Save",
+    "search": "Search",
     "submit": "Submit",
-    "pleaseWait": "Please wait..."
+    "pleaseWait": "Please wait...",
+    "update": "Update"
   },
   "month": {
     "january": "January",
@@ -70,5 +73,52 @@
     "downloadOptions": "Download Options",
     "detailedSummary": "Detailed Summary",
     "useFilter": "Use the filter to run the report."
+  },
+  "wrapper": {
+    "sureRemoveChurch": "Are you sure you wish to delete {} from the list?",
+    "deleteChurch": "Delete church from the list",
+    "privateMessage": "Private Message",
+    "newPrivateMessage": "New Private Message",
+    "searchForPerson": "Search for a person",
+    "chatWith": "Chat with",
+    "logout": "Logout",
+    "profile": "Profile",
+    "support": "Support",
+    "switchApp": "Switch App",
+    "switchChurch": "Switch Church"
+  },
+  "b1Share": {
+    "validate":{
+      "selectGroup": "Please select a group.",
+      "addComment": "Please add a comment.",
+      "loginFirst": "Please login first.",
+      "notMember": "You are not currently a member of any groups on B1."
+    },
+    "sharingToGroup": "Sharing {} to B1 Group",
+    "group": "Group",
+    "comment": "Comment",
+    "commentPlaceholder": "Include a comment with your post.",
+    "contentShared": "Content Shared"
+  },
+  "createPerson": {
+    "addNewPerson": "Add a New Person",
+    "firstName": "First Name",
+    "lastName": "Last Name"
+  },
+  "formSubmissionEdit": {
+    "confirmDelete": "Are you sure you wish to delete this form data?",
+    "isRequired": "is required",
+    "editForm": "Edit Form",
+    "submit": "Submit"
+  },
+  "person": {
+    "person": "Person"
+  },
+  "support": 
+  {
+    "email": "Email",
+    "phone": "Phone",
+    "messenger": "Messenger",
+    "knowledge base": "Knowledge Base"
   }
 }
