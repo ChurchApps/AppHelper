@@ -1,11 +1,46 @@
 {
   "common": {
     "cancel": "Cancel",
+    "close": "Close",
     "delete": "Delete",
+    "date": "Date",
     "edit": "Edit",
     "save": "Save",
     "submit": "Submit",
     "pleaseWait": "Please wait..."
+  },
+  "month": {
+    "january": "January",
+    "february": "February",
+    "march": "March",
+    "april": "April",
+    "may": "May",
+    "june": "June",
+    "july": "July",
+    "august": "August",
+    "september": "September",
+    "october": "October",
+    "november": "November",
+    "december": "December"
+  },
+  "gallery": {
+    "confirmDelete": "Are you sure you wish to delete this image from gallery?",
+    "aspectRatio": "Aspect Ratio",
+    "freeForm": "Free Form"
+  },
+  "stockPhotos": {
+    "photoBy": "Photo by:",
+    "providedBy": "Stock photos provided by"
+  },
+  "iconPicker": {
+    "search": "Search icons...",
+    "iconsAvailable": "icons available",
+    "matchingResults": "matching results"
+  },
+  "markdownEditor": {
+    "markdownGuide": "Markdown Guide",
+    "markdownEditor": "Markdown Editor",
+    "content": "Content"
   },
   "login": {
     "email": "Email",
@@ -18,5 +53,22 @@
       "email": "Please enter a valid email address.",
       "password": "Please enter a password."
     }
+  },
+  "notes": {
+    "comment": "comment",
+    "comments": "comments",
+    "notes": "Notes",
+    "startConversation": "Start a conversation",
+    "validate": {
+      "content": "Please enter a note."
+    },
+    "viewAll": "View all"
+  },
+  "reporting": {
+    "noData": "There is no data to display.",
+    "runReport": "Run Report",
+    "downloadOptions": "Download Options",
+    "detailedSummary": "Detailed Summary",
+    "useFilter": "Use the filter to run the report."
   }
 }
