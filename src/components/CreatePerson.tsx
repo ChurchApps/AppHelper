@@ -2,16 +2,22 @@ import React from "react"
 import { useNavigate } from "react-router-dom"
 import { UserHelper, ApiHelper, Locale } from "../helpers";
 import { Permissions, PersonInterface, HouseholdInterface } from "@churchapps/helpers";
-import { Button, Grid, TextField } from "@mui/material"
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, TextField } from "@mui/material"
 import { ErrorMessages } from "./ErrorMessages"
 import { useMountedState } from "../hooks/useMountedState"
 
-interface Props {
+interface CommonProps {
   navigateOnCreate?: boolean;
   onCreate?: (person: PersonInterface) => void;
 }
 
-export function CreatePerson({ navigateOnCreate = true, onCreate = () => {} }: Props) {
+type ConditionalProps = 
+  | { showInModal: true; onClose: () => void; }
+  | { showInModal?: false; onClose?: never; }
+
+type Props = CommonProps & ConditionalProps
+
+export function CreatePerson({ navigateOnCreate = true, onCreate = () => {}, showInModal = false, ...props }: Props) {
   const navigate = useNavigate()
   const [person, setPerson] = React.useState<PersonInterface>({ name: { first: "", last: "" }, contactInfo: {} });
   const [errors, setErrors] = React.useState<string[]>([]);
@@ -60,6 +66,21 @@ export function CreatePerson({ navigateOnCreate = true, onCreate = () => {} }: P
   }
 
   if (!UserHelper.checkAccess(Permissions.membershipApi.people.edit)) return null;
+  if (showInModal) {
+    return(
+        <Dialog open onClose={props.onClose} fullWidth>
+          <DialogTitle>{Locale.label("createPerson.addNewPerson")}</DialogTitle>
+          <DialogContent>
+            <TextField margin="dense" fullWidth type="text" aria-label="firstName" label={Locale.label("createPerson.firstName")} name="first" value={person.name.first || ""} onChange={handleChange} onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === "Enter" && handleSubmit} />
+            <TextField margin="dense" fullWidth type="text" aria-label="lastName" label={Locale.label("createPerson.lastName")} name="last" value={person.name.last || ""} onChange={handleChange} onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === "Enter" && handleSubmit} />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => { props.onClose(); }}>{Locale.label("common.cancel")}</Button>
+            <Button type="submit" variant="contained" disabled={isSubmitting || !person.name?.first || !person.name?.last} onClick={() => { handleSubmit(); props.onClose(); }}>{Locale.label("common.add")}</Button>
+          </DialogActions>
+        </Dialog>
+    )
+  }
   return (
     <div>
       <p className="pl-1 mb-3 text-dark"><b>{Locale.label("createPerson.addNewPerson")}</b></p>

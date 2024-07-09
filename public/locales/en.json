@@ -214,7 +214,8 @@
 		"lastName": "Last Name",
 		"name": "Name",
 		"person": "Person",
-		"years": "years"
+		"years": "years",
+		"noRec": "Don't have a person record?"
 	},
 	"reporting": {
 		"detailedSummary": "Detailed Summary",
