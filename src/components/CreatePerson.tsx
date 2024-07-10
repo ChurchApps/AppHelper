@@ -60,6 +60,7 @@ export function CreatePerson({ navigateOnCreate = true, onCreate = () => {}, sho
         }).finally(() => {
           if (isMounted()) {
             setIsSubmitting(false);
+            showInModal && props.onClose();
           }
         });
       });
@@ -69,18 +70,21 @@ export function CreatePerson({ navigateOnCreate = true, onCreate = () => {}, sho
   if (!UserHelper.checkAccess(Permissions.membershipApi.people.edit)) return null;
   if (showInModal) {
     return(
+      <>
+        <ErrorMessages errors={errors} />
         <Dialog open onClose={props.onClose} fullWidth>
           <DialogTitle>{Locale.label("createPerson.addNewPerson")}</DialogTitle>
           <DialogContent>
-            <TextField margin="dense" fullWidth type="text" aria-label="firstName" label={Locale.label("createPerson.firstName")} name="first" value={person.name.first || ""} onChange={handleChange} onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === "Enter" && handleSubmit} />
-            <TextField margin="dense" fullWidth type="text" aria-label="lastName" label={Locale.label("createPerson.lastName")} name="last" value={person.name.last || ""} onChange={handleChange} onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === "Enter" && handleSubmit} />
-            <TextField margin="dense" fullWidth type="text" aria-label="email" label={Locale.label("createPerson.email") + " (optional)"} name="email" value={person.contactInfo.email || ""} onChange={handleChange} onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === "Enter" && handleSubmit} />
+            <TextField margin="dense" required fullWidth type="text" aria-label="firstName" label={Locale.label("createPerson.firstName")} name="first" value={person.name.first || ""} onChange={handleChange} onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === "Enter" && handleSubmit} />
+            <TextField margin="dense" required fullWidth type="text" aria-label="lastName" label={Locale.label("createPerson.lastName")} name="last" value={person.name.last || ""} onChange={handleChange} onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === "Enter" && handleSubmit} />
+            <TextField margin="dense" fullWidth type="text" aria-label="email" label={Locale.label("createPerson.email")} name="email" value={person.contactInfo.email || ""} onChange={handleChange} onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === "Enter" && handleSubmit} />
           </DialogContent>
           <DialogActions>
             <Button onClick={() => { props.onClose(); }}>{Locale.label("common.cancel")}</Button>
-            <Button type="submit" variant="contained" disabled={isSubmitting || !person.name?.first || !person.name?.last} onClick={() => { handleSubmit(); props.onClose(); }}>{Locale.label("common.add")}</Button>
+            <Button type="submit" variant="contained" disabled={isSubmitting} onClick={handleSubmit}>{Locale.label("common.add")}</Button>
           </DialogActions>
         </Dialog>
+      </>
     )
   }
   return (
@@ -89,13 +93,13 @@ export function CreatePerson({ navigateOnCreate = true, onCreate = () => {}, sho
       <ErrorMessages errors={errors} />
       <Grid container spacing={3} alignItems="center">
         <Grid item md={6} xs={12}>
-          <TextField size="small" margin="none" fullWidth type="text" aria-label="firstName" label={Locale.label("createPerson.firstName")} name="first" value={person.name.first || ""} onChange={handleChange} onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === "Enter" && handleSubmit} />
+          <TextField size="small" margin="none" required fullWidth type="text" aria-label="firstName" label={Locale.label("createPerson.firstName")} name="first" value={person.name.first || ""} onChange={handleChange} onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === "Enter" && handleSubmit} />
         </Grid>
         <Grid item md={6} xs={12}>
-          <TextField size="small" margin="none" fullWidth type="text" aria-label="lastName" label={Locale.label("createPerson.lastName")} name="last" value={person.name.last || ""} onChange={handleChange} onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === "Enter" && handleSubmit} />
+          <TextField size="small" margin="none" required fullWidth type="text" aria-label="lastName" label={Locale.label("createPerson.lastName")} name="last" value={person.name.last || ""} onChange={handleChange} onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === "Enter" && handleSubmit} />
         </Grid>
         <Grid item xs={12}>
-          <TextField size="small" margin="none" fullWidth type="text" aria-label="email" label={Locale.label("createPerson.email") + " (optional)"} name="email" value={person.contactInfo.email || ""} onChange={handleChange} onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === "Enter" && handleSubmit} />
+          <TextField size="small" margin="none" fullWidth type="text" aria-label="email" label={Locale.label("createPerson.email")} name="email" value={person.contactInfo.email || ""} onChange={handleChange} onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === "Enter" && handleSubmit} />
         </Grid>
         <Grid item xs={12}>
           <Button type="submit" fullWidth variant="contained" disabled={isSubmitting} onClick={handleSubmit}>{Locale.label("common.add")}</Button>
