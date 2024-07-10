@@ -29,7 +29,8 @@
 	"createPerson": {
 		"addNewPerson": "Add a New Person",
 		"firstName": "First Name",
-		"lastName": "Last Name"
+		"lastName": "Last Name",
+		"email": "Email"
 	},
 	"donation": {
 		"bankForm": {
