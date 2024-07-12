@@ -11,7 +11,7 @@ interface CommonProps {
   onCreate?: (person: PersonInterface) => void;
 }
 
-type ConditionalProps = 
+type ConditionalProps =
   | { showInModal: true; onClose: () => void; }
   | { showInModal?: false; onClose?: never; }
 
@@ -44,26 +44,53 @@ export function CreatePerson({ navigateOnCreate = true, onCreate = () => {}, sho
     setPerson(p);
   }
 
-  function handleSubmit() {
+  const validateEmail = (email: string) => (/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(.\w{2,3})+$/.test(email));
+
+  const checkExistingEmail = async () => {
+    const result = await ApiHelper.get("/people/search?email=" + person.contactInfo.email, "MembershipApi");
+    return result[0];
+  }
+
+  const handleSave = () => {
     let household = { name: person.name.last } as HouseholdInterface;
-    if (validate()) {
-      setIsSubmitting(true);
-      ApiHelper.post("/households", [household], "MembershipApi").then(data => {
-        household.id = data[0].id;
-        person.householdId = household.id;
-        person.name.display = [person.name.first, person.name.last].join(" ");
-        ApiHelper.post("/people", [person], "MembershipApi").then(data => {
-          person.id = data[0].id
-          onCreate(person);
-          setPerson({...person, name: { first: "", last: "" }, contactInfo: { email: "" }});
-          navigateOnCreate && navigate("/people/" + person.id);
-        }).finally(() => {
-          if (isMounted()) {
-            setIsSubmitting(false);
-            showInModal && props.onClose();
-          }
-        });
+
+    setIsSubmitting(true);
+    ApiHelper.post("/households", [household], "MembershipApi").then(data => {
+      household.id = data[0].id;
+      person.householdId = household.id;
+      person.name.display = [person.name.first, person.name.last].join(" ");
+      ApiHelper.post("/people", [person], "MembershipApi").then(data => {
+        person.id = data[0].id
+        onCreate(person);
+        setPerson({...person, name: { first: "", last: "" }, contactInfo: { email: "" }});
+        navigateOnCreate && navigate("/people/" + person.id);
+      }).finally(() => {
+        if (isMounted()) {
+          setIsSubmitting(false);
+          showInModal && props.onClose();
+        }
       });
+    });
+  }
+
+  async function handleSubmit() {
+    if (validate()) {
+      if (person.contactInfo.email && (person.contactInfo.email?.trim() !== undefined || person.contactInfo.email?.trim() !== "")) {
+        if (!validateEmail(person.contactInfo.email)) {
+          setErrors(["Please enter a valid email address."]);
+        } else {
+          const existingPerson = await checkExistingEmail();
+          if (existingPerson) {
+            if (window.confirm(`${existingPerson.name.display} already exists with an email of ${existingPerson.contactInfo.email}. Are you sure you wish to add ${person.name.first} ${person.name.last}?`)) {
+              handleSave();
+            }
+          } else {
+            handleSave();
+          }
+        }
+      } else {
+        handleSave();
+      }
     }
   }
 
