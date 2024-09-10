@@ -2,15 +2,18 @@ import React from "react";
 import { MuiTelInput } from "mui-tel-input";
 import { AnswerInterface, QuestionInterface } from "@churchapps/helpers";
 import { Checkbox, Select, MenuItem, SelectChangeEvent, FormControl, InputLabel, TextField, FormLabel, FormGroup, FormControlLabel, Box } from "@mui/material";
+import { FormCardPayment } from "./FormCardPayment";
 
 interface Props {
   answer: AnswerInterface
   question: QuestionInterface,
   noBackground?: boolean,
-  changeFunction: (questionId: string, value: string) => void
+  changeFunction: (questionId: string, value: string) => void,
+  churchId?: string,
+  ref?: React.ForwardedRef<any>
 }
 
-export const QuestionEdit: React.FC<Props> = ({noBackground = false, ...props}) => {
+export const QuestionEdit = React.forwardRef<any, Props>(({noBackground = false, ...props}, ref) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement> | SelectChangeEvent<string>) => {
     props.changeFunction(props.question.id, e.target.value);
   }
@@ -81,11 +84,11 @@ export const QuestionEdit: React.FC<Props> = ({noBackground = false, ...props}) 
       case "Phone Number": input = <MuiTelInput fullWidth style={noBackground ? {backgroundColor: "white", borderRadius: "4px"} : {}} InputLabelProps={{ sx: { fontWeight: "bold" } }} label={q.title} placeholder="" value={answerValue} onChange={(value) => { props.changeFunction(props.question.id, value); }} defaultCountry="US" focusOnSelectCountry excludedCountries={["TA", "AC"]} />; break;
       case "Email": input = <TextField fullWidth style={noBackground ? {backgroundColor: "white", borderRadius: "4px"} : {}} type="email" InputLabelProps={{ sx: { fontWeight: "bold" } }} label={q.title} placeholder="john@doe.com" value={answerValue} onChange={handleChange} />; break;
       case "Text Area": input = <TextField fullWidth style={noBackground ? {backgroundColor: "white", borderRadius: "4px"} : {}} multiline rows={4} InputLabelProps={{ sx: { fontWeight: "bold" } }} label={q.title} placeholder={q.placeholder} value={answerValue} onChange={handleChange} />; break;
-      case "Payment": input = <><Box sx={{ backgroundColor: "#e0e0e0", padding: 1.5, borderRadius: 1, color: "gray", fontWeight: "bold", fontSize: 18 }}>$20</Box></>; break;
+      case "Payment": input = <FormCardPayment churchId={props.churchId} question={q} ref={ref} />; break;
       default: return null;
     }
     return input;
   }
 
-}
+});
 

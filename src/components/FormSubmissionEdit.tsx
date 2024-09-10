@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { ErrorMessages, InputBox, QuestionEdit } from "./";
 import { ApiHelper, Locale, UniqueIdHelper, UserHelper } from "../helpers";
 import { AnswerInterface, QuestionInterface, FormSubmissionInterface } from "@churchapps/helpers";
@@ -20,6 +20,7 @@ interface Props {
 export const FormSubmissionEdit: React.FC<Props> = ({showHeader = true, noBackground = false, ...props}) => {
   const [formSubmission, setFormSubmission] = React.useState(null);
   const [errors, setErrors] = React.useState([]);
+  const paymentRef = useRef<any>(null);
 
   const getDeleteFunction = () => (!UniqueIdHelper.isMissing(formSubmission?.id)) ? handleDelete : undefined
   const handleDelete = () => {
@@ -67,8 +68,29 @@ export const FormSubmissionEdit: React.FC<Props> = ({showHeader = true, noBackgr
     return result;
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const fs = formSubmission;
+    // First, handle the payment if there's a payment component
+    if (paymentRef.current) {
+      const paymentResult = await paymentRef.current.handlePayment();
+      if (!paymentResult.paymentSuccessful) {
+        setErrors(paymentResult.errors);
+        return;
+      } else {
+        // Mark payment as successful in answers
+        const paymentAnswer = fs.answers.find((a: AnswerInterface) => a.questionId === paymentRef.current.questionId);
+        if (paymentAnswer) {
+          paymentAnswer.value = "Payment Successful";
+        } else {
+          fs.answers.push({
+            questionId: paymentRef.current.questionId,
+            value: "Payment Successful"
+          });
+        }
+      }
+    }
+
+    // If payment is successful or there's no payment, proceed with form submission
     fs.submittedBy = props.personId || null;
     fs.submissionDate = new Date();
     fs.churchId = props.churchId || null;
@@ -107,7 +129,7 @@ export const FormSubmissionEdit: React.FC<Props> = ({showHeader = true, noBackgr
   let questionList = [];
   if (formSubmission != null) {
     let questions = formSubmission.questions;
-    for (let i = 0; i < questions.length; i++) questionList.push(<QuestionEdit noBackground={noBackground} key={questions[i].id} question={questions[i]} answer={getAnswer(questions[i].id)} changeFunction={handleChange} />);
+    for (let i = 0; i < questions.length; i++) questionList.push(<QuestionEdit noBackground={noBackground} key={questions[i].id} question={questions[i]} answer={getAnswer(questions[i].id)} changeFunction={handleChange} churchId={props.churchId} ref={questions[i].fieldType === "Payment" ? paymentRef : null} />);
   }
 
   return (
