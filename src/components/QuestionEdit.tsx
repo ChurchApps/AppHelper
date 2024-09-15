@@ -1,4 +1,6 @@
 import React from "react";
+import { Elements } from "@stripe/react-stripe-js";
+import { Stripe } from "@stripe/stripe-js";
 import { MuiTelInput } from "mui-tel-input";
 import { AnswerInterface, QuestionInterface } from "@churchapps/helpers";
 import { Checkbox, Select, MenuItem, SelectChangeEvent, FormControl, InputLabel, TextField, FormLabel, FormGroup, FormControlLabel, Box } from "@mui/material";
@@ -10,7 +12,8 @@ interface Props {
   noBackground?: boolean,
   changeFunction: (questionId: string, value: string) => void,
   churchId?: string,
-  ref?: React.ForwardedRef<any>
+  ref?: React.ForwardedRef<any>,
+  stripePromise?: Promise<Stripe>
 }
 
 export const QuestionEdit = React.forwardRef<any, Props>(({noBackground = false, ...props}, ref) => {
@@ -84,7 +87,7 @@ export const QuestionEdit = React.forwardRef<any, Props>(({noBackground = false,
       case "Phone Number": input = <MuiTelInput fullWidth style={noBackground ? {backgroundColor: "white", borderRadius: "4px"} : {}} InputLabelProps={{ sx: { fontWeight: "bold" } }} label={q.title} placeholder="" value={answerValue} onChange={(value) => { props.changeFunction(props.question.id, value); }} defaultCountry="US" focusOnSelectCountry excludedCountries={["TA", "AC"]} />; break;
       case "Email": input = <TextField fullWidth style={noBackground ? {backgroundColor: "white", borderRadius: "4px"} : {}} type="email" InputLabelProps={{ sx: { fontWeight: "bold" } }} label={q.title} placeholder="john@doe.com" value={answerValue} onChange={handleChange} />; break;
       case "Text Area": input = <TextField fullWidth style={noBackground ? {backgroundColor: "white", borderRadius: "4px"} : {}} multiline rows={4} InputLabelProps={{ sx: { fontWeight: "bold" } }} label={q.title} placeholder={q.placeholder} value={answerValue} onChange={handleChange} />; break;
-      case "Payment": input = <FormCardPayment churchId={props.churchId} question={q} ref={ref} />; break;
+      case "Payment": input = <Elements stripe={props.stripePromise}><FormCardPayment churchId={props.churchId} question={q} ref={ref} /></Elements>; break;
       default: return null;
     }
     return input;

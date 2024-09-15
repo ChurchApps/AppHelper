@@ -1,6 +1,5 @@
 import React, { forwardRef, useImperativeHandle } from "react";
-import { CardElement, Elements } from "@stripe/react-stripe-js";
-import { loadStripe, Stripe } from "@stripe/stripe-js";
+import { CardElement } from "@stripe/react-stripe-js";
 import { Box, Grid, TextField } from "@mui/material";
 import { QuestionInterface } from "@churchapps/helpers";
 import { ApiHelper, Locale } from "../helpers";
@@ -12,20 +11,12 @@ interface Props {
 
 export const FormCardPayment = forwardRef((props: Props, ref) => {
   const formStyling = { style: { base: { fontSize: "18px" } } };
-  const [stripePromise, setStripe] = React.useState<Promise<Stripe>>(null);
   const [email, setEmail] = React.useState<string>("");
   const [firstName, setFirstName] = React.useState<string>("");
   const [lastName, setLastName] = React.useState<string>("");
   const [errors, setErrors] = React.useState<string[]>([]); //TODO: if not needed remove this
   let amt = Number(props.question.choices.find(c => c.text === "Amount")?.value);
 
-  const init = () => {
-    ApiHelper.get("/gateways/churchId/" + props.churchId, "GivingApi").then(data=> {
-      if (data.length && data[0]?.publicKey) {
-        setStripe(loadStripe(data[0].publicKey));
-      }
-    });
-  }
 
   const handlePayment = async () => {
     const validateErrors = validate();
@@ -56,7 +47,6 @@ export const FormCardPayment = forwardRef((props: Props, ref) => {
 		questionId: props.question.id
 	}));
 
-	React.useEffect(init, []); //eslint-disable-line
 
 	return <div style={{ backgroundColor: "#bdbdbd", padding: 35, borderRadius: 20 }}>
 		<Grid container spacing={2}>
@@ -74,9 +64,7 @@ export const FormCardPayment = forwardRef((props: Props, ref) => {
 			</Grid>
 			<Grid item xs={12}>
 				<div style={{ padding: 10, border: "1px solid #CCC", borderRadius: 5, backgroundColor: "white" }}>
-					<Elements stripe={stripePromise}>
-						<CardElement options={formStyling} />
-					</Elements>
+          <CardElement options={formStyling} />
 				</div>
 			</Grid>
 		</Grid>

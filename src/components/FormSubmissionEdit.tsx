@@ -1,4 +1,5 @@
 import React, { useRef } from "react";
+import { loadStripe, Stripe } from "@stripe/stripe-js";
 import { ErrorMessages, InputBox, QuestionEdit } from "./";
 import { ApiHelper, Locale, UniqueIdHelper, UserHelper } from "../helpers";
 import { AnswerInterface, QuestionInterface, FormSubmissionInterface } from "@churchapps/helpers";
@@ -18,6 +19,7 @@ interface Props {
 }
 
 export const FormSubmissionEdit: React.FC<Props> = ({showHeader = true, noBackground = false, ...props}) => {
+  const [stripePromise, setStripe] = React.useState<Promise<Stripe>>(null);
   const [formSubmission, setFormSubmission] = React.useState(null);
   const [errors, setErrors] = React.useState([]);
   const paymentRef = useRef<any>(null);
@@ -124,12 +126,22 @@ export const FormSubmissionEdit: React.FC<Props> = ({showHeader = true, noBackgr
     setFormSubmission(fs);
   }
 
+  React.useEffect(() => {
+    if (props.churchId) {
+      ApiHelper.get("/gateways/churchId/" + props.churchId, "GivingApi").then(data => {
+        if (data.length && data[0]?.publicKey) {
+          setStripe(loadStripe(data[0].publicKey));
+        }
+      });
+    }
+  }, [props.churchId]);
+
   React.useEffect(loadData, []); //eslint-disable-line
 
   let questionList = [];
   if (formSubmission != null) {
     let questions = formSubmission.questions;
-    for (let i = 0; i < questions.length; i++) questionList.push(<QuestionEdit noBackground={noBackground} key={questions[i].id} question={questions[i]} answer={getAnswer(questions[i].id)} changeFunction={handleChange} churchId={props.churchId} ref={questions[i].fieldType === "Payment" ? paymentRef : null} />);
+    for (let i = 0; i < questions.length; i++) questionList.push(<QuestionEdit noBackground={noBackground} key={questions[i].id} question={questions[i]} answer={getAnswer(questions[i].id)} changeFunction={handleChange} churchId={props.churchId} ref={questions[i].fieldType === "Payment" ? paymentRef : null} stripePromise={stripePromise} />);
   }
 
   return (
