@@ -1,8 +1,8 @@
 import React, { forwardRef, useImperativeHandle } from "react";
-import { CardElement } from "@stripe/react-stripe-js";
+import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { Box, Grid, TextField } from "@mui/material";
 import { QuestionInterface } from "@churchapps/helpers";
-import { ApiHelper, Locale } from "../helpers";
+import { ApiHelper, Locale, UserInterface, PersonInterface, StripePaymentMethod, StripeDonationInterface, ChurchInterface, FundInterface, ArrayHelper } from "../helpers";
 
 interface Props {
 	churchId: string,
@@ -11,23 +11,123 @@ interface Props {
 
 export const FormCardPayment = forwardRef((props: Props, ref) => {
   const formStyling = { style: { base: { fontSize: "18px" } } };
+  const elements = useElements();
+  const stripe = useStripe();
   const [email, setEmail] = React.useState<string>("");
   const [firstName, setFirstName] = React.useState<string>("");
   const [lastName, setLastName] = React.useState<string>("");
   const [errors, setErrors] = React.useState<string[]>([]); //TODO: if not needed remove this
+  const [church, setChurch] = React.useState<ChurchInterface>();
+  const [fund, setFund] = React.useState<FundInterface>()
   let amt = Number(props.question.choices.find(c => c.text === "Amount")?.value);
+  let fundId = props.question.choices.find(c => c.text === "FundId")?.value;
 
+  const getChurchData = () => {
+    let fundId = props.question.choices.find(c => c.text === "FundId")?.value;
+    ApiHelper.get("/churches/" + props.churchId, "MembershipApi").then(data => {
+      setChurch(data);
+    });
+    ApiHelper.get("/funds/churchId/" + props.churchId, "GivingApi").then(data => {
+      const result = ArrayHelper.getOne(data, "id", fundId);
+      setFund(result);
+    })
+  }
 
   const handlePayment = async () => {
     const validateErrors = validate();
-    if (validateErrors.length > 0) return { paymentSuccessful: false, errors: validateErrors }
+    if (validateErrors.length > 0) {
+      setErrors(validateErrors); //don't know
+      return { paymentSuccessful: false, errors: validateErrors }
+    }
 
     try {
+      const userData = await ApiHelper.post("/users/loadOrCreate", { userEmail: email, firstName, lastName }, "MembershipApi");
+
+      const personData = { churchId: props.churchId, firstName, lastName, email };
+      const person = await ApiHelper.post("/people/loadOrCreate", personData, "MembershipApi");
+
+      const cardSavedRes = await saveCard(userData, person);
+      if (!cardSavedRes.success) {
+        setErrors(cardSavedRes.errors)//don't know
+        return { paymentSuccessful: false, errors: cardSavedRes.errors }
+      }
+      
       return { paymentSuccessful: true, errors: [] }
     } catch (err) {
-      setErrors(["An error occurred while processing your payment."]);
-      return { paymentSuccessful: false, errors: errors }
+      const errorMessage = "An error occurred while processing your payment.";
+      setErrors([errorMessage]);
+      return { paymentSuccessful: false, errors: [errorMessage] }
     }
+  }
+
+  const saveCard = async (user: UserInterface, person: PersonInterface) => {
+    const cardData = elements.getElement(CardElement);
+    try {
+      const stripePM = await stripe.createPaymentMethod({ type: "card", card: cardData });
+      if (stripePM.error) {
+        // setErrors([stripePM.error.message]);
+        return { success: false, errors: [stripePM.error.message] };
+      } else {
+        const pm = { id: stripePM.paymentMethod.id, personId: person.id, email: email, name: person.name.display, churchId: props.churchId };
+        try {
+          const result = await ApiHelper.post("/paymentmethods/addcard", pm, "GivingApi");
+          if (result?.raw?.message) {
+            return { success: false, errors: [result.raw.message] };
+          } else {
+            const p: { paymentMethod: StripePaymentMethod, customerId: string } = result
+            const savedPaymentRes = await savePayment(p.paymentMethod, p.customerId, person);
+            if (!savedPaymentRes.success) {
+              return { success: false, errors: savedPaymentRes.errors }
+            }
+            return { success: true, errors: [] }
+          }
+        } catch (apiError) {
+          return { success: false, errors: ["An error occurred while saving the card."] }
+        }
+      }
+    } catch (stripeError) {
+      // setErrors(["An error occurred while processing your payment method."]);
+      return { success: false, errors: ["An error occurred while processing your payment method."] };
+    }
+  }
+
+  const savePayment = async (paymentMethod: StripePaymentMethod, customerId: string, person?: PersonInterface) => {
+
+    let payment: StripeDonationInterface = {
+      amount: amt,
+      id: paymentMethod.id,
+      customerId: customerId,
+      type: paymentMethod.type,
+      churchId: props.churchId,
+      funds: [{ id: fundId, amount: amt, name: fund.name }],
+      person: {
+        id: person.id,
+        email: person?.contactInfo?.email,
+        name: person?.name?.display,
+      }
+    }
+
+    const churchObj = {
+      name: church.name,
+      subDomain: church.subDomain,
+      churchURL: typeof window !== "undefined" && window.location.origin,
+      logo: ""
+    }
+
+    try {
+      const result = await ApiHelper.post("/donate/charge/", { ...payment, church: churchObj }, "GivingApi");
+      if (result?.status === "succeeded" || result?.status === "pending") {
+        return { success: true, errors: [] }
+      }
+
+      if (result?.raw?.message) {
+        return { success: false, errors: [result.raw.message] }
+      }
+
+    } catch (err) {
+      return { success: false, errors: ["An error occurred while saving your payment."] }
+    }
+
   }
 
   const validate = () => {
@@ -47,6 +147,7 @@ export const FormCardPayment = forwardRef((props: Props, ref) => {
 		questionId: props.question.id
 	}));
 
+  React.useEffect(getChurchData, []);
 
 	return <div style={{ backgroundColor: "#bdbdbd", padding: 35, borderRadius: 20 }}>
 		<Grid container spacing={2}>
