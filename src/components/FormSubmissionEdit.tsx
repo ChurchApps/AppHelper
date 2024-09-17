@@ -70,32 +70,7 @@ export const FormSubmissionEdit: React.FC<Props> = ({showHeader = true, noBackgr
     return result;
   }
 
-  const handleSave = async () => {
-    const fs = formSubmission;
-    // First, handle the payment if there's a payment component
-    if (paymentRef.current) {
-      const paymentResult = await paymentRef.current.handlePayment();
-      if (!paymentResult.paymentSuccessful) {
-        setErrors(paymentResult.errors);
-        return;
-      } else {
-        // Mark payment as successful in answers
-        const paymentAnswer = fs.answers.find((a: AnswerInterface) => a.questionId === paymentRef.current.questionId);
-        if (paymentAnswer) {
-          paymentAnswer.value = "Payment Successful";
-        } else {
-          fs.answers.push({
-            questionId: paymentRef.current.questionId,
-            value: "Payment Successful"
-          });
-        }
-      }
-    }
-
-    // If payment is successful or there's no payment, proceed with form submission
-    fs.submittedBy = props.personId || null;
-    fs.submissionDate = new Date();
-    fs.churchId = props.churchId || null;
+  const validate = (fs: any) => {
     let e: any = [];
     fs.answers.forEach((a: AnswerInterface) => {
 
@@ -105,13 +80,45 @@ export const FormSubmissionEdit: React.FC<Props> = ({showHeader = true, noBackgr
         setErrors(e);
       }
     });
-    if (!e.length) ApiHelper.post("/formsubmissions/", [fs], "MembershipApi").then((res) => {
-      if (res?.[0]?.error) {
-        setErrors([res?.[0].error]);
-      } else {
-        props.updatedFunction();
+    return e.length === 0;
+  }
+
+  const handleSave = async () => {
+    const fs = formSubmission;
+    if (validate(fs)) {
+      // First, handle the payment if there's a payment component
+      if (paymentRef.current) {
+        const paymentResult = await paymentRef.current.handlePayment();
+        if (!paymentResult.paymentSuccessful) {
+          setErrors(paymentResult.errors);
+          return;
+        } else {
+          // Mark payment as successful in answers
+          const paymentAnswer = fs.answers.find((a: AnswerInterface) => a.questionId === paymentRef.current.questionId);
+          if (paymentAnswer) {
+            paymentAnswer.value = "Payment Successful";
+          } else {
+            fs.answers.push({
+              questionId: paymentRef.current.questionId,
+              value: "Payment Successful"
+            });
+          }
+        }
       }
-    });
+  
+      // If payment is successful or there's no payment, proceed with form submission
+      fs.submittedBy = props.personId || null;
+      fs.submissionDate = new Date();
+      fs.churchId = props.churchId || null;
+  
+      ApiHelper.post("/formsubmissions/", [fs], "MembershipApi").then((res) => {
+        if (res?.[0]?.error) {
+          setErrors([res?.[0].error]);
+        } else {
+          props.updatedFunction();
+        }
+      });
+    }
   }
 
   const handleChange = (questionId: string, value: string) => {
