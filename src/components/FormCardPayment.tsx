@@ -16,7 +16,6 @@ export const FormCardPayment = forwardRef((props: Props, ref) => {
   const [email, setEmail] = React.useState<string>("");
   const [firstName, setFirstName] = React.useState<string>("");
   const [lastName, setLastName] = React.useState<string>("");
-  const [errors, setErrors] = React.useState<string[]>([]); //TODO: if not needed remove this
   const [church, setChurch] = React.useState<ChurchInterface>();
   const [fund, setFund] = React.useState<FundInterface>()
   let amt = Number(props.question.choices.find(c => c.text === "Amount")?.value);
@@ -36,7 +35,6 @@ export const FormCardPayment = forwardRef((props: Props, ref) => {
   const handlePayment = async () => {
     const validateErrors = validate();
     if (validateErrors.length > 0) {
-      setErrors(validateErrors); //don't know
       return { paymentSuccessful: false, errors: validateErrors }
     }
 
@@ -48,14 +46,12 @@ export const FormCardPayment = forwardRef((props: Props, ref) => {
 
       const cardSavedRes = await saveCard(userData, person);
       if (!cardSavedRes.success) {
-        setErrors(cardSavedRes.errors)//don't know
         return { paymentSuccessful: false, errors: cardSavedRes.errors }
       }
       
       return { paymentSuccessful: true, errors: [] }
     } catch (err) {
       const errorMessage = "An error occurred while processing your payment.";
-      setErrors([errorMessage]);
       return { paymentSuccessful: false, errors: [errorMessage] }
     }
   }
@@ -65,7 +61,6 @@ export const FormCardPayment = forwardRef((props: Props, ref) => {
     try {
       const stripePM = await stripe.createPaymentMethod({ type: "card", card: cardData });
       if (stripePM.error) {
-        // setErrors([stripePM.error.message]);
         return { success: false, errors: [stripePM.error.message] };
       } else {
         const pm = { id: stripePM.paymentMethod.id, personId: person.id, email: email, name: person.name.display, churchId: props.churchId };
@@ -86,7 +81,6 @@ export const FormCardPayment = forwardRef((props: Props, ref) => {
         }
       }
     } catch (stripeError) {
-      // setErrors(["An error occurred while processing your payment method."]);
       return { success: false, errors: ["An error occurred while processing your payment method."] };
     }
   }
@@ -138,7 +132,6 @@ export const FormCardPayment = forwardRef((props: Props, ref) => {
     if (result.length === 0) {
       if (!email.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)) result.push(Locale.label("donation.donationForm.validate.validEmail"));  //eslint-disable-line
     }
-    setErrors(result);
     return result;
   }
 
