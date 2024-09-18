@@ -126,9 +126,9 @@ export const FormCardPayment = forwardRef((props: Props, ref) => {
 
   const validate = () => {
     const result = [];
-    if (!firstName) result.push("Please enter your first name to make a payment");
-    if (!lastName) result.push("Please enter your last name to make a payment");
-    if (!email) result.push("Please enter your email address to make a payment");
+    if (!firstName) result.push(Locale.label("donation.donationForm.validate.firstName"));
+    if (!lastName) result.push(Locale.label("donation.donationForm.validate.lastName"));
+    if (!email) result.push(Locale.label("donation.donationForm.validate.email"));
     if (result.length === 0) {
       if (!email.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)) result.push(Locale.label("donation.donationForm.validate.validEmail"));  //eslint-disable-line
     }
@@ -145,13 +145,13 @@ export const FormCardPayment = forwardRef((props: Props, ref) => {
 	return <div style={{ backgroundColor: "#bdbdbd", padding: 35, borderRadius: 20 }}>
 		<Grid container spacing={2}>
 			<Grid item xs={12}>
-				<TextField fullWidth required size="small" margin="none" style={{backgroundColor: "white", borderRadius: "4px"}} InputLabelProps={{ sx: { fontWeight: "bold" } }} label="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+				<TextField fullWidth required size="small" margin="none" style={{backgroundColor: "white", borderRadius: "4px"}} InputLabelProps={{ sx: { fontWeight: "bold" } }} label={Locale.label("person.email")} value={email} onChange={(e) => setEmail(e.target.value)} />
 			</Grid>
 			<Grid item xs={12} sm={6}>
-				<TextField fullWidth required size="small" margin="none" style={{backgroundColor: "white", borderRadius: "4px"}} InputLabelProps={{ sx: { fontWeight: "bold" } }} label="First Name" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+				<TextField fullWidth required size="small" margin="none" style={{backgroundColor: "white", borderRadius: "4px"}} InputLabelProps={{ sx: { fontWeight: "bold" } }} label={Locale.label("person.firstName")} value={firstName} onChange={(e) => setFirstName(e.target.value)} />
 			</Grid>
 			<Grid item xs={12} sm={6}>
-				<TextField fullWidth required size="small" margin="none" style={{backgroundColor: "white", borderRadius: "4px"}} InputLabelProps={{ sx: { fontWeight: "bold" } }} label="Last Name" value={lastName} onChange={(e) => setLastName(e.target.value)} />
+				<TextField fullWidth required size="small" margin="none" style={{backgroundColor: "white", borderRadius: "4px"}} InputLabelProps={{ sx: { fontWeight: "bold" } }} label={Locale.label("person.lastName")} value={lastName} onChange={(e) => setLastName(e.target.value)} />
 			</Grid>
 			<Grid item xs={12}>
 				<Box sx={{ backgroundColor: "white", padding: 1.5, borderRadius: 1, color: "gray", fontWeight: "bold", fontSize: 18 }}>$ {amt}</Box>
