@@ -19,6 +19,7 @@ import { AutoLinkNode, LinkNode } from "@lexical/link";
 import { CodeHighlightNode, CodeNode } from "@lexical/code";
 import { theme } from "./theme";
 import { ToolbarPlugin, CustomAutoLinkPlugin, ListMaxIndentLevelPlugin, PLAYGROUND_TRANSFORMERS, ReadOnlyPlugin, ControlledEditorPlugin } from "./plugins";
+import FloatingTextFormatToolbarPlugin from "./plugins/FloatingTextMenu/FloatingTextFormatToolbarPlugin";
 import { MarkdownModal } from "./MarkdownModal";
 import CustomLinkNodePlugin from "./plugins/customLink/CustomLinkNodePlugin";
 import { CustomLinkNode } from "./plugins/customLink/CustomLinkNode";
@@ -113,6 +114,7 @@ function Editor({ value, onChange = () => { }, mode = "interactive", textAlign =
             <CustomLinkNodePlugin />
             {mode !== "preview" && <EmojiPickerPlugin />}
             <EmojisPlugin />
+            <FloatingTextFormatToolbarPlugin />
             <OnChangePlugin onChange={handleChange} />
             {mode !== "preview" && <AutoFocusPlugin />}
             <HistoryPlugin />
