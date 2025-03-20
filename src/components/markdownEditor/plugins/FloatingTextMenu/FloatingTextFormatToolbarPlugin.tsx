@@ -149,7 +149,7 @@ function TextFormatFloatingToolbar({ editor, anchorElem, isLink, isBold, isItali
             onClick={() => {
               applyFormatting("bold");
             }}
-            color={isBold ? "secondary" : undefined}
+            sx={{ backgroundColor: isBold ? "#e0e0e0" : undefined, borderRadius: 2, marginRight: 0.3 }}
           >
             <Icon>format_bold_outline</Icon>
           </IconButton>
@@ -158,7 +158,7 @@ function TextFormatFloatingToolbar({ editor, anchorElem, isLink, isBold, isItali
             onClick={() => {
               applyFormatting("italic");
             }}
-            color={isItalic ? "secondary" : undefined}
+            sx={{ backgroundColor: isItalic ? "#e0e0e0" : undefined, borderRadius: 2, marginRight: 0.3 }}
           >
             <Icon>format_italic_outline</Icon>
           </IconButton>
@@ -167,7 +167,7 @@ function TextFormatFloatingToolbar({ editor, anchorElem, isLink, isBold, isItali
             onClick={() => {
               applyFormatting("underline");
             }}
-            color={isUnderline ? "secondary" : undefined}
+            sx={{ backgroundColor: isUnderline ? "#e0e0e0" : undefined, borderRadius: 2, marginRight: 0.3 }}
           >
             <Icon>format_underlined_outline</Icon>
           </IconButton>
@@ -176,7 +176,7 @@ function TextFormatFloatingToolbar({ editor, anchorElem, isLink, isBold, isItali
             onClick={() => {
               applyFormatting("strikethrough");
             }}
-            color={isStrikethrough ? "secondary" : undefined}
+            sx={{ backgroundColor: isStrikethrough ? "#e0e0e0" : undefined, borderRadius: 2, marginRight: 0.3 }}
           >
             <Icon>strikethrough_s_outline</Icon>
           </IconButton>
@@ -185,14 +185,14 @@ function TextFormatFloatingToolbar({ editor, anchorElem, isLink, isBold, isItali
             onClick={() => {
               applyFormatting("code");
             }}
-            color={isCode ? "secondary" : undefined}
+            sx={{ backgroundColor: isCode ? "#e0e0e0" : undefined, borderRadius: 2, marginRight: 0.3 }}
           >
             <Icon>code</Icon>
           </IconButton>
 
           <IconButton
             onClick={insertLink}
-            color={isLink ? "secondary" : undefined}
+            sx={{ backgroundColor: isLink ? "#e0e0e0" : undefined, borderRadius: 2 }}
           >
             <Icon>insert_link_outline</Icon>
           </IconButton>
