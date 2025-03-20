@@ -1,8 +1,7 @@
 const VERTICAL_GAP = 10;
 const HORIZONTAL_OFFSET = 5;
 
-//@ts-ignore
-export function setFloatingElemPosition( targetRect, floatingElem, anchorElem, verticalGap = VERTICAL_GAP, horizontalOffset = HORIZONTAL_OFFSET ) {
+export function setFloatingElemPosition( targetRect: any, floatingElem: any, anchorElem: any, verticalGap = VERTICAL_GAP, horizontalOffset = HORIZONTAL_OFFSET ) {
   const scrollerElem = anchorElem.parentElement;
 
   if (targetRect === null || !scrollerElem) {

@@ -1,5 +1,4 @@
-//@ts-ignore
-export function getDOMRangeRect(nativeSelection, rootElement) {
+export function getDOMRangeRect(nativeSelection: any, rootElement: any) {
 	const domRange = nativeSelection.getRangeAt(0);
 
 	let rect;

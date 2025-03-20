@@ -2,6 +2,7 @@ import { $isCodeHighlightNode } from "@lexical/code";
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
+import { $convertToMarkdownString } from "@lexical/markdown";
 import { $getSelection, $isRangeSelection, $isTextNode, COMMAND_PRIORITY_LOW, FORMAT_TEXT_COMMAND, SELECTION_CHANGE_COMMAND } from "lexical";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -10,6 +11,8 @@ import { Box, styled, IconButton, Icon } from "@mui/material";
 import { getDOMRangeRect } from "./getDOMRangeRect";
 import { getSelectedNode } from "./getSelectNode";
 import { setFloatingElemPosition } from "./setFloatingElemPosition";
+import { PLAYGROUND_TRANSFORMERS } from "../MarkdownTransformers";
+import { ApiHelper } from "../../../../helpers";
 
 export const FloatingDivContainer = styled(Box)({
   display: "flex",
@@ -29,9 +32,13 @@ export const FloatingDivContainer = styled(Box)({
   willChange: "transform",
 });
 
-//@ts-ignore
-function TextFormatFloatingToolbar({ editor, anchorElem, isLink, isBold, isItalic, isUnderline, isCode, isStrikethrough, isSubscript, isSuperscript }) {
+function TextFormatFloatingToolbar({ editor, anchorElem, isLink, isBold, isItalic, isUnderline, isCode, isStrikethrough, isSubscript, isSuperscript }: any) {
   const popupCharStylesEditorRef = useRef(null);
+
+  const applyFormatting = (command: string) => {
+    editor.dispatchCommand(FORMAT_TEXT_COMMAND, command);
+    saveChanges(editor);
+  }
 
   const insertLink = useCallback(() => {
     if (!isLink) {
@@ -118,8 +125,7 @@ function TextFormatFloatingToolbar({ editor, anchorElem, isLink, isBold, isItali
       updateTextFormatFloatingToolbar();
     });
     return mergeRegister(
-        //@ts-ignore
-      editor.registerUpdateListener(({ editorState }) => {
+      editor.registerUpdateListener(({ editorState }: any) => {
         editorState.read(() => {
           updateTextFormatFloatingToolbar();
         });
@@ -138,11 +144,10 @@ function TextFormatFloatingToolbar({ editor, anchorElem, isLink, isBold, isItali
 
   return (
     <FloatingDivContainer ref={popupCharStylesEditorRef}>
-      {/* {editor.isEditable() && ( */}
         <>
           <IconButton
             onClick={() => {
-              editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold");
+              applyFormatting("bold");
             }}
             color={isBold ? "secondary" : undefined}
           >
@@ -151,7 +156,7 @@ function TextFormatFloatingToolbar({ editor, anchorElem, isLink, isBold, isItali
 
           <IconButton
             onClick={() => {
-              editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic");
+              applyFormatting("italic");
             }}
             color={isItalic ? "secondary" : undefined}
           >
@@ -160,7 +165,7 @@ function TextFormatFloatingToolbar({ editor, anchorElem, isLink, isBold, isItali
 
           <IconButton
             onClick={() => {
-              editor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline");
+              applyFormatting("underline");
             }}
             color={isUnderline ? "secondary" : undefined}
           >
@@ -169,7 +174,7 @@ function TextFormatFloatingToolbar({ editor, anchorElem, isLink, isBold, isItali
 
           <IconButton
             onClick={() => {
-              editor.dispatchCommand(FORMAT_TEXT_COMMAND, "strikethrough");
+              applyFormatting("strikethrough");
             }}
             color={isStrikethrough ? "secondary" : undefined}
           >
@@ -178,7 +183,7 @@ function TextFormatFloatingToolbar({ editor, anchorElem, isLink, isBold, isItali
 
           <IconButton
             onClick={() => {
-              editor.dispatchCommand(FORMAT_TEXT_COMMAND, "code");
+              applyFormatting("code");
             }}
             color={isCode ? "secondary" : undefined}
           >
@@ -192,13 +197,60 @@ function TextFormatFloatingToolbar({ editor, anchorElem, isLink, isBold, isItali
             <Icon>insert_link_outline</Icon>
           </IconButton>
         </>
-      {/* )} */}
     </FloatingDivContainer>
   );
 }
 
-//@ts-ignore
-function useFloatingTextFormatToolbar(editor, anchorElem) {
+let lastSavedText = "";
+let lastFormattingState = {};
+
+const getFormattingState = (selection: any) => {
+  return {
+    isBold: selection.hasFormat("bold"),
+    isItalic: selection.hasFormat("italic"),
+    isUnderline: selection.hasFormat("underline"),
+    isStrikethrough: selection.hasFormat("strikethrough"),
+    isCode: selection.hasFormat("code"),
+  }
+}
+
+const saveChanges = (editor: any) => {
+  editor.update(() => {
+      const selection = $getSelection();
+      if ($isRangeSelection(selection)) {
+        const text = selection.getTextContent().trim();
+        const newFormattingState = getFormattingState(selection);
+
+        if (JSON.stringify(newFormattingState) !== JSON.stringify(lastFormattingState)) {
+          lastSavedText = text;
+          lastFormattingState = newFormattingState;
+
+          const editorNode = editor.getRootElement();
+          const elementJSON = editorNode?.dataset?.element;
+          if (elementJSON) {
+            const markdown = $convertToMarkdownString(PLAYGROUND_TRANSFORMERS)
+            const element: any = JSON.parse(elementJSON);
+
+            element.answers.text = markdown;
+            element.answersJSON = JSON.stringify(element.answers);
+
+            ApiHelper.post("/elements", [element], "ContentApi");
+          }
+        }
+      }
+  })
+}
+
+const updateFormattingState = (editor: any) => {
+  editor.update(() => {
+    const selection = $getSelection();
+    if ($isRangeSelection(selection)) {
+      lastFormattingState = getFormattingState(selection);
+    }
+  })
+}
+
+function useFloatingTextFormatToolbar(editor: any, anchorElem: any) {
   const [isText, setIsText] = useState(false);
   const [isLink, setIsLink] = useState(false);
   const [isBold, setIsBold] = useState(false);
@@ -266,7 +318,15 @@ function useFloatingTextFormatToolbar(editor, anchorElem) {
         setIsText(false);
         return;
       }
+
+      if ($isRangeSelection(selection)) {
+        const text = selection.getTextContent().trim();
+        if (text && JSON.stringify(lastFormattingState === "{}")) {
+          updateFormattingState(editor);
+        }
+      }
     });
+
   }, [editor]);
 
   useEffect(() => {
@@ -281,6 +341,10 @@ function useFloatingTextFormatToolbar(editor, anchorElem) {
       editor.registerUpdateListener(() => {
         updatePopup();
       }),
+      editor.registerCommand(SELECTION_CHANGE_COMMAND, () => {
+        updatePopup();
+        return false;
+      },COMMAND_PRIORITY_LOW),
       editor.registerRootListener(() => {
         if (editor.getRootElement() === null) {
           setIsText(false);

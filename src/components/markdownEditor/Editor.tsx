@@ -1,6 +1,6 @@
 "use client";
 
-import React, {useCallback, useMemo} from "react";
+import React, { useCallback, useMemo } from "react";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
@@ -34,9 +34,10 @@ interface Props {
   style?: any;
   textAlign?: "left" | "center" | "right";
   placeholder?: string;
+  element?: any;
 }
 
-function Editor({ value, onChange = () => { }, mode = "interactive", textAlign = "left", style, placeholder = "Enter some text..." }: Props) {
+function Editor({ value, onChange = () => {}, mode = "interactive", textAlign = "left", style, placeholder = "Enter some text...", ...props }: Props) {
   const [fullScreen, setFullScreen] = React.useState(false);
 
   const handleChange = (editorState: any) => {
@@ -50,7 +51,7 @@ function Editor({ value, onChange = () => { }, mode = "interactive", textAlign =
     console.error(error);
   };
 
-  const handleModalOnChange = (value : string) => {
+  const handleModalOnChange = (value: string) => {
     onChange(value);
   };
 
@@ -82,35 +83,47 @@ function Editor({ value, onChange = () => { }, mode = "interactive", textAlign =
         with: (node: LinkNode) => (
           new CustomLinkNode(node.getURL(), node.getTarget(), [])
         )
-      }
-    ]
+      },
+    ],
   };
 
-  let textAlignClass = ""
+  let textAlignClass = "";
   switch (textAlign) {
     case "center":
-      textAlignClass = "text-center"
+      textAlignClass = "text-center";
       break;
     case "right":
-      textAlignClass = "text-right"
+      textAlignClass = "text-right";
       break;
     case "left":
     default:
-      textAlignClass = "text-left"
+      textAlignClass = "text-left";
       break;
   }
 
   return (
     <>
       <LexicalComposer initialConfig={initialConfig}>
-        <div className={(mode === "preview") ? `editor-container preview ${textAlignClass}` : `editor-container ${textAlignClass}`} style={Object.assign({ border: mode === "preview" ? "none" : "1px solid lightgray" }, style)}>
-          {mode !== "preview" && <ToolbarPlugin goFullScreen={() => { setFullScreen(true) }} />}
+        <div
+          className={mode === "preview" ? `editor-container preview ${textAlignClass}` : `editor-container ${textAlignClass}`}
+          style={Object.assign({ border: mode === "preview" ? "none" : "1px solid lightgray" }, style)}
+        >
+          {mode !== "preview" && (<ToolbarPlugin goFullScreen={() => { setFullScreen(true); }} />)}
           <div className="editor-inner">
-            {!fullScreen && <RichTextPlugin
-              contentEditable={<ContentEditable className="editor-input" style={{ minHeight: mode === "preview" ? "auto" : "150px" }} />}
-              placeholder={mode !== "preview" ? <div className="editor-placeholder">{placeholder}</div> : null}
-              ErrorBoundary={LexicalErrorBoundary}
-            /> }
+            {!fullScreen && (
+              <RichTextPlugin
+                contentEditable={
+                  <ContentEditable
+                    className="editor-input"
+                    style={{ minHeight: mode === "preview" ? "auto" : "150px" }}
+                    //@ts-ignore
+                    ref={(node) => { if (node) { const editor = node.closest("[data-lexical-editor]") as HTMLElement; if (editor) { editor.dataset.element = JSON.stringify(props.element) } } }}
+                  />
+                }
+                placeholder={mode !== "preview" ? (<div className="editor-placeholder">{placeholder}</div>) : null}
+                ErrorBoundary={LexicalErrorBoundary}
+              />
+            )}
             <CustomLinkNodePlugin />
             {mode !== "preview" && <EmojiPickerPlugin />}
             <EmojisPlugin />
@@ -128,7 +141,7 @@ function Editor({ value, onChange = () => { }, mode = "interactive", textAlign =
           </div>
         </div>
       </LexicalComposer>
-      {fullScreen && <MarkdownModal onChange={handleModalOnChange} value={value} hideModal={handleCloseFullScreen} />}
+      {fullScreen && (<MarkdownModal onChange={handleModalOnChange} value={value} hideModal={handleCloseFullScreen} />)}
     </>
   );
 }
