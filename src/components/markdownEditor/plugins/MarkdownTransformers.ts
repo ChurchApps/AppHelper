@@ -61,7 +61,7 @@ export type TextMatchTransformer = Readonly<{
 export const UNDERLINE: TextFormatTransformer = {
   format: ["underline"],
   intraword: false,
-  tag: "_",
+  tag: "__",
   type: "text-format"
 };
 /*

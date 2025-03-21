@@ -172,14 +172,14 @@ function TextFormatFloatingToolbar({ editor, anchorElem, isLink, isBold, isItali
             <Icon>format_underlined_outline</Icon>
           </IconButton>
 
-          <IconButton
+          {/* <IconButton
             onClick={() => {
               applyFormatting("strikethrough");
             }}
             sx={{ backgroundColor: isStrikethrough ? "#e0e0e0" : undefined, borderRadius: 2, marginRight: 0.3 }}
           >
             <Icon>strikethrough_s_outline</Icon>
-          </IconButton>
+          </IconButton> */}
 
           <IconButton
             onClick={() => {
@@ -190,12 +190,12 @@ function TextFormatFloatingToolbar({ editor, anchorElem, isLink, isBold, isItali
             <Icon>code</Icon>
           </IconButton>
 
-          <IconButton
+          {/* <IconButton
             onClick={insertLink}
             sx={{ backgroundColor: isLink ? "#e0e0e0" : undefined, borderRadius: 2 }}
           >
             <Icon>insert_link_outline</Icon>
-          </IconButton>
+          </IconButton> */}
         </>
     </FloatingDivContainer>
   );

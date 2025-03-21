@@ -85,6 +85,7 @@ function Editor({ value, onChange = () => {}, mode = "interactive", textAlign = 
         )
       },
     ],
+    markdown: { transformers: PLAYGROUND_TRANSFORMERS }
   };
 
   let textAlignClass = "";
