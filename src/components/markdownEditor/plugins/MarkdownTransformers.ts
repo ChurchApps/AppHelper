@@ -96,11 +96,11 @@ export const UNDERLINE: TextMatchTransformer = {
 const modifiedTextTransformers = [EMOJI_NODE_MARKDOWN_TRANSFORM];
 
 export const PLAYGROUND_TRANSFORMERS: Array<Transformer> = [
-  UNDERLINE,
   ...modifiedTextTransformers,
   HR,
   ...ELEMENT_TRANSFORMERS,
 
   CUSTOM_LINK_NODE_TRANSFORMER,
   ...TRANSFORMERS.splice(0, 13),
+  UNDERLINE,
 ];

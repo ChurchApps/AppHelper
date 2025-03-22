@@ -3,10 +3,12 @@ import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
 import { $convertToMarkdownString } from "@lexical/markdown";
-import { $getSelection, $isRangeSelection, $isTextNode, COMMAND_PRIORITY_LOW, FORMAT_TEXT_COMMAND, SELECTION_CHANGE_COMMAND } from "lexical";
+import { $createParagraphNode, $getSelection, $isRangeSelection, $isTextNode, COMMAND_PRIORITY_LOW, FORMAT_TEXT_COMMAND, SELECTION_CHANGE_COMMAND } from "lexical";
+import { $createHeadingNode, $isHeadingNode } from "@lexical/rich-text";
+import { $wrapNodes } from "@lexical/selection";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { Box, styled, IconButton, Icon } from "@mui/material";
+import { Box, styled, IconButton, Icon, Select, MenuItem } from "@mui/material";
 
 import { getDOMRangeRect } from "./getDOMRangeRect";
 import { getSelectedNode } from "./getSelectNode";
@@ -32,7 +34,7 @@ export const FloatingDivContainer = styled(Box)({
   willChange: "transform",
 });
 
-function TextFormatFloatingToolbar({ editor, anchorElem, isLink, isBold, isItalic, isUnderline, isCode, isStrikethrough, isSubscript, isSuperscript }: any) {
+function TextFormatFloatingToolbar({ editor, anchorElem, isLink, isBold, isItalic, isUnderline, isCode, isStrikethrough, isSubscript, isSuperscript, blockType, setBlockType }: any) {
   const popupCharStylesEditorRef = useRef(null);
 
   const applyFormatting = (command: string) => {
@@ -142,9 +144,39 @@ function TextFormatFloatingToolbar({ editor, anchorElem, isLink, isBold, isItali
     );
   }, [editor, updateTextFormatFloatingToolbar]);
 
+  const formatBlock = (type: string) => {
+    editor.update(() => {
+      const selection = $getSelection();
+      if ($isRangeSelection(selection)) {
+        $wrapNodes(selection, () =>
+          //@ts-ignore
+          type === "paragraph" ? $createParagraphNode() : $createHeadingNode(type)
+        );
+      }
+    });
+    setBlockType(type);
+    saveChanges(editor)
+  };
+
   return (
     <FloatingDivContainer ref={popupCharStylesEditorRef}>
         <>
+          <Select
+            value={blockType}
+            onChange={(e) => formatBlock(e.target.value)}
+            sx={{
+              minWidth: 120,
+              backgroundColor: "#fff",
+              borderRadius: 2,
+              marginRight: 0.3,
+            }}
+          >
+            <MenuItem value="paragraph">Normal</MenuItem>
+            <MenuItem value="h1">Heading 1</MenuItem>
+            <MenuItem value="h2">Heading 2</MenuItem>
+            <MenuItem value="h3">Heading 3</MenuItem>
+            <MenuItem value="h4">Heading 4</MenuItem>
+          </Select>
           <IconButton
             onClick={() => {
               applyFormatting("bold");
@@ -204,13 +236,21 @@ function TextFormatFloatingToolbar({ editor, anchorElem, isLink, isBold, isItali
 let lastSavedText = "";
 let lastFormattingState = {};
 
-const getFormattingState = (selection: any) => {
+//@ts-ignore
+const getFormattingState = (selection) => {
+  const node = getSelectedNode(selection);
+  let blockType = "paragraph";
+  if ($isHeadingNode(node)) {
+    blockType = node.getTag(); // "h1", "h2", etc.
+  }
+
   return {
     isBold: selection.hasFormat("bold"),
     isItalic: selection.hasFormat("italic"),
     isUnderline: selection.hasFormat("underline"),
-    isStrikethrough: selection.hasFormat("strikethrough"),
+    // isStrikethrough: selection.hasFormat("strikethrough"),
     isCode: selection.hasFormat("code"),
+    blockType
   }
 }
 
@@ -220,10 +260,22 @@ const saveChanges = (editor: any) => {
       if ($isRangeSelection(selection)) {
         const text = selection.getTextContent().trim();
         const newFormattingState = getFormattingState(selection);
+        
+        // ✅ Get the parent block node (ensuring it's not just a text node)
+        const node = getSelectedNode(selection);
+        const parentNode = node.getParent(); // Get the parent block-level node
+        let blockType = "paragraph";
 
-        if (JSON.stringify(newFormattingState) !== JSON.stringify(lastFormattingState)) {
+        if ($isHeadingNode(parentNode)) {
+          blockType = parentNode.getTag(); // Get heading type
+        } else if ($isHeadingNode(node)) {
+          blockType = node.getTag();
+        }
+        
+        //@ts-ignore
+        if (JSON.stringify(newFormattingState) !== JSON.stringify(lastFormattingState) || blockType !== lastFormattingState.blockType) {
           lastSavedText = text;
-          lastFormattingState = newFormattingState;
+          lastFormattingState = { ...newFormattingState, blockType };
 
           const editorNode = editor.getRootElement();
           const elementJSON = editorNode?.dataset?.element;
@@ -260,6 +312,7 @@ function useFloatingTextFormatToolbar(editor: any, anchorElem: any) {
   const [isSubscript, setIsSubscript] = useState(false);
   const [isSuperscript, setIsSuperscript] = useState(false);
   const [isCode, setIsCode] = useState(false);
+  const [blockType, setBlockType] = useState("paragraph");
 
   const updatePopup = useCallback(() => {
     editor.getEditorState().read(() => {
@@ -325,6 +378,14 @@ function useFloatingTextFormatToolbar(editor: any, anchorElem: any) {
           updateFormattingState(editor);
         }
       }
+
+      let type = "paragraph";
+      if ($isHeadingNode(parent)) {
+        type = parent.getTag();
+      } else if ($isHeadingNode(node)) {
+        type = node.getTag();
+      }
+      setBlockType(type);
     });
 
   }, [editor]);
@@ -369,6 +430,8 @@ function useFloatingTextFormatToolbar(editor: any, anchorElem: any) {
       isSuperscript={isSuperscript}
       isUnderline={isUnderline}
       isCode={isCode}
+      blockType={blockType}
+      setBlockType={setBlockType}
     />,
     anchorElem
   );
