@@ -35,9 +35,10 @@ interface Props {
   textAlign?: "left" | "center" | "right";
   placeholder?: string;
   element?: any;
+  showFloatingEditor?: boolean;
 }
 
-function Editor({ value, onChange = () => {}, mode = "interactive", textAlign = "left", style, placeholder = "Enter some text...", ...props }: Props) {
+function Editor({ value, onChange = () => {}, mode = "interactive", textAlign = "left", style, placeholder = "Enter some text...", showFloatingEditor = false, ...props }: Props) {
   const [fullScreen, setFullScreen] = React.useState(false);
 
   const handleChange = (editorState: any) => {
@@ -128,7 +129,7 @@ function Editor({ value, onChange = () => {}, mode = "interactive", textAlign = 
             <CustomLinkNodePlugin />
             {mode !== "preview" && <EmojiPickerPlugin />}
             <EmojisPlugin />
-            <FloatingTextFormatToolbarPlugin />
+            {showFloatingEditor && <FloatingTextFormatToolbarPlugin />}
             <OnChangePlugin onChange={handleChange} />
             {mode !== "preview" && <AutoFocusPlugin />}
             <HistoryPlugin />
