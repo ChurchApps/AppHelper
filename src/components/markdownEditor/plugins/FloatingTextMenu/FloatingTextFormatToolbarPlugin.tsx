@@ -233,8 +233,8 @@ function TextFormatFloatingToolbar({ editor, anchorElem, isLink, isBold, isItali
   );
 }
 
-let lastSavedText = "";
-let lastFormattingState = {};
+let lastSavedText = ""; // Track last saved text
+let lastFormattingState = {}; // Track last formatting state
 
 //@ts-ignore
 const getFormattingState = (selection) => {
@@ -259,9 +259,9 @@ const saveChanges = (editor: any) => {
       const selection = $getSelection();
       if ($isRangeSelection(selection)) {
         const text = selection.getTextContent().trim();
-        const newFormattingState = getFormattingState(selection);
+        const newFormattingState = getFormattingState(selection); // Get current formatting
         
-        // ✅ Get the parent block node (ensuring it's not just a text node)
+        // Get the parent block node (ensuring it's not just a text node)
         const node = getSelectedNode(selection);
         const parentNode = node.getParent(); // Get the parent block-level node
         let blockType = "paragraph";

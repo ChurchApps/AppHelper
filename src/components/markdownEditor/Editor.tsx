@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useMemo } from "react";
+import React, {useCallback, useMemo} from "react";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
@@ -119,7 +119,7 @@ function Editor({ value, onChange = () => {}, mode = "interactive", textAlign = 
                     className="editor-input"
                     style={{ minHeight: mode === "preview" ? "auto" : "150px" }}
                     //@ts-ignore
-                    ref={(node) => { if (node) { const editor = node.closest("[data-lexical-editor]") as HTMLElement; if (editor) { editor.dataset.element = JSON.stringify(props.element) } } }}
+                    ref={(node) => { if (node) { const editor = node.closest("[data-lexical-editor]") as HTMLElement; if (editor) { editor.dataset.element = JSON.stringify(props.element) } } }} //Store element in dataset
                   />
                 }
                 placeholder={mode !== "preview" ? (<div className="editor-placeholder">{placeholder}</div>) : null}
