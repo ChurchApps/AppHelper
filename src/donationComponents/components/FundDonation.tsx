@@ -2,7 +2,7 @@
 
 import React from "react";
 import { FundDonationInterface, FundInterface } from "@churchapps/helpers";
-import { Chip, FormControl, Grid, InputLabel, MenuItem, Select, SelectChangeEvent, TextField } from "@mui/material"
+import { FormControl, Grid, InputLabel, MenuItem, Select, SelectChangeEvent, TextField } from "@mui/material"
 import { Locale } from "../../helpers";
 
 interface Props {
