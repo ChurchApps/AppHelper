@@ -11,11 +11,6 @@ export class DateHelper {
     return new Date(Date.parse(input.toString()));
   }
 
-  //obsolete.  Do not use
-  static convertToDate(input: any) {
-    return this.toDateTime(input);
-  }
-
   static addDays(date: Date, days: number) {
     date.setDate(date.getDate() + days);
     return date;

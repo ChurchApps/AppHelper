@@ -36,8 +36,6 @@ export const SiteWrapper: React.FC<Props> = props => {
   }
 
   const handleNotification = () => {
-    //alert("Notification received.  Make GET to fetch bell count and toast message.")
-    console.log("Notification received.  Make GET to fetch bell count and toast message.");
     loadCounts();
   }
 
@@ -65,7 +63,6 @@ export const SiteWrapper: React.FC<Props> = props => {
     SocketHelper.addHandler("notification", "notificationBell", handleNotification);
     SocketHelper.init();
     loadCounts();
-    console.log("RELOADED SiteWrapper2");
   }, []);
 
   const boxStyle: CSSProperties = { flexGrow: 1, marginTop: 8, minHeight: "90vh" }

@@ -38,20 +38,20 @@ export class ApiHelper {
 
   static async get(path: string, apiName: ApiListType) {
     const config = this.getConfig(apiName);
-    const requestOptions = { 
-			method: "GET", 
-			headers: { Authorization: "Bearer " + config.jwt } ,
-			cache: "no-store"
-		};
-		
+    const requestOptions = {
+      method: "GET",
+      headers: { Authorization: "Bearer " + config.jwt },
+      cache: "no-store"
+    };
+
     return await this.fetchWithErrorHandling(config.url + path, requestOptions);
   }
 
-  static async getAnonymous(path: string, apiName: ApiListType, tags?:string[]) {
+  static async getAnonymous(path: string, apiName: ApiListType, tags?: string[]) {
     const config = this.getConfig(apiName);
-    const requestOptions:any = { method: "GET" };
-		if (tags?.length>0) requestOptions.next = { tags: tags };
-		else requestOptions.cache = "no-store";
+    const requestOptions: RequestInit = { method: "GET" };
+    if (tags?.length > 0) (requestOptions as any).next = { tags: tags };
+    else requestOptions.cache = "no-store";
     return await this.fetchWithErrorHandling(config.url + path, requestOptions);
   }
 
@@ -85,7 +85,6 @@ export class ApiHelper {
       const response = await fetch(config.url + path, requestOptions);
       if (!response.ok) await this.throwApiError(response);
     } catch (e) {
-      console.log(e)
       throw (e);
     }
   }
@@ -97,9 +96,6 @@ export class ApiHelper {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data)
     };
-    if (!config.url.includes("/login")) {
-      console.log(config.url + path, requestOptions);
-    }
     return await this.fetchWithErrorHandling(config.url + path, requestOptions);
   }
 
@@ -113,20 +109,16 @@ export class ApiHelper {
         }
       }
     } catch (e) {
-      console.log("Error loading url: " + url);
-      console.log(e)
       throw (e);
     }
   }
 
   private static async throwApiError(response: Response) {
-    console.log("THROW API ERROR");
     let msg = response.statusText;
     try {
       const json = await response.json();
       msg = json.errors[0];
     } catch { }
-    console.log("RESPONSE", response)
     ErrorHelper.logError(response.status.toString(), response.url, msg);
     throw new Error(msg || "Error");
   }

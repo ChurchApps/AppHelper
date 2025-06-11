@@ -21,7 +21,7 @@ export function ImageEditor(props: Props) {
   const [photoSrc, setPhotoSrc] = useState<string>("");
   const [croppedImageDataUrl, setCroppedImageDataUrl] = useState<string>("");
   const cropperRef = useRef<HTMLImageElement>(null);
-  let timeout: any = null;
+  let timeout: number | null = null;
 
   const handleSave = () => props.onUpdate(croppedImageDataUrl);
 

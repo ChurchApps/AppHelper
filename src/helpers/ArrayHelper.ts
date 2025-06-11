@@ -60,7 +60,7 @@ export class ArrayHelper {
     else {
       let obj = item;
       for (let i = 0; i < propChain.length - 1; i++) {
-        if (obj) obj = item[propChain[i]];
+        if (obj) obj = obj[propChain[i]];
       }
       return obj[propChain[propChain.length - 1]] === value;
     }

@@ -2,17 +2,11 @@
   "compilerOptions": {
     "module": "commonjs",
     "esModuleInterop": true,
-    "lib": [
-      "ESNext",
-      "DOM"
-    ],
-    "typeRoots": [
-      "./types",
-      "node_modules/@types"
-    ],
+    "lib": ["ES2021", "DOM"],
+    "typeRoots": ["node_modules/@types"],
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "target": "es6",
+    "target": "ES2020",
     "noImplicitAny": true,
     "moduleResolution": "node",
     "sourceMap": true,
@@ -26,11 +20,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "paths": {
-      "*": [
-        "node_modules/*"
-      ]
-    }
+    "isolatedModules": true
   },
   "include": [
     "src/**/*"
