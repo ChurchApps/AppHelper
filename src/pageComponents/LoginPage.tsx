@@ -36,7 +36,7 @@ export const LoginPage: React.FC<Props> = ({ showLogo = true, loginContainerCssP
   const [welcomeBackName, setWelcomeBackName] = React.useState("");
   const [pendingAutoLogin, setPendingAutoLogin] = React.useState(false);
   const [errors, setErrors] = React.useState([]);
-  const [cookies, setCookie] = useCookies(["jwt", "name", "email"]);
+  const [cookies, setCookie] = useCookies(["jwt", "name", "email", "lastChurchId"]);
   const [showForgot, setShowForgot] = React.useState(false);
   const [showRegister, setShowRegister] = React.useState(false);
   const [showSelectModal, setShowSelectModal] = React.useState(false);
@@ -105,11 +105,17 @@ export const LoginPage: React.FC<Props> = ({ showLogo = true, loginContainerCssP
     if (props.keyName) selectChurchByKeyName();
     else if (selectedChurchId) selectChurchById();
     else if (churchIdInParams) selectChurch(churchIdInParams);
+    else if (props.jwt && cookies.lastChurchId && ArrayHelper.getOne(resp.userChurches, "church.id", cookies.lastChurchId)) {
+      selectedChurchId = cookies.lastChurchId;
+      selectChurchById();
+    }
     else setShowSelectModal(true);
   }
 
   const selectChurchById = async () => {
     await UserHelper.selectChurch(props.context, selectedChurchId, undefined);
+
+    setCookie("lastChurchId", selectedChurchId, { path: "/" });
 
     if (registeredChurch) {
       AnalyticsHelper.logEvent("Church", "Register", UserHelper.currentUserChurch.church.name);
@@ -132,12 +138,15 @@ export const LoginPage: React.FC<Props> = ({ showLogo = true, loginContainerCssP
     if (!ArrayHelper.getOne(UserHelper.userChurches, "church.subDomain", props.keyName)) {
       const userChurch: LoginUserChurchInterface = await ApiHelper.post("/churches/select", { subDomain: props.keyName }, "MembershipApi");
       UserHelper.setupApiHelper(userChurch);
+      setCookie("lastChurchId", userChurch.church.id, { path: "/" });
       //create/claim the person record and relogin
       await ApiHelper.get("/people/claim/" + userChurch.church.id, "MembershipApi");
       login({ jwt: userJwt || userJwtBackup });
       return;
     }
     await UserHelper.selectChurch(props.context, undefined, props.keyName);
+    const selectedChurch = ArrayHelper.getOne(UserHelper.userChurches, "church.subDomain", props.keyName);
+    if (selectedChurch) setCookie("lastChurchId", selectedChurch.church.id, { path: "/" });
     await continueLoginProcess()
     return;
   }
@@ -167,6 +176,12 @@ export const LoginPage: React.FC<Props> = ({ showLogo = true, loginContainerCssP
         const personClaim = await ApiHelper.get("/people/claim/" + UserHelper.currentUserChurch.church.id, "MembershipApi");
         props.context.setPerson(personClaim);
       }
+
+      const search = new URLSearchParams(location?.search);
+      const returnUrl = search.get("returnUrl") || props.returnUrl;
+      if (returnUrl && typeof window !== "undefined") {
+        window.location.href = returnUrl;
+      }
     }
   }
 
@@ -174,6 +189,7 @@ export const LoginPage: React.FC<Props> = ({ showLogo = true, loginContainerCssP
     try {
       setErrors([])
       selectedChurchId = churchId;
+      setCookie("lastChurchId", churchId, { path: "/" });
       if (!ArrayHelper.getOne(UserHelper.userChurches, "church.id", churchId)) {
         const userChurch: LoginUserChurchInterface = await ApiHelper.post("/churches/select", { churchId: churchId }, "MembershipApi");
         UserHelper.setupApiHelper(userChurch);

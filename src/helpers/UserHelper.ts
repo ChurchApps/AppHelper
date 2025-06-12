@@ -52,8 +52,20 @@ export class UserHelper {
   }
 
   static createAppUrl(appUrl: string, returnUrl: string) {
-    const jwt = ApiHelper.getConfig("MembershipApi").jwt;
+    const jwt = ApiHelper.getConfig("MembershipApi")?.jwt;
 
-    return `${appUrl}/login/?jwt=${jwt}&returnUrl=${returnUrl}`;
+    if (jwt) {
+      return `${appUrl}/login/?jwt=${jwt}&returnUrl=${encodeURIComponent(returnUrl)}`;
+    } else {
+      return `${appUrl}/login/?returnUrl=${encodeURIComponent(returnUrl)}`;
+    }
+  }
+
+  static redirectToLogin(returnUrl?: string) {
+    if (typeof window !== "undefined") {
+      const currentUrl = returnUrl || window.location.pathname + window.location.search;
+      const encodedReturnUrl = encodeURIComponent(currentUrl);
+      window.location.href = `/login?returnUrl=${encodedReturnUrl}`;
+    }
   }
 }

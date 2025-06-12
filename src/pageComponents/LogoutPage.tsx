@@ -7,11 +7,12 @@ import { ApiHelper, UserContextInterface } from "../helpers";
 interface Props { context?: UserContextInterface, }
 
 export const LogoutPage: React.FC<Props> = (props) => {
-  const [, , removeCookie] = useCookies(["jwt", "email", "name"]);
+  const [, , removeCookie] = useCookies(["jwt", "email", "name", "lastChurchId"]);
 
   removeCookie("jwt");
   removeCookie("email");
   removeCookie("name");
+  removeCookie("lastChurchId");
 
   ApiHelper.clearPermissions();
   props.context?.setUser(null);
