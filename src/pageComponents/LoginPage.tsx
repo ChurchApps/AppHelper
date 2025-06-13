@@ -30,6 +30,8 @@ interface Props {
   callbackErrors?: string[];
   showLogo?: boolean;
   loginContainerCssProps?: PaperProps;
+  defaultEmail?: string;
+  defaultPassword?: string;
 }
 
 export const LoginPage: React.FC<Props> = ({ showLogo = true, loginContainerCssProps, ...props }) => {
@@ -244,7 +246,7 @@ export const LoginPage: React.FC<Props> = ({ showLogo = true, loginContainerCssP
     );
     else if (showForgot) return (<Forgot registerCallback={handleRegisterCallback} loginCallback={handleLoginCallback} />);
     else if (props.auth) return (<LoginSetPassword setErrors={setErrors} setShowForgot={setShowForgot} isSubmitting={isSubmitting} auth={props.auth} login={login} appName={props.appName} appUrl={cleanAppUrl()} />)
-    else return <Login setShowRegister={setShowRegister} setShowForgot={setShowForgot} setErrors={setErrors} isSubmitting={isSubmitting} login={login} mainContainerCssProps={loginContainerCssProps} />;
+    else return <Login setShowRegister={setShowRegister} setShowForgot={setShowForgot} setErrors={setErrors} isSubmitting={isSubmitting} login={login} mainContainerCssProps={loginContainerCssProps} defaultEmail={props.defaultEmail} defaultPassword={props.defaultPassword} />;
   }
 
   React.useEffect(init, []); //eslint-disable-line

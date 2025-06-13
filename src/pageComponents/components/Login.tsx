@@ -14,11 +14,13 @@ interface Props {
   setShowForgot: (showForgot: boolean) => void,
   setErrors: (errors: string[]) => void;
   mainContainerCssProps?: PaperProps;
+  defaultEmail?: string;
+  defaultPassword?: string;
 }
 
 export const Login: React.FC<Props> = ({ mainContainerCssProps = {}, ...props }) => {
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
+  const [email, setEmail] = React.useState(props.defaultEmail || "");
+  const [password, setPassword] = React.useState(props.defaultPassword || "");
   const [showPassword, setShowPassword] = useState(false);
 
   const validateEmail = (email: string) => (/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(.\w{2,3})+$/.test(email))
