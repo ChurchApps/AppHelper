@@ -24,6 +24,7 @@ export const FormSubmissionEdit: React.FC<Props> = ({showHeader = true, noBackgr
   const [stripePromise, setStripe] = React.useState<Promise<Stripe>>(null);
   const [formSubmission, setFormSubmission] = React.useState(null);
   const [errors, setErrors] = React.useState([]);
+  const [isSubmitting, setIsSubmitting] = React.useState<boolean>(false);
   const paymentRef = useRef<any>(null);
 
   const getDeleteFunction = () => (!UniqueIdHelper.isMissing(formSubmission?.id)) ? handleDelete : undefined
@@ -88,11 +89,13 @@ export const FormSubmissionEdit: React.FC<Props> = ({showHeader = true, noBackgr
   const handleSave = async () => {
     const fs = formSubmission;
     if (validate(fs)) {
+      setIsSubmitting(true);
       // First, handle the payment if there's a payment component
       if (paymentRef.current) {
         const paymentResult = await paymentRef.current.handlePayment();
         if (!paymentResult.paymentSuccessful) {
           setErrors(paymentResult.errors);
+          setIsSubmitting(false);
           return;
         } else {
           // Mark payment as successful in answers
@@ -119,6 +122,9 @@ export const FormSubmissionEdit: React.FC<Props> = ({showHeader = true, noBackgr
         } else {
           props.updatedFunction();
         }
+      })
+      .finally(() => {
+        setIsSubmitting(false);
       });
     }
   }
@@ -154,7 +160,7 @@ export const FormSubmissionEdit: React.FC<Props> = ({showHeader = true, noBackgr
   }
 
   return (
-    <InputBox id="formSubmissionBox" headerText={showHeader ? (formSubmission?.form?.name || Locale.label("formSubmissionEdit.editForm")) : ""} headerIcon={showHeader ? "person" : ""} mainContainerCssProps={noBackground ? { sx: {backgroundColor: "transparent", boxShadow: 0}}: {}} saveFunction={handleSave} saveText={props.contentType === "form" ? Locale.label("formSubmissionEdit.submit") : ""} cancelFunction={props.cancelFunction} deleteFunction={getDeleteFunction()}>
+    <InputBox id="formSubmissionBox" headerText={showHeader ? (formSubmission?.form?.name || Locale.label("formSubmissionEdit.editForm")) : ""} headerIcon={showHeader ? "person" : ""} mainContainerCssProps={noBackground ? { sx: {backgroundColor: "transparent", boxShadow: 0}}: {}} saveFunction={handleSave} isSubmitting={isSubmitting} saveText={props.contentType === "form" ? Locale.label("formSubmissionEdit.submit") : ""} cancelFunction={props.cancelFunction} deleteFunction={getDeleteFunction()}>
       <ErrorMessages errors={errors} />
       {questionList}
     </InputBox>
