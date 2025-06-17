@@ -1,4 +1,4 @@
-import { ErrorLogInterface, ErrrorAppDataInterface } from "@churchapps/helpers";
+import { ErrorLogInterface, ErrorAppDataInterface } from "@churchapps/helpers";
 import { ApiHelper } from "./ApiHelper";
 
 
@@ -7,7 +7,7 @@ export class ErrorHelper {
 	static getAppData: () => { churchId: string, userId: string, originUrl: string, application: string };
 	static customErrorHandler: (errorLog: ErrorLogInterface) => void;
 
-	static init = (getAppData: () => ErrrorAppDataInterface, customErrorHandler: (errorLog: ErrorLogInterface) => void) => {
+	static init = (getAppData: () => ErrorAppDataInterface, customErrorHandler: (errorLog: ErrorLogInterface) => void) => {
 		ErrorHelper.getAppData = getAppData;
 		ErrorHelper.customErrorHandler = customErrorHandler;
 	}
