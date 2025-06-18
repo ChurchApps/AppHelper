@@ -77,7 +77,7 @@ export const NewPrivateMessage: React.FC<Props> = (props) => {
 
   useEffect(() => {
     if (props.selectedPerson) handlePersonSelected(props.selectedPerson);
-  }, [props.selectedPerson, handlePersonSelected]);
+  }, [props.selectedPerson]);
 
 
   if (!selectedPerson) return (
