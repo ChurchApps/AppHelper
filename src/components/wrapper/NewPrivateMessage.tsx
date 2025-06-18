@@ -37,12 +37,18 @@ export const NewPrivateMessage: React.FC<Props> = (props) => {
   */
 
   const handlePersonSelected = async (person: PersonInterface) => {
-    const existing: PrivateMessageInterface = await ApiHelper.get("/privateMessages/existing/" + person.id, "MessagingApi");
-    if (existing.id) {
-      existing.person = person;
-      props.onSelectMessage(existing);
+    try {
+      const existing: PrivateMessageInterface = await ApiHelper.get("/privateMessages/existing/" + person.id, "MessagingApi");
+      if (existing?.id) {
+        existing.person = person;
+        props.onSelectMessage(existing);
+        return;
+      }
+    } catch (error) {
+      // No existing conversation found, continue to create new one
+      console.log("No existing conversation found for person:", person.id);
     }
-    else setSelectedPerson(person);
+    setSelectedPerson(person);
   }
 
   const getPeople = () => {
