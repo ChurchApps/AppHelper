@@ -58,7 +58,7 @@ export const PersonAdd: React.FC<Props> = ({ addFunction, getPhotoUrl, searchCli
         <TableCell><img src={getPhotoUrl(sr)} alt="avatar" /></TableCell>
         <TableCell>{sr.name.display}{includeEmail && (<><br /><i style={{ color: "#999" }}>{sr.contactInfo.email}</i></>)}</TableCell>
         <TableCell>
-          <SmallButton color="success" icon="person" text={actionLabel || "Add"} ariaLabel="addPerson" onClick={() => handleAdd(sr)} />
+          <SmallButton color="success" icon="person" text={actionLabel || "Add"} ariaLabel="addPerson" onClick={() => handleAdd(sr)} data-testid={`add-person-${sr.id}`} />
         </TableCell>
       </TableRow>
     );
@@ -66,8 +66,8 @@ export const PersonAdd: React.FC<Props> = ({ addFunction, getPhotoUrl, searchCli
 
   return (
     <>
-      <TextField fullWidth name="personAddText" label={Locale.label("person.person")} value={searchText} onChange={handleChange} onKeyDown={handleKeyDown}
-        InputProps={{ endAdornment: <Button variant="contained" id="searchButton" data-cy="search-button" onClick={handleSearch}>{Locale.label("common.search")}</Button> }}
+      <TextField fullWidth name="personAddText" label={Locale.label("person.person")} value={searchText} onChange={handleChange} onKeyDown={handleKeyDown} data-testid="person-search-input"
+        InputProps={{ endAdornment: <Button variant="contained" id="searchButton" data-testid="search-button" onClick={handleSearch}>{Locale.label("common.search")}</Button> }}
       />
       {showCreatePersonOnNotFound && hasSearched && searchText && searchResults.length === 0 && (
         <Typography sx={{ marginTop: "7px" }}>{Locale.label("person.noRec")} <a href="about:blank" onClick={(e) => { e.preventDefault(); setOpen(true); }}>{Locale.label("createPerson.addNewPerson")}</a></Typography>

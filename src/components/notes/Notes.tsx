@@ -65,5 +65,5 @@ export function Notes(props: Props) {
     {messages && (<AddNote context={props.context} conversationId={props.conversationId} onUpdate={loadNotes} createConversation={props.createConversation} messageId={editMessageId} />)}
   </>
   if (props.noDisplayBox) return result;
-  else return (<DisplayBox id="notesBox" data-cy="notes-box" headerIcon="sticky_note_2" headerText={Locale.label("notes.notes")}>{result}</DisplayBox>);
+  else return (<DisplayBox id="notesBox" data-testid="notes-box" headerIcon="sticky_note_2" headerText={Locale.label("notes.notes")}>{result}</DisplayBox>);
 };

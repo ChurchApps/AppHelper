@@ -32,7 +32,7 @@ export const NavItem: React.FC<Props> = (props) => {
     else return <Icon>{props.icon}</Icon>
   }
 
-  const getLinkContents = () => (<ListItemButton>
+  const getLinkContents = () => (<ListItemButton data-testid={`nav-item-${props.label.toLowerCase().replace(/\s+/g, '-')}`}>
     <Tooltip title={props.label || ""} arrow placement="right">
       <ListItemIcon sx={{ minWidth: "40px" }}>{getIcon()}</ListItemIcon>
     </Tooltip>
@@ -40,7 +40,7 @@ export const NavItem: React.FC<Props> = (props) => {
     {props?.deleteIcon
       ? (
         <Tooltip title={props.deleteLabel || ""} arrow placement="left">
-          <IconButton onClick={props.deleteFunction ? (e) => { e.stopPropagation(); e.preventDefault(); props.deleteFunction() } : null} sx={{ color: "#f7a9a9" }} size="small">
+          <IconButton onClick={props.deleteFunction ? (e) => { e.stopPropagation(); e.preventDefault(); props.deleteFunction() } : null} sx={{ color: "#f7a9a9" }} size="small" aria-label={props.deleteLabel || "Delete item"} data-testid="nav-item-delete">
             <Icon sx={{ fontSize: 19 }}>delete</Icon>
           </IconButton>
         </Tooltip>

@@ -94,9 +94,9 @@ export const NewPrivateMessage: React.FC<Props> = (props) => {
       <b>{Locale.label("wrapper.newPrivateMessage")}</b>
       <div>{Locale.label("wrapper.searchForPerson")}</div>
 
-      <TextField fullWidth label="Name" id="searchText" data-cy="search-input" name="searchText" type="text" placeholder="Name" value={searchText} onChange={handleChange}
+      <TextField fullWidth label="Name" id="searchText" data-testid="search-input" name="searchText" type="text" placeholder="Name" value={searchText} onChange={handleChange}
         onKeyDown={(e) => {e.stopPropagation()}}
-        InputProps={{ endAdornment: <Button variant="contained" id="searchButton" data-cy="search-button" onClick={handleSubmit}>{Locale.label("common.search")}</Button> }}
+        InputProps={{ endAdornment: <Button variant="contained" id="searchButton" data-testid="search-button" onClick={handleSubmit}>{Locale.label("common.search")}</Button> }}
       />
       <br />
       <Table id="smallPeopleTable" size="small">

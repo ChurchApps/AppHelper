@@ -64,7 +64,7 @@ export const StockPhotos: React.FC<Props> = (props: Props) => {
 
   return (<>
     <TextField fullWidth name="personAddText" label="Search Term" value={searchText} onChange={handleChange}
-      InputProps={{ endAdornment: <Button variant="contained" id="searchButton" data-cy="search-button" onClick={handleSearch}>Search</Button> }}
+      InputProps={{ endAdornment: <Button variant="contained" id="searchButton" data-testid="search-button" onClick={handleSearch}>Search</Button> }}
     />
     {searchResults && <div>{Locale.label("stockPhotos.providedBy")} <a href="https://pexels.com">Pexels</a>.</div>}
     <Grid container spacing={3} alignItems="center">

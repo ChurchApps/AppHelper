@@ -29,7 +29,7 @@ interface Props {
   cancelFunction?: () => void;
   deleteFunction?: () => void;
   saveFunction?: () => void;
-  "data-cy"?: string;
+  "data-testid"?: string;
   className?: string;
   isSubmitting?: boolean;
   ariaLabelDelete?: string;
@@ -71,9 +71,9 @@ export function InputBox({ mainContainerCssProps = {}, ...props }: Props) {
   }
 
   return (
-    <Paper id={props.id} sx={{ padding: 2, marginBottom: 4 }} data-cy={props["data-cy"]} {...mainContainerCssProps}>
+    <Paper id={props.id} sx={{ padding: 2, marginBottom: 4 }} data-testid={props["data-testid"]} {...mainContainerCssProps}>
       {props.help && <HelpIcon article={props.help} />}
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", position: "relative" }} data-cy="header">
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", position: "relative" }} data-testid="input-box-header">
         <Box display="flex" alignItems="center">
           {props.headerIcon && <Icon sx={{ color: headerText }}>{props.headerIcon}</Icon>}
           {props.headerText && (

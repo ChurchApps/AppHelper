@@ -47,7 +47,7 @@ export const SupportDrawer = (props: Props) => {
 
   return (
     <>
-      <IconButton sx={{ color: "white !important", borderRadius: 2 }} onClick={() => setOpen(true)}>
+      <IconButton sx={{ color: "white !important", borderRadius: 2 }} onClick={() => setOpen(true)} aria-label="Open support help" data-testid="support-help-button">
         <Icon sx={{ fontSize: "26px !important" }}>help</Icon>
       </IconButton>
       <Drawer open={open} onClose={() => setOpen(false)} anchor="right" PaperProps={{ sx: { width: { xs: "80%", sm: "40%", md: "30%", lg: "20%" } } }}>

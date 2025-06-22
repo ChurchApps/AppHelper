@@ -57,7 +57,7 @@ const Icons = React.memo(function Icons(props: { icons: string[]; handleOpenClic
     <div>
       {icons.map((icon) => (
         <StyledIconSpan key={icon}>
-          <StyledIcon tabIndex={-1} sx={{ fontSize: "34px !important" }} onClick={() => { handleIconClick(icon) }}>
+          <StyledIcon tabIndex={-1} sx={{ fontSize: "34px !important" }} onClick={() => { handleIconClick(icon) }} aria-label={`Select ${icon} icon`} data-testid={`icon-${icon}`}>
             {icon}
           </StyledIcon>
         </StyledIconSpan>
@@ -141,10 +141,10 @@ export function IconPicker(props: Props) {
     <Grid container sx={{ minHeight: 360, padding: "16px" }}>
       <Grid item>
         <Paper>
-          <IconButton sx={{ padding: "10px" }} aria-label="search">
+          <IconButton sx={{ padding: "10px" }} aria-label="search" data-testid="icon-search-button">
             <Icon>search</Icon>
           </IconButton>
-          <Input autoFocus value={query} onChange={(event) => setQuery(event.target.value)} placeholder={Locale.label("iconPicker.searchIcons")} inputProps={{ "aria-label": "search icons" }} />
+          <Input autoFocus value={query} onChange={(event) => setQuery(event.target.value)} placeholder={Locale.label("iconPicker.searchIcons")} inputProps={{ "aria-label": "search icons" }} data-testid="icon-search-input" />
         </Paper>
         {(query === "") && <Typography sx={{ mb: 1 }}>{IconNamesList.length} {Locale.label("iconPicker.iconsAvailable")}</Typography>}
         {(query !== "") && <Typography sx={{ mb: 1 }}>{icons.length} {Locale.label("iconPicker.matchingResults")}</Typography>}

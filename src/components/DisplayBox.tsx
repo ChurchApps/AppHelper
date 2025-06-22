@@ -23,7 +23,7 @@ interface Props {
   headerText: string,
   editFunction?: () => void,
   editContent?: React.ReactNode,
-  "data-cy"?: string,
+  "data-testid"?: string,
   ariaLabel?: string,
   footerContent?: React.ReactNode,
   help?: string
@@ -60,7 +60,7 @@ export const DisplayBox = React.forwardRef<HTMLDivElement, Props>((props, ref) =
   else if (props.editContent !== undefined) editContent = props.editContent;
 
   return (
-    <Paper sx={{ padding: 2, marginBottom: 4 }} id={props.id} data-cy={props["data-cy"] || ""}>
+    <Paper sx={{ padding: 2, marginBottom: 4 }} id={props.id} data-testid={props["data-testid"] || ""}>
       {props.help && <HelpIcon article={props.help} />}
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -74,7 +74,7 @@ export const DisplayBox = React.forwardRef<HTMLDivElement, Props>((props, ref) =
           {editContent}
         </Box>
       </Box>
-      <CustomContextBox ref={ref} data-cy="content">{props.children}</CustomContextBox>
+      <CustomContextBox ref={ref} data-testid="display-box-content">{props.children}</CustomContextBox>
       {props.footerContent && (<div style={{ marginLeft: -16, marginRight: -16, marginBottom: -15, marginTop: 15 }}>{props.footerContent}</div>)}
     </Paper>
   );

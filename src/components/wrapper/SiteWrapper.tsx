@@ -71,7 +71,7 @@ export const SiteWrapper: React.FC<Props> = props => {
   return <>
     <CustomAppBar position="absolute">
       <Toolbar sx={{ pr: "24px", backgroundColor: props.appearance?.wrapperBackground }}>
-        <IconButton edge="start" color="inherit" aria-label="open drawer" onClick={toggleDrawer} sx={{ marginRight: "36px", ...(open && { display: "none" }) }}>
+        <IconButton edge="start" color="inherit" aria-label="open drawer" onClick={toggleDrawer} sx={{ marginRight: "36px", ...(open && { display: "none" }) }} data-testid="open-navigation-drawer">
           <Icon>menu</Icon>
         </IconButton>
         <Typography variant="h6" noWrap>{UserHelper.currentUserChurch?.church?.name || ""}</Typography>
@@ -85,7 +85,7 @@ export const SiteWrapper: React.FC<Props> = props => {
       <Toolbar sx={{ display: "flex", alignItems: "center", width: "100%", px: [1] }}>
         <img src={churchLogo || "/images/logo-wrapper.png"} alt="logo" style={{ maxWidth: 170 }} />
         <div style={{ justifyContent: "flex-end", flex: 1, display: "flex" }}>
-          <IconButton onClick={toggleDrawer}><Icon style={{ color: "#FFFFFF" }}>chevron_left</Icon></IconButton>
+          <IconButton onClick={toggleDrawer} aria-label="close navigation drawer" data-testid="close-navigation-drawer"><Icon style={{ color: "#FFFFFF" }}>chevron_left</Icon></IconButton>
         </div>
       </Toolbar>
       {props.navContent}

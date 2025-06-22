@@ -62,7 +62,7 @@ export const SelectChurchSearch: React.FC<Props> = (props) => {
 	else return (
 		<>
 			<TextField fullWidth name="searchText" label="Name" value={searchText} onChange={handleChange} onKeyDown={handleKeyDown}
-				InputProps={{ endAdornment: <Button variant="contained" id="searchButton" data-cy="search-button" onClick={handleSubmit}>{Locale.label("common.search")}</Button> }}
+				InputProps={{ endAdornment: <Button variant="contained" id="searchButton" data-testid="search-button" onClick={handleSubmit}>{Locale.label("common.search")}</Button> }}
 			/>
 			{getResults()}
 		</>

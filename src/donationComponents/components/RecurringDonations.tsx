@@ -110,7 +110,7 @@ export const RecurringDonations: React.FC<Props> = (props) => {
   if (!subscriptions.length) return null;
   if (mode === "display") {
     return (
-      <DisplayBox data-cy="recurring-donations" headerIcon="restart_alt" headerText="Recurring Donations">
+      <DisplayBox data-testid="recurring-donations" headerIcon="restart_alt" headerText="Recurring Donations">
         {getSubscriptionsTable()}
       </DisplayBox>
     );

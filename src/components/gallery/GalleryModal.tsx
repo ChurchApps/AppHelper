@@ -55,12 +55,12 @@ export const GalleryModal: React.FC<Props> = (props: Props) => {
 
       result.push(<Grid item md={4} xs={12}>
         <Box sx={{ position: "relative", ":hover #deleteIcon": { visibility: "visible" } }}>
-          <a href="about:blank" onClick={(e) => { e.preventDefault(); props.onSelect(CommonEnvironmentHelper.ContentRoot + "/" + img) }}>
+          <a href="about:blank" onClick={(e) => { e.preventDefault(); props.onSelect(CommonEnvironmentHelper.ContentRoot + "/" + img) }} aria-label="Select image" data-testid="select-image">
             <Box component="img" src={CommonEnvironmentHelper.ContentRoot + "/" + img} className="img-fluid" alt="custom" />
           </a>
           <Box id="deleteIcon" sx={{ position: "absolute", top: 3, right: 3, visibility: "hidden", backgroundColor: "whitesmoke", borderRadius: 5 }}>
             <Tooltip title="Delete">
-              <IconButton size="small" color="error" onClick={() => handleDelete(parts[2], parts[3])}>
+              <IconButton size="small" color="error" onClick={() => handleDelete(parts[2], parts[3])} aria-label="Delete image" data-testid="delete-image">
                 <Icon sx={{ fontSize: "17px !important" }}>delete_outline</Icon>
               </IconButton>
             </Tooltip>
