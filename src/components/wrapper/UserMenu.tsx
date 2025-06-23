@@ -12,6 +12,7 @@ import { TabPanel } from "../TabPanel";
 import { Locale } from "../../helpers";
 import { PrivateMessages } from "./PrivateMessages";
 import { Notifications } from "./Notifications";
+import { useCookies } from "react-cookie";
 
 
 interface Props {
@@ -32,6 +33,7 @@ export const UserMenu: React.FC<Props> = (props) => {
   const [showPM, setShowPM] = React.useState(false);
   const [showNotifications, setShowNotifications] = React.useState(false);
   const [refreshKey, setRefreshKey] = React.useState(0);
+  const [, , removeCookie] = useCookies(["lastChurchId"]);
   const open = Boolean(anchorEl);
 
 
@@ -43,6 +45,11 @@ export const UserMenu: React.FC<Props> = (props) => {
   const handleClose = () => {
     setTabIndex(0);
     setAnchorEl(null);
+  };
+
+  const handleSwitchChurch = () => {
+    removeCookie("lastChurchId", { path: "/" });
+    setTabIndex(2);
   };
 
   const getMainLinks = () => {
@@ -60,7 +67,7 @@ export const UserMenu: React.FC<Props> = (props) => {
     result.push(<NavItem url="/logout" label={Locale.label("wrapper.logout")} icon="logout" key="/logout" onNavigate={props.onNavigate} />);
     result.push(<div style={{borderTop:"1px solid #CCC", paddingTop:2, paddingBottom:2}}></div>)
     result.push(<NavItem label="Switch App" key={Locale.label("wrapper.switchApp")} icon="apps" onClick={() => { setTabIndex(1); }} />);
-    if (props.userChurches.length > 1) result.push(<NavItem label={Locale.label("wrapper.switchChurch")} key="Switch Church" icon="church" onClick={() => { setTabIndex(2); }} />);
+    result.push(<NavItem label={Locale.label("wrapper.switchChurch")} key="Switch Church" icon="church" onClick={handleSwitchChurch} />);
     return result;
   }
 
@@ -95,12 +102,12 @@ export const UserMenu: React.FC<Props> = (props) => {
         <NavItem label="Back" key="AppBack" icon="arrow_back" onClick={() => { setTabIndex(0); }} />
         <AppList currentUserChurch={props.currentUserChurch} appName={props.appName} onNavigate={props.onNavigate} />
       </TabPanel>
-      {props.userChurches.length > 1 && <TabPanel value={tabIndex} index={2}>
+      <TabPanel value={tabIndex} index={2}>
         <div style={{ maxHeight: '70vh', overflowY: "auto" }}>
           <NavItem label="Back" key="ChurchBack" icon="arrow_back" onClick={() => { setTabIndex(0); }} />
           <ChurchList userChurches={props.userChurches} currentUserChurch={props.currentUserChurch} context={props.context} onDelete={handleClose} />
         </div>
-      </TabPanel>}
+      </TabPanel>
 
     </Box>
   );

@@ -24,24 +24,21 @@ export const ChurchList: React.FC<Props> = props => {
     }
   }
 
-  if (userChurches.length < 2) return <></>;
-  else {
-    let result: JSX.Element[] = [];
-    userChurches.forEach(uc => {
-      const userChurch = uc;
-      const churchName = uc.church.name;
-      result.push(<NavItem
-        key={userChurch.church.id}
-        selected={(uc.church.id === props.currentUserChurch.church.id) && true}
-        onClick={() => UserHelper.selectChurch(props.context, userChurch.church.id, null)}
-        label={churchName}
-        icon="church"
-        deleteIcon={uc.church.id !== props.currentUserChurch.church.id ? "delete" : null}
-        deleteLabel={Locale.label("wrapper.deleteChurch")}
-        deleteFunction={() => { handleDelete(uc); }}
-      />);
-    });
+  let result: JSX.Element[] = [];
+  userChurches.forEach(uc => {
+    const userChurch = uc;
+    const churchName = uc.church.name;
+    result.push(<NavItem
+      key={userChurch.church.id}
+      selected={(uc.church.id === props.currentUserChurch.church.id) && true}
+      onClick={() => UserHelper.selectChurch(props.context, userChurch.church.id, null)}
+      label={churchName}
+      icon="church"
+      deleteIcon={uc.church.id !== props.currentUserChurch.church.id ? "delete" : null}
+      deleteLabel={Locale.label("wrapper.deleteChurch")}
+      deleteFunction={() => { handleDelete(uc); }}
+    />);
+  });
 
-    return <>{result}</>;
-  }
+  return <>{result}</>;
 };
