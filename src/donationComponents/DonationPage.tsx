@@ -28,39 +28,62 @@ export const DonationPage: React.FC<Props> = (props) => {
     setAnchorEl(null);
   }
 
-  const loadData = () => {
+  const loadPaymentMethods = async () => {
+    try {
+      const data = await ApiHelper.get("/paymentmethods/personid/" + props.personId, "GivingApi");
+      if (!data.length) {
+        setPaymentMethods([]);
+        return;
+      }
+      
+      const cards = data[0].cards.data.map((card: any) => new StripePaymentMethod(card));
+      const banks = data[0].banks.data.map((bank: any) => new StripePaymentMethod(bank));
+      setCustomerId(data[0].customer.id);
+      setPaymentMethods(cards.concat(banks));
+    } catch (error) {
+      console.error("Error loading payment methods:", error);
+      setPaymentMethods([]);
+    }
+  }
+
+  const loadPersonData = async () => {
+    try {
+      const data = await ApiHelper.get("/people/" + props.personId, "MembershipApi");
+      setPerson(data);
+    } catch (error) {
+      console.error("Error loading person data:", error);
+    }
+  }
+
+  const loadStripeData = async (gatewayData: any) => {
+    if (!gatewayData.length || !gatewayData[0]?.publicKey) {
+      setPaymentMethods([]);
+      return;
+    }
+    
+    setStripe(loadStripe(gatewayData[0].publicKey));
+    await Promise.all([
+      loadPersonData(),
+      loadPaymentMethods()
+    ]);
+  }
+
+  const loadData = async () => {
     if (props?.appName) setAppName(props.appName);
-    if (!UniqueIdHelper.isMissing(props.personId)) {
-      ApiHelper.get("/donations?personId=" + props.personId, "GivingApi").then(data => {
-        if(isMounted()) {
-          setDonations(data);
-        }});
-      ApiHelper.get("/gateways", "GivingApi").then(data => {
-        if (data.length && data[0]?.publicKey) {
-          if(isMounted()) {
-            setStripe(loadStripe(data[0].publicKey));
-          }
-          ApiHelper.get("/paymentmethods/personid/" + props.personId, "GivingApi").then(results => {
-            if(!isMounted()) {
-              return;
-            }
-            if (!results.length) setPaymentMethods([]);
-            else {
-              let cards = results[0].cards.data.map((card: any) => new StripePaymentMethod(card));
-              let banks = results[0].banks.data.map((bank: any) => new StripePaymentMethod(bank));
-              let methods = cards.concat(banks);
-              setCustomerId(results[0].customer.id);
-              setPaymentMethods(methods);
-            }
-          });
-          ApiHelper.get("/people/" + props.personId, "MembershipApi").then(data => {
-            if(isMounted()) {
-              setPerson(data);
-            }
-          });
-        }
-        else setPaymentMethods([]);
-      });
+    if (UniqueIdHelper.isMissing(props.personId)) return;
+    
+    try {
+      const [donationsData, gatewaysData] = await Promise.all([
+        ApiHelper.get("/donations?personId=" + props.personId, "GivingApi"),
+        ApiHelper.get("/gateways", "GivingApi")
+      ]);
+      
+      setDonations(donationsData);
+      await loadStripeData(gatewaysData);
+    } catch (error) {
+      console.error("Error loading donation data:", error);
+      setDonations([]);
+      setPaymentMethods([]);
     }
   }
 
@@ -156,7 +179,9 @@ export const DonationPage: React.FC<Props> = (props) => {
     return rows;
   }
 
-  React.useEffect(loadData, [isMounted]); //eslint-disable-line
+  React.useEffect(() => {
+    loadData();
+  }, [props.personId]); //eslint-disable-line
 
   const getTable = () => {
     if (!donations) return <Loading />;
