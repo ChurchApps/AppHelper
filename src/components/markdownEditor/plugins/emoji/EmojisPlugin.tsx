@@ -63,7 +63,7 @@ function useEmojis(editor: LexicalEditor): void {
   }, [editor]);
 }
 
-export default function EmojisPlugin(): JSX.Element | null {
+export default function EmojisPlugin(): React.ReactElement | null {
   const [editor] = useLexicalComposerContext();
   useEmojis(editor);
   return null;

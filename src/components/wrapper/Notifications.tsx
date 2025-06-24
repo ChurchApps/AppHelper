@@ -53,7 +53,7 @@ export const Notifications: React.FC<Props> = (props) => {
   }
 
   const getMainLinks = () => {
-    let result: JSX.Element[] = [];
+    let result: React.ReactElement[] = [];
     notifications.forEach(notification => {
       let datePosted = new Date(notification.timeSent);
       const displayDuration = DateHelper.getDisplayDuration(datePosted);

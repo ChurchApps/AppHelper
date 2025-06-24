@@ -189,17 +189,17 @@ export const DonationForm: React.FC<Props> = (props) => {
       <DonationPreviewModal show={showDonationPreviewModal} onHide={() => setShowDonationPreviewModal(false)} handleDonate={makeDonation} donation={donation} donationType={donationType} payFee={payFee} paymentMethodName={paymentMethodName} funds={funds} />
       <InputBox id="donationBox" aria-label="donation-box" headerIcon="volunteer_activism" headerText={Locale.label("donation.donationForm.donate")} ariaLabelSave="save-button" cancelFunction={donationType ? handleCancel : undefined} saveFunction={donationType ? handleSave : undefined} saveText={Locale.label("donation.donationForm.preview")}>
         <Grid container spacing={3}>
-          <Grid item md={6} xs={12}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Button aria-label="single-donation" size="small" fullWidth style={{ minHeight: "50px" }} variant={donationType === "once" ? "contained" : "outlined"} onClick={() => handleDonationSelect("once")}>{Locale.label("donation.donationForm.make")}</Button>
           </Grid>
-          <Grid item md={6} xs={12}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Button aria-label="recurring-donation" size="small" fullWidth style={{ minHeight: "50px" }} variant={donationType === "recurring" ? "contained" : "outlined"} onClick={() => handleDonationSelect("recurring")}>{Locale.label("donation.donationForm.makeRecurring")}</Button>
           </Grid>
         </Grid>
         {donationType
           && <div style={{ marginTop: "20px" }}>
             <Grid container spacing={3}>
-              <Grid item md={12} xs={12}>
+              <Grid size={12}>
                 <FormControl fullWidth>
                   <InputLabel>{Locale.label("donation.donationForm.method")}</InputLabel>
                   <Select label={Locale.label("donation.donationForm.method")} name="method" aria-label="method" value={donation.id} className="capitalize" onChange={handleChange}>
@@ -210,10 +210,10 @@ export const DonationForm: React.FC<Props> = (props) => {
             </Grid>
             {donationType === "recurring"
               && <Grid container spacing={3} style={{marginTop:10}}>
-                <Grid item md={6} xs={12}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <TextField fullWidth name="date" type="date" aria-label="date" label={Locale.label("donation.donationForm.startDate")} value={DateHelper.formatHtml5Date(new Date(donation.billing_cycle_anchor))} onChange={handleChange} onKeyDown={handleKeyDown} />
                 </Grid>
-                <Grid item md={6} xs={12}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <FormControl fullWidth>
                     <InputLabel>{Locale.label("donation.donationForm.frequency")}</InputLabel>
                     <Select label={Locale.label("donation.donationForm.frequency")} name="interval" aria-label="interval" value={interval} onChange={handleChange}>

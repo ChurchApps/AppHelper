@@ -139,7 +139,7 @@ export function IconPicker(props: Props) {
 
   return (
     <Grid container sx={{ minHeight: 360, padding: "16px" }}>
-      <Grid item>
+      <Grid size={12}>
         <Paper>
           <IconButton sx={{ padding: "10px" }} aria-label="search" data-testid="icon-search-button">
             <Icon>search</Icon>

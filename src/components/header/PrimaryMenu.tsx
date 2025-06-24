@@ -33,7 +33,7 @@ export const PrimaryMenu = (props:Props) => {
   };
 
   const getNavItems = () => {
-    let result: JSX.Element[] = [];
+    let result: React.ReactElement[] = [];
     props.menuItems.forEach(item => {
       result.push(<NavItem url={item.url} label={item.label.toUpperCase()} icon={item.icon} key={item.url} onNavigate={props.onNavigate} />);
     });

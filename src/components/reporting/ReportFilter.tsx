@@ -38,7 +38,7 @@ export const ReportFilter = (props: Props) => {
   }
 
   const getInputs = () => {
-    const result: JSX.Element[] = [];
+    const result: React.ReactElement[] = [];
     props.report.parameters.forEach((p, i) => {
       if (p.source === "dropdown" || p.source === "date") {
         result.push(<ReportFilterField key={i} parameter={p} report={props.report} onChange={handleChange} />)

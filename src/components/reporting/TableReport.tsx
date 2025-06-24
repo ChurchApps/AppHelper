@@ -10,7 +10,7 @@ interface Props { reportResult: ReportResultInterface, output: ReportOutputInter
 export const TableReport = (props: Props) => {
 
   const getHeaders = () => {
-    const result: JSX.Element[] = []
+    const result: React.ReactElement[] = []
     props.output.columns.forEach((c, i) => {
       result.push(<TableCell key={i} style={{fontWeight:"bold"}}>{c.header}</TableCell>);
     })
@@ -18,9 +18,9 @@ export const TableReport = (props: Props) => {
   }
 
   const getRows = () => {
-    const result: JSX.Element[] = []
+    const result: React.ReactElement[] = []
     props.reportResult.table.forEach(d => {
-      const row: JSX.Element[] = [];
+      const row: React.ReactElement[] = [];
       props.output.columns.forEach(c => {
         row.push(<TableCell>{ReportHelper.getField(c, d)}</TableCell>);
       })

@@ -44,7 +44,7 @@ export const PrivateMessages: React.FC<Props> = (props) => {
   React.useEffect(() => { console.log("RELOADED PMS") }, []);
 
   const getMainLinks = () => {
-    let result: JSX.Element[] = [];
+    let result: React.ReactElement[] = [];
     privateMessages.forEach(pm => {
 
       const person = pm.person;

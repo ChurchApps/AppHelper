@@ -121,16 +121,16 @@ export function CreatePerson({ navigateOnCreate = true, onCreate = () => {}, sho
       <p className="pl-1 mb-3 text-dark"><b>{Locale.label("createPerson.addNewPerson")}</b></p>
       <ErrorMessages errors={errors} />
       <Grid container spacing={3} alignItems="center">
-        <Grid item md={6} xs={12}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <TextField size="small" margin="none" required fullWidth type="text" aria-label="firstName" label={Locale.label("createPerson.firstName")} name="first" value={person.name.first || ""} onChange={handleChange} onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === "Enter" && handleSubmit} />
         </Grid>
-        <Grid item md={6} xs={12}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <TextField size="small" margin="none" required fullWidth type="text" aria-label="lastName" label={Locale.label("createPerson.lastName")} name="last" value={person.name.last || ""} onChange={handleChange} onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === "Enter" && handleSubmit} />
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <TextField size="small" margin="none" fullWidth type="text" aria-label="email" label={Locale.label("createPerson.email")} name="email" value={person.contactInfo.email || ""} onChange={handleChange} onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === "Enter" && handleSubmit} />
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <Button type="submit" fullWidth variant="contained" disabled={isSubmitting} onClick={handleSubmit}>{Locale.label("common.add")}</Button>
         </Grid>
       </Grid>

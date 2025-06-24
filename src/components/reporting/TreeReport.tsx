@@ -18,7 +18,7 @@ export const TreeReport = (props: Props) => {
   let totalGroupings = getPreviousGroupingCount(props.output.groupings.length);
 
   const getHeaders = () => {
-    const result: JSX.Element[] = []
+    const result: React.ReactElement[] = []
     const columns = props.output.columns;
     for (let i = totalGroupings; i < columns.length; i++) {
       const c = columns[i];
@@ -29,12 +29,12 @@ export const TreeReport = (props: Props) => {
   }
 
   const getRows = () => {
-    const result: JSX.Element[] = []
+    const result: React.ReactElement[] = []
     const columns = props.output.columns;
     let previousData = {}
     props.reportResult.table.forEach(d => {
-      const row: JSX.Element[] = [];
-      const groupingRows: JSX.Element[] = getGroupingRows(previousData, d);
+      const row: React.ReactElement[] = [];
+      const groupingRows: React.ReactElement[] = getGroupingRows(previousData, d);
       groupingRows.forEach(gr => result.push(gr));
       for (let i = totalGroupings; i < columns.length; i++) {
         const c = columns[i];
@@ -48,7 +48,7 @@ export const TreeReport = (props: Props) => {
   }
 
   const getGroupingRows = (previousData: any, data: any) => {
-    const result: JSX.Element[] = [];
+    const result: React.ReactElement[] = [];
     let firstGroupModified = getFirstGroupModified(previousData, data);
     for (let i = firstGroupModified; i <= props.output.groupings.length; i++) {
       result.push(getGroupingRow(data, i))
@@ -59,7 +59,7 @@ export const TreeReport = (props: Props) => {
   const getGroupingRow = (row: any, groupNumber: number) => {
     const g = props.output.groupings[groupNumber];
     const prevCols = getPreviousGroupingCount(groupNumber);
-    const outputRow: JSX.Element[] = [];
+    const outputRow: React.ReactElement[] = [];
     for (let i = prevCols; i < prevCols + g; i++) {
       const c = props.output.columns[i];
       const className = "heading" + (groupNumber + 1);

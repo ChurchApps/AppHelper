@@ -49,11 +49,11 @@ export const GalleryModal: React.FC<Props> = (props: Props) => {
   React.useEffect(loadData, [aspectRatio]); //eslint-disable-line
 
   const getImages = () => {
-    let result: JSX.Element[] = [];
+    let result: React.ReactElement[] = [];
     images.forEach(img => {
       const parts = img.split("/");
 
-      result.push(<Grid item md={4} xs={12}>
+      result.push(<Grid size={{ xs: 12, md: 4 }}>
         <Box sx={{ position: "relative", ":hover #deleteIcon": { visibility: "visible" } }}>
           <a href="about:blank" onClick={(e) => { e.preventDefault(); props.onSelect(CommonEnvironmentHelper.ContentRoot + "/" + img) }} aria-label="Select image" data-testid="select-image">
             <Box component="img" src={CommonEnvironmentHelper.ContentRoot + "/" + img} className="img-fluid" alt="custom" />

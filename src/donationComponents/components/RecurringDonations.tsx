@@ -53,7 +53,7 @@ export const RecurringDonations: React.FC<Props> = (props) => {
   }
 
   const getFunds = (subscription: SubscriptionInterface) => {
-    let result: JSX.Element[] = [];
+    let result: React.ReactElement[] = [];
     subscription.funds.forEach((fund: any) => {
       result.push(
         <div key={subscription.id + fund.id}>
@@ -76,13 +76,13 @@ export const RecurringDonations: React.FC<Props> = (props) => {
   }
 
   const getTableHeader = () => {
-    let result: JSX.Element[] = [];
+    let result: React.ReactElement[] = [];
     result.push(<TableRow key="header" sx={{textAlign: "left"}}><TableCell><b>{Locale.label("donation.recurring.startDate")}</b></TableCell><TableCell><b>{Locale.label("donation.recurring.amount")}</b></TableCell><TableCell><b>{Locale.label("donation.recurring.interval")}</b></TableCell><TableCell><b>{Locale.label("donation.recurring.paymentMethod")}</b></TableCell>{props?.paymentMethods?.length > 0 && <TableCell></TableCell>}</TableRow>);
     return result;
   }
 
   const getTableRows = () => {
-    let rows: JSX.Element[] = [];
+    let rows: React.ReactElement[] = [];
 
     subscriptions.forEach((sub: any) => {
       rows.push(

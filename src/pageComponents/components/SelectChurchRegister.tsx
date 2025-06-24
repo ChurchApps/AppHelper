@@ -73,12 +73,12 @@ export const SelectChurchRegister: React.FC<Props> = (props) => {
 
       <TextField required fullWidth name="address1" label={Locale.label("selectChurch.address1")} value={church.address1} onChange={handleChange} />
       <Grid container spacing={3}>
-        <Grid item xs={6}><TextField fullWidth name="address2" label={Locale.label("selectChurch.address2")} value={church.address2} onChange={handleChange} /></Grid>
-        <Grid item xs={6}><TextField required fullWidth name="city" label={Locale.label("selectChurch.city")} value={church.city} onChange={handleChange} /></Grid>
+        <Grid size={6}><TextField fullWidth name="address2" label={Locale.label("selectChurch.address2")} value={church.address2} onChange={handleChange} /></Grid>
+        <Grid size={6}><TextField required fullWidth name="city" label={Locale.label("selectChurch.city")} value={church.city} onChange={handleChange} /></Grid>
       </Grid>
       <Grid container spacing={3}>
-        <Grid item xs={6}><TextField required fullWidth name="state" label={Locale.label("selectChurch.state")} value={church.state} onChange={handleChange} /></Grid>
-        <Grid item xs={6}><TextField required fullWidth name="zip" label={Locale.label("selectChurch.zip")} value={church.zip} onChange={handleChange} /></Grid>
+        <Grid size={6}><TextField required fullWidth name="state" label={Locale.label("selectChurch.state")} value={church.state} onChange={handleChange} /></Grid>
+        <Grid size={6}><TextField required fullWidth name="zip" label={Locale.label("selectChurch.zip")} value={church.zip} onChange={handleChange} /></Grid>
       </Grid>
       <TextField required fullWidth name="country" label={Locale.label("selectChurch.country")} value={church.country} onChange={handleChange} />
     </InputBox>

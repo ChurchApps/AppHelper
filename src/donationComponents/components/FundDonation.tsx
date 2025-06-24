@@ -40,10 +40,10 @@ export const FundDonation: React.FC<Props> = (props) => {
   return (
     <>
       <Grid container spacing={3}>
-        <Grid item md={6} xs={12}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <TextField fullWidth name="amount" label={Locale.label("donation.fundDonations.amount")} type="number" disabled={props.params?.amount && props.params.amount !== ""} aria-label="amount" lang="en-150" value={props.fundDonation.amount || ""} onChange={handleChange} />
         </Grid>
-        <Grid item md={6} xs={12}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <FormControl fullWidth>
             <InputLabel>{Locale.label("donation.fundDonations.fund")}</InputLabel>
             <Select fullWidth label={Locale.label("donation.fundDonations.fund")} name="fund" aria-label="fund" value={props.fundDonation.fundId} onChange={handleChange}>

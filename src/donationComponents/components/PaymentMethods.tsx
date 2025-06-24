@@ -87,7 +87,7 @@ export const PaymentMethods: React.FC<Props> = (props) => {
   const getPMIcon = (type: string) => (type === "card" ? <Icon>credit_card</Icon> : <Icon>account_balance</Icon>)
 
   const getPaymentRows = () => {
-    let rows: JSX.Element[] = [];
+    let rows: React.ReactElement[] = [];
 
     props.paymentMethods.forEach((method: StripePaymentMethod) => {
       rows.push(

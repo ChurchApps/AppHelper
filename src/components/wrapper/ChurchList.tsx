@@ -24,7 +24,7 @@ export const ChurchList: React.FC<Props> = props => {
     }
   }
 
-  let result: JSX.Element[] = [];
+  let result: React.ReactElement[] = [];
   userChurches.forEach(uc => {
     const userChurch = uc;
     const churchName = uc.church.name;

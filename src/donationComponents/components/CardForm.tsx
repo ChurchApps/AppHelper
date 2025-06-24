@@ -91,10 +91,10 @@ export const CardForm: React.FC<Props> = (props) => {
         {!props.card.id
           ? <CardElement options={formStyling} />
           : <Grid container spacing={3}>
-            <Grid item md={6} xs={12}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <TextField fullWidth aria-label="card-exp-month" label={Locale.label("donation.cardForm.expirationMonth")} name="exp_month" value={cardUpdate.cardData.card.exp_month} placeholder="MM" inputProps={{ maxLength: 2 }} onChange={handleChange} onKeyPress={handleKeyPress} />
             </Grid>
-            <Grid item md={6} xs={12}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <TextField fullWidth aria-label="card-exp-year" label={Locale.label("donation.cardForm.expirationYear")} name="exp_year" value={cardUpdate.cardData.card.exp_year} placeholder="YY" inputProps={{ maxLength: 2 }} onChange={handleChange} onKeyPress={handleKeyPress} />
             </Grid>
           </Grid>

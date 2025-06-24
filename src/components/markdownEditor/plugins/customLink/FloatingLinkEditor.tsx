@@ -198,7 +198,7 @@ const FloatingLinkEditor: FC<FloatingLinkEditorProps> = ({
   }
 
   const getVariantItems = () => {
-    const result:JSX.Element[] = [];
+    const result: React.ReactElement[] = [];
     variants.forEach((variant: string, idx:number) => {
       result.push(<MenuItem key={appearance + " btn-" + getVariantKeyName(variant)} value={"btn-" + getVariantKeyName(variant)}>{variant}</MenuItem>);
       if (idx===4 || idx===9) result.push(<MenuItem disabled>──────────</MenuItem>)

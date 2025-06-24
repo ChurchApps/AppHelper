@@ -29,12 +29,12 @@ export const MarkdownModal: React.FC<Props> = ({ value, onChange, hideModal }) =
     <DialogTitle>{Locale.label("markdownEditor.markdownGuide")}</DialogTitle>
     <DialogContent>
       <Grid container spacing={3}>
-        <Grid item xs={6}>
+        <Grid size={6}>
           <TextField fullWidth multiline label={<>{Locale.label("markdownEditor.content")} &nbsp; {guideLink}</>} name="modalMarkdown" className="modalMarkdown" InputProps={{ style: { height: "80vh" } }} value={inputVal} onChange={(e) => {
             setInputVal(e.target.value);
           }} placeholder="" />
         </Grid>
-        <Grid item xs={6}>
+        <Grid size={6}>
           <div style={{ border: "1px solid #BBB", borderRadius: 5, marginTop: 15, padding: 10, height: "80vh", overflowY: "scroll" }} id="markdownPreview">
             <div style={{ marginTop: -20, marginBottom: -10, position: "absolute" }}><span style={{ backgroundColor: "#FFFFFF", color: "#999", fontSize: 13 }}> &nbsp; Preview &nbsp; </span></div>
             <MarkdownPreview value={inputVal} />

@@ -10,7 +10,7 @@ import { SocketHelper } from "../../helpers/SocketHelper";
 import { ClosedDrawer, ClosedDrawerAppBar, OpenDrawer, OpenDrawerAppBar } from "./Drawers";
 
 interface Props {
-  navContent: JSX.Element,
+  navContent: React.ReactElement,
   context: UserContextInterface,
   children: React.ReactNode,
   appName: string,

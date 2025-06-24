@@ -55,7 +55,7 @@ export const UserMenu: React.FC<Props> = (props) => {
   const getMainLinks = () => {
     const jwt = ApiHelper.getConfig("MembershipApi").jwt;
     const churchId = UserHelper.currentUserChurch.church.id;
-    let result: JSX.Element[] = [];
+    let result: React.ReactElement[] = [];
 
 
     result.push(<NavItem onClick={() => {setShowPM(true)}} label={Locale.label("wrapper.messages")} icon="mail" key="/messages" onNavigate={props.onNavigate} badgeCount={props.notificationCounts.pmCount} />);

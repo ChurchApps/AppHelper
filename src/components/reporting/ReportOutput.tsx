@@ -25,7 +25,7 @@ export const ReportOutput = (props: Props) => {
 	const isMounted = useMountedState();
 
 	const handlePrint = useReactToPrint({
-		content: () => contentRef.current
+		contentRef
 	})
 
 	const populatePeople = async (data: any[]) => {
@@ -127,7 +127,7 @@ export const ReportOutput = (props: Props) => {
 	React.useEffect(runReport, [props.report, isMounted]);
 
 	const getEditContent = () => {
-		const result: JSX.Element[] = [];
+		const result: React.ReactElement[] = [];
 
 		if (reportResult) {
 			result.push(<button type="button" className="no-default-style" key={result.length - 2} onClick={handlePrint} title="print"><Icon>print</Icon></button>);
@@ -139,7 +139,7 @@ export const ReportOutput = (props: Props) => {
 	}
 
 	const getOutputs = () => {
-		const result: JSX.Element[] = [];
+		const result: React.ReactElement[] = [];
 		reportResult.outputs.forEach(o => {
 			if (o.outputType === "table") result.push(<TableReport key={o.outputType} reportResult={reportResult} output={o} />)
 			if (o.outputType === "tree") result.push(<TreeReport key={o.outputType} reportResult={reportResult} output={o} />)

@@ -44,7 +44,7 @@ export const SelectChurchSearch: React.FC<Props> = (props) => {
 	)
 
 	const getChurches = () => {
-		const result: JSX.Element[] = [];
+		const result: React.ReactElement[] = [];
 		churches.forEach(church => {
 			result.push(<SelectableChurch church={church} selectChurch={props.selectChurch} />);
 		});

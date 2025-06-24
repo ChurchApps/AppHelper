@@ -61,10 +61,10 @@ export const ReportWithFilter = (props: Props) => {
   if (!checkAccess()) return <></>
   else {
     return (<Grid container spacing={3}>
-      <Grid item md={8} xs={12}>
+      <Grid size={{ xs: 12, md: 8 }}>
         <ReportOutput keyName={props.keyName} report={reportToRun} />
       </Grid>
-      <Grid item md={4} xs={12}>
+      <Grid size={{ xs: 12, md: 4 }}>
         <ReportFilter report={report} onChange={handleChange} onRun={handleRun} />
       </Grid>
     </Grid>)

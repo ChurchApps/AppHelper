@@ -56,7 +56,7 @@ export const RecurringDonationsEdit: React.FC<Props> = (props) => {
   const getFields = () => (
     <>
       <Grid container spacing={3}>
-        <Grid item md={6} xs={12}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <FormControl fullWidth>
             <InputLabel>{Locale.label("donation.donationForm.method")}</InputLabel>
             <Select label={Locale.label("donation.donationForm.method")} name="method" aria-label="method" value={editSubscription.default_payment_method || editSubscription.default_source} className="capitalize" onChange={handleChange}>
@@ -64,7 +64,7 @@ export const RecurringDonationsEdit: React.FC<Props> = (props) => {
             </Select>
           </FormControl>
         </Grid>
-        <Grid item md={6} xs={12}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <FormControl fullWidth>
             <InputLabel>{Locale.label("donation.donationForm.frequency")}</InputLabel>
             <Select label={Locale.label("donation.donationForm.frequency")} name="interval" aria-label="interval" value={interval} onChange={handleChange}>

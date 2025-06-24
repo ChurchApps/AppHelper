@@ -5,7 +5,7 @@ import { ErrorMessages, FloatingSupport, Loading } from "../components";
 import { LoginResponseInterface, UserContextInterface, ChurchInterface, UserInterface, LoginUserChurchInterface } from "@churchapps/helpers";
 import { AnalyticsHelper, ApiHelper, ArrayHelper, Locale, UserHelper } from "../helpers";
 import { useCookies } from "react-cookie"
-import jwt_decode from "jwt-decode"
+import { jwtDecode } from "jwt-decode"
 import { Register } from "./components/Register"
 import { SelectChurchModal } from "./components/SelectChurchModal"
 import { Forgot } from "./components/Forgot";
@@ -97,7 +97,7 @@ export const LoginPage: React.FC<Props> = ({ showLogo = true, loginContainerCssP
 		UserHelper.user = resp.user;
 
 		if (props.jwt) {
-			const decoded: any = jwt_decode(userJwtBackup)
+			const decoded: any = jwtDecode(userJwtBackup)
 			selectedChurchId = decoded.churchId
 		}
 

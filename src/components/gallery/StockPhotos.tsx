@@ -35,9 +35,9 @@ export const StockPhotos: React.FC<Props> = (props: Props) => {
   }
 
   const getResults = () => {
-    let result: JSX.Element[] = [];
+    let result: React.ReactElement[] = [];
     searchResults.forEach(p => {
-      result.push(<Grid item md={4} xs={12}>
+      result.push(<Grid size={{ xs: 12, md: 4 }}>
         <a href="about:blank" onClick={(e) => { e.preventDefault(); props.onStockSelect(p.large) }}>
           <img src={p.thumbnail} className="img-fluid" alt="stock" />
         </a>
@@ -51,9 +51,9 @@ export const StockPhotos: React.FC<Props> = (props: Props) => {
   }
 
   const getSuggested = () => {
-    let result: JSX.Element[] = [];
+    let result: React.ReactElement[] = [];
     images.forEach(img => {
-      result.push(<Grid item md={4} xs={12}>
+      result.push(<Grid size={{ xs: 12, md: 4 }}>
         <a href="about:blank" onClick={(e) => { e.preventDefault(); props.onSelect(CommonEnvironmentHelper.ContentRoot + "/" + img) }}>
           <img src={CommonEnvironmentHelper.ContentRoot + "/" + img} className="img-fluid" alt="stock" />
         </a>

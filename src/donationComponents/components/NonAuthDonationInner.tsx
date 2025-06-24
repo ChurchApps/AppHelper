@@ -234,22 +234,22 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
     <InputBox headerIcon={showHeader ? "volunteer_activism" : ""} headerText={showHeader ? "Donate" : ""} saveFunction={handleSave} saveText="Donate" isSubmitting={processing || !captchaResponse || captchaResponse === "robot"} mainContainerCssProps={mainContainerCssProps}>
       <ErrorMessages errors={errors} />
       <Grid container spacing={3}>
-        <Grid item md={6} xs={12}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Button aria-label="single-donation" size="small" fullWidth style={{ minHeight: "50px" }} variant={donationType === "once" ? "contained" : "outlined"} onClick={() => setDonationType("once")}>{Locale.label("donation.donationForm.make")}</Button>
         </Grid>
-        <Grid item md={6} xs={12}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Button aria-label="recurring-donation" size="small" fullWidth style={{ minHeight: "50px" }} variant={donationType === "recurring" ? "contained" : "outlined"} onClick={() => setDonationType("recurring")}>{Locale.label("donation.donationForm.makeRecurring")}</Button>
         </Grid>
-        <Grid item md={6} xs={12}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <TextField fullWidth label={Locale.label("person.firstName")} name="firstName" value={firstName} onChange={handleChange} />
         </Grid>
-        <Grid item md={6} xs={12}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <TextField fullWidth label={Locale.label("person.lastName")} name="lastName" value={lastName} onChange={handleChange} />
         </Grid>
-        <Grid item md={6} xs={12}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <TextField fullWidth label={Locale.label("person.email")} name="email" value={email} onChange={handleChange} />
         </Grid>
-        <Grid item md={6} xs={12}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <ReCAPTCHA sitekey={props.recaptchaSiteKey} ref={captchaRef} onChange={handleCaptchaChange} />
         </Grid>
       </Grid>
@@ -258,7 +258,7 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
       </div>
       {donationType === "recurring"
         && <Grid container spacing={3} style={{ marginTop: 0 }}>
-          <Grid item md={6} xs={12}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <FormControl fullWidth>
               <InputLabel>{Locale.label("donation.donationForm.frequency")}</InputLabel>
               <Select label="Frequency" name="interval" aria-label="interval" value={interval} onChange={(e) => { setInterval(e.target.value) }}>
@@ -270,7 +270,7 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
               </Select>
             </FormControl>
           </Grid>
-          <Grid item md={6} xs={12}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField fullWidth name="startDate" type="date" aria-label="startDate" label={Locale.label("donation.donationForm.startDate")} value={DateHelper.formatHtml5Date(new Date(startDate))} onChange={handleChange} />
           </Grid>
         </Grid>

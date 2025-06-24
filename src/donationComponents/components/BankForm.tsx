@@ -107,10 +107,10 @@ export const BankForm: React.FC<Props> = (props) => {
       return (<>
         <p>{Locale.label("donation.bankForm.twoDeposits")}</p>
         <Grid container columnSpacing={2}>
-          <Grid item md={6} xs={12}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField fullWidth aria-label="amount1" label={Locale.label("donation.bankForm.firstDeposit")} name="amount1" placeholder="00" inputProps={{ maxLength: 2 }} onChange={handleVerify} onKeyPress={handleKeyPress} />
           </Grid>
-          <Grid item md={6} xs={12}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField fullWidth aria-label="amount2" label={Locale.label("donation.bankForm.secondDeposit")} name="amount2" placeholder="00" inputProps={{ maxLength: 2 }} onChange={handleVerify} onKeyPress={handleKeyPress} />
           </Grid>
         </Grid>
@@ -120,20 +120,20 @@ export const BankForm: React.FC<Props> = (props) => {
       let accountDetails = <></>
       if (!props.bank.id) accountDetails = (
         <Grid container spacing={3}>
-          <Grid item md={6} xs={12} style={{ marginBottom: "20px" }}>
+          <Grid size={{ xs: 12, md: 6 }} style={{ marginBottom: "20px" }}>
             <TextField fullWidth label={Locale.label("donation.bankForm.routingNumber")} type="number" name="routing_number" aria-label="routing-number" placeholder="Routing Number" className="form-control" onChange={handleChange} />
           </Grid>
-          <Grid item md={6} xs={12} style={{ marginBottom: "20px" }}>
+          <Grid size={{ xs: 12, md: 6 }} style={{ marginBottom: "20px" }}>
             <TextField fullWidth label={Locale.label("donation.bankForm.accountNumber")} type="number" name="account_number" aria-label="account-number" placeholder="Account Number" className="form-control" onChange={handleChange} />
           </Grid>
         </Grid>
       );
       return (<>
         <Grid container spacing={3}>
-          <Grid item md={6} xs={12} style={{ marginBottom: "20px" }}>
+          <Grid size={{ xs: 12, md: 6 }} style={{ marginBottom: "20px" }}>
             <TextField fullWidth label="Account Holder Name" name="account_holder_name" required aria-label="account-holder-name" placeholder="Account Holder Name" value={bankAccount.account_holder_name} className="form-control" onChange={handleChange} />
           </Grid>
-          <Grid item md={6} xs={12} style={{ marginBottom: "20px" }}>
+          <Grid size={{ xs: 12, md: 6 }} style={{ marginBottom: "20px" }}>
             <FormControl fullWidth>
               <InputLabel>{Locale.label("donation.bankForm.name")}</InputLabel>
               <Select label={Locale.label("donation.bankForm.name")} name="account_holder_type" aria-label="account-holder-type" value={bankAccount.account_holder_type} onChange={handleChange}>
