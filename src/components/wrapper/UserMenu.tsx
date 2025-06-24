@@ -12,7 +12,7 @@ import { TabPanel } from "../TabPanel";
 import { Locale } from "../../helpers";
 import { PrivateMessages } from "./PrivateMessages";
 import { Notifications } from "./Notifications";
-import { useCookies } from "react-cookie";
+import { useCookies, CookiesProvider } from "react-cookie";
 
 
 interface Props {
@@ -27,7 +27,7 @@ interface Props {
   onNavigate: (url: string) => void;
 }
 
-export const UserMenu: React.FC<Props> = (props) => {
+const UserMenuContent: React.FC<Props> = (props) => {
   const userName = props.userName;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [showPM, setShowPM] = React.useState(false);
@@ -149,5 +149,13 @@ export const UserMenu: React.FC<Props> = (props) => {
       </Menu>
       {getModals()}
     </>
+  );
+};
+
+export const UserMenu: React.FC<Props> = (props) => {
+  return (
+    <CookiesProvider defaultSetOptions={{ path: '/' }}>
+      <UserMenuContent {...props} />
+    </CookiesProvider>
   );
 };

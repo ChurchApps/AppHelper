@@ -4,7 +4,7 @@ import * as React from "react";
 import { ErrorMessages, FloatingSupport, Loading } from "../components";
 import { LoginResponseInterface, UserContextInterface, ChurchInterface, UserInterface, LoginUserChurchInterface } from "@churchapps/helpers";
 import { AnalyticsHelper, ApiHelper, ArrayHelper, Locale, UserHelper } from "../helpers";
-import { useCookies } from "react-cookie"
+import { useCookies, CookiesProvider } from "react-cookie"
 import { jwtDecode } from "jwt-decode"
 import { Register } from "./components/Register"
 import { SelectChurchModal } from "./components/SelectChurchModal"
@@ -35,7 +35,7 @@ interface Props {
 	handleRedirect?: (url: string) => void; // Function to handle redirects from parent component
 }
 
-export const LoginPage: React.FC<Props> = ({ showLogo = true, loginContainerCssProps, ...props }) => {
+const LoginPageContent: React.FC<Props> = ({ showLogo = true, loginContainerCssProps, ...props }) => {
 	const [welcomeBackName, setWelcomeBackName] = React.useState("");
 	const [pendingAutoLogin, setPendingAutoLogin] = React.useState(false);
 	const [errors, setErrors] = React.useState([]);
@@ -268,4 +268,17 @@ export const LoginPage: React.FC<Props> = ({ showLogo = true, loginContainerCssP
 		</Box>
 	);
 
+};
+
+export const LoginPage: React.FC<Props> = (props) => {
+	// Try to detect if CookiesProvider is available
+	const CookiesContext = React.createContext(null);
+	const context = React.useContext(CookiesContext);
+	
+	// Always wrap with CookiesProvider to ensure context is available
+	return (
+		<CookiesProvider defaultSetOptions={{ path: '/' }}>
+			<LoginPageContent {...props} />
+		</CookiesProvider>
+	);
 };

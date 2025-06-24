@@ -1,12 +1,12 @@
 "use client";
 
 import React from "react";
-import { useCookies } from "react-cookie"
+import { useCookies, CookiesProvider } from "react-cookie"
 import { ApiHelper, UserContextInterface } from "../helpers";
 
 interface Props { context?: UserContextInterface, handleRedirect?: (url: string) => void }
 
-export const LogoutPage: React.FC<Props> = (props) => {
+const LogoutPageContent: React.FC<Props> = (props) => {
 	const [, , removeCookie] = useCookies(["jwt", "email", "name", "lastChurchId"]);
 
 	removeCookie("jwt");
@@ -32,4 +32,12 @@ export const LogoutPage: React.FC<Props> = (props) => {
 		}
 	}, 300);
 	return null;
+}
+
+export const LogoutPage: React.FC<Props> = (props) => {
+	return (
+		<CookiesProvider defaultSetOptions={{ path: '/' }}>
+			<LogoutPageContent {...props} />
+		</CookiesProvider>
+	);
 }
