@@ -109,6 +109,7 @@ export class ApiHelper {
 				}
 			}
 		} catch (e) {
+			console.log("Failed to fetch from " + url);
 			throw (e);
 		}
 	}
