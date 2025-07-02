@@ -6,8 +6,8 @@ import { DonationForm, RecurringDonations, PaymentMethods } from "./components";
 import { DisplayBox, ExportLink, Loading } from "../components";
 import { ApiHelper, DateHelper, UniqueIdHelper, CurrencyHelper, Locale } from "../helpers";
 import { DonationInterface, PersonInterface, StripePaymentMethod, ChurchInterface } from "@churchapps/helpers";
-import { Link } from "react-router-dom"
-import { Table, TableBody, TableRow, TableCell, TableHead, Alert, Button, Icon, Menu, MenuItem } from "@mui/material"
+// import { Link } from "react-router-dom"
+import { Table, TableBody, TableRow, TableCell, TableHead, Alert, Button, Icon, Link, Menu, MenuItem } from "@mui/material"
 import { useMountedState } from "../hooks/useMountedState";
 
 interface Props { personId: string, appName?: string, church?: ChurchInterface, churchLogo?: string }
@@ -129,9 +129,9 @@ export const DonationPage: React.FC<Props> = (props) => {
         MenuListProps={{ 'aria-labelledby': "download-button" }}
       >
         <MenuItem onClick={handleClose} dense><ExportLink data={current_year} filename="current_year_donations" customHeaders={customHeaders} text="Current Year (CSV)" icon="table_chart" /></MenuItem>
-        <MenuItem onClick={handleClose} dense><Link to={"/donations/print/" + person?.id}><Button><Icon>print</Icon> &nbsp; Current Year (PRINT)</Button></Link></MenuItem>
+        <MenuItem onClick={handleClose} dense><Link href={"/donations/print/" + person?.id}><Button><Icon>print</Icon> &nbsp; Current Year (PRINT)</Button></Link></MenuItem>
         <MenuItem onClick={handleClose} dense><ExportLink data={last_year} filename="last_year_donations" customHeaders={customHeaders} text="Last Year (CSV)" icon="table_chart" /></MenuItem>
-        <MenuItem onClick={handleClose} dense><Link to={"/donations/print/" + person?.id + "?prev=1"}><Button><Icon>print</Icon> &nbsp; Last Year (PRINT)</Button></Link></MenuItem>
+        <MenuItem onClick={handleClose} dense><Link href={"/donations/print/" + person?.id + "?prev=1"}><Button><Icon>print</Icon> &nbsp; Last Year (PRINT)</Button></Link></MenuItem>
       </Menu>
     </>);
 
@@ -150,7 +150,7 @@ export const DonationPage: React.FC<Props> = (props) => {
       let d = donations[i];
       rows.push(
         <TableRow key={i}>
-          {appName !== "B1App" && <TableCell><Link to={"/donations/" + d.batchId}>{d.batchId}</Link></TableCell>}
+          {appName !== "B1App" && <TableCell><Link href={"/donations/" + d.batchId}>{d.batchId}</Link></TableCell>}
           <TableCell>{DateHelper.prettyDate(new Date(d.donationDate))}</TableCell>
           <TableCell>{d.method} - {d.methodDetails}</TableCell>
           <TableCell>{d.fund.name}</TableCell>
