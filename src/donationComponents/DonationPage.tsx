@@ -63,7 +63,7 @@ export const DonationPage: React.FC<Props> = (props) => {
     
     setStripe(loadStripe(gatewayData[0].publicKey));
     await Promise.all([
-      loadPersonData(),
+      // loadPersonData(),
       loadPaymentMethods()
     ]);
   }
@@ -79,6 +79,7 @@ export const DonationPage: React.FC<Props> = (props) => {
       ]);
       
       setDonations(donationsData);
+      await loadPersonData(); //moved this outside of loadStripeData to fix issue with person data not loading when there's no gateway data
       await loadStripeData(gatewaysData);
     } catch (error) {
       console.error("Error loading donation data:", error);
