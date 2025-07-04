@@ -10,9 +10,9 @@ export const SecondaryMenu= (props:Props) => {
 
   const getItems = () => {
     const result:any[] = [];
-    props.menuItems.forEach(item => {
-      if (item.label === props.label) result.push(<Chip onClick={() => props.onNavigate(item.url)} label={item.label} component="a" variant="filled" clickable style={{backgroundColor:"var(--c1d2)", color:"#FFF", fontSize:16}} />);
-      else result.push(<a href="about:blank" onClick={(e) => { e.preventDefault(); props.onNavigate(item.url) }} style={{ color:"#FFF", textDecoration: "none", marginLeft:10, marginRight:10}}>{item.label}</a>);
+    props.menuItems.forEach((item, index) => {
+      if (item.label === props.label) result.push(<Chip key={index} onClick={() => props.onNavigate(item.url)} label={item.label} component="a" variant="filled" clickable style={{backgroundColor:"var(--c1d2)", color:"#FFF", fontSize:16}} />);
+      else result.push(<a key={index} href="about:blank" onClick={(e) => { e.preventDefault(); props.onNavigate(item.url) }} style={{ color:"#FFF", textDecoration: "none", marginLeft:10, marginRight:10}}>{item.label}</a>);
     });
     return result;
   }
