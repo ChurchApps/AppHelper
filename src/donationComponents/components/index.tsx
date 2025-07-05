@@ -3,6 +3,8 @@ export { CardForm } from "./CardForm";
 export { DonationForm } from "./DonationForm";
 export { FundDonation } from "./FundDonation";
 export { FundDonations } from "./FundDonations";
+export { NonAuthDonation } from "./NonAuthDonation";
+export { NonAuthDonationInner } from "./NonAuthDonationInner";
 export { PaymentMethods } from "./PaymentMethods";
 export { RecurringDonations } from "./RecurringDonations";
 export { RecurringDonationsEdit } from "./RecurringDonationsEdit";
