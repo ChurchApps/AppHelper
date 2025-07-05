@@ -18,7 +18,7 @@ import {
   TextNode,
 } from 'lexical';
 import { $createEmojiNode } from './EmojiNode';
-import materialIcons from '../../../iconPicker/IconNamesList';
+import materialIcons from '../../IconNamesList';
 import * as React from 'react';
 import {useCallback, useEffect, useMemo, useState} from 'react';
 import * as ReactDOM from 'react-dom';

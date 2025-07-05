@@ -11,7 +11,7 @@ import {
   $createEmojiNode
 } from "../emoji/EmojiNode";
 
-import iconNamesList from '../../../iconPicker/IconNamesList';
+import iconNamesList from '../../IconNamesList';
 
 const CUSTOM_LINK_NODE_MARKDOWN_REGEX_QUERY = /(?:\[([^[]+?)\])(?:\(([^(]+)\))(?:({([^}]*)})?)(?:((.*)\)?))$/;
 

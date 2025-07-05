@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Cropper from "react-cropper";
-import "cropperjs/dist/cropper.css";
+// import "cropperjs/dist/cropper.css"; // CSS import removed due to Next.js compatibility issues
 import { InputBox, SmallButton } from ".";
 import { Locale } from "../helpers";
 
