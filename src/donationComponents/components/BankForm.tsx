@@ -5,7 +5,8 @@ import { FormControl, Grid, InputLabel, MenuItem, Select, TextField } from "@mui
 import type { SelectChangeEvent } from "@mui/material";
 import { useStripe } from "@stripe/react-stripe-js";
 import { InputBox, ErrorMessages } from "../../components";
-import { ApiHelper, Locale } from "../../helpers";
+import { ApiHelper } from "@churchapps/helpers";
+import { Locale } from "../../helpers";
 import { PersonInterface, StripePaymentMethod, PaymentMethodInterface, StripeBankAccountInterface, StripeBankAccountUpdateInterface, StripeBankAccountVerifyInterface } from "@churchapps/helpers";
 
 interface Props { bank: StripePaymentMethod, showVerifyForm: boolean, customerId: string, person: PersonInterface, setMode: any, deletePayment: any, updateList: (message?: string) => void }

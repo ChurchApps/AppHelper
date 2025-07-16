@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { DateHelper, CurrencyHelper, Locale } from "../../helpers";
+import { DateHelper, CurrencyHelper } from "@churchapps/helpers";
+import { Locale } from "../../helpers";
 import { StripeDonationInterface } from "@churchapps/helpers";
 import {
  Table, TableBody, TableRow, TableCell, Dialog, DialogTitle, DialogContent, DialogActions, Button 

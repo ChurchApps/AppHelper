@@ -2,7 +2,8 @@
 
 import React from "react";
 import { ReportInterface, ParameterInterface } from "@churchapps/helpers";
-import { ArrayHelper, Locale } from "../../helpers"
+import { ArrayHelper } from "@churchapps/helpers";
+import { Locale } from "../../helpers";
 import { InputBox } from "../"
 import { ReportFilterField } from "./ReportFilterField";
 

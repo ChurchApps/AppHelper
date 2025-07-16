@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { InputBox } from "../../components";
+import { InputBox } from "@churchapps/apphelper";
 import { TextField, Box, PaperProps, InputAdornment, IconButton, Icon } from "@mui/material";
-import { Locale } from "../../helpers/Locale";
+import { Locale } from "../../helpers";
 
 interface Props {
   //registerCallback: () => void,

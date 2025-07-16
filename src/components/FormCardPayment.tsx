@@ -4,7 +4,8 @@ import React, { forwardRef, useImperativeHandle } from "react";
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { Box, Grid, TextField } from "@mui/material";
 import { QuestionInterface } from "@churchapps/helpers";
-import { ApiHelper, Locale, UserInterface, PersonInterface, StripePaymentMethod, StripeDonationInterface, ChurchInterface, FundInterface, ArrayHelper, UserHelper } from "../helpers";
+import { ApiHelper, UserInterface, PersonInterface, StripePaymentMethod, StripeDonationInterface, ChurchInterface, FundInterface, ArrayHelper, UserHelper } from "@churchapps/helpers";
+import { Locale } from "../helpers";
 
 interface Props {
 	churchId: string,

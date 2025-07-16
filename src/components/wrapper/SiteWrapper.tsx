@@ -2,11 +2,12 @@
 
 import React, { CSSProperties } from "react";
 import { IconButton, Toolbar, Icon, Typography, Box, Container, Link } from "@mui/material";
-import { UserHelper, AppearanceHelper, PersonHelper, AppearanceInterface, ApiHelper } from "../../helpers";
+import { UserHelper, AppearanceHelper, PersonHelper, ApiHelper } from "@churchapps/helpers";
+import { AppearanceInterface } from "../../helpers";
 import { UserMenu } from "./UserMenu";
 import { UserContextInterface } from "@churchapps/helpers";
 import { useMountedState } from "../../hooks/useMountedState";
-import { SocketHelper } from "../../helpers/SocketHelper";
+import { SocketHelper } from "../../helpers";
 import { ClosedDrawer, ClosedDrawerAppBar, OpenDrawer, OpenDrawerAppBar } from "./Drawers";
 
 interface Props {

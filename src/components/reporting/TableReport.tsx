@@ -3,7 +3,7 @@
 import React from "react";
 import { ReportOutputInterface, ReportResultInterface } from "@churchapps/helpers";
 import { Table, TableBody, TableRow, TableCell, TableHead } from "@mui/material";
-import { ReportHelper } from "../../helpers/ReportHelper";
+import { ReportHelper } from "../../helpers";
 
 interface Props { reportResult: ReportResultInterface, output: ReportOutputInterface }
 

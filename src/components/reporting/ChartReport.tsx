@@ -3,7 +3,7 @@
 import React from "react";
 import { Chart } from "react-google-charts";
 import { ReportOutputInterface, ReportResultInterface } from "@churchapps/helpers";
-import { ReportHelper } from "../../helpers/ReportHelper";
+import { ReportHelper } from "../../helpers";
 import { Locale } from "../../helpers";
 
 interface Props { reportResult: ReportResultInterface, output: ReportOutputInterface }

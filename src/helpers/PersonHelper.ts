@@ -1,5 +1,5 @@
 import { PersonInterface, ContactInfoInterface } from "@churchapps/helpers";
-import { CommonEnvironmentHelper } from "./CommonEnvironmentHelper";
+import { CommonEnvironmentHelper } from "@churchapps/helpers";
 import { Locale } from "./Locale";
 
 export class PersonHelper {

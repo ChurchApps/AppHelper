@@ -1,10 +1,9 @@
 "use client";
 
 import React from "react";
-import { ApiHelper } from "../../helpers/ApiHelper";
-import { UserHelper } from "../../helpers/UserHelper";
+import { ApiHelper, UserHelper } from "@churchapps/helpers";
 import { NavItem } from "./NavItem";
-import { CommonEnvironmentHelper } from "../../helpers/CommonEnvironmentHelper";
+import { CommonEnvironmentHelper } from "@churchapps/helpers";
 import { LoginUserChurchInterface } from "@churchapps/helpers";
 
 export interface Props { appName: string; currentUserChurch: LoginUserChurchInterface; onNavigate: (url: string) => void; }

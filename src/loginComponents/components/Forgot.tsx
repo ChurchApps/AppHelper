@@ -1,8 +1,9 @@
 "use client";
 
 import React, { FormEventHandler } from "react";
-import { ApiHelper, Locale } from "../../helpers";
-import { ErrorMessages } from "../../components";
+import { ApiHelper } from "@churchapps/helpers";
+import { Locale } from "../../helpers";
+import { ErrorMessages } from "@churchapps/apphelper";
 import { ResetPasswordRequestInterface, ResetPasswordResponseInterface } from "@churchapps/helpers";
 import { Stack, TextField, Box, Typography } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";

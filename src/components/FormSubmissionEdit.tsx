@@ -3,7 +3,8 @@
 import React, { useRef } from "react";
 import { loadStripe, Stripe } from "@stripe/stripe-js";
 import { ErrorMessages, InputBox, QuestionEdit } from "./";
-import { ApiHelper, Locale, UniqueIdHelper, UserHelper } from "../helpers";
+import { ApiHelper, UniqueIdHelper, UserHelper } from "@churchapps/helpers";
+import { Locale } from "../helpers";
 import { AnswerInterface, QuestionInterface, FormSubmissionInterface } from "@churchapps/helpers";
 
 interface Props {

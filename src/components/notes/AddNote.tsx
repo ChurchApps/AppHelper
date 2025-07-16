@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react"
-import { ApiHelper, Locale, PersonHelper } from "../../helpers"
+import { ApiHelper, PersonHelper } from "@churchapps/helpers";
+import { Locale } from "../../helpers";
 import { MessageInterface, UserContextInterface } from "@churchapps/helpers"
 import { Icon, Stack, TextField } from "@mui/material"
 import { ErrorMessages } from "../ErrorMessages"

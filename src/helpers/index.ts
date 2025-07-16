@@ -10,6 +10,7 @@ export { EventHelper } from "./EventHelper";
 export { FileHelper } from "./FileHelper";
 export { Locale } from "./Locale";
 export { PersonHelper } from "./PersonHelper"
+export { ReportHelper } from "./ReportHelper";
 export { SocketHelper } from "./SocketHelper";
 export { UserHelper } from "./UserHelper";
 export { UniqueIdHelper } from "./UniqueIdHelper";

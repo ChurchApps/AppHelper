@@ -5,7 +5,8 @@ import type { Stripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import { CardForm, BankForm } from ".";
 import { DisplayBox, Loading } from "../../components";
-import { ApiHelper, Locale, UserHelper } from "../../helpers";
+import { ApiHelper, UserHelper } from "@churchapps/helpers";
+import { Locale } from "../../helpers";
 import { PersonInterface, StripePaymentMethod, Permissions } from "@churchapps/helpers";
 import {
  Icon, Table, TableBody, TableCell, TableRow, IconButton, Menu, MenuItem 

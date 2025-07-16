@@ -2,7 +2,7 @@
 
 import React from "react";
 import { ReportInterface, ReportPermissionInterface } from "@churchapps/helpers";
-import { ApiHelper, UserHelper } from "../../helpers"
+import { ApiHelper, UserHelper } from "@churchapps/helpers";
 import { Loading } from "../Loading"
 import { Grid } from "@mui/material"
 import { ReportOutput } from "./ReportOutput"

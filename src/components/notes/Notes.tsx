@@ -2,7 +2,8 @@ import React from "react";
 import { Note } from "./Note";
 import { AddNote } from "./AddNote";
 import { DisplayBox, Loading } from "../";
-import { ApiHelper, ArrayHelper, Locale } from "../../helpers";
+import { ApiHelper, ArrayHelper } from "@churchapps/helpers";
+import { Locale } from "../../helpers";
 import { MessageInterface, UserContextInterface } from "@churchapps/helpers";
 
 interface Props {

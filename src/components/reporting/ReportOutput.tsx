@@ -3,7 +3,8 @@
 import React, { useRef } from "react";
 import { ArrayHelper, PersonInterface, ReportInterface, ReportResultInterface } from "@churchapps/helpers";
 import { DisplayBox, ExportLink, Loading } from "../"
-import { ApiHelper, Locale } from "../../helpers"
+import { ApiHelper } from "@churchapps/helpers";
+import { Locale } from "../../helpers";
 import { useReactToPrint } from "react-to-print";
 import { TableReport } from "./TableReport";
 import { ChartReport } from "./ChartReport";

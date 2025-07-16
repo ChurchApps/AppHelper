@@ -2,7 +2,8 @@
 
 import React from "react";
 import { DisplayBox } from "../../components";
-import { ApiHelper, UserHelper, CurrencyHelper, DateHelper, Locale } from "../../helpers";
+import { ApiHelper, UserHelper, CurrencyHelper, DateHelper } from "@churchapps/helpers";
+import { Locale } from "../../helpers";
 import { Permissions, SubscriptionInterface } from "@churchapps/helpers";
 import { RecurringDonationsEdit } from ".";
 import { Icon, Table, TableBody, TableCell, TableRow, TableHead } from "@mui/material";

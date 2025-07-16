@@ -1,7 +1,7 @@
 import { ConnectionInterface, LoginUserChurchInterface, SocketActionHandlerInterface, SocketPayloadInterface, UserChurchInterface } from "@churchapps/helpers";
 import { ApiHelper } from "./ApiHelper";
 import { ArrayHelper } from "./ArrayHelper";
-import { CommonEnvironmentHelper } from "./CommonEnvironmentHelper";
+import { CommonEnvironmentHelper } from "@churchapps/helpers";
 
 export class SocketHelper {
   static socket: WebSocket;

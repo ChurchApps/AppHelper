@@ -4,7 +4,7 @@ import React from "react";
 import { ChurchInterface, LoginUserChurchInterface } from "@churchapps/helpers";
 import { SelectChurchSearch } from "./SelectChurchSearch";
 import { SelectableChurch } from "./SelectableChurch";
-import { ErrorMessages } from "../../components"
+import { ErrorMessages } from "@churchapps/apphelper"
 import { Dialog, DialogContent, DialogTitle, Icon, IconButton, Tooltip } from "@mui/material";
 import { Locale } from "../../helpers";
 

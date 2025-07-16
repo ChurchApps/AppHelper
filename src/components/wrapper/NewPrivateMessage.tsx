@@ -2,7 +2,8 @@
 
 import { Button, TextField, TableRow, TableCell, Table, TableBody } from "@mui/material";
 import React, { useEffect } from "react";
-import { ApiHelper, Locale, PersonHelper } from "../../helpers";
+import { ApiHelper, PersonHelper } from "@churchapps/helpers";
+import { Locale } from "../../helpers";
 import { ConversationInterface, PersonInterface, PrivateMessageInterface, UserContextInterface } from "@churchapps/helpers";
 import { AddNote } from "../notes/AddNote";
 import { SmallButton } from "../SmallButton";

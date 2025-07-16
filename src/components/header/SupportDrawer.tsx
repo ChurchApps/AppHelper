@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Avatar, Box, Button, Drawer, Icon, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography } from "@mui/material";
-import { ApiHelper, UserHelper } from "../../helpers";
+import { ApiHelper, UserHelper } from "@churchapps/helpers";
 
 type Props = {
   appName: string;

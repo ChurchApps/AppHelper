@@ -2,8 +2,9 @@
 
 import React, { FormEventHandler } from "react";
 import { LoginResponseInterface, RegisterUserInterface, UserInterface } from "@churchapps/helpers";
-import { AnalyticsHelper, ApiHelper, Locale } from "../../helpers";
-import { ErrorMessages } from "../../components";
+import { ApiHelper } from "@churchapps/helpers";
+import { AnalyticsHelper, Locale } from "../../helpers";
+import { ErrorMessages } from "@churchapps/apphelper";
 import { Button, Stack, TextField, Link } from "@mui/material";
 
 interface Props {

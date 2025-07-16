@@ -1,12 +1,13 @@
 "use client";
 
 import React from "react";
-import { ApiHelper, Locale } from "../../helpers";
+import { ApiHelper } from "@churchapps/helpers";
+import { Locale } from "../../helpers";
 import { InputBox } from "../../components";
 import { StripePaymentMethod, SubscriptionInterface } from "@churchapps/helpers";
 import { FormControl, Grid, InputLabel, MenuItem, Select, TextField } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material";
-import { DonationHelper } from "../../helpers";
+import { DonationHelper } from "@churchapps/helpers";
 
 interface Props { subscriptionUpdated: (message?: string) => void, customerId: string, paymentMethods: StripePaymentMethod[], editSubscription: SubscriptionInterface };
 

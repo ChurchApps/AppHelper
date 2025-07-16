@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { InputBox } from "../../components";
+import { InputBox } from "@churchapps/apphelper";
 import { Icon, IconButton, InputAdornment, TextField, Typography } from "@mui/material";
 import { LoginResponseInterface, UserInterface } from "@churchapps/helpers";
-import { ApiHelper, Locale } from "../../helpers";
+import { ApiHelper } from "@churchapps/helpers";
+import { Locale } from "../../helpers";
 
 interface Props {
   appName: string,

@@ -1,8 +1,8 @@
 import React from "react";
 import { AppBar, Link, styled, Toolbar } from "@mui/material";
-import { UserHelper } from "../../helpers/UserHelper"
+import { UserHelper } from "@churchapps/helpers";
 import { UserMenu } from "../wrapper/UserMenu";
-import { PersonHelper } from "../../helpers/PersonHelper";
+import { PersonHelper } from "@churchapps/helpers";
 import { PrimaryMenu } from "./PrimaryMenu";
 import { SecondaryMenu } from "./SecondaryMenu";
 import { SecondaryMenuAlt } from "./SecondaryMenuAlt";

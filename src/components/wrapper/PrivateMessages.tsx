@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { ApiHelper } from "../../helpers/ApiHelper";
+import { ApiHelper } from "@churchapps/helpers";
 import { Box, Stack } from "@mui/material";
 import { SmallButton } from "../SmallButton";
 import { PrivateMessageInterface, UserContextInterface } from "@churchapps/helpers";
-import { ArrayHelper, DateHelper, PersonHelper } from "../../helpers";
+import { ArrayHelper, DateHelper, PersonHelper } from "@churchapps/helpers";
 import { PrivateMessageDetails } from "./PrivateMessageDetails";
 import { NewPrivateMessage } from "./NewPrivateMessage";
 

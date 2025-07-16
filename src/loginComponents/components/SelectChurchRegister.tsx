@@ -1,9 +1,10 @@
 "use client";
 
 import React from "react";
-import { ApiHelper, Locale } from "../../helpers"
+import { ApiHelper } from "@churchapps/helpers";
+import { Locale } from "../../helpers";
 import { ChurchInterface, RegisterChurchRequestInterface } from "@churchapps/helpers";
-import { ErrorMessages, InputBox } from "../../components"
+import { ErrorMessages, InputBox } from "@churchapps/apphelper"
 import { Grid, TextField } from "@mui/material";
 
 interface Props {

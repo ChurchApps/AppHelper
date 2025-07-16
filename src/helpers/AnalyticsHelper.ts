@@ -1,5 +1,5 @@
 import ReactGA from "react-ga4";
-import { CommonEnvironmentHelper } from "./CommonEnvironmentHelper";
+import { CommonEnvironmentHelper } from "@churchapps/helpers";
 import { UserHelper } from "./UserHelper";
 
 export class AnalyticsHelper {
