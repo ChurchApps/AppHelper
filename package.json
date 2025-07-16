@@ -4,7 +4,8 @@
   "description": "Workspace for ChurchApps AppHelper packages",
   "private": true,
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "playground"
   ],
   "scripts": {
     "build": "npm run build --workspaces",
@@ -13,6 +14,8 @@
     "build:apphelper": "npm run build --workspace=packages/apphelper",
     "build:login": "npm run build --workspace=packages/login",
     "build:donations": "npm run build --workspace=packages/donations",
+    "playground": "npm run dev --workspace=playground",
+    "test:login": "npm run build:apphelper && npm run build:login && npm run dev --workspace=playground",
     "publish:all": "npm run build && npm publish --workspace=packages/apphelper --access=public && npm publish --workspace=packages/login --access=public && npm publish --workspace=packages/donations --access=public"
   },
   "devDependencies": {
