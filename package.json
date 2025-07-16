@@ -4,6 +4,20 @@
   "description": "Library of helper functions for React and NextJS ChurchApps",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./login": {
+      "types": "./dist/login.d.ts",
+      "default": "./dist/login.js"
+    },
+    "./donations": {
+      "types": "./dist/donations.d.ts",
+      "default": "./dist/donations.js"
+    }
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "clean": "rimraf dist",
