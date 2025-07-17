@@ -257,15 +257,14 @@ const LoginPageContent: React.FC<Props> = ({ showLogo = true, loginContainerCssP
 	React.useEffect(init, []); //eslint-disable-line
 
 	return (
-		<Box sx={{ maxWidth: "382px" }} px="16px" mx="auto">
-			{showLogo && <img src={props.logo || "/images/logo-login.png"} alt="logo" style={{ width: "100%", marginTop: 100, marginBottom: 60 }} />}
+		<>
 			<ErrorMessages errors={errors} />
 			{getWelcomeBack()}
 			{getCheckEmail()}
 			{!pendingAutoLogin && getInputBox()}
 			<SelectChurchModal show={showSelectModal} userChurches={loginResponse?.userChurches} selectChurch={selectChurch} registeredChurchCallback={handleChurchRegistered} errors={errors} appName={props.appName} />
 			<FloatingSupport appName={props.appName} />
-		</Box>
+		</>
 	);
 
 };
@@ -274,7 +273,7 @@ export const LoginPage: React.FC<Props> = (props) => {
 	// Try to detect if CookiesProvider is available
 	const CookiesContext = React.createContext(null);
 	const context = React.useContext(CookiesContext);
-	
+
 	// Always wrap with CookiesProvider to ensure context is available
 	return (
 		<CookiesProvider defaultSetOptions={{ path: '/' }}>

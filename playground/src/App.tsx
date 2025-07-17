@@ -150,42 +150,20 @@ function FullLoginPage() {
   let auth = search.get("auth") || "";
 
   return (
-    <ComponentPage title="LoginPage (Full Implementation)">
-      <Alert severity="info" sx={{ mb: 2 }}>
-        <strong>Demo Mode:</strong> This is a playground environment. All API calls will fail gracefully.
-        <br />
-        Try email: "demo@test.com" and password: "password" to see the UI flow.
-      </Alert>
-      
-      <Box
-        sx={{
-          display: "flex",
-          backgroundColor: "#EEE",
-          minHeight: "60vh",
-        }}
-      >
-        <Box
-          sx={{
-            marginLeft: "auto",
-            marginRight: "auto",
-            paddingTop: 2
-          }}
-        >
-          <LoginPage
-            auth={auth}
-            context={context}
-            jwt={jwt}
-            appName="Playground"
-            appUrl={window.location.href}
-            callbackErrors={errors}
-            returnUrl={returnUrl}
-            handleRedirect={handleRedirect}
-            defaultEmail="demo@test.com"
-            defaultPassword="password"
-          />
-        </Box>
-      </Box>
-    </ComponentPage>
+    <>
+      <LoginPage
+        auth={auth}
+        context={context}
+        jwt={jwt}
+        appName="Playground"
+        appUrl={window.location.href}
+        callbackErrors={errors}
+        returnUrl={returnUrl}
+        handleRedirect={handleRedirect}
+        defaultEmail="demo@test.com"
+        defaultPassword="password"
+      />
+    </>
   );
 }
 
