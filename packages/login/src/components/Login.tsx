@@ -1,14 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { InputBox } from "@churchapps/apphelper";
-import { TextField, Box, PaperProps, InputAdornment, IconButton } from "@mui/material";
+import { TextField, Box, PaperProps, InputAdornment, IconButton, Card, CardContent, Typography, Button } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Locale } from "../helpers";
 
 interface Props {
-  //registerCallback: () => void,
-  //loginCallback: () => void
   login: (data: any) => void,
   isSubmitting: boolean,
   setShowRegister: (showRegister: boolean) => void,
@@ -39,25 +36,215 @@ export const Login: React.FC<Props> = ({ mainContainerCssProps = {}, ...props })
     if (validate()) props.login({ email, password });
   }
 
-  const getRegisterLink = () => (
-    <><a href="about:blank" className="text-decoration" onClick={handleShowRegister}>{Locale.label("login.register")}</a> &nbsp; | &nbsp; </>
-  )
-
   const handleShowRegister = (e: React.MouseEvent) => {
     e.preventDefault();
     props.setShowRegister(true);
   }
 
   return (
-    <InputBox headerText={Locale.label("login.signInTitle")} saveFunction={submitLogin} saveButtonType="submit" saveText={props.isSubmitting ? Locale.label("common.pleaseWait") : Locale.label("login.signIn")} isSubmitting={props.isSubmitting} mainContainerCssProps={mainContainerCssProps}>
-      <TextField fullWidth autoFocus name="email" type="email" label={Locale.label("login.email")} value={email} onChange={(e) => { e.preventDefault(); setEmail(e.target.value) }} sx={{ marginBottom: 2 }} />
-      <TextField fullWidth name="email" type={showPassword ? "text" : "password"} label={Locale.label("login.password")} value={password} onChange={(e) => { e.preventDefault(); setPassword(e.target.value) }}  InputProps={{
-        endAdornment: (<InputAdornment position="end"><IconButton aria-label="toggle password visibility" onClick={() => { setShowPassword(!showPassword) }}>{showPassword ? <Visibility /> : <VisibilityOff />}</IconButton></InputAdornment>)
-      }} />
-      <Box sx={{ textAlign: "right", marginY: 1 }}>
-        {getRegisterLink()}
-        <a href="about:blank" className="text-decoration" onClick={(e) => { e.preventDefault(); props.setShowForgot(true); }}>{Locale.label("login.forgot")}</a>&nbsp;
-      </Box>
-    </InputBox>
+    <div style={{ minHeight: '100vh', backgroundColor: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
+      <Card sx={{ 
+        width: '100%', 
+        maxWidth: { xs: '400px', sm: '500px' },
+        backgroundColor: 'white', 
+        border: '1px solid #e5e7eb',
+        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+        ...mainContainerCssProps 
+      }}>
+        <CardContent sx={{ textAlign: 'center', padding: '32px' }}>
+          <div style={{ marginBottom: '32px' }}>
+            <img 
+              src="/images/logo-login.png" 
+              alt="Church Logo" 
+              style={{ 
+                maxWidth: '100%', 
+                width: 'auto',
+                height: 'auto',
+                maxHeight: '80px', 
+                marginBottom: '16px',
+                objectFit: 'contain'
+              }}
+            />
+          </div>
+          <Typography 
+            component="h1" 
+            sx={{ 
+              fontSize: '24px', 
+              fontWeight: 'bold', 
+              color: '#111827',
+              marginBottom: '8px'
+            }}
+          >
+            {Locale.label("login.signInTitle")}
+          </Typography>
+          <Typography 
+            sx={{ 
+              color: '#6b7280',
+              marginBottom: '32px'
+            }}
+          >
+            Enter your email and password to access your church
+          </Typography>
+
+          <form onSubmit={(e) => { e.preventDefault(); submitLogin(); }} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <label htmlFor="email" style={{ fontSize: '14px', fontWeight: 500, color: '#374151', textAlign: 'left' }}>
+                {Locale.label("login.email")}
+              </label>
+              <TextField
+                id="email"
+                name="email"
+                type="email"
+                placeholder={Locale.label("login.email")}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoFocus
+                required
+                autoComplete="email"
+                variant="outlined"
+                fullWidth
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    backgroundColor: 'white',
+                    '& fieldset': { 
+                      borderColor: '#d1d5db' 
+                    },
+                    '&:hover fieldset': { 
+                      borderColor: '#d1d5db' 
+                    },
+                    '&.Mui-focused fieldset': { 
+                      borderColor: '#3b82f6' 
+                    },
+                    '& input': { 
+                      color: '#111827',
+                      fontSize: '16px'
+                    }
+                  },
+                  '& .MuiInputLabel-root': {
+                    display: 'none'
+                  }
+                }}
+              />
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', position: 'relative' }}>
+              <label htmlFor="password" style={{ fontSize: '14px', fontWeight: 500, color: '#374151', textAlign: 'left' }}>
+                {Locale.label("login.password")}
+              </label>
+              <TextField
+                id="password"
+                name="password"
+                type={showPassword ? "text" : "password"}
+                placeholder={Locale.label("login.password")}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                autoComplete="current-password"
+                variant="outlined"
+                fullWidth
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={() => setShowPassword(!showPassword)}
+                        edge="end"
+                        sx={{ color: '#6b7280' }}
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  )
+                }}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    backgroundColor: 'white',
+                    paddingRight: '10px',
+                    '& fieldset': { 
+                      borderColor: '#d1d5db' 
+                    },
+                    '&:hover fieldset': { 
+                      borderColor: '#d1d5db' 
+                    },
+                    '&.Mui-focused fieldset': { 
+                      borderColor: '#3b82f6' 
+                    },
+                    '& input': { 
+                      color: '#111827',
+                      fontSize: '16px'
+                    }
+                  },
+                  '& .MuiInputLabel-root': {
+                    display: 'none'
+                  }
+                }}
+              />
+            </div>
+
+            <Button
+              type="submit"
+              variant="contained"
+              fullWidth
+              disabled={props.isSubmitting}
+              sx={{
+                backgroundColor: 'hsl(218, 85%, 55%)',
+                color: 'white',
+                padding: '12px',
+                textTransform: 'none',
+                fontSize: '16px',
+                fontWeight: 500,
+                borderRadius: '6px',
+                '&:hover': { 
+                  backgroundColor: 'hsl(218, 85%, 50%)' 
+                },
+                '&:disabled': { 
+                  backgroundColor: '#9ca3af' 
+                }
+              }}
+            >
+              {props.isSubmitting ? Locale.label("common.pleaseWait") : Locale.label("login.signIn")}
+            </Button>
+
+            <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <button
+                type="button"
+                onClick={(e) => { e.preventDefault(); props.setShowForgot(true); }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#3b82f6',
+                  fontSize: '14px',
+                  cursor: 'pointer',
+                  textDecoration: 'none'
+                }}
+                onMouseOver={(e) => e.currentTarget.style.textDecoration = 'underline'}
+                onMouseOut={(e) => e.currentTarget.style.textDecoration = 'none'}
+              >
+                {Locale.label("login.forgot")}
+              </button>
+              <div style={{ fontSize: '14px', color: '#6b7280' }}>
+                Don't have an account?{' '}
+                <button
+                  type="button"
+                  onClick={handleShowRegister}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#3b82f6',
+                    fontSize: '14px',
+                    cursor: 'pointer',
+                    textDecoration: 'none'
+                  }}
+                  onMouseOver={(e) => e.currentTarget.style.textDecoration = 'underline'}
+                  onMouseOut={(e) => e.currentTarget.style.textDecoration = 'none'}
+                >
+                  {Locale.label("login.register")}
+                </button>
+              </div>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

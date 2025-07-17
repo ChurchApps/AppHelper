@@ -3,10 +3,8 @@
 import React, { FormEventHandler } from "react";
 import { ApiHelper } from "@churchapps/helpers";
 import { Locale } from "../helpers";
-import { ErrorMessages } from "@churchapps/apphelper";
 import { ResetPasswordRequestInterface, ResetPasswordResponseInterface } from "@churchapps/helpers";
-import { Stack, TextField, Box, Typography } from "@mui/material";
-import LoadingButton from "@mui/lab/LoadingButton";
+import { TextField, Typography, Card, CardContent, Button } from "@mui/material";
 
 interface Props {
   registerCallback: () => void,
@@ -23,7 +21,7 @@ export const Forgot: React.FC<Props> = props => {
     setEmail(e.target.value);
   }
 
-  const validateEmail = (email: string) => (/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(.\w{2,3})+$/.test(email))
+  const validateEmail = (email: string) => (/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(email))
 
   const validate = () => {
     const result = [];
@@ -43,7 +41,22 @@ export const Forgot: React.FC<Props> = props => {
           setErrors([]);
           setSuccessMessage(
             <Typography textAlign="center" marginTop="35px">
-              {Locale.label("login.resetSent")} <br /><br /><a href="about:blank" className="text-decoration" onClick={(e) => { e.preventDefault(); props.loginCallback(); }}>{Locale.label("login.goLogin")}</a>
+              {Locale.label("login.resetSent")} <br /><br />
+              <button 
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#3b82f6',
+                  fontSize: '14px',
+                  cursor: 'pointer',
+                  textDecoration: 'none'
+                }}
+                onMouseOver={(e) => e.currentTarget.style.textDecoration = 'underline'}
+                onMouseOut={(e) => e.currentTarget.style.textDecoration = 'none'}
+                onClick={(e) => { e.preventDefault(); props.loginCallback(); }}
+              >
+                {Locale.label("login.goLogin")}
+              </button>
             </Typography>
           );
           setEmail("");
@@ -56,27 +69,179 @@ export const Forgot: React.FC<Props> = props => {
   }
 
   return (
-    <Box id="loginBox" sx={{ backgroundColor: "#FFF", border: "1px solid #CCC", borderRadius: "5px", padding: "20px" }}>
-      <Typography component="h2" sx={{ fontSize: "32px", fontWeight: 500, lineHeight: 1.2, margin: "0 0 8px 0" }}>{Locale.label("login.resetPassword")}</Typography>
+    <div style={{ minHeight: '100vh', backgroundColor: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
+      <Card sx={{ 
+        width: '100%', 
+        maxWidth: { xs: '400px', sm: '500px' },
+        backgroundColor: 'white', 
+        border: '1px solid #e5e7eb',
+        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)'
+      }}>
+        <CardContent sx={{ textAlign: 'center', padding: '32px' }}>
+          <div style={{ marginBottom: '32px' }}>
+            <img 
+              src="/images/logo-login.png" 
+              alt="Church Logo" 
+              style={{ 
+                maxWidth: '100%', 
+                width: 'auto',
+                height: 'auto',
+                maxHeight: '80px', 
+                marginBottom: '16px',
+                objectFit: 'contain'
+              }}
+            />
+          </div>
+          <Typography 
+            component="h1" 
+            sx={{ 
+              fontSize: '24px', 
+              fontWeight: 'bold', 
+              color: '#111827',
+              marginBottom: '8px'
+            }}
+          >
+            {Locale.label("login.resetPassword")}
+          </Typography>
+          <Typography 
+            sx={{ 
+              color: '#6b7280',
+              marginBottom: '32px'
+            }}
+          >
+            Enter your email to receive password reset instructions
+          </Typography>
 
-      <form onSubmit={reset}>
-        <p>{Locale.label("login.resetInstructions")}</p>
-        <ErrorMessages errors={errors} />
-        {successMessage}
-        {!successMessage && (
-          <>
-            <TextField fullWidth autoFocus label={Locale.label("login.email")} aria-label="email" id="email" name="email" value={email} onChange={handleChange} placeholder={Locale.label("login.email")} onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === "Enter" && reset} />
-            <br />
-            <Box sx={{ textAlign: "right", marginY: 1 }}>
-              <a href="about:blank" className="text-decoration" onClick={(e) => { e.preventDefault(); props.registerCallback(); }}>{Locale.label("login.register")}</a> &nbsp; | &nbsp;
-              <a href="about:blank" className="text-decoration" onClick={(e) => { e.preventDefault(); props.loginCallback(); }}>{Locale.label("login.login")}</a>&nbsp;
-            </Box>
-            <Stack direction="row" sx={{ marginTop: 1.5 }} spacing={1} justifyContent="flex-end">
-              <LoadingButton loading={isSubmitting} variant="contained" type="submit" disabled={isSubmitting}>{Locale.label("login.reset")}</LoadingButton>
-            </Stack>
-          </>
-        )}
-      </form>
-    </Box>
+          <form onSubmit={reset} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {errors.length > 0 && (
+              <div style={{ 
+                backgroundColor: '#fef2f2', 
+                border: '1px solid #fecaca', 
+                borderRadius: '6px', 
+                padding: '12px',
+                textAlign: 'left'
+              }}>
+                {errors.map((error, index) => (
+                  <div key={index} style={{ color: '#dc2626', fontSize: '14px' }}>{error}</div>
+                ))}
+              </div>
+            )}
+            
+            {successMessage ? (
+              <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                {successMessage}
+              </div>
+            ) : (
+              <>
+                <Typography variant="body2" sx={{ color: '#6b7280', fontSize: '14px', textAlign: 'left' }}>
+                  {Locale.label("login.resetInstructions")}
+                </Typography>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <label htmlFor="forgot-email" style={{ fontSize: '14px', fontWeight: 500, color: '#374151', textAlign: 'left' }}>
+                    {Locale.label("login.email")}
+                  </label>
+                  <TextField
+                    id="forgot-email"
+                    name="forgot-email"
+                    type="email"
+                    placeholder={Locale.label("login.email")}
+                    value={email}
+                    onChange={handleChange}
+                    autoFocus
+                    required
+                    autoComplete="email"
+                    variant="outlined"
+                    fullWidth
+                    onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === "Enter" && reset}
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        backgroundColor: 'white',
+                        '& fieldset': { 
+                          borderColor: '#d1d5db' 
+                        },
+                        '&:hover fieldset': { 
+                          borderColor: '#d1d5db' 
+                        },
+                        '&.Mui-focused fieldset': { 
+                          borderColor: '#3b82f6' 
+                        },
+                        '& input': { 
+                          color: '#111827',
+                          fontSize: '16px'
+                        }
+                      },
+                      '& .MuiInputLabel-root': {
+                        display: 'none'
+                      }
+                    }}
+                  />
+                </div>
+                
+                <Button
+                  type="submit"
+                  variant="contained"
+                  fullWidth
+                  disabled={isSubmitting}
+                  sx={{
+                    backgroundColor: 'hsl(218, 85%, 55%)',
+                    color: 'white',
+                    padding: '12px',
+                    textTransform: 'none',
+                    fontSize: '16px',
+                    fontWeight: 500,
+                    borderRadius: '6px',
+                    '&:hover': { 
+                      backgroundColor: 'hsl(218, 85%, 50%)' 
+                    },
+                    '&:disabled': { 
+                      backgroundColor: '#9ca3af' 
+                    }
+                  }}
+                >
+                  {isSubmitting ? "Sending..." : Locale.label("login.reset")}
+                </Button>
+                
+                <div style={{ textAlign: 'center', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
+                  <button
+                    type="button"
+                    onClick={(e) => { e.preventDefault(); props.registerCallback(); }}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#3b82f6',
+                      fontSize: '14px',
+                      cursor: 'pointer',
+                      textDecoration: 'none'
+                    }}
+                    onMouseOver={(e) => e.currentTarget.style.textDecoration = 'underline'}
+                    onMouseOut={(e) => e.currentTarget.style.textDecoration = 'none'}
+                  >
+                    {Locale.label("login.register")}
+                  </button>
+                  <span style={{ fontSize: '14px', color: '#6b7280' }}>|</span>
+                  <button
+                    type="button"
+                    onClick={(e) => { e.preventDefault(); props.loginCallback(); }}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#3b82f6',
+                      fontSize: '14px',
+                      cursor: 'pointer',
+                      textDecoration: 'none'
+                    }}
+                    onMouseOver={(e) => e.currentTarget.style.textDecoration = 'underline'}
+                    onMouseOut={(e) => e.currentTarget.style.textDecoration = 'none'}
+                  >
+                    {Locale.label("login.login")}
+                  </button>
+                </div>
+              </>
+            )}
+          </form>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
