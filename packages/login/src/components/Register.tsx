@@ -4,8 +4,7 @@ import React, { FormEventHandler } from "react";
 import { LoginResponseInterface, RegisterUserInterface, UserInterface } from "@churchapps/helpers";
 import { ApiHelper } from "@churchapps/helpers";
 import { AnalyticsHelper, Locale } from "../helpers";
-import { ErrorMessages } from "@churchapps/apphelper";
-import { Button, Stack, TextField, Link } from "@mui/material";
+import { TextField, Card, CardContent, Typography, Button } from "@mui/material";
 
 interface Props {
   appName?: string,
@@ -77,28 +76,296 @@ export const Register: React.FC<Props> = (props) => {
         .finally(() => {
           setIsSubmitting(false)
         });
-    } else {
-      e.preventDefault();
     }
   };
 
-  const getForm = () => (<>
-    <ErrorMessages errors={errors} />
-    <form onSubmit={register}>
-      <TextField fullWidth name="firstName" label="First Name" value={user.firstName} onChange={handleChange} />
-      <TextField fullWidth name="lastName" label="Last Name" value={user.lastName} onChange={handleChange} />
-      <TextField fullWidth type="email" name="email" label="Email" value={user.email} onChange={handleChange} />
-      <br />
-      <Stack direction="row" sx={{ marginTop: 1 }} spacing={1} justifyContent="end">
-        {props.loginCallback && (<Button variant="text" onClick={(e) => { e.preventDefault(); props.loginCallback(); }}>{Locale.label("login.login")}</Button>)}
-        <Button id="signInButton" variant="contained" disableElevation type="submit" disabled={isSubmitting} color="primary" onClick={register} sx={{ "&:focus": { outline: "none" } }}>
-          {isSubmitting ? "Please wait..." : "Register"}
-        </Button>
-      </Stack>
-    </form>
-  </>)
+  if (registered) {
+    return (
+      <div style={{ minHeight: '100vh', backgroundColor: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
+        <Card sx={{ 
+          width: '100%', 
+          maxWidth: { xs: '400px', sm: '500px' },
+          backgroundColor: 'white', 
+          border: '1px solid #e5e7eb',
+          boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)'
+        }}>
+          <CardContent sx={{ textAlign: 'center', padding: '32px' }}>
+            <div style={{ marginBottom: '32px' }}>
+              <img 
+                src="/images/logo-login.png" 
+                alt="Church Logo" 
+                style={{ 
+                  maxWidth: '100%', 
+                  width: 'auto',
+                  height: 'auto',
+                  maxHeight: '80px', 
+                  marginBottom: '16px',
+                  objectFit: 'contain'
+                }}
+              />
+            </div>
+            <Typography 
+              component="h1" 
+              sx={{ 
+                fontSize: '24px', 
+                fontWeight: 'bold', 
+                color: '#111827',
+                marginBottom: '32px'
+              }}
+            >
+              Registration Complete
+            </Typography>
+            <Typography sx={{ color: '#6b7280', marginBottom: '24px' }}>
+              {Locale.label("login.registerThankYou")}
+            </Typography>
+            <button
+              type="button"
+              onClick={(e) => { e.preventDefault(); props.loginCallback && props.loginCallback(); }}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#3b82f6',
+                fontSize: '14px',
+                cursor: 'pointer',
+                textDecoration: 'none'
+              }}
+              onMouseOver={(e) => e.currentTarget.style.textDecoration = 'underline'}
+              onMouseOut={(e) => e.currentTarget.style.textDecoration = 'none'}
+            >
+              Back to sign in
+            </button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
-  if (registered) return (<p>{Locale.label("login.registerThankYou")}</p>);
-  else return getForm();
+  return (
+    <div style={{ minHeight: '100vh', backgroundColor: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
+      <Card sx={{ 
+        width: '100%', 
+        maxWidth: { xs: '400px', sm: '500px' },
+        backgroundColor: 'white', 
+        border: '1px solid #e5e7eb',
+        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)'
+      }}>
+        <CardContent sx={{ textAlign: 'center', padding: '32px' }}>
+          <div style={{ marginBottom: '32px' }}>
+            <img 
+              src="/images/logo-login.png" 
+              alt="Church Logo" 
+              style={{ 
+                maxWidth: '100%', 
+                width: 'auto',
+                height: 'auto',
+                maxHeight: '80px', 
+                marginBottom: '16px',
+                objectFit: 'contain'
+              }}
+            />
+          </div>
+          <Typography 
+            component="h1" 
+            sx={{ 
+              fontSize: '24px', 
+              fontWeight: 'bold', 
+              color: '#111827',
+              marginBottom: '8px'
+            }}
+          >
+            Create Account
+          </Typography>
+          <Typography 
+            sx={{ 
+              color: '#6b7280',
+              marginBottom: '32px'
+            }}
+          >
+            Create a new account to access your church
+          </Typography>
 
+          <form onSubmit={register} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {errors.length > 0 && (
+              <div style={{ 
+                backgroundColor: '#fef2f2', 
+                border: '1px solid #fecaca', 
+                borderRadius: '6px', 
+                padding: '12px',
+                textAlign: 'left'
+              }}>
+                {errors.map((error, index) => (
+                  <div key={index} style={{ color: '#dc2626', fontSize: '14px' }}>{error}</div>
+                ))}
+              </div>
+            )}
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <label htmlFor="firstName" style={{ fontSize: '14px', fontWeight: 500, color: '#374151', textAlign: 'left' }}>
+                  First Name
+                </label>
+                <TextField
+                  id="firstName"
+                  name="firstName"
+                  type="text"
+                  placeholder="First Name"
+                  value={user.firstName}
+                  onChange={handleChange}
+                  required
+                  autoComplete="given-name"
+                  variant="outlined"
+                  fullWidth
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      backgroundColor: 'white',
+                      '& fieldset': { 
+                        borderColor: '#d1d5db' 
+                      },
+                      '&:hover fieldset': { 
+                        borderColor: '#d1d5db' 
+                      },
+                      '&.Mui-focused fieldset': { 
+                        borderColor: '#3b82f6' 
+                      },
+                      '& input': { 
+                        color: '#111827',
+                        fontSize: '16px'
+                      }
+                    },
+                    '& .MuiInputLabel-root': {
+                      display: 'none'
+                    }
+                  }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <label htmlFor="lastName" style={{ fontSize: '14px', fontWeight: 500, color: '#374151', textAlign: 'left' }}>
+                  Last Name
+                </label>
+                <TextField
+                  id="lastName"
+                  name="lastName"
+                  type="text"
+                  placeholder="Last Name"
+                  value={user.lastName}
+                  onChange={handleChange}
+                  required
+                  autoComplete="family-name"
+                  variant="outlined"
+                  fullWidth
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      backgroundColor: 'white',
+                      '& fieldset': { 
+                        borderColor: '#d1d5db' 
+                      },
+                      '&:hover fieldset': { 
+                        borderColor: '#d1d5db' 
+                      },
+                      '&.Mui-focused fieldset': { 
+                        borderColor: '#3b82f6' 
+                      },
+                      '& input': { 
+                        color: '#111827',
+                        fontSize: '16px'
+                      }
+                    },
+                    '& .MuiInputLabel-root': {
+                      display: 'none'
+                    }
+                  }}
+                />
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <label htmlFor="email" style={{ fontSize: '14px', fontWeight: 500, color: '#374151', textAlign: 'left' }}>
+                Email
+              </label>
+              <TextField
+                id="email"
+                name="email"
+                type="email"
+                placeholder="Email"
+                value={user.email}
+                onChange={handleChange}
+                required
+                autoComplete="email"
+                variant="outlined"
+                fullWidth
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    backgroundColor: 'white',
+                    '& fieldset': { 
+                      borderColor: '#d1d5db' 
+                    },
+                    '&:hover fieldset': { 
+                      borderColor: '#d1d5db' 
+                    },
+                    '&.Mui-focused fieldset': { 
+                      borderColor: '#3b82f6' 
+                    },
+                    '& input': { 
+                      color: '#111827',
+                      fontSize: '16px'
+                    }
+                  },
+                  '& .MuiInputLabel-root': {
+                    display: 'none'
+                  }
+                }}
+              />
+            </div>
+
+            <Button
+              type="submit"
+              variant="contained"
+              fullWidth
+              disabled={isSubmitting}
+              sx={{
+                backgroundColor: 'hsl(218, 85%, 55%)',
+                color: 'white',
+                padding: '12px',
+                textTransform: 'none',
+                fontSize: '16px',
+                fontWeight: 500,
+                borderRadius: '6px',
+                '&:hover': { 
+                  backgroundColor: 'hsl(218, 85%, 50%)' 
+                },
+                '&:disabled': { 
+                  backgroundColor: '#9ca3af' 
+                }
+              }}
+            >
+              {isSubmitting ? "Please wait..." : "Register"}
+            </Button>
+
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: '14px', color: '#6b7280' }}>
+                Already have an account?{' '}
+                <button
+                  type="button"
+                  onClick={(e) => { e.preventDefault(); props.loginCallback && props.loginCallback(); }}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#3b82f6',
+                    fontSize: '14px',
+                    cursor: 'pointer',
+                    textDecoration: 'none'
+                  }}
+                  onMouseOver={(e) => e.currentTarget.style.textDecoration = 'underline'}
+                  onMouseOut={(e) => e.currentTarget.style.textDecoration = 'none'}
+                >
+                  Sign in
+                </button>
+              </div>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  );
 };
