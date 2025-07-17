@@ -3,15 +3,27 @@ import { type LoginUserChurchInterface, type PersonInterface, type UserContextIn
 
 const UserContext = React.createContext<UserContextInterface | undefined>(undefined);
 
+// Create a mock UserContextInterface that allows null values
+interface MockUserContextInterface {
+  user: UserInterface | null;
+  setUser: React.Dispatch<React.SetStateAction<UserInterface | null>>;
+  userChurch: LoginUserChurchInterface | null;
+  setUserChurch: React.Dispatch<React.SetStateAction<LoginUserChurchInterface | null>>;
+  userChurches: LoginUserChurchInterface[] | null;
+  setUserChurches: React.Dispatch<React.SetStateAction<LoginUserChurchInterface[] | null>>;
+  person: PersonInterface | null;
+  setPerson: React.Dispatch<React.SetStateAction<PersonInterface | null>>;
+}
+
 interface Props {
   children: React.ReactNode;
 }
 
 export const UserProvider = ({ children }: Props) => {
-  const [user, setUser] = React.useState<UserInterface>(null);
-  const [person, setPerson] = React.useState<PersonInterface>(null);
-  const [userChurch, setUserChurch] = React.useState<LoginUserChurchInterface>(null);
-  const [userChurches, setUserChurches] = React.useState<LoginUserChurchInterface[]>(null);
+  const [user, setUser] = React.useState<UserInterface | null>(null);
+  const [person, setPerson] = React.useState<PersonInterface | null>(null);
+  const [userChurch, setUserChurch] = React.useState<LoginUserChurchInterface | null>(null);
+  const [userChurches, setUserChurches] = React.useState<LoginUserChurchInterface[] | null>(null);
 
   return (
     <UserContext.Provider
@@ -24,7 +36,7 @@ export const UserProvider = ({ children }: Props) => {
         setUserChurches,
         person,
         setPerson,
-      }}
+      } as UserContextInterface}
     >
       {children}
     </UserContext.Provider>
