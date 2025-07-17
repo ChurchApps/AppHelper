@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, TextField } from "@mui/material";
 import { MarkdownPreview } from "./MarkdownPreview";
-import { Locale } from "../../helpers";
+import { Locale } from "@churchapps/apphelper";
 
 interface Props {
   hideModal: () => void

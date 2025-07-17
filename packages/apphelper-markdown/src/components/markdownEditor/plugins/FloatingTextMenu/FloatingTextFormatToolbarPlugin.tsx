@@ -14,7 +14,7 @@ import { getDOMRangeRect } from "./getDOMRangeRect";
 import { getSelectedNode } from "./getSelectNode";
 import { setFloatingElemPosition } from "./setFloatingElemPosition";
 import { PLAYGROUND_TRANSFORMERS } from "../MarkdownTransformers";
-import { ApiHelper } from "../../../../helpers";
+import { ApiHelper } from "@churchapps/helpers";
 
 export const FloatingDivContainer = styled(Box)({
   display: "flex",

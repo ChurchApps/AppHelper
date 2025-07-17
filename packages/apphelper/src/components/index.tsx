@@ -11,11 +11,7 @@ export { Notes } from "./notes/Notes";
 export { QuestionEdit } from "./QuestionEdit";
 export { SmallButton } from "./SmallButton";
 export { SupportModal } from "./SupportModal";
-export { MarkdownEditor } from "./markdownEditor/MarkdownEditor";
-export { MarkdownPreview } from "./markdownEditor/MarkdownPreview";
-
 export * from "./wrapper";
-export * from "./markdownEditor";
 export * from "./notes";
 export * from "./reporting";
 export * from "./header";

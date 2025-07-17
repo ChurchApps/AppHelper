@@ -2,7 +2,7 @@
 
 import React from "react";
 import { lazy, Suspense } from 'react';
-import { Loading } from "../Loading";
+import { Loading } from "@churchapps/apphelper";
 const Editor = lazy(() => import('./Editor'));
 
 interface Props {
