@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { Paper, Box, Typography, Stack, Button, Icon, PaperProps } from "@mui/material";
+import { Paper, Box, Typography, Stack, Button, PaperProps } from "@mui/material";
+import { Icon } from "@mui/material";
 import { HelpIcon } from "./HelpIcon";
 import { Locale } from "../helpers";
 import { styled, useTheme } from '@mui/material/styles';

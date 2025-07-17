@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import { InputBox } from "@churchapps/apphelper";
-import { Icon, IconButton, InputAdornment, TextField, Typography } from "@mui/material";
+import { IconButton, InputAdornment, TextField, Typography, Icon } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { LoginResponseInterface, UserInterface } from "@churchapps/helpers";
 import { ApiHelper } from "@churchapps/helpers";
 import { Locale } from "../helpers";
@@ -87,10 +88,10 @@ export const LoginSetPassword: React.FC<Props> = props => {
         <>
           {user && <p style={{ marginTop: 0, marginBottom: 0 }}>{Locale.label("login.welcomeBack")} {user.firstName}.</p>}
           <TextField fullWidth name="password" type={showPassword ? "text" : "password"} label={Locale.label("login.setPassword")} value={password} onChange={(e) => { e.preventDefault(); setPassword(e.target.value) }}  InputProps={{
-            endAdornment: (<InputAdornment position="end"><IconButton aria-label="toggle password visibility" onClick={() => { setShowPassword(!showPassword) }}>{showPassword ? <Icon>visibility</Icon> : <Icon>visibility_off</Icon>}</IconButton></InputAdornment>)
-          }} />
+            endAdornment: (<InputAdornment position="end"><IconButton aria-label="toggle password visibility" onClick={() => { setShowPassword(!showPassword) }}>{showPassword ? <Visibility /> : <VisibilityOff />}</IconButton></InputAdornment>)
+          }} sx={{ marginBottom: 2 }} />
           <TextField fullWidth name="verifyPassword" type={showPassword ? "text" : "password"} label={Locale.label("login.verifyPassword")} value={verifyPassword} onChange={(e) => { e.preventDefault(); setVerifyPassword(e.target.value) }}  InputProps={{
-            endAdornment: (<InputAdornment position="end"><IconButton aria-label="toggle password visibility" onClick={() => { setShowPassword(!showPassword) }}>{showPassword ? <Icon>visibility</Icon> : <Icon>visibility_off</Icon>}</IconButton></InputAdornment>)
+            endAdornment: (<InputAdornment position="end"><IconButton aria-label="toggle password visibility" onClick={() => { setShowPassword(!showPassword) }}>{showPassword ? <Visibility /> : <VisibilityOff />}</IconButton></InputAdornment>)
           }} />
         </>
       )}

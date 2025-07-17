@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import { InputBox } from "@churchapps/apphelper";
-import { TextField, Box, PaperProps, InputAdornment, IconButton, Icon } from "@mui/material";
+import { TextField, Box, PaperProps, InputAdornment, IconButton } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Locale } from "../helpers";
 
 interface Props {
@@ -49,9 +50,9 @@ export const Login: React.FC<Props> = ({ mainContainerCssProps = {}, ...props })
 
   return (
     <InputBox headerText={Locale.label("login.signInTitle")} saveFunction={submitLogin} saveButtonType="submit" saveText={props.isSubmitting ? Locale.label("common.pleaseWait") : Locale.label("login.signIn")} isSubmitting={props.isSubmitting} mainContainerCssProps={mainContainerCssProps}>
-      <TextField fullWidth autoFocus name="email" type="email" label={Locale.label("login.email")} value={email} onChange={(e) => { e.preventDefault(); setEmail(e.target.value) }} />
+      <TextField fullWidth autoFocus name="email" type="email" label={Locale.label("login.email")} value={email} onChange={(e) => { e.preventDefault(); setEmail(e.target.value) }} sx={{ marginBottom: 2 }} />
       <TextField fullWidth name="email" type={showPassword ? "text" : "password"} label={Locale.label("login.password")} value={password} onChange={(e) => { e.preventDefault(); setPassword(e.target.value) }}  InputProps={{
-        endAdornment: (<InputAdornment position="end"><IconButton aria-label="toggle password visibility" onClick={() => { setShowPassword(!showPassword) }}>{showPassword ? <Icon>visibility</Icon> : <Icon>visibility_off</Icon>}</IconButton></InputAdornment>)
+        endAdornment: (<InputAdornment position="end"><IconButton aria-label="toggle password visibility" onClick={() => { setShowPassword(!showPassword) }}>{showPassword ? <Visibility /> : <VisibilityOff />}</IconButton></InputAdornment>)
       }} />
       <Box sx={{ textAlign: "right", marginY: 1 }}>
         {getRegisterLink()}

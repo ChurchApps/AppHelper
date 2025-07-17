@@ -5,7 +5,8 @@ import { ChurchInterface, LoginUserChurchInterface } from "@churchapps/helpers";
 import { SelectChurchSearch } from "./SelectChurchSearch";
 import { SelectableChurch } from "./SelectableChurch";
 import { ErrorMessages } from "@churchapps/apphelper"
-import { Dialog, DialogContent, DialogTitle, Icon, IconButton, Tooltip } from "@mui/material";
+import { Dialog, DialogContent, DialogTitle, IconButton, Tooltip } from "@mui/material";
+import { Logout } from "@mui/icons-material";
 import { Locale } from "../helpers";
 
 interface Props {
@@ -46,7 +47,7 @@ export const SelectChurchModal: React.FC<Props> = (props) => {
 						window.location.href = "/logout";
 					}
 				}}>
-					<Icon>logout</Icon>
+					<Logout />
 				</IconButton>
 			</Tooltip>
 			<DialogContent sx={{ width: 500, maxWidth: "100%" }}>
