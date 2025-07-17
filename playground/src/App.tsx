@@ -1,9 +1,11 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { CssBaseline, Container, AppBar, Toolbar, Typography, Box, Card, CardContent, Grid } from '@mui/material';
-import { CookiesProvider } from 'react-cookie';
+import { CssBaseline, Container, AppBar, Toolbar, Typography, Box, Card, CardContent, Grid, Alert, Stack } from '@mui/material';
+import { CookiesProvider, useCookies } from 'react-cookie';
 import { ErrorBoundary } from './ErrorBoundary';
+import { UserProvider } from './UserContext';
+import UserContext from './UserContext';
 
 // Import login components
 import { 
@@ -22,14 +24,6 @@ const theme = createTheme({
   },
 });
 
-// Mock context for testing
-const mockUserContext = {
-  user: null,
-  setUser: () => {},
-  churchId: '',
-  setChurchId: () => {}
-};
-
 function HomePage() {
   return (
     <Container maxWidth="lg">
@@ -38,18 +32,18 @@ function HomePage() {
           AppHelper Login Components Playground
         </Typography>
         <Typography variant="h6" color="textSecondary" paragraph>
-          Test and preview all login components
+          Test and preview all login components with proper implementations
         </Typography>
         
         <Grid container spacing={3} sx={{ mt: 2 }}>
           <Grid size={{ xs: 12, sm: 6, md: 4 }}>
             <Card>
               <CardContent>
-                <Typography variant="h6">LoginPage</Typography>
+                <Typography variant="h6">LoginPage (Full)</Typography>
                 <Typography variant="body2" color="textSecondary">
-                  Main login page with multiple tabs
+                  Complete login page with tabs, registration, forgot password
                 </Typography>
-                <Link to="/login-page">View Component</Link>
+                <Link to="/login-full">View Component</Link>
               </CardContent>
             </Card>
           </Grid>
@@ -57,11 +51,11 @@ function HomePage() {
           <Grid size={{ xs: 12, sm: 6, md: 4 }}>
             <Card>
               <CardContent>
-                <Typography variant="h6">Login</Typography>
+                <Typography variant="h6">Login Form Only</Typography>
                 <Typography variant="body2" color="textSecondary">
-                  Simple login form
+                  Simple login form component
                 </Typography>
-                <Link to="/login">View Component</Link>
+                <Link to="/login-form">View Component</Link>
               </CardContent>
             </Card>
           </Grid>
@@ -69,11 +63,11 @@ function HomePage() {
           <Grid size={{ xs: 12, sm: 6, md: 4 }}>
             <Card>
               <CardContent>
-                <Typography variant="h6">Register</Typography>
+                <Typography variant="h6">Register Form</Typography>
                 <Typography variant="body2" color="textSecondary">
-                  User registration form
+                  User registration component
                 </Typography>
-                <Link to="/register">View Component</Link>
+                <Link to="/register-form">View Component</Link>
               </CardContent>
             </Card>
           </Grid>
@@ -95,9 +89,9 @@ function HomePage() {
               <CardContent>
                 <Typography variant="h6">Set Password</Typography>
                 <Typography variant="body2" color="textSecondary">
-                  Set new password form
+                  Set new password form (with mock JWT)
                 </Typography>
-                <Link to="/set-password">View Component</Link>
+                <Link to="/set-password?jwt=mock-jwt-token&auth=reset">View Component</Link>
               </CardContent>
             </Card>
           </Grid>
@@ -107,7 +101,7 @@ function HomePage() {
               <CardContent>
                 <Typography variant="h6">Church Selection</Typography>
                 <Typography variant="body2" color="textSecondary">
-                  Church selection components
+                  Church search and registration
                 </Typography>
                 <Link to="/church-selection">View Components</Link>
               </CardContent>
@@ -137,111 +131,202 @@ function ComponentPage({ children, title }: { children: React.ReactNode, title: 
   );
 }
 
+function FullLoginPage() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const context = React.useContext(UserContext);
+  const [cookies] = useCookies(["jwt"]);
+  const [errors] = React.useState<string[]>([]);
+
+  const search = new URLSearchParams(window.location.search);
+  const returnUrl = search.get("returnUrl") || location.state?.from?.pathname || "/";
+
+  const handleRedirect = (url: string) => { 
+    console.log('Redirecting to:', url);
+    navigate(url); 
+  };
+
+  let jwt = search.get("jwt") || cookies.jwt || "";
+  let auth = search.get("auth") || "";
+
+  return (
+    <ComponentPage title="LoginPage (Full Implementation)">
+      <Alert severity="info" sx={{ mb: 2 }}>
+        <strong>Demo Mode:</strong> This is a playground environment. All API calls will fail gracefully.
+        <br />
+        Try email: "demo@test.com" and password: "password" to see the UI flow.
+      </Alert>
+      
+      <Box
+        sx={{
+          display: "flex",
+          backgroundColor: "#EEE",
+          minHeight: "60vh",
+        }}
+      >
+        <Box
+          sx={{
+            marginLeft: "auto",
+            marginRight: "auto",
+            paddingTop: 2
+          }}
+        >
+          <LoginPage
+            auth={auth}
+            context={context}
+            jwt={jwt}
+            appName="Playground"
+            appUrl={window.location.href}
+            callbackErrors={errors}
+            returnUrl={returnUrl}
+            handleRedirect={handleRedirect}
+            defaultEmail="demo@test.com"
+            defaultPassword="password"
+          />
+        </Box>
+      </Box>
+    </ComponentPage>
+  );
+}
+
+function LoginFormPage() {
+  const context = React.useContext(UserContext);
+  
+  return (
+    <ComponentPage title="Login Form Component">
+      <Alert severity="info" sx={{ mb: 2 }}>
+        <strong>Demo:</strong> Try email: "demo@test.com" and password: "password"
+      </Alert>
+      
+      <Login
+        appName="Playground"
+        appUrl={window.location.href}
+        setErrors={() => {}}
+        setShowForgot={() => {}}
+        setShowRegister={() => {}}
+        onSuccess={() => console.log('Login success')}
+        context={context}
+        defaultEmail="demo@test.com"
+        defaultPassword="password"
+      />
+    </ComponentPage>
+  );
+}
+
+function RegisterFormPage() {
+  const context = React.useContext(UserContext);
+  
+  return (
+    <ComponentPage title="Register Form Component">
+      <Alert severity="info" sx={{ mb: 2 }}>
+        <strong>Demo:</strong> Fill out the form to see validation and UI behavior
+      </Alert>
+      
+      <Register
+        context={context}
+        onSuccess={() => console.log('Registration success')}
+        appName="Playground"
+        recaptchaSiteKey=""
+        defaultChurchId=""
+      />
+    </ComponentPage>
+  );
+}
+
+function ForgotPasswordPage() {
+  return (
+    <ComponentPage title="Forgot Password">
+      <Alert severity="info" sx={{ mb: 2 }}>
+        <strong>Demo:</strong> Enter any email to see the forgot password flow
+      </Alert>
+      
+      <Forgot 
+        registerCallback={() => console.log('Navigate to register')}
+        loginCallback={() => console.log('Navigate to login')}
+      />
+    </ComponentPage>
+  );
+}
+
+function SetPasswordPage() {
+  const search = new URLSearchParams(window.location.search);
+  const jwt = search.get("jwt") || "mock-jwt-token";
+  const auth = search.get("auth") || "reset";
+  
+  return (
+    <ComponentPage title="Set Password">
+      <Alert severity="info" sx={{ mb: 2 }}>
+        <strong>Demo:</strong> Mock JWT token provided. Enter a new password to see validation.
+        <br />
+        JWT: {jwt} | Auth: {auth}
+      </Alert>
+      
+      <LoginSetPassword 
+        appName="Playground"
+        appUrl={window.location.href}
+      />
+    </ComponentPage>
+  );
+}
+
+function ChurchSelectionPage() {
+  return (
+    <ComponentPage title="Church Selection Components">
+      <Stack spacing={4}>
+        <Box>
+          <Typography variant="h6" gutterBottom>Church Search</Typography>
+          <Alert severity="info" sx={{ mb: 2 }}>
+            Search for churches (API calls will fail gracefully in demo mode)
+          </Alert>
+          <SelectChurchSearch 
+            onDone={() => console.log('Search done')}
+            appName="Playground"
+            userEmail="demo@test.com"
+          />
+        </Box>
+        
+        <Box>
+          <Typography variant="h6" gutterBottom>Church Registration</Typography>
+          <Alert severity="info" sx={{ mb: 2 }}>
+            Register a new church (demo mode)
+          </Alert>
+          <SelectChurchRegister 
+            onDone={() => console.log('Register done')}
+            appName="Playground"
+            recaptchaSiteKey=""
+          />
+        </Box>
+      </Stack>
+    </ComponentPage>
+  );
+}
+
 function App() {
   return (
     <CookiesProvider>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <Router>
-          <AppBar position="static">
-            <Toolbar>
-              <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                AppHelper Login Playground
-              </Typography>
-            </Toolbar>
-          </AppBar>
-          
-          <Routes>
-            <Route path="/" element={<HomePage />} />
+        <UserProvider>
+          <Router>
+            <AppBar position="static">
+              <Toolbar>
+                <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                  AppHelper Login Playground
+                </Typography>
+              </Toolbar>
+            </AppBar>
             
-            <Route 
-              path="/login-page" 
-              element={
-                <ComponentPage title="LoginPage">
-                  <Box sx={{ textAlign: 'center', py: 4 }}>
-                    <Typography color="warning.main">
-                      LoginPage requires complex props - check the source code for full implementation
-                    </Typography>
-                  </Box>
-                </ComponentPage>
-              } 
-            />
-            
-            <Route 
-              path="/login" 
-              element={
-                <ComponentPage title="Login Component">
-                  <Box sx={{ textAlign: 'center', py: 4 }}>
-                    <Typography color="warning.main">
-                      Login component requires complex props - check the source code for full implementation
-                    </Typography>
-                  </Box>
-                </ComponentPage>
-              } 
-            />
-            
-            <Route 
-              path="/register" 
-              element={
-                <ComponentPage title="Register Component">
-                  <Box sx={{ textAlign: 'center', py: 4 }}>
-                    <Typography color="warning.main">
-                      Register component requires complex props - check the source code for full implementation
-                    </Typography>
-                  </Box>
-                </ComponentPage>
-              } 
-            />
-            
-            <Route 
-              path="/forgot" 
-              element={
-                <ComponentPage title="Forgot Password">
-                  <Forgot 
-                    registerCallback={() => console.log('Navigate to register')}
-                    loginCallback={() => console.log('Navigate to login')}
-                  />
-                </ComponentPage>
-              } 
-            />
-            
-            <Route 
-              path="/set-password" 
-              element={
-                <ComponentPage title="Set Password">
-                  <Box sx={{ textAlign: 'center', py: 4 }}>
-                    <Typography color="warning.main">
-                      LoginSetPassword requires URL parameters - check the source code for full implementation
-                    </Typography>
-                  </Box>
-                </ComponentPage>
-              } 
-            />
-            
-            <Route 
-              path="/church-selection" 
-              element={
-                <ComponentPage title="Church Selection Components">
-                  <Box sx={{ '& > *': { mb: 3 } }}>
-                    <Typography variant="h6">Church Search</Typography>
-                    <Box sx={{ textAlign: 'center', py: 2 }}>
-                      <Typography color="warning.main">
-                        SelectChurchSearch requires complex props - check the source code for full implementation
-                      </Typography>
-                    </Box>
-                    
-                    <Typography variant="h6" sx={{ mt: 4 }}>Church Register</Typography>
-                    <Box sx={{ textAlign: 'center', py: 2 }}>
-                      <Typography color="warning.main">
-                        SelectChurchRegister requires complex props - check the source code for full implementation
-                      </Typography>
-                    </Box>
-                  </Box>
-                </ComponentPage>
-              } 
-            />
-          </Routes>
-        </Router>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/login-full" element={<FullLoginPage />} />
+              <Route path="/login-form" element={<LoginFormPage />} />
+              <Route path="/register-form" element={<RegisterFormPage />} />
+              <Route path="/forgot" element={<ForgotPasswordPage />} />
+              <Route path="/set-password" element={<SetPasswordPage />} />
+              <Route path="/church-selection" element={<ChurchSelectionPage />} />
+            </Routes>
+          </Router>
+        </UserProvider>
       </ThemeProvider>
     </CookiesProvider>
   );
