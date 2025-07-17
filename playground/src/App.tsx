@@ -5,6 +5,7 @@ import { CssBaseline, Container, AppBar, Toolbar, Typography, Box, Card, CardCon
 import { CookiesProvider } from 'react-cookie';
 import { ErrorBoundary } from './ErrorBoundary';
 import { UserProvider } from './UserContext';
+import RequireAuth from './components/RequireAuth';
 
 // Import test pages
 import { ComponentsTestPage } from './pages/ComponentsPage';
@@ -13,6 +14,7 @@ import { WrapperTestPage } from './pages/WrapperPage';
 import { DonationTestPage } from './pages/DonationPage';
 import { ReportingTestPage } from './pages/ReportingPage';
 import { HeaderTestPage } from './pages/HeaderPage';
+import LoginPageComponent from './pages/LoginPage';
 
 // Test imports from login package
 import { 
@@ -42,6 +44,12 @@ function HomePage() {
           Test and preview all exported components from @churchapps/apphelper
         </Typography>
         
+        <Alert severity="info" sx={{ mb: 3 }}>
+          <strong>Authentication Demo:</strong> Components marked with 🔒 require login.
+          <br />
+          <Link to="/auth">Go to Authentication</Link> or add <code>?demo=true</code> to any URL for instant access.
+        </Alert>
+        
         <Grid container spacing={3} sx={{ mt: 2 }}>
           <Grid size={{ xs: 12, sm: 6, md: 4 }}>
             <Card>
@@ -58,9 +66,9 @@ function HomePage() {
           <Grid size={{ xs: 12, sm: 6, md: 4 }}>
             <Card>
               <CardContent>
-                <Typography variant="h6">Core Components</Typography>
+                <Typography variant="h6">Core Components 🔒</Typography>
                 <Typography variant="body2" color="textSecondary">
-                  Basic UI components, forms, loading, buttons
+                  Basic UI components, forms, loading, buttons (Login Required)
                 </Typography>
                 <Link to="/components">View Components</Link>
               </CardContent>
@@ -82,9 +90,9 @@ function HomePage() {
           <Grid size={{ xs: 12, sm: 6, md: 4 }}>
             <Card>
               <CardContent>
-                <Typography variant="h6">Wrapper Components</Typography>
+                <Typography variant="h6">Wrapper Components 🔒</Typography>
                 <Typography variant="body2" color="textSecondary">
-                  Site wrapper, navigation, menus, messaging
+                  Site wrapper, navigation, menus, messaging (Login Required)
                 </Typography>
                 <Link to="/wrapper">View Components</Link>
               </CardContent>
@@ -94,9 +102,9 @@ function HomePage() {
           <Grid size={{ xs: 12, sm: 6, md: 4 }}>
             <Card>
               <CardContent>
-                <Typography variant="h6">Donation Components</Typography>
+                <Typography variant="h6">Donation Components 🔒</Typography>
                 <Typography variant="body2" color="textSecondary">
-                  Payment forms, Stripe integration, recurring donations
+                  Payment forms, Stripe integration, recurring donations (Login Required)
                 </Typography>
                 <Link to="/donations">View Components</Link>
               </CardContent>
@@ -207,11 +215,12 @@ function App() {
             
             <Routes>
               <Route path="/" element={<HomePage />} />
+              <Route path="/auth" element={<LoginPageComponent />} />
               <Route path="/login" element={<LoginTestPage />} />
-              <Route path="/components" element={<ComponentsTestPage />} />
+              <Route path="/components" element={<RequireAuth><ComponentsTestPage /></RequireAuth>} />
               <Route path="/markdown" element={<MarkdownTestPage />} />
-              <Route path="/wrapper" element={<WrapperTestPage />} />
-              <Route path="/donations" element={<DonationTestPage />} />
+              <Route path="/wrapper" element={<RequireAuth><WrapperTestPage /></RequireAuth>} />
+              <Route path="/donations" element={<RequireAuth><DonationTestPage /></RequireAuth>} />
               <Route path="/reporting" element={<ReportingTestPage />} />
               <Route path="/header" element={<HeaderTestPage />} />
             </Routes>

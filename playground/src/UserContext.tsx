@@ -1,29 +1,46 @@
 import React from "react";
-import { type LoginUserChurchInterface, type PersonInterface, type UserContextInterface, type UserInterface } from "@churchapps/apphelper";
+import { type LoginUserChurchInterface, type PersonInterface, type UserContextInterface, type UserInterface, ApiHelper } from "@churchapps/apphelper";
+import { mockUser, mockPerson, mockUserChurch } from "./mockData";
 
 const UserContext = React.createContext<UserContextInterface | undefined>(undefined);
-
-// Create a mock UserContextInterface that allows null values
-interface MockUserContextInterface {
-  user: UserInterface | null;
-  setUser: React.Dispatch<React.SetStateAction<UserInterface | null>>;
-  userChurch: LoginUserChurchInterface | null;
-  setUserChurch: React.Dispatch<React.SetStateAction<LoginUserChurchInterface | null>>;
-  userChurches: LoginUserChurchInterface[] | null;
-  setUserChurches: React.Dispatch<React.SetStateAction<LoginUserChurchInterface[] | null>>;
-  person: PersonInterface | null;
-  setPerson: React.Dispatch<React.SetStateAction<PersonInterface | null>>;
-}
 
 interface Props {
   children: React.ReactNode;
 }
 
 export const UserProvider = ({ children }: Props) => {
+  // Start with null user to simulate unauthenticated state
   const [user, setUser] = React.useState<UserInterface | null>(null);
   const [person, setPerson] = React.useState<PersonInterface | null>(null);
   const [userChurch, setUserChurch] = React.useState<LoginUserChurchInterface | null>(null);
   const [userChurches, setUserChurches] = React.useState<LoginUserChurchInterface[] | null>(null);
+
+  // Mock authentication function
+  const mockLogin = () => {
+    setUser(mockUser);
+    setPerson(mockPerson);
+    setUserChurch(mockUserChurch);
+    setUserChurches([mockUserChurch]);
+    ApiHelper.isAuthenticated = true;
+  };
+
+  // Mock logout function
+  const mockLogout = () => {
+    setUser(null);
+    setPerson(null);
+    setUserChurch(null);
+    setUserChurches(null);
+    ApiHelper.isAuthenticated = false;
+  };
+
+  // Initialize authentication state
+  React.useEffect(() => {
+    // Check if we should start logged in (for demo purposes)
+    const isDemo = window.location.search.includes('demo=true');
+    if (isDemo) {
+      mockLogin();
+    }
+  }, []);
 
   return (
     <UserContext.Provider
@@ -36,7 +53,9 @@ export const UserProvider = ({ children }: Props) => {
         setUserChurches,
         person,
         setPerson,
-      } as UserContextInterface}
+        mockLogin,
+        mockLogout,
+      } as UserContextInterface & { mockLogin: () => void; mockLogout: () => void }}
     >
       {children}
     </UserContext.Provider>

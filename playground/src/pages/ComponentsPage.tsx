@@ -1,28 +1,29 @@
 import React from 'react';
-import { Container, Box, Typography, Alert, Stack } from '@mui/material';
+import { Container, Box, Typography, Alert, Stack, Button } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { ErrorBoundary } from '../ErrorBoundary';
-
-// Import components to test their existence
+import UserContext from '../UserContext';
 import { 
   ErrorMessages, 
   ExportLink, 
   DisplayBox, 
   FloatingSupport, 
-  FormSubmissionEdit,
   HelpIcon,
-  ImageEditor,
   InputBox,
   Loading,
   Notes,
-  QuestionEdit,
   SmallButton,
   SupportModal
 } from '@churchapps/apphelper';
+import { 
+  mockFormSubmission, 
+  mockQuestions, 
+  mockReportData
+} from '../mockData';
 
 function ComponentPage({ children, title }: { children: React.ReactNode, title: string }) {
   return (
-    <Container maxWidth="md">
+    <Container maxWidth="lg">
       <Box sx={{ mt: 2, mb: 2 }}>
         <Link to="/">← Back to Home</Link>
         <Typography variant="h4" component="h1" gutterBottom sx={{ mt: 2 }}>
@@ -39,66 +40,210 @@ function ComponentPage({ children, title }: { children: React.ReactNode, title: 
 }
 
 export function ComponentsTestPage() {
-  const componentList = [
-    { name: 'ErrorMessages', component: ErrorMessages },
-    { name: 'ExportLink', component: ExportLink },
-    { name: 'DisplayBox', component: DisplayBox },
-    { name: 'FloatingSupport', component: FloatingSupport },
-    { name: 'FormSubmissionEdit', component: FormSubmissionEdit },
-    { name: 'HelpIcon', component: HelpIcon },
-    { name: 'ImageEditor', component: ImageEditor },
-    { name: 'InputBox', component: InputBox },
-    { name: 'Loading', component: Loading },
-    { name: 'Notes', component: Notes },
-    { name: 'QuestionEdit', component: QuestionEdit },
-    { name: 'SmallButton', component: SmallButton },
-    { name: 'SupportModal', component: SupportModal }
-  ];
+  const context = React.useContext(UserContext);
+  const [showSupportModal, setShowSupportModal] = React.useState(false);
+  const [errors, setErrors] = React.useState<string[]>([]);
+  const [savedData, setSavedData] = React.useState<any>(null);
+
+  const handleSave = () => {
+    setSavedData({ saved: true, timestamp: new Date() });
+    console.log('Data saved!');
+  };
+
+  const handleCancel = () => {
+    console.log('Action cancelled');
+  };
+
+  const handleError = () => {
+    setErrors(['Sample error message', 'Another error occurred', 'Validation failed']);
+  };
+
+  const clearErrors = () => {
+    setErrors([]);
+  };
 
   return (
-    <ComponentPage title="Core Components">
-      <Stack spacing={3}>
+    <ComponentPage title="Core Components - Functional Examples">
+      <Stack spacing={4}>
         <Alert severity="info">
-          This page tests the availability of core UI components from @churchapps/apphelper.
-          Components listed here are successfully imported and available for use.
+          This page demonstrates functional AppHelper components with real interactions, mock data, and proper context.
         </Alert>
 
         <Box>
-          <Typography variant="h6" gutterBottom>Successfully Imported Components:</Typography>
-          <Stack spacing={2}>
-            {componentList.map((item) => (
-              <Box key={item.name} sx={{ border: 1, borderColor: 'divider', borderRadius: 1, p: 2 }}>
-                <Typography variant="subtitle1" gutterBottom>
-                  <strong>{item.name}</strong>
-                </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  ✅ Component type: {typeof item.component}
-                </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  ✅ Successfully imported from @churchapps/apphelper
-                </Typography>
-              </Box>
-            ))}
-          </Stack>
-        </Box>
-
-        <Box>
-          <Typography variant="h6" gutterBottom>Simple Component Test:</Typography>
+          <Typography variant="h6" gutterBottom>ErrorMessages</Typography>
           <Alert severity="info" sx={{ mb: 2 }}>
-            Testing the Loading component which should be simple to render
+            Component for displaying error messages with dismiss functionality
           </Alert>
-          <Box sx={{ border: 1, borderColor: 'divider', borderRadius: 1, p: 2 }}>
-            <Loading />
+          <Button onClick={handleError} variant="outlined" sx={{ mr: 2 }}>
+            Generate Sample Errors
+          </Button>
+          <Button onClick={clearErrors} variant="outlined">
+            Clear Errors
+          </Button>
+          <Box sx={{ mt: 2 }}>
+            <ErrorMessages errors={errors} />
           </Box>
         </Box>
 
         <Box>
-          <Typography variant="h6" gutterBottom>Usage Information:</Typography>
-          <Alert severity="warning">
-            These components may require specific props and context to function properly. 
-            This page verifies import availability rather than full functionality.
-            Refer to the component source code for proper usage instructions.
+          <Typography variant="h6" gutterBottom>Loading</Typography>
+          <Alert severity="info" sx={{ mb: 2 }}>
+            Loading spinner component
           </Alert>
+          <Loading />
+        </Box>
+
+        <Box>
+          <Typography variant="h6" gutterBottom>SmallButton</Typography>
+          <Alert severity="info" sx={{ mb: 2 }}>
+            Compact button component with icon support
+          </Alert>
+          <Stack direction="row" spacing={2}>
+            <SmallButton 
+              icon="save" 
+              onClick={handleSave}
+              text="Save"
+              color="primary"
+            />
+            <SmallButton 
+              icon="delete" 
+              onClick={() => console.log('Delete clicked')}
+              text="Delete"
+              color="error"
+            />
+            <SmallButton 
+              icon="add" 
+              onClick={() => console.log('Add clicked')}
+              text="Add"
+              color="success"
+            />
+          </Stack>
+          {savedData && (
+            <Alert severity="success" sx={{ mt: 2 }}>
+              Data saved at: {savedData.timestamp.toLocaleTimeString()}
+            </Alert>
+          )}
+        </Box>
+
+        <Box>
+          <Typography variant="h6" gutterBottom>DisplayBox</Typography>
+          <Alert severity="info" sx={{ mb: 2 }}>
+            Container component with header, icon, and help text
+          </Alert>
+          <DisplayBox 
+            headerText="Sample Data Display" 
+            headerIcon="people" 
+            help="This is a sample display box with mock data"
+          >
+            <Typography>This is content inside the DisplayBox component.</Typography>
+            <Typography sx={{ mt: 1 }}>
+              Current user: {context?.person?.name?.display || 'No user'}
+            </Typography>
+            <Typography>
+              Church: {context?.userChurch?.church?.name || 'No church'}
+            </Typography>
+          </DisplayBox>
+        </Box>
+
+        <Box>
+          <Typography variant="h6" gutterBottom>InputBox</Typography>
+          <Alert severity="info" sx={{ mb: 2 }}>
+            Enhanced input container with save/cancel functionality
+          </Alert>
+          <InputBox
+            headerText="Edit Person Information"
+            headerIcon="edit"
+            saveFunction={handleSave}
+            cancelFunction={handleCancel}
+            help="Edit the person's information below"
+          >
+            <Stack spacing={2}>
+              <input 
+                type="text" 
+                placeholder="First Name" 
+                defaultValue={context?.person?.name?.first || ''}
+                style={{ width: '100%', padding: '8px' }} 
+              />
+              <input 
+                type="text" 
+                placeholder="Last Name" 
+                defaultValue={context?.person?.name?.last || ''}
+                style={{ width: '100%', padding: '8px' }} 
+              />
+              <input 
+                type="email" 
+                placeholder="Email" 
+                defaultValue={context?.person?.contactInfo?.email || ''}
+                style={{ width: '100%', padding: '8px' }} 
+              />
+            </Stack>
+          </InputBox>
+        </Box>
+
+        <Box>
+          <Typography variant="h6" gutterBottom>HelpIcon</Typography>
+          <Alert severity="info" sx={{ mb: 2 }}>
+            Icon with tooltip help text
+          </Alert>
+          <Stack direction="row" spacing={2} alignItems="center">
+            <Typography>Need help?</Typography>
+            <HelpIcon helpText="This is helpful information displayed in a tooltip when you hover over the icon" />
+          </Stack>
+        </Box>
+
+        <Box>
+          <Typography variant="h6" gutterBottom>ExportLink</Typography>
+          <Alert severity="info" sx={{ mb: 2 }}>
+            Link component for data export functionality
+          </Alert>
+          <ExportLink 
+            data={mockReportData.rows}
+            filename="sample-export"
+            text="Export Sample Data"
+          />
+        </Box>
+
+        <Box>
+          <Typography variant="h6" gutterBottom>Notes</Typography>
+          <Alert severity="info" sx={{ mb: 2 }}>
+            Notes component for managing notes on content
+          </Alert>
+          {context && (
+            <Notes
+              contentType="person"
+              contentId={context.person?.id || "person123"}
+              context={context}
+            />
+          )}
+        </Box>
+
+        <Box>
+          <Typography variant="h6" gutterBottom>SupportModal</Typography>
+          <Alert severity="info" sx={{ mb: 2 }}>
+            Modal for support/help functionality
+          </Alert>
+          <Button onClick={() => setShowSupportModal(true)} variant="outlined">
+            Open Support Modal
+          </Button>
+          {context && showSupportModal && (
+            <SupportModal
+              onClose={() => setShowSupportModal(false)}
+              appName="Playground"
+            />
+          )}
+        </Box>
+
+        <Box>
+          <Typography variant="h6" gutterBottom>FloatingSupport</Typography>
+          <Alert severity="info" sx={{ mb: 2 }}>
+            Floating support button (check bottom-right corner of the page)
+          </Alert>
+          {context && (
+            <FloatingSupport 
+              appName="Playground"
+              context={context}
+            />
+          )}
         </Box>
       </Stack>
     </ComponentPage>

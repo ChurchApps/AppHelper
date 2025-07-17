@@ -1243,6 +1243,7 @@ ansi-styles@^6.1.0, ansi-styles@^6.2.1:
     "@churchapps/apphelper" "*"
     "@churchapps/apphelper-donations" "*"
     "@churchapps/apphelper-login" "*"
+    "@churchapps/apphelper-markdown" "*"
     "@churchapps/helpers" "^1.0.40"
     "@emotion/react" "^11.14.0"
     "@emotion/styled" "^11.14.1"
