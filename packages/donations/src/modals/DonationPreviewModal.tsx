@@ -38,9 +38,14 @@ export const DonationPreviewModal: React.FC<Props> = (props) => {
   };
 
   return (
-    <Dialog open={props.show} {...props}>
-      <DialogTitle>Donation Preview</DialogTitle>
-      <DialogContent>
+    <Dialog 
+      open={props.show} 
+      onClose={props.onHide}
+      aria-labelledby="donation-preview-title"
+      aria-describedby="donation-preview-content"
+    >
+      <DialogTitle id="donation-preview-title">Donation Preview</DialogTitle>
+      <DialogContent id="donation-preview-content">
         <Table>
           <TableBody>
             <TableRow><TableCell>{Locale.label("person.name")}:</TableCell><TableCell>{props.donation.person.name}</TableCell></TableRow>

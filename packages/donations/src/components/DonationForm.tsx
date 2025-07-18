@@ -58,6 +58,11 @@ export const DonationForm: React.FC<Props> = (props) => {
     });
   }, []);
 
+  const handleSave = useCallback(() => {
+    if (donation.amount < .5) setErrorMessage(Locale.label("donation.donationForm.tooLow"));
+    else setShowDonationPreviewModal(true);
+  }, [donation.amount]);
+
   const handleKeyDown = useCallback((e: React.KeyboardEvent<any>) => { if (e.key === "Enter") { e.preventDefault(); handleSave(); } }, [handleSave]);
 
   const handleCheckChange = useCallback((e: React.SyntheticEvent<Element, Event>, checked: boolean) => {
@@ -107,10 +112,6 @@ export const DonationForm: React.FC<Props> = (props) => {
   }, [donation, props.paymentMethods, fundsTotal, transactionFee]);
 
   const handleCancel = useCallback(() => { setDonationType(null); }, []);
-  const handleSave = useCallback(() => {
-    if (donation.amount < .5) setErrorMessage(Locale.label("donation.donationForm.tooLow"));
-    else setShowDonationPreviewModal(true);
-  }, [donation.amount]);
   const handleDonationSelect = useCallback((type: string) => {
     const dt = donationType === type ? null : type;
     setDonationType(dt);

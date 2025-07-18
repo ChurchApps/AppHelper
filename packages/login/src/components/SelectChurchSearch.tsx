@@ -38,9 +38,22 @@ export const SelectChurchSearch: React.FC<Props> = (props) => {
 
 	const getRegisterLink = () => (
 		<div>
-			<a style={{ display: "block", textAlign: "center" }} href="about:blank" onClick={handleRegisterClick}>
+			<button 
+				type="button"
+				style={{ 
+					display: "block", 
+					textAlign: "center", 
+					background: "none", 
+					border: "none", 
+					color: "#3b82f6", 
+					cursor: "pointer", 
+					textDecoration: "underline",
+					width: "100%"
+				}} 
+				onClick={handleRegisterClick}
+			>
 				{Locale.label("selectChurch.register")}
-			</a>
+			</button>
 		</div>
 	)
 

@@ -30,27 +30,50 @@ export const SelectChurchModal: React.FC<Props> = (props) => {
 		if (showSearch || props.userChurches?.length === 0) return <SelectChurchSearch selectChurch={props.selectChurch} registeredChurchCallback={props.registeredChurchCallback} appName={props.appName} />
 		else return (<>
 			{props.userChurches?.map(uc => (<SelectableChurch church={uc.church} selectChurch={props.selectChurch} key={uc.church.id} />))}
-			<a href="about:blank" style={{ display: "block", textAlign: "center" }} onClick={(e) => { e.preventDefault(); setShowSearch(true); }}>{Locale.label("selectChurch.another")}</a>
+			<button 
+				type="button"
+				style={{ 
+					display: "block", 
+					textAlign: "center", 
+					background: "none", 
+					border: "none", 
+					color: "#3b82f6", 
+					cursor: "pointer", 
+					textDecoration: "underline" 
+				}} 
+				onClick={(e) => { e.preventDefault(); setShowSearch(true); }}
+			>
+				{Locale.label("selectChurch.another")}
+			</button>
 		</>);
 	}
 
 	return (
-		<Dialog open={props.show} onClose={handleClose}>
-			<DialogTitle>{Locale.label("selectChurch.selectChurch")}
+		<Dialog 
+			open={props.show} 
+			onClose={handleClose}
+			aria-labelledby="select-church-title"
+			aria-describedby="select-church-content"
+		>
+			<DialogTitle id="select-church-title">{Locale.label("selectChurch.selectChurch")}
 			</DialogTitle>
 			<Tooltip title="Logout" arrow>
-				<IconButton sx={{ position: "absolute", right: 8, top: 8 }} color="error" onClick={() => {
-					// Use handleRedirect function if available, otherwise fallback to window.location
-					if (props.handleRedirect) {
-						props.handleRedirect("/logout");
-					} else {
-						window.location.href = "/logout";
-					}
-				}}>
+				<IconButton 
+					sx={{ position: "absolute", right: 8, top: 8 }} 
+					color="error" 
+					aria-label="Logout"
+					onClick={() => {
+						// Use handleRedirect function if available, otherwise fallback to window.location
+						if (props.handleRedirect) {
+							props.handleRedirect("/logout");
+						} else {
+							window.location.href = "/logout";
+						}
+					}}>
 					<Logout />
 				</IconButton>
 			</Tooltip>
-			<DialogContent sx={{ width: 500, maxWidth: "100%" }}>
+			<DialogContent id="select-church-content" sx={{ width: 500, maxWidth: "100%" }}>
 				<ErrorMessages errors={props.errors} />
 				{getContents()}
 			</DialogContent>

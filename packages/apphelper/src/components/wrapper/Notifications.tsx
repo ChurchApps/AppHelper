@@ -59,10 +59,10 @@ export const Notifications: React.FC<Props> = (props) => {
       const displayDuration = DateHelper.getDisplayDuration(datePosted);
 
       result.push(
-        <div className="note" style={{ cursor: "pointer" }} onClick={(e) => { e.preventDefault(); }}>
+        <div className="note" style={{ cursor: "pointer" }} onClick={(e) => { e.preventDefault(); }} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClick(notification); } }}>
           <Box sx={{ width: "100%" }} className="note-contents">
             <Stack direction="row" justifyContent="space-between">
-              <div style={{width:"100%"}} onClick={(e) => { e.preventDefault(); handleClick(notification); }}>
+              <div style={{width:"100%"}} onClick={(e) => { e.preventDefault(); handleClick(notification); }} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClick(notification); } }} aria-label={`View notification: ${notification.message}`}>
                 <span className="text-grey" style={{float:"right"}}>{displayDuration}</span>
                 <p>
                   <Icon>notifications</Icon> 

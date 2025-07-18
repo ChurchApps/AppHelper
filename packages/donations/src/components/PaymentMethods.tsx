@@ -82,7 +82,14 @@ export const PaymentMethods: React.FC<Props> = (props) => {
 
   const getEditOptions = (pm: StripePaymentMethod) => {
     if (!UserHelper.checkAccess(Permissions.givingApi.settings.edit) && props.appName !== "B1App") return null;
-    return <a aria-label="edit-button" onClick={handleEdit(pm)} href="about:blank"><Icon>edit</Icon></a>;
+    return <button 
+      type="button"
+      aria-label="edit-button" 
+      onClick={handleEdit(pm)} 
+      style={{ background: "none", border: "none", cursor: "pointer", color: "#3b82f6" }}
+    >
+      <Icon>edit</Icon>
+    </button>;
   };
 
   const getPMIcon = (type: string) => (type === "card" ? <Icon>credit_card</Icon> : <Icon>account_balance</Icon>);
@@ -93,7 +100,14 @@ export const PaymentMethods: React.FC<Props> = (props) => {
     props.paymentMethods.forEach((method: StripePaymentMethod) => {
       rows.push(<TableRow key={method.id}>
           <TableCell className="capitalize">{getPMIcon(method.type)} {method.name + " ****" + method.last4}</TableCell>
-          <TableCell>{method?.status === "new" && <a href="about:blank" aria-label="verify-account" onClick={handleEdit(method, true)}>{Locale.label("donation.paymentMethods.verify")}</a>}</TableCell>
+          <TableCell>{method?.status === "new" && <button 
+            type="button"
+            aria-label="verify-account" 
+            onClick={handleEdit(method, true)}
+            style={{ background: "none", border: "none", cursor: "pointer", color: "#3b82f6", textDecoration: "underline" }}
+          >
+            {Locale.label("donation.paymentMethods.verify")}
+          </button>}</TableCell>
           <TableCell align="right">{getEditOptions(method)}</TableCell>
         </TableRow>);
     });

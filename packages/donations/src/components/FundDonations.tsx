@@ -36,7 +36,23 @@ export const FundDonations: React.FC<Props> = (props) => {
     <>
       {getRows()}
       {(!props?.params?.fundId || props?.params?.fundId === "") &&
-        <a href="about:blank" aria-label="add-fund-donation" className="text-decoration" style={{ display: "block", marginBottom: "15px" }} onClick={addRow}>{Locale.label("donation.fundDonations.addMore")}</a>
+        <button 
+          type="button"
+          aria-label="add-fund-donation" 
+          className="text-decoration" 
+          style={{ 
+            display: "block", 
+            marginBottom: "15px", 
+            background: "none", 
+            border: "none", 
+            color: "#3b82f6", 
+            cursor: "pointer", 
+            textDecoration: "underline" 
+          }} 
+          onClick={addRow}
+        >
+          {Locale.label("donation.fundDonations.addMore")}
+        </button>
       }
     </>
   );

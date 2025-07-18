@@ -170,6 +170,7 @@ function TextFormatFloatingToolbar({ editor, anchorElem, isLink, isBold, isItali
               borderRadius: 2,
               marginRight: 0.3,
             }}
+            aria-label="Text format"
           >
             <MenuItem value="paragraph">Normal</MenuItem>
             <MenuItem value="h1">Heading 1</MenuItem>
@@ -182,6 +183,7 @@ function TextFormatFloatingToolbar({ editor, anchorElem, isLink, isBold, isItali
               applyFormatting("bold");
             }}
             sx={{ backgroundColor: isBold ? "#e0e0e0" : undefined, borderRadius: 2, marginRight: 0.3 }}
+            aria-label="Bold"
           >
             <Icon>format_bold_outline</Icon>
           </IconButton>
@@ -191,6 +193,7 @@ function TextFormatFloatingToolbar({ editor, anchorElem, isLink, isBold, isItali
               applyFormatting("italic");
             }}
             sx={{ backgroundColor: isItalic ? "#e0e0e0" : undefined, borderRadius: 2, marginRight: 0.3 }}
+            aria-label="Italic"
           >
             <Icon>format_italic_outline</Icon>
           </IconButton>
@@ -200,6 +203,7 @@ function TextFormatFloatingToolbar({ editor, anchorElem, isLink, isBold, isItali
               applyFormatting("underline");
             }}
             sx={{ backgroundColor: isUnderline ? "#e0e0e0" : undefined, borderRadius: 2, marginRight: 0.3 }}
+            aria-label="Underline"
           >
             <Icon>format_underlined_outline</Icon>
           </IconButton>
@@ -218,6 +222,7 @@ function TextFormatFloatingToolbar({ editor, anchorElem, isLink, isBold, isItali
               applyFormatting("code");
             }}
             sx={{ backgroundColor: isCode ? "#e0e0e0" : undefined, borderRadius: 2, marginRight: 0.3 }}
+            aria-label="Code"
           >
             <Icon>code</Icon>
           </IconButton>

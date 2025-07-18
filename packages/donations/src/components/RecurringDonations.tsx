@@ -69,7 +69,14 @@ export const RecurringDonations: React.FC<Props> = (props) => {
 
   const getEditOptions = (sub: SubscriptionInterface) => {
     if ((!UserHelper.checkAccess(Permissions.givingApi.settings.edit) && props.appName !== "B1App") || props?.paymentMethods?.length === 0) return null;
-    return <a aria-label="edit-button" onClick={handleEdit(sub)} href="about:blank"><Icon>edit</Icon></a>;
+    return <button 
+      type="button"
+      aria-label="edit-button" 
+      onClick={handleEdit(sub)} 
+      style={{ background: "none", border: "none", cursor: "pointer", color: "#3b82f6" }}
+    >
+      <Icon>edit</Icon>
+    </button>;
   };
 
   const getTableHeader = () => {

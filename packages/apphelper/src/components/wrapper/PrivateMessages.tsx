@@ -56,7 +56,16 @@ export const PrivateMessages: React.FC<Props> = (props) => {
       const contents = message.content?.split("\n")[0];
       const privateMessage = pm;
       result.push(
-        <div key={pm.id} className="note" style={{ cursor: "pointer" }} onClick={(e) => { e.preventDefault(); setSelectedMessage(privateMessage) }}>
+        <div 
+          key={pm.id} 
+          className="note" 
+          style={{ cursor: "pointer" }} 
+          onClick={(e) => { e.preventDefault(); setSelectedMessage(privateMessage) }}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedMessage(privateMessage); } }}
+          aria-label={`View private message from ${person.name?.display}`}
+        >
           <div className="postedBy">
             <img src={photoUrl} alt="avatar" />
           </div>
