@@ -1,6 +1,6 @@
 import { LexicalNode, createCommand, LexicalCommand, $isElementNode, $getSelection, ElementNode, NodeKey, $applyNodeReplacement, $isRangeSelection } from "lexical";
 import { LinkNode } from "@lexical/link";
-import utils from "@lexical/utils";
+import { addClassNamesToElement } from "@lexical/utils";
 
 export interface LinkCustomizationAttributes {
   url: string;
@@ -49,7 +49,7 @@ export class CustomLinkNode extends LinkNode {
 
     link.setAttribute("target", this.__target || "_blank");
 
-    utils.addClassNamesToElement(link, (this.__classNames || []).join(" "));
+    addClassNamesToElement(link, (this.__classNames || []).join(" "));
 
     return link;
   }
