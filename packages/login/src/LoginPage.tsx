@@ -225,6 +225,7 @@ const LoginPageContent: React.FC<Props> = ({ showLogo = true, loginContainerCssP
 		setErrors([])
 		setIsSubmitting(true);
 		try {
+			console.log("Logging in with data: ", data, "/users/login", ApiHelper.getConfig("MembeshipApi"));
 			const resp: LoginResponseInterface = await ApiHelper.postAnonymous("/users/login", data, "MembershipApi");
 			setIsSubmitting(false);
 			handleLoginSuccess(resp);

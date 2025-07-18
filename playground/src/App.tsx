@@ -179,19 +179,24 @@ function LoginTestPage() {
       component: Login,
       description: 'Basic login form component',
       props: {
-        auth: {
-          loginUser: (email: string, password: string) => {
-            console.log('Mock login:', email, password);
-            return Promise.resolve({ user: { email }, jwt: 'mock-jwt-token' });
-          }
+        login: (data: any) => {
+          console.log('Mock login:', data);
+          alert(`Mock login with email: ${data.email}`);
         },
-        context: context,
-        jwt: 'mock-jwt-token',
-        appName: 'Playground',
-        returnUrl: '/',
-        handleRedirect: (url: string) => {
-          console.log('Redirect to:', url);
-          alert(`Would redirect to: ${url}`);
+        isSubmitting: false,
+        setShowRegister: (show: boolean) => {
+          console.log('Show register:', show);
+          alert(`Would show register: ${show}`);
+        },
+        setShowForgot: (show: boolean) => {
+          console.log('Show forgot:', show);
+          alert(`Would show forgot: ${show}`);
+        },
+        setErrors: (errors: string[]) => {
+          console.log('Validation errors:', errors);
+          if (errors.length > 0) {
+            alert(`Validation errors: ${errors.join(', ')}`);
+          }
         },
         defaultEmail: mockEmail,
         defaultPassword: mockPassword
@@ -300,6 +305,7 @@ function LoginTestPage() {
 
   const renderComponent = (item: any) => {
     const Component = item.component;
+    console.log('Rendering component:', item.name, 'with props:', item.props);
     return (
       <ErrorBoundary>
         <Box sx={{ 
@@ -400,7 +406,10 @@ function LoginTestPage() {
                     <Button
                       key={item.name}
                       variant={selectedComponent === item.name ? 'contained' : 'outlined'}
-                      onClick={() => setSelectedComponent(selectedComponent === item.name ? null : item.name)}
+                      onClick={() => {
+                        console.log('Clicking button:', item.name, 'current selected:', selectedComponent);
+                        setSelectedComponent(selectedComponent === item.name ? null : item.name);
+                      }}
                       size="small"
                     >
                       {item.name}

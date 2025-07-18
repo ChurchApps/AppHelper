@@ -1,14 +1,94 @@
 import React from 'react';
-import { Container, Box, Typography, Button, Alert, Stack } from '@mui/material';
+import { Container, Box, Typography, Button, Alert, Stack, Tab, Tabs } from '@mui/material';
 import { Link } from 'react-router-dom';
+import { LoginPage as AppHelperLoginPage, Login, ErrorMessages } from '@churchapps/apphelper-login';
+import { ApiHelper } from '@churchapps/apphelper';
 import UserContext from '../UserContext';
 
 function LoginPageComponent() {
   const context = React.useContext(UserContext) as any;
-  const [loginMethod, setLoginMethod] = React.useState<'mock' | 'component'>('mock');
+  const [loginMethod, setLoginMethod] = React.useState<'mock' | 'real'>('mock');
+  const [loginTabValue, setLoginTabValue] = React.useState(0);
+  const [errors, setErrors] = React.useState<string[]>([]);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   const handleMockLogin = () => {
     context?.mockLogin();
+  };
+
+  const handleClearError = () => {
+    context.clearLoginError();
+  };
+
+  const handleRealLogin = async (data: { email: string; password: string }) => {
+    setIsSubmitting(true);
+    setErrors([]);
+    
+    try {
+      console.log("Attempting login with:", data);
+      const response = await ApiHelper.postAnonymous("/users/login", data, "MembershipApi");
+      console.log("Login response:", response);
+      
+      if (response.user && response.userChurches && response.userChurches.length > 0) {
+        const firstUserChurch = response.userChurches[0];
+        context.setUser(response.user);
+        context.setPerson(firstUserChurch.person);
+        context.setUserChurch(firstUserChurch);
+        context.setUserChurches(response.userChurches);
+        console.log("Login successful!");
+      } else {
+        setErrors(["Invalid credentials"]);
+      }
+    } catch (error: any) {
+      console.error("Login failed:", error);
+      setErrors([error.message || "Login failed. Please try again."]);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleShowRegister = () => {
+    setErrors(["Registration not implemented in playground"]);
+  };
+
+  const handleShowForgot = () => {
+    setErrors(["Forgot password not implemented in playground"]);
+  };
+
+  const testApiConnection = async () => {
+    console.log("Testing API connection...");
+    console.log("Current URL:", window.location.href);
+    console.log("URL Search params:", window.location.search);
+    console.log("API Configs:", ApiHelper.apiConfigs);
+    
+    try {
+      const config = ApiHelper.getConfig("MembershipApi");
+      console.log("MembershipApi config:", config);
+      
+      if (!config) {
+        console.error("MembershipApi config not found!");
+        return;
+      }
+      
+      // Test a simple API call
+      const response = await fetch(config.url + "/users/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: "test@example.com",
+          password: "wrongpassword"
+        })
+      });
+      
+      console.log("API response status:", response.status);
+      const data = await response.text();
+      console.log("API response:", data);
+      
+    } catch (error) {
+      console.error("API test failed:", error);
+    }
   };
 
   const handleMockLogout = () => {
@@ -76,45 +156,117 @@ function LoginPageComponent() {
           Choose a login method below to test authenticated components.
         </Alert>
 
-        <Stack spacing={3} sx={{ width: '100%' }}>
-          <Box>
-            <Typography variant="h6" gutterBottom>
-              Mock Login (Recommended)
-            </Typography>
-            <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
-              Instantly login with pre-configured mock data to test all components.
-            </Typography>
-            <Button 
-              onClick={handleMockLogin}
-              variant="contained" 
-              color="primary" 
-              fullWidth
-              size="large"
-            >
-              Login with Mock Data
-            </Button>
-          </Box>
+        <Box sx={{ width: '100%', mb: 3 }}>
+          <Tabs 
+            value={loginMethod} 
+            onChange={(_, value) => setLoginMethod(value)}
+            variant="fullWidth"
+            sx={{ borderBottom: 1, borderColor: 'divider' }}
+          >
+            <Tab label="Mock Login" value="mock" />
+            <Tab label="Real Login" value="real" />
+          </Tabs>
+        </Box>
 
-          <Box>
+        {loginMethod === 'mock' && (
+          <Stack spacing={3} sx={{ width: '100%' }}>
+            <Box>
+              <Typography variant="h6" gutterBottom>
+                Mock Login (Recommended)
+              </Typography>
+              <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+                Instantly login with pre-configured mock data to test all components.
+              </Typography>
+              <Button 
+                onClick={handleMockLogin}
+                variant="contained" 
+                color="primary" 
+                fullWidth
+                size="large"
+              >
+                Login with Mock Data
+              </Button>
+            </Box>
+          </Stack>
+        )}
+
+        {loginMethod === 'real' && (
+          <Box sx={{ width: '100%' }}>
             <Typography variant="h6" gutterBottom>
-              AppHelper LoginPage Component
+              Real Login via MembershipAPI
             </Typography>
             <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
-              Test the actual LoginPage component from @churchapps/apphelper-login.
-              Note: This requires proper API configuration.
+              Connect to the actual MembershipAPI at https://membershipapi.staging.churchapps.org
             </Typography>
-            <Button 
-              onClick={() => setLoginMethod('component')}
-              variant="outlined" 
-              color="secondary" 
-              fullWidth
-              size="large"
-              disabled
-            >
-              Use LoginPage Component (Coming Soon)
-            </Button>
+            
+            {context.loginError && (
+              <Alert severity="error" sx={{ mb: 2 }} onClose={handleClearError}>
+                {context.loginError}
+              </Alert>
+            )}
+
+            <Tabs value={loginTabValue} onChange={(_, value) => setLoginTabValue(value)} sx={{ mb: 2 }}>
+              <Tab label="AppHelper LoginPage" />
+              <Tab label="Direct Login Component" />
+            </Tabs>
+
+            {loginTabValue === 0 && (
+              <Box>
+                <Typography variant="caption" color="textSecondary" sx={{ display: 'block', mb: 1 }}>
+                  Debug: URL = {window.location.href}
+                </Typography>
+                <AppHelperLoginPage
+                  context={context}
+                  jwt=""
+                  auth=""
+                  appName="AppHelper Playground"
+                  appUrl={window.location.origin}
+                  returnUrl="/"
+                  loginSuccessOverride={() => {
+                    // Custom success handler for playground
+                    console.log('Login successful via AppHelper LoginPage');
+                  }}
+                  showLogo={false}
+                  loginContainerCssProps={{
+                    style: {
+                      backgroundColor: 'transparent',
+                      boxShadow: 'none',
+                      border: 'none'
+                    }
+                  }}
+                />
+              </Box>
+            )}
+
+            {loginTabValue === 1 && (
+              <Box>
+                <ErrorMessages errors={errors} />
+                <Login
+                  login={handleRealLogin}
+                  isSubmitting={isSubmitting}
+                  setShowRegister={handleShowRegister}
+                  setShowForgot={handleShowForgot}
+                  setErrors={setErrors}
+                />
+              </Box>
+            )}
+            
+            {/* Debug information */}
+            <Box sx={{ mt: 2, p: 2, backgroundColor: '#f5f5f5', borderRadius: 1 }}>
+              <Typography variant="caption" color="textSecondary" sx={{ display: 'block', mb: 1 }}>
+                Debug: Check browser console for API configuration details
+              </Typography>
+              <Button 
+                size="small" 
+                variant="outlined" 
+                onClick={testApiConnection}
+                sx={{ fontSize: '0.75rem' }}
+              >
+                Test API Connection
+              </Button>
+            </Box>
           </Box>
-        </Stack>
+        )}
 
         <Box sx={{ mt: 4, width: '100%' }}>
           <Typography variant="h6" gutterBottom>

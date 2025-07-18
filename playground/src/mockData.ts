@@ -5,6 +5,7 @@ import {
   type UserContextInterface,
   type ChurchInterface
 } from "@churchapps/apphelper";
+import { type ApiInterface } from "@churchapps/helpers";
 
 // Mock Person Data
 export const mockPerson: PersonInterface = {
@@ -57,8 +58,6 @@ export const mockChurch: ChurchInterface = {
   state: "ST",
   zip: "12345",
   country: "USA",
-  website: "https://samplechurch.org",
-  logo: "/images/logo-login.png",
   subDomain: "sample"
 };
 
@@ -66,22 +65,14 @@ export const mockChurch: ChurchInterface = {
 export const mockUserChurch: LoginUserChurchInterface = {
   church: mockChurch,
   person: mockPerson,
-  permissions: [
-    "membershipApi.people.view",
-    "membershipApi.people.edit",
-    "membershipApi.forms.view",
-    "membershipApi.forms.edit",
-    "givingApi.donations.view",
-    "givingApi.donations.edit",
-    "messagingApi.conversations.view",
-    "messagingApi.conversations.edit"
-  ],
+  jwt: "mock-jwt-token",
+  groups: [],
   apis: [
-    { name: "AccessApi", url: "https://api.churchapps.org/access", keyName: "AccessApi", jwt: "" },
-    { name: "MembershipApi", url: "https://api.churchapps.org/membership", keyName: "MembershipApi", jwt: "" },
-    { name: "GivingApi", url: "https://api.churchapps.org/giving", keyName: "GivingApi", jwt: "" },
-    { name: "MessagingApi", url: "https://api.churchapps.org/messaging", keyName: "MessagingApi", jwt: "" }
-  ]
+    { name: "AccessApi", keyName: "AccessApi", jwt: "", permissions: [] },
+    { name: "MembershipApi", keyName: "MembershipApi", jwt: "", permissions: [] },
+    { name: "GivingApi", keyName: "GivingApi", jwt: "", permissions: [] },
+    { name: "MessagingApi", keyName: "MessagingApi", jwt: "", permissions: [] }
+  ] as ApiInterface[]
 };
 
 // Mock Questions for Forms
@@ -238,26 +229,23 @@ export const mockUserChurches: LoginUserChurchInterface[] = [
   {
     church: mockChurches[1],
     person: mockPerson,
-    permissions: [
-      "membershipApi.people.view",
-      "givingApi.donations.view"
-    ],
+    jwt: "mock-jwt-token-2",
+    groups: [],
     apis: [
-      { name: "AccessApi", url: "https://api.churchapps.org/access", keyName: "AccessApi", jwt: "" },
-      { name: "MembershipApi", url: "https://api.churchapps.org/membership", keyName: "MembershipApi", jwt: "" },
-      { name: "GivingApi", url: "https://api.churchapps.org/giving", keyName: "GivingApi", jwt: "" }
-    ]
+      { name: "AccessApi", keyName: "AccessApi", jwt: "", permissions: [] },
+      { name: "MembershipApi", keyName: "MembershipApi", jwt: "", permissions: [] },
+      { name: "GivingApi", keyName: "GivingApi", jwt: "", permissions: [] }
+    ] as ApiInterface[]
   },
   {
     church: mockChurches[2],
     person: mockPerson,
-    permissions: [
-      "membershipApi.people.view"
-    ],
+    jwt: "mock-jwt-token-3",
+    groups: [],
     apis: [
-      { name: "AccessApi", url: "https://api.churchapps.org/access", keyName: "AccessApi", jwt: "" },
-      { name: "MembershipApi", url: "https://api.churchapps.org/membership", keyName: "MembershipApi", jwt: "" }
-    ]
+      { name: "AccessApi", keyName: "AccessApi", jwt: "", permissions: [] },
+      { name: "MembershipApi", keyName: "MembershipApi", jwt: "", permissions: [] }
+    ] as ApiInterface[]
   }
 ];
 
