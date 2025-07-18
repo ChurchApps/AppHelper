@@ -1,8 +1,11 @@
 "use client";
 
 import { Button, Icon } from "@mui/material";
-import React from "react";
-import { CSVLink } from "react-csv";
+import React, { Suspense, lazy } from "react";
+import { Loading } from "./Loading";
+
+// Lazy load the CSVLink component
+const CSVLink = lazy(() => import("react-csv").then(module => ({ default: module.CSVLink })));
 
 interface Props {
   data: any[],
@@ -65,7 +68,13 @@ export const ExportLink: React.FC<Props> = (props) => {
   else {
     let items = [];
     if (props.spaceBefore) items.push(" ");
-    items.push(<CSVLink key={props.filename} data={people} headers={props.customHeaders || getHeaders()} filename={props.filename || "export.csv"}> <Button><Icon sx={{ marginRight: props.text ? 1 : 0 }}>{props.icon || "file_download"}</Icon>{props.text || ""}</Button></CSVLink>);
+    items.push(
+      <Suspense key={props.filename} fallback={<Button><Icon sx={{ marginRight: props.text ? 1 : 0 }}>{props.icon || "file_download"}</Icon>{props.text || ""}</Button>}>
+        <CSVLink data={people} headers={props.customHeaders || getHeaders()} filename={props.filename || "export.csv"}>
+          <Button><Icon sx={{ marginRight: props.text ? 1 : 0 }}>{props.icon || "file_download"}</Icon>{props.text || ""}</Button>
+        </CSVLink>
+      </Suspense>
+    );
     if (props.spaceAfter) items.push(" ");
     return (<>{items}</>);
   }

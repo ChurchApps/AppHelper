@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import Cropper from "react-cropper";
-// import "cropperjs/dist/cropper.css"; // CSS import removed due to Next.js compatibility issues
-import { InputBox, SmallButton } from ".";
+import React, { useState, useEffect, useRef, Suspense, lazy } from "react";
+import { InputBox, SmallButton, Loading } from ".";
 import { Locale } from "../helpers";
+
+// Lazy load the Cropper component
+const Cropper = lazy(() => import("react-cropper").then(module => ({ default: module.default })));
 
 interface Props {
   title?: string;
@@ -125,14 +126,16 @@ export function ImageEditor(props: Props) {
         </div>
       }
     >
-      <Cropper
-        ref={cropperRef}
-        src={photoSrc}
-        style={{ height: 240, width: "100%" }}
-        aspectRatio={props.aspectRatio}
-        guides={false}
-        crop={handleCrop}
-      />
+      <Suspense fallback={<Loading />}>
+        <Cropper
+          ref={cropperRef}
+          src={photoSrc}
+          style={{ height: 240, width: "100%" }}
+          aspectRatio={props.aspectRatio}
+          guides={false}
+          crop={handleCrop}
+        />
+      </Suspense>
     </InputBox>
   );
 }

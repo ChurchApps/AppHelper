@@ -1,10 +1,13 @@
 "use client";
 
-import React from "react";
-import { Chart } from "react-google-charts";
+import React, { Suspense, lazy } from "react";
 import { ReportOutputInterface, ReportResultInterface } from "@churchapps/helpers";
 import { ReportHelper } from "../../helpers/ReportHelper";
 import { Locale } from "../../helpers";
+import { Loading } from "..";
+
+// Lazy load the Chart component
+const Chart = lazy(() => import("react-google-charts").then(module => ({ default: module.Chart })));
 
 interface Props { reportResult: ReportResultInterface, output: ReportOutputInterface }
 
@@ -82,7 +85,11 @@ export const ChartReport = (props: Props) => {
   }
 
   let result = <p>{Locale.label("reporting.noData")}</p>
-  if (props.reportResult.table?.length > 0) result = (<Chart chartType="ColumnChart" data={getChartData()} width="100%" height="400px" options={{ height: 400, legend: { position: "top", maxLines: 3 }, bar: { groupWidth: "75%" }, isStacked: true }} />);
+  if (props.reportResult.table?.length > 0) result = (
+    <Suspense fallback={<Loading />}>
+      <Chart chartType="ColumnChart" data={getChartData()} width="100%" height="400px" options={{ height: 400, legend: { position: "top", maxLines: 3 }, bar: { groupWidth: "75%" }, isStacked: true }} />
+    </Suspense>
+  );
 
   return result;
 
