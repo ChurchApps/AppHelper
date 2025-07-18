@@ -65,6 +65,54 @@ A comprehensive testing environment for all exported components from `@churchapp
 - Banner (church banner)
 - SiteHeader (main site header)
 
+## Setup
+
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+2. **Configure environment variables:**
+   ```bash
+   cp .env.example .env
+   ```
+
+3. **Edit `.env` file with your configuration:**
+   ```env
+   # Required for donation components
+   VITE_STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key_here
+   VITE_CHURCH_ID=your_church_id
+   VITE_RECAPTCHA_SITE_KEY=your_recaptcha_site_key_here
+   ```
+
+4. **Start the development server:**
+   ```bash
+   npm run dev
+   ```
+
+## Environment Variables
+
+### Required for Donation Components
+
+- **VITE_STRIPE_PUBLISHABLE_KEY**: Your Stripe publishable key
+  - Get from [Stripe Dashboard](https://dashboard.stripe.com/apikeys)
+  - Use test keys (pk_test_...) for development
+  - Never use live keys in development!
+
+- **VITE_CHURCH_ID**: Church identifier for testing
+  - Used by donation components to fetch configuration
+  - Can be any string for testing purposes
+
+- **VITE_RECAPTCHA_SITE_KEY**: reCAPTCHA site key
+  - Required for non-authenticated donations
+  - Get from [Google reCAPTCHA](https://www.google.com/recaptcha/admin)
+
+### Optional API Overrides
+
+- **VITE_GIVING_API_URL**: Override default Giving API endpoint
+- **VITE_MEMBERSHIP_API_URL**: Override default Membership API endpoint
+- **VITE_ACCESS_API_URL**: Override default Access API endpoint
+
 ## Usage
 
 1. **Start the playground:**
@@ -82,19 +130,36 @@ A comprehensive testing environment for all exported components from `@churchapp
    - Components are wrapped in error boundaries for safe testing
    - Pages show component types and package sources
 
+## Testing Stripe Integration
+
+### Test Cards
+- **Success**: 4242 4242 4242 4242
+- **Decline**: 4000 0000 0000 0002
+- **Requires Authentication**: 4000 0025 0000 3155
+
+### Test Bank Account
+- **Routing**: 110000000
+- **Account**: 000123456789
+
+### Important Notes
+- Always use test keys (pk_test_...) in development
+- Never commit real API keys to version control
+- Test thoroughly before using live keys
+
 ## Development
 
 - The playground uses Vite for fast development
 - All components are imported from `@churchapps/apphelper`
 - TypeScript is fully supported
 - Material-UI theming is pre-configured
+- Environment variables are loaded via Vite (VITE_ prefix)
 
 ## Notes
 
 - Some components require API connections that will gracefully fail in demo mode
-- Stripe components use mock data for testing
+- Donation components now support environment-based Stripe configuration
 - All components are documented with usage examples and sample data
-- The playground is designed to test component behavior, not actual functionality
+- The playground is designed to test component behavior and integration
 
 ## File Structure
 

@@ -75,6 +75,12 @@ export const mockUserChurch: LoginUserChurchInterface = {
     "givingApi.donations.edit",
     "messagingApi.conversations.view",
     "messagingApi.conversations.edit"
+  ],
+  apis: [
+    { name: "AccessApi", url: "https://api.churchapps.org/access", keyName: "AccessApi", jwt: "" },
+    { name: "MembershipApi", url: "https://api.churchapps.org/membership", keyName: "MembershipApi", jwt: "" },
+    { name: "GivingApi", url: "https://api.churchapps.org/giving", keyName: "GivingApi", jwt: "" },
+    { name: "MessagingApi", url: "https://api.churchapps.org/messaging", keyName: "MessagingApi", jwt: "" }
   ]
 };
 
@@ -226,6 +232,35 @@ export const mockChurches = [
   }
 ];
 
+// Mock User Churches (for multi-church users)
+export const mockUserChurches: LoginUserChurchInterface[] = [
+  mockUserChurch,
+  {
+    church: mockChurches[1],
+    person: mockPerson,
+    permissions: [
+      "membershipApi.people.view",
+      "givingApi.donations.view"
+    ],
+    apis: [
+      { name: "AccessApi", url: "https://api.churchapps.org/access", keyName: "AccessApi", jwt: "" },
+      { name: "MembershipApi", url: "https://api.churchapps.org/membership", keyName: "MembershipApi", jwt: "" },
+      { name: "GivingApi", url: "https://api.churchapps.org/giving", keyName: "GivingApi", jwt: "" }
+    ]
+  },
+  {
+    church: mockChurches[2],
+    person: mockPerson,
+    permissions: [
+      "membershipApi.people.view"
+    ],
+    apis: [
+      { name: "AccessApi", url: "https://api.churchapps.org/access", keyName: "AccessApi", jwt: "" },
+      { name: "MembershipApi", url: "https://api.churchapps.org/membership", keyName: "MembershipApi", jwt: "" }
+    ]
+  }
+];
+
 // Mock Apps List
 export const mockApps = [
   { name: "CHUMS", url: "https://chums.org", icon: "people" },
@@ -290,7 +325,7 @@ export const mockNotes = [
   }
 ];
 
-// Mock Report Data
+// Mock Report Data - Enhanced for comprehensive reporting demos
 export const mockReportData = {
   columns: [
     { field: "name", headerName: "Name", width: 150 },
@@ -306,7 +341,11 @@ export const mockReportData = {
       email: "john.doe@example.com", 
       phone: "555-1234", 
       membershipStatus: "Member",
-      lastAttendance: "2024-01-07"
+      lastAttendance: "2024-01-07",
+      age: 35,
+      joinDate: "2022-03-15",
+      group: "Adults",
+      department: "Worship"
     },
     { 
       id: 2, 
@@ -314,7 +353,11 @@ export const mockReportData = {
       email: "jane.smith@example.com", 
       phone: "555-5678", 
       membershipStatus: "Visitor",
-      lastAttendance: "2024-01-06"
+      lastAttendance: "2024-01-06",
+      age: 28,
+      joinDate: "2024-01-01",
+      group: "Young Adults",
+      department: "Outreach"
     },
     { 
       id: 3, 
@@ -322,9 +365,224 @@ export const mockReportData = {
       email: "bob.johnson@example.com", 
       phone: "555-9012", 
       membershipStatus: "Member",
-      lastAttendance: "2024-01-05"
+      lastAttendance: "2024-01-05",
+      age: 42,
+      joinDate: "2021-08-20",
+      group: "Adults",
+      department: "Children"
+    },
+    { 
+      id: 4, 
+      name: "Sarah Wilson", 
+      email: "sarah.wilson@example.com", 
+      phone: "555-3456", 
+      membershipStatus: "Member",
+      lastAttendance: "2024-01-04",
+      age: 29,
+      joinDate: "2023-06-10",
+      group: "Young Adults",
+      department: "Worship"
+    },
+    { 
+      id: 5, 
+      name: "Mike Brown", 
+      email: "mike.brown@example.com", 
+      phone: "555-7890", 
+      membershipStatus: "Regular Attender",
+      lastAttendance: "2024-01-03",
+      age: 38,
+      joinDate: "2023-09-05",
+      group: "Adults",
+      department: "Facilities"
+    },
+    { 
+      id: 6, 
+      name: "Lisa Davis", 
+      email: "lisa.davis@example.com", 
+      phone: "555-2468", 
+      membershipStatus: "Member",
+      lastAttendance: "2024-01-02",
+      age: 33,
+      joinDate: "2022-11-30",
+      group: "Adults",
+      department: "Outreach"
     }
   ]
+};
+
+// Mock Report Filters Configuration
+export const mockReportFilters = [
+  {
+    keyName: "membershipStatus",
+    displayName: "Membership Status",
+    fieldType: "select",
+    required: false,
+    options: [
+      { value: "", text: "All" },
+      { value: "Member", text: "Member" },
+      { value: "Visitor", text: "Visitor" },
+      { value: "Regular Attender", text: "Regular Attender" }
+    ]
+  },
+  {
+    keyName: "group",
+    displayName: "Age Group",
+    fieldType: "select",
+    required: false,
+    options: [
+      { value: "", text: "All Groups" },
+      { value: "Young Adults", text: "Young Adults" },
+      { value: "Adults", text: "Adults" },
+      { value: "Seniors", text: "Seniors" }
+    ]
+  },
+  {
+    keyName: "department",
+    displayName: "Department",
+    fieldType: "select",
+    required: false,
+    options: [
+      { value: "", text: "All Departments" },
+      { value: "Worship", text: "Worship" },
+      { value: "Outreach", text: "Outreach" },
+      { value: "Children", text: "Children" },
+      { value: "Facilities", text: "Facilities" }
+    ]
+  },
+  {
+    keyName: "startDate",
+    displayName: "Join Date From",
+    fieldType: "date",
+    required: false
+  },
+  {
+    keyName: "endDate",
+    displayName: "Join Date To", 
+    fieldType: "date",
+    required: false
+  },
+  {
+    keyName: "searchName",
+    displayName: "Name Search",
+    fieldType: "text",
+    required: false,
+    placeholder: "Enter name to search..."
+  }
+];
+
+// Mock Chart Data for Attendance Report
+export const mockAttendanceChart = {
+  title: "Monthly Attendance Report",
+  chartType: "column",
+  data: [
+    ["Month", "Sunday Service", "Wed Prayer", "Youth Group"],
+    ["January", 150, 45, 28],
+    ["February", 165, 52, 31],
+    ["March", 180, 48, 35],
+    ["April", 175, 55, 32],
+    ["May", 190, 58, 38],
+    ["June", 185, 50, 36]
+  ]
+};
+
+// Mock Chart Data for Giving Report
+export const mockGivingChart = {
+  title: "Monthly Giving by Fund",
+  chartType: "column",
+  data: [
+    ["Month", "General Fund", "Building Fund", "Missions"],
+    ["January", 8500, 2200, 1500],
+    ["February", 9200, 2800, 1800],
+    ["March", 8800, 2400, 1600],
+    ["April", 9500, 3100, 2000],
+    ["May", 9800, 2900, 1900],
+    ["June", 9300, 2600, 1700]
+  ]
+};
+
+// Mock Tree Report Data (Hierarchical)
+export const mockTreeData = [
+  {
+    id: "1",
+    name: "Leadership Team",
+    level: 0,
+    children: [
+      {
+        id: "2", 
+        name: "Senior Pastor - John Smith",
+        level: 1,
+        email: "john.smith@church.com",
+        phone: "555-0001"
+      },
+      {
+        id: "3",
+        name: "Associate Pastor - Mary Johnson", 
+        level: 1,
+        email: "mary.johnson@church.com",
+        phone: "555-0002"
+      }
+    ]
+  },
+  {
+    id: "4",
+    name: "Ministry Leaders",
+    level: 0,
+    children: [
+      {
+        id: "5",
+        name: "Worship Ministry",
+        level: 1,
+        children: [
+          {
+            id: "6",
+            name: "Worship Leader - David Brown",
+            level: 2,
+            email: "david.brown@church.com",
+            phone: "555-0003"
+          },
+          {
+            id: "7",
+            name: "Music Director - Sarah Wilson",
+            level: 2,
+            email: "sarah.wilson@church.com", 
+            phone: "555-0004"
+          }
+        ]
+      },
+      {
+        id: "8",
+        name: "Children's Ministry",
+        level: 1,
+        children: [
+          {
+            id: "9",
+            name: "Children's Director - Lisa Davis",
+            level: 2,
+            email: "lisa.davis@church.com",
+            phone: "555-0005"
+          }
+        ]
+      }
+    ]
+  }
+];
+
+// Mock Report Interface for ReportWithFilter
+export const mockReport = {
+  keyName: "membershipReport",
+  name: "Membership Report",
+  path: "/reports/membership",
+  category: "People",
+  columns: [
+    { field: "name", headerName: "Name", width: 150 },
+    { field: "email", headerName: "Email", width: 200 },
+    { field: "phone", headerName: "Phone", width: 150 },
+    { field: "membershipStatus", headerName: "Status", width: 120 },
+    { field: "group", headerName: "Group", width: 100 },
+    { field: "department", headerName: "Department", width: 120 },
+    { field: "joinDate", headerName: "Join Date", width: 120 }
+  ],
+  filters: mockReportFilters
 };
 
 // Mock Chart Data

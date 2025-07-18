@@ -15,7 +15,8 @@ import {
   mockApps, 
   mockChurches, 
   mockNavItems, 
-  mockPrivateMessages
+  mockPrivateMessages,
+  mockUserChurches
 } from '../mockData';
 
 function ComponentPage({ children, title }: { children: React.ReactNode, title: string }) {
@@ -37,37 +38,38 @@ function ComponentPage({ children, title }: { children: React.ReactNode, title: 
 }
 
 export function WrapperTestPage() {
-  const context = React.useContext(UserContext);
+  const context = React.useContext(UserContext) as any;
   const [showNewMessage, setShowNewMessage] = React.useState(false);
   const [showMessageDetails, setShowMessageDetails] = React.useState(false);
-  const [selectedChurch, setSelectedChurch] = React.useState(mockChurches[0]);
   const [selectedMessage, setSelectedMessage] = React.useState(mockPrivateMessages[0]);
+  const [refreshKey, setRefreshKey] = React.useState(0);
+  const [notificationCounts, setNotificationCounts] = React.useState({ notificationCount: 3, pmCount: 2 });
 
   const handleNavClick = (url: string, label: string) => {
     console.log(`Navigation clicked: ${label} -> ${url}`);
     alert(`Would navigate to: ${label} (${url})`);
   };
 
-  const handleChurchSelect = (church: any) => {
-    setSelectedChurch(church);
-    console.log('Selected church:', church);
-    alert(`Church selected: ${church.name}`);
+  const handleNavigate = (url: string) => {
+    console.log('Navigation:', url);
+    alert(`Would navigate to: ${url}`);
   };
 
-  const handleMessageSent = () => {
-    console.log('Message sent!');
-    alert('Message sent successfully!');
+  const handleSelectMessage = (pm: any) => {
+    setSelectedMessage(pm);
+    setShowMessageDetails(true);
     setShowNewMessage(false);
   };
 
-  const handleLogout = () => {
-    console.log('Logout clicked');
-    alert('Logout functionality would be triggered here');
+  const loadCounts = () => {
+    console.log('Loading notification counts...');
+    // Simulate loading counts
+    setNotificationCounts({ notificationCount: Math.floor(Math.random() * 10), pmCount: Math.floor(Math.random() * 5) });
   };
 
-  const handleProfile = () => {
-    console.log('Profile clicked');
-    alert('Profile page would open here');
+  const handleBack = () => {
+    setShowNewMessage(false);
+    setShowMessageDetails(false);
   };
 
   return (
@@ -101,9 +103,9 @@ export function WrapperTestPage() {
             List of available ChurchApps applications
           </Alert>
           <AppList
-            apps={mockApps}
-            currentApp="Playground"
-            context={context}
+            appName="Playground"
+            currentUserChurch={context?.userChurch || mockUserChurches[0]}
+            onNavigate={handleNavigate}
           />
         </Box>
 
@@ -113,25 +115,42 @@ export function WrapperTestPage() {
             List of churches for multi-church users
           </Alert>
           <ChurchList
-            churches={mockChurches}
-            selectedChurch={selectedChurch}
-            onSelect={handleChurchSelect}
+            userChurches={mockUserChurches}
+            currentUserChurch={context?.userChurch || mockUserChurches[0]}
+            context={context}
           />
           <Alert severity="success" sx={{ mt: 2 }}>
-            Selected church: {selectedChurch.name}
+            Current church: {context?.userChurch?.church?.name || mockUserChurches[0].church.name}
           </Alert>
         </Box>
 
         <Box>
           <Typography variant="h6" gutterBottom>UserMenu</Typography>
           <Alert severity="info" sx={{ mb: 2 }}>
-            User menu with profile and logout options
+            User menu with profile, church switching, and app navigation
           </Alert>
-          <UserMenu
-            context={context}
-            onLogout={handleLogout}
-            onProfile={handleProfile}
-          />
+          <Alert severity="warning" sx={{ mb: 2 }}>
+            Note: UserMenu shows inline and is normally used within a header component.
+            Click the user avatar to see the dropdown menu.
+          </Alert>
+          <Box sx={{ border: 1, borderColor: 'divider', borderRadius: 1, p: 2, display: 'inline-block' }}>
+            <UserMenu
+              notificationCounts={notificationCounts}
+              loadCounts={loadCounts}
+              userName={context?.person?.name?.display || "John Doe"}
+              profilePicture={context?.person?.photo || "/images/logo-login.png"}
+              userChurches={mockUserChurches}
+              currentUserChurch={context?.userChurch || mockUserChurches[0]}
+              context={context}
+              appName="Playground"
+              onNavigate={handleNavigate}
+            />
+          </Box>
+          <Box sx={{ mt: 2 }}>
+            <Button onClick={loadCounts} variant="outlined" size="small">
+              Refresh Notification Counts
+            </Button>
+          </Box>
         </Box>
 
         <Box>
@@ -145,12 +164,15 @@ export function WrapperTestPage() {
           >
             Compose New Message
           </Button>
-          <NewPrivateMessage
-            show={showNewMessage}
-            onHide={() => setShowNewMessage(false)}
-            context={context}
-            onSent={handleMessageSent}
-          />
+          {showNewMessage && (
+            <Box sx={{ mt: 2, border: 1, borderColor: 'divider', borderRadius: 1, p: 2 }}>
+              <NewPrivateMessage
+                context={context}
+                onSelectMessage={handleSelectMessage}
+                onBack={handleBack}
+              />
+            </Box>
+          )}
         </Box>
 
         <Box>
@@ -185,13 +207,10 @@ export function WrapperTestPage() {
             <Box sx={{ mt: 2, border: 1, borderColor: 'divider', borderRadius: 1, p: 2 }}>
               <Typography variant="h6" gutterBottom>Message Details</Typography>
               <PrivateMessageDetails
-                message={selectedMessage}
+                privateMessage={selectedMessage}
                 context={context}
-                onClose={() => setShowMessageDetails(false)}
-                onReply={() => {
-                  console.log('Reply clicked');
-                  alert('Reply functionality would open here');
-                }}
+                onBack={handleBack}
+                refreshKey={refreshKey}
               />
             </Box>
           )}

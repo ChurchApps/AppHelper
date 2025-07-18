@@ -1,6 +1,6 @@
 import React from "react";
-import { type LoginUserChurchInterface, type PersonInterface, type UserContextInterface, type UserInterface, ApiHelper } from "@churchapps/apphelper";
-import { mockUser, mockPerson, mockUserChurch } from "./mockData";
+import { type LoginUserChurchInterface, type PersonInterface, type UserContextInterface, type UserInterface, ApiHelper, UserHelper } from "@churchapps/apphelper";
+import { mockUser, mockPerson, mockUserChurch, mockUserChurches } from "./mockData";
 
 const UserContext = React.createContext<UserContextInterface | undefined>(undefined);
 
@@ -20,8 +20,20 @@ export const UserProvider = ({ children }: Props) => {
     setUser(mockUser);
     setPerson(mockPerson);
     setUserChurch(mockUserChurch);
-    setUserChurches([mockUserChurch]);
+    setUserChurches(mockUserChurches);
     ApiHelper.isAuthenticated = true;
+    
+    // Initialize ApiHelper with mock data to prevent JWT null errors
+    try {
+      UserHelper.setupApiHelper(mockUserChurch);
+    } catch (error) {
+      console.warn('ApiHelper setup failed in mock environment:', error);
+      // Fallback: manually set up API configs to prevent null errors
+      ApiHelper.apiConfigs = mockUserChurch.apis.map(api => ({
+        ...api,
+        permissions: []
+      }));
+    }
   };
 
   // Mock logout function
@@ -31,6 +43,9 @@ export const UserProvider = ({ children }: Props) => {
     setUserChurch(null);
     setUserChurches(null);
     ApiHelper.isAuthenticated = false;
+    
+    // Clear API configs on logout
+    ApiHelper.clearPermissions();
   };
 
   // Initialize authentication state
