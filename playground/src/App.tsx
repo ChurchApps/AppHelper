@@ -265,20 +265,22 @@ function LoginTestPage() {
       component: SelectChurchRegister,
       description: 'Church selection during registration',
       props: {
-        auth: {
-          registerUser: (userData: any) => {
-            console.log('Mock registration with church:', userData);
-            return Promise.resolve({ user: userData, jwt: 'mock-jwt-token' });
-          }
-        },
-        context: context,
-        jwt: 'mock-jwt-token',
+        initialChurchName: 'Sample Church',
         appName: 'Playground',
-        returnUrl: '/',
-        handleRedirect: (url: string) => {
-          console.log('Redirect to:', url);
-          alert(`Would redirect to: ${url}`);
+        selectChurch: (churchId: string) => {
+          console.log('Church selected:', churchId);
+          alert(`Church selected: ${churchId}`);
+        },
+        registeredChurchCallback: (church: any) => {
+          console.log('Church registered:', church);
+          alert(`Church registered: ${church.name}`);
         }
+      },
+      wrapperStyle: {
+        '& .MuiTextField-root': { marginBottom: 2 },
+        '& .MuiFormControl-root': { marginBottom: 2 },
+        '& button[type="submit"]:empty::after': { content: '"Register"' },
+        '& .MuiButton-root.MuiButton-containedPrimary:empty::after': { content: '"Register"' }
       }
     },
     { 
@@ -286,23 +288,12 @@ function LoginTestPage() {
       component: SelectChurchSearch,
       description: 'Church search component',
       props: {
-        auth: {
-          searchChurches: (query: string) => {
-            console.log('Mock church search:', query);
-            return Promise.resolve([
-              { id: '1', name: 'First Baptist Church', subDomain: 'first', city: 'Dallas', state: 'TX' },
-              { id: '2', name: 'Grace Community Church', subDomain: 'grace', city: 'Austin', state: 'TX' }
-            ]);
-          }
-        },
-        context: context,
-        jwt: 'mock-jwt-token',
         appName: 'Playground',
-        returnUrl: '/',
-        handleRedirect: (url: string) => {
-          console.log('Redirect to:', url);
-          alert(`Would redirect to: ${url}`);
-        }
+        selectChurch: (churchId: string) => {
+          console.log('Church selected:', churchId);
+          alert(`Church selected: ${churchId}`);
+        },
+        includeRegister: true
       }
     }
   ];
@@ -311,8 +302,54 @@ function LoginTestPage() {
     const Component = item.component;
     return (
       <ErrorBoundary>
-        <Box sx={{ border: 1, borderColor: 'divider', borderRadius: 1, p: 2, minHeight: 400 }}>
+        <Box sx={{ 
+          border: 1, 
+          borderColor: 'divider', 
+          borderRadius: 1, 
+          p: 2, 
+          minHeight: 400,
+          ...(item.wrapperStyle || {})
+        }}>
           <Component {...item.props} />
+          {/* Add CSS fix for missing button labels and spacing */}
+          {item.name === 'SelectChurchRegister' && (
+            <style>{`
+              .custom-context-box .MuiTextField-root,
+              .custom-context-box .MuiFormControl-root {
+                margin-bottom: 16px !important;
+              }
+              
+              .MuiButton-containedPrimary:empty::after,
+              button[type="submit"]:empty::after {
+                content: "Register";
+              }
+              
+              /* Fix Grid spacing */
+              .MuiGrid2-root {
+                row-gap: 16px;
+              }
+              
+              /* Fix TextField label positioning to prevent cutoff */
+              .MuiOutlinedInput-root .MuiInputLabel-root {
+                transform: translate(14px, -6px) scale(0.75) !important;
+              }
+              
+              .MuiOutlinedInput-root .MuiInputLabel-root.MuiInputLabel-shrink {
+                transform: translate(14px, -9px) scale(0.75) !important;
+              }
+              
+              /* Alternative fix: Add padding to the notched outline */
+              .MuiOutlinedInput-notchedOutline {
+                padding-top: 2px;
+              }
+              
+              /* Ensure proper spacing for the label background */
+              .MuiInputLabel-root.MuiInputLabel-shrink {
+                background-color: white;
+                padding: 0 4px;
+              }
+            `}</style>
+          )}
         </Box>
       </ErrorBoundary>
     );
