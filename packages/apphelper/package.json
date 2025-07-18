@@ -1,6 +1,6 @@
 {
   "name": "@churchapps/apphelper",
-  "version": "0.4.12",
+  "version": "0.4.13",
   "description": "Library of helper functions for React and NextJS ChurchApps",
   "type": "module",
   "main": "dist/index.js",
