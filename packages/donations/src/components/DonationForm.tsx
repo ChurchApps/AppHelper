@@ -1,7 +1,7 @@
 "use client";
 
  
-import React from "react";
+import React, { useCallback, useMemo } from "react";
 import type { Stripe } from "@stripe/stripe-js";
 import { InputBox, ErrorMessages } from "@churchapps/apphelper";
 import { FundDonations } from ".";
@@ -48,7 +48,7 @@ export const DonationForm: React.FC<Props> = (props) => {
     funds: []
   });
 
-  const loadData = () => {
+  const loadData = useCallback(() => {
     ApiHelper.get("/funds", "GivingApi").then(data => {
       setFunds(data);
       if (data.length) setFundDonations([{ fundId: data[0].id }]);
@@ -56,29 +56,29 @@ export const DonationForm: React.FC<Props> = (props) => {
     ApiHelper.get("/gateways", "GivingApi").then((data) => {
       if (data.length !== 0) setGateway(data[0]);
     });
-  };
+  }, []);
 
-  const handleKeyDown = (e: React.KeyboardEvent<any>) => { if (e.key === "Enter") { e.preventDefault(); handleSave(); } };
+  const handleKeyDown = useCallback((e: React.KeyboardEvent<any>) => { if (e.key === "Enter") { e.preventDefault(); handleSave(); } }, [handleSave]);
 
-  const handleCheckChange = (e: React.SyntheticEvent<Element, Event>, checked: boolean) => {
+  const handleCheckChange = useCallback((e: React.SyntheticEvent<Element, Event>, checked: boolean) => {
     const d = { ...donation } as StripeDonationInterface;
     d.amount = checked ? fundsTotal + transactionFee : fundsTotal;
     const showFee = checked ? transactionFee : 0;
     setTotal(d.amount);
     setPayFee(showFee);
     setDonation(d);
-  };
+  }, [donation, fundsTotal, transactionFee]);
 
-  const handleAutoPayFee = () => {
+  const handleAutoPayFee = useCallback(() => {
     const d = { ...donation } as StripeDonationInterface;
     d.amount = fundsTotal + transactionFee;
     const showFee = transactionFee;
     setTotal(d.amount);
     setPayFee(showFee);
     setDonation(d);
-  };
+  }, [donation, fundsTotal, transactionFee]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement> | SelectChangeEvent<string>) => {
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement> | SelectChangeEvent<string>) => {
     setErrorMessage(null);
     const d = { ...donation } as StripeDonationInterface;
     const value = e.target.value;
@@ -104,19 +104,19 @@ export const DonationForm: React.FC<Props> = (props) => {
         setPayFee(showFee);
     }
     setDonation(d);
-  };
+  }, [donation, props.paymentMethods, fundsTotal, transactionFee]);
 
-  const handleCancel = () => { setDonationType(null); };
-  const handleSave = () => {
+  const handleCancel = useCallback(() => { setDonationType(null); }, []);
+  const handleSave = useCallback(() => {
     if (donation.amount < .5) setErrorMessage(Locale.label("donation.donationForm.tooLow"));
     else setShowDonationPreviewModal(true);
-  };
-  const handleDonationSelect = (type: string) => {
+  }, [donation.amount]);
+  const handleDonationSelect = useCallback((type: string) => {
     const dt = donationType === type ? null : type;
     setDonationType(dt);
-  };
+  }, [donationType]);
 
-  const makeDonation = async (message: string) => {
+  const makeDonation = useCallback(async (message: string) => {
     let results;
 
     const churchObj = {
@@ -138,9 +138,9 @@ export const DonationForm: React.FC<Props> = (props) => {
       setShowDonationPreviewModal(false);
       setErrorMessage(Locale.label("donation.common.error") + ": " + results?.raw?.message);
     }
-  };
+  }, [donation, donationType, props.church?.name, props.church?.subDomain, props.churchLogo, props.donationSuccess]);
 
-  const handleFundDonationsChange = async (fd: FundDonationInterface[]) => {
+  const handleFundDonationsChange = useCallback(async (fd: FundDonationInterface[]) => {
     setErrorMessage(null);
     setFundDonations(fd);
     let totalAmount = 0;
@@ -164,9 +164,9 @@ export const DonationForm: React.FC<Props> = (props) => {
     }
     setTotal(d.amount);
     setDonation(d);
-  };
+  }, [donation, funds, gateway]);
 
-  const getTransactionFee = async (amount: number) => {
+  const getTransactionFee = useCallback(async (amount: number) => {
     if (amount > 0) {
       let dt: string = "";
       if (donation.type === "card") dt = "creditCard";
@@ -181,9 +181,11 @@ export const DonationForm: React.FC<Props> = (props) => {
     } else {
       return 0;
     }
-  };
+  }, [donation.type, props?.church?.id]);
 
-  React.useEffect(loadData, [props.person?.id]);
+  React.useEffect(() => {
+    loadData();
+  }, [loadData, props.person?.id]);
    
   // React.useEffect(() => { gateway && gateway.payFees === true && handleAutoPayFee() }, [fundDonations]);
 
@@ -195,10 +197,10 @@ return (
       <InputBox id="donationBox" aria-label="donation-box" headerIcon="volunteer_activism" headerText={Locale.label("donation.donationForm.donate")} ariaLabelSave="save-button" cancelFunction={donationType ? handleCancel : undefined} saveFunction={donationType ? handleSave : undefined} saveText={Locale.label("donation.donationForm.preview")}>
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Button aria-label="single-donation" size="small" fullWidth style={{ minHeight: "50px" }} variant={donationType === "once" ? "contained" : "outlined"} onClick={() => handleDonationSelect("once")}>{Locale.label("donation.donationForm.make")}</Button>
+            <Button aria-label="single-donation" size="small" fullWidth style={{ minHeight: "50px" }} variant={donationType === "once" ? "contained" : "outlined"} onClick={useCallback(() => handleDonationSelect("once"), [handleDonationSelect])}>{Locale.label("donation.donationForm.make")}</Button>
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Button aria-label="recurring-donation" size="small" fullWidth style={{ minHeight: "50px" }} variant={donationType === "recurring" ? "contained" : "outlined"} onClick={() => handleDonationSelect("recurring")}>{Locale.label("donation.donationForm.makeRecurring")}</Button>
+            <Button aria-label="recurring-donation" size="small" fullWidth style={{ minHeight: "50px" }} variant={donationType === "recurring" ? "contained" : "outlined"} onClick={useCallback(() => handleDonationSelect("recurring"), [handleDonationSelect])}>{Locale.label("donation.donationForm.makeRecurring")}</Button>
           </Grid>
         </Grid>
         {donationType

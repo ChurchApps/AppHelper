@@ -1,6 +1,6 @@
 "use client";
 
-import React, { CSSProperties } from "react";
+import React, { CSSProperties, useCallback, useMemo } from "react";
 import { IconButton, Toolbar, Icon, Typography, Box, Container, Link } from "@mui/material";
 import { UserHelper, AppearanceHelper, PersonHelper, AppearanceInterface, ApiHelper } from "../../helpers";
 import { UserMenu } from "./UserMenu";
@@ -23,21 +23,24 @@ export const SiteWrapper: React.FC<Props> = props => {
   const [churchLogo, setChurchLogo] = React.useState<string>();
   const [open, setOpen] = React.useState(false);
   const [notificationCounts, setNotificationCounts] = React.useState({notificationCount:0, pmCount:0});
-  const toggleDrawer = () => { setOpen(!open); };
+  const toggleDrawer = useCallback(() => { setOpen(!open); }, [open]);
   const isMounted = useMountedState();
 
-  const CustomDrawer = (open) ? OpenDrawer({backgroundColor:props.appearance.wrapperBackground}) : ClosedDrawer({backgroundColor:props.appearance.wrapperBackground});
-  const CustomAppBar = (open) ? OpenDrawerAppBar : ClosedDrawerAppBar;
+  const CustomDrawer = useMemo(() => 
+    (open) ? OpenDrawer({backgroundColor:props.appearance?.wrapperBackground}) : ClosedDrawer({backgroundColor:props.appearance?.wrapperBackground}),
+    [open, props.appearance?.wrapperBackground]
+  );
+  const CustomAppBar = useMemo(() => (open) ? OpenDrawerAppBar : ClosedDrawerAppBar, [open]);
 
-  const loadCounts = () => {
+  const loadCounts = useCallback(() => {
     ApiHelper.get("/notifications/unreadCount", "MessagingApi").then(data => {
       if (!notificationCounts || JSON.stringify(notificationCounts) !== JSON.stringify(data)) setNotificationCounts(data);
     });
-  }
+  }, [notificationCounts]);
 
-  const handleNotification = () => {
+  const handleNotification = useCallback(() => {
     loadCounts();
-  }
+  }, [loadCounts]);
 
 
 
@@ -63,10 +66,13 @@ export const SiteWrapper: React.FC<Props> = props => {
     SocketHelper.addHandler("notification", "notificationBell", handleNotification);
     SocketHelper.init();
     loadCounts();
-  }, []);
+  }, [handleNotification, loadCounts]);
 
-  const boxStyle: CSSProperties = { flexGrow: 1, marginTop: 8, minHeight: "90vh" }
-  if (!props.omitOverflow) boxStyle.overflow = "auto";
+  const boxStyle: CSSProperties = useMemo(() => {
+    const style: CSSProperties = { flexGrow: 1, marginTop: 8, minHeight: "90vh" };
+    if (!props.omitOverflow) style.overflow = "auto";
+    return style;
+  }, [props.omitOverflow]);
 
   return <>
     <CustomAppBar position="absolute">
@@ -81,7 +87,7 @@ export const SiteWrapper: React.FC<Props> = props => {
       </Toolbar>
     </CustomAppBar>
 
-    <CustomDrawer style={{ backgroundColor: props.appearance?.wrapperBackground }} variant="permanent" open={open} onMouseOver={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
+    <CustomDrawer style={{ backgroundColor: props.appearance?.wrapperBackground }} variant="permanent" open={open} onMouseOver={useCallback(() => setOpen(true), [])} onMouseLeave={useCallback(() => setOpen(false), [])}>
       <Toolbar sx={{ display: "flex", alignItems: "center", width: "100%", px: [1] }}>
         <img src={churchLogo || "/images/logo-wrapper.png"} alt="logo" style={{ maxWidth: 170 }} />
         <div style={{ justifyContent: "flex-end", flex: 1, display: "flex" }}>

@@ -42,26 +42,26 @@ interface Props {
 function Editor({ value, onChange = () => {}, mode = "interactive", textAlign = "left", style, placeholder = "Enter some text...", showFloatingEditor = false, ...props }: Props) {
   const [fullScreen, setFullScreen] = React.useState(false);
 
-  const handleChange = (editorState: any) => {
+  const handleChange = useCallback((editorState: any) => {
     editorState.read(() => {
       const markdown = $convertToMarkdownString(PLAYGROUND_TRANSFORMERS);
       onChange(markdown);
     });
-  };
+  }, [onChange]);
 
-  const onError = (error: any) => {
+  const onError = useCallback((error: any) => {
     console.error(error);
-  };
+  }, []);
 
-  const handleModalOnChange = (value: string) => {
+  const handleModalOnChange = useCallback((value: string) => {
     onChange(value);
-  };
+  }, [onChange]);
 
-  const handleCloseFullScreen = () => {
+  const handleCloseFullScreen = useCallback(() => {
     setFullScreen(false);
-  };
+  }, []);
 
-  const initialConfig = {
+  const initialConfig = useMemo(() => ({
     editorState: () => $convertFromMarkdownString(value, PLAYGROUND_TRANSFORMERS),
     namespace: "editor",
     theme,
@@ -88,30 +88,28 @@ function Editor({ value, onChange = () => {}, mode = "interactive", textAlign = 
       },
     ],
     markdown: { transformers: PLAYGROUND_TRANSFORMERS }
-  };
+  }), [value, onError]);
 
-  let textAlignClass = "";
-  switch (textAlign) {
-    case "center":
-      textAlignClass = "text-center";
-      break;
-    case "right":
-      textAlignClass = "text-right";
-      break;
-    case "left":
-    default:
-      textAlignClass = "text-left";
-      break;
-  }
+  const textAlignClass = useMemo(() => {
+    switch (textAlign) {
+      case "center":
+        return "text-center";
+      case "right":
+        return "text-right";
+      case "left":
+      default:
+        return "text-left";
+    }
+  }, [textAlign]);
 
   return (
     <>
       <LexicalComposer initialConfig={initialConfig}>
         <div
           className={mode === "preview" ? `editor-container preview ${textAlignClass}` : `editor-container ${textAlignClass}`}
-          style={Object.assign({ border: mode === "preview" ? "none" : "1px solid lightgray" }, style)}
+          style={useMemo(() => Object.assign({ border: mode === "preview" ? "none" : "1px solid lightgray" }, style), [mode, style])}
         >
-          {mode !== "preview" && (<ToolbarPlugin goFullScreen={() => { setFullScreen(true); }} />)}
+          {mode !== "preview" && (<ToolbarPlugin goFullScreen={useCallback(() => { setFullScreen(true); }, [])} />)}
           <div className="editor-inner">
             {!fullScreen && (
               <RichTextPlugin
