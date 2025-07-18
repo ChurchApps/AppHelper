@@ -66,6 +66,11 @@ export const SiteWrapper: React.FC<Props> = props => {
     SocketHelper.addHandler("notification", "notificationBell", handleNotification);
     SocketHelper.init();
     loadCounts();
+    
+    // Cleanup function to remove handlers and disconnect socket
+    return () => {
+      SocketHelper.removeHandler("notificationBell");
+    };
   }, [handleNotification, loadCounts]);
 
   const boxStyle: CSSProperties = useMemo(() => {
