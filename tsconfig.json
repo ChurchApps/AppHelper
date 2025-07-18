@@ -22,9 +22,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true
   },
-  "include": [
-    "src/**/*"
-  ],
+  "include": [],
   "exclude": [  // Added exclude
     "node_modules",
     "dist"
