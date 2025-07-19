@@ -1,9 +1,10 @@
 "use client";
 
-import { Grid } from "@mui/material";
+import { Grid, Paper, Box, Typography } from "@mui/material";
 import React from "react";
 import { ArrayHelper } from "@churchapps/helpers";
 import { ChurchInterface, GenericSettingInterface } from "@churchapps/helpers";
+import { LocationOn, Church } from "@mui/icons-material";
 
 interface Props {
   selectChurch: (churchId: string) => void,
@@ -12,61 +13,102 @@ interface Props {
 
 export const SelectableChurch: React.FC<Props> = (props) => {
 
-  let logo = "/images/logo.png";
+  let logo: string | null = null;
   if (props.church.settings) {
     let l: GenericSettingInterface = ArrayHelper.getOne(props.church.settings, "keyName", "logoLight");
     if (l?.value) logo = l.value;
   }
   return (
-    <Grid container spacing={3}>
-      <Grid size={{ xs: 12, md: 6 }}>
-        <button 
-          type="button"
-          style={{ 
-            fontSize: "1.125rem", 
-            display: "block", 
-            marginTop: 15, 
-            marginBottom: 15, 
-            background: "none", 
-            border: "none", 
-            cursor: "pointer", 
-            padding: 0, 
-            width: "100%" 
-          }} 
-          onClick={(e) => { e.preventDefault(); props.selectChurch(props.church.id) }}
-          aria-label={`Select church: ${props.church.name}`}
-        >
-          <img src={logo} alt="church logo" className="w-100 img-fluid" />
-        </button>
-      </Grid>
-      <Grid size={{ xs: 12, md: 6 }}>
-        <div>
-          <button 
-            type="button"
-            style={{ 
-              fontSize: "1.125rem", 
-              display: "block", 
-              background: "none", 
-              border: "none", 
-              color: "#3b82f6", 
-              cursor: "pointer", 
-              textDecoration: "underline", 
-              padding: 0, 
-              textAlign: "left" 
-            }} 
-            onClick={(e) => { e.preventDefault(); props.selectChurch(props.church.id) }}
-            aria-label={`Select church: ${props.church.name}`}
+    <Paper 
+      elevation={0}
+      sx={{ 
+        p: 1, 
+        mb: 0.75, 
+        cursor: "pointer",
+        transition: "all 0.2s ease",
+        border: "1px solid transparent",
+        borderRadius: 2,
+        "&:hover": {
+          borderColor: "primary.main",
+          boxShadow: 2,
+          transform: "translateY(-2px)"
+        }
+      }}
+      onClick={() => props.selectChurch(props.church.id)}
+    >
+      <Grid container spacing={2} alignItems="center">
+        <Grid size={{ xs: 12, sm: 5, md: 5 }}>
+          <Box 
+            sx={{ 
+              display: "flex", 
+              justifyContent: "center", 
+              alignItems: "center",
+              height: { xs: 60, sm: 80 },
+              p: 0.5
+            }}
           >
-            {props.church.name}
-          </button>
-          {(props.church.address1) && <div>{props.church.address1}</div>}
-          {(props.church.city || props.church.state) && <div>
-            {props.church.city && props.church.city + ", "}
-            {props.church.state}
-          </div>}
-        </div>
+            {logo ? (
+              <img 
+                src={logo} 
+                alt={`${props.church.name} logo`}
+                style={{ 
+                  width: "100%", 
+                  height: "100%", 
+                  objectFit: "contain" 
+                }} 
+              />
+            ) : (
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "100%",
+                  height: "100%",
+                  backgroundColor: "grey.100",
+                  borderRadius: 2
+                }}
+              >
+                <Church sx={{ fontSize: { xs: 40, sm: 50 }, color: "grey.400" }} />
+              </Box>
+            )}
+          </Box>
+        </Grid>
+        <Grid size={{ xs: 12, sm: 7, md: 7 }}>
+          <Box>
+            <Typography 
+              variant="h6" 
+              component="h3"
+              sx={{ 
+                color: "primary.main",
+                fontWeight: 600,
+                mb: 0.5
+              }}
+            >
+              {props.church.name}
+            </Typography>
+            {(props.church.address1 || props.church.city || props.church.state) && (
+              <Box sx={{ display: "flex", alignItems: "flex-start", color: "text.secondary" }}>
+                <LocationOn sx={{ fontSize: 18, mr: 0.5, mt: 0.3 }} />
+                <Box>
+                  {props.church.address1 && (
+                    <Typography variant="body2">
+                      {props.church.address1}
+                    </Typography>
+                  )}
+                  {(props.church.city || props.church.state) && (
+                    <Typography variant="body2">
+                      {props.church.city && props.church.city}
+                      {props.church.city && props.church.state && ", "}
+                      {props.church.state}
+                    </Typography>
+                  )}
+                </Box>
+              </Box>
+            )}
+          </Box>
+        </Grid>
       </Grid>
-      <span style={{ display: "block", width: "100%", borderTop: "1px solid #ccc", margin: "1rem" }}></span>
-    </Grid>
+    </Paper>
   );
 };

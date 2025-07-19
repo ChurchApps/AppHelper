@@ -5,7 +5,7 @@ import { ChurchInterface, LoginUserChurchInterface } from "@churchapps/helpers";
 import { SelectChurchSearch } from "./SelectChurchSearch";
 import { SelectableChurch } from "./SelectableChurch";
 import { ErrorMessages } from "@churchapps/apphelper"
-import { Dialog, DialogContent, DialogTitle, IconButton, Tooltip } from "@mui/material";
+import { Dialog, DialogContent, DialogTitle, IconButton, Tooltip, Box } from "@mui/material";
 import { Logout } from "@mui/icons-material";
 import { Locale } from "../helpers";
 
@@ -30,21 +30,26 @@ export const SelectChurchModal: React.FC<Props> = (props) => {
 		if (showSearch || props.userChurches?.length === 0) return <SelectChurchSearch selectChurch={props.selectChurch} registeredChurchCallback={props.registeredChurchCallback} appName={props.appName} />
 		else return (<>
 			{props.userChurches?.map(uc => (<SelectableChurch church={uc.church} selectChurch={props.selectChurch} key={uc.church.id} />))}
-			<button 
-				type="button"
-				style={{ 
-					display: "block", 
-					textAlign: "center", 
-					background: "none", 
-					border: "none", 
-					color: "#3b82f6", 
-					cursor: "pointer", 
-					textDecoration: "underline" 
-				}} 
-				onClick={(e) => { e.preventDefault(); setShowSearch(true); }}
-			>
-				{Locale.label("selectChurch.another")}
-			</button>
+			<Box sx={{ textAlign: "center", mt: 3 }}>
+				<button 
+					type="button"
+					style={{ 
+						display: "inline-block", 
+						background: "none", 
+						border: "none", 
+						color: "#3b82f6", 
+						cursor: "pointer", 
+						textDecoration: "none",
+						fontSize: "1rem",
+						transition: "all 0.2s ease"
+					}} 
+					onClick={(e) => { e.preventDefault(); setShowSearch(true); }}
+					onMouseEnter={(e) => e.currentTarget.style.textDecoration = "underline"}
+					onMouseLeave={(e) => e.currentTarget.style.textDecoration = "none"}
+				>
+					{Locale.label("selectChurch.another")}
+				</button>
+			</Box>
 		</>);
 	}
 
@@ -55,7 +60,8 @@ export const SelectChurchModal: React.FC<Props> = (props) => {
 			aria-labelledby="select-church-title"
 			aria-describedby="select-church-content"
 		>
-			<DialogTitle id="select-church-title">{Locale.label("selectChurch.selectChurch")}
+			<DialogTitle id="select-church-title" sx={{ fontSize: "1.5rem", fontWeight: 600 }}>
+				{Locale.label("selectChurch.selectChurch")}
 			</DialogTitle>
 			<Tooltip title="Logout" arrow>
 				<IconButton 
@@ -73,7 +79,7 @@ export const SelectChurchModal: React.FC<Props> = (props) => {
 					<Logout />
 				</IconButton>
 			</Tooltip>
-			<DialogContent id="select-church-content" sx={{ width: 500, maxWidth: "100%" }}>
+			<DialogContent id="select-church-content" sx={{ width: 700, maxWidth: "100%", px: 2, py: 2 }}>
 				<ErrorMessages errors={props.errors} />
 				{getContents()}
 			</DialogContent>
