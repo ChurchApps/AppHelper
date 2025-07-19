@@ -13,5 +13,4 @@ export { SmallButton } from "./SmallButton";
 export { SupportModal } from "./SupportModal";
 export * from "./wrapper";
 export * from "./notes";
-export * from "./reporting";
 export * from "./header";
