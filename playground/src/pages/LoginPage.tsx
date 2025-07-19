@@ -173,19 +173,6 @@ function LoginPageComponent() {
                   appName="AppHelper Playground"
                   appUrl={window.location.origin}
                   returnUrl="/"
-                  loginSuccessOverride={() => {
-                    // Show alert with user and church info from UserHelper
-                    const userName = UserHelper.currentUserChurch?.person?.name?.display || 
-                                   (UserHelper.user?.firstName && UserHelper.user?.lastName ? 
-                                    `${UserHelper.user.firstName} ${UserHelper.user.lastName}` : 
-                                    UserHelper.user?.email || 'Unknown User');
-                    const churchName = UserHelper.currentUserChurch?.church?.name || 'Unknown Church';
-                    
-                    alert(`Login Successful!\n\nUser: ${userName}\nChurch: ${churchName}`);
-                    
-                    // Reset the login form to show it again
-                    window.location.reload();
-                  }}
                   showLogo={false}
                   loginContainerCssProps={{
                     style: {
@@ -194,25 +181,18 @@ function LoginPageComponent() {
                       border: 'none'
                     }
                   }}
-                  handleRedirect={(url: string) => {
-                    // Check if this is a church selection redirect
-                    if (url.includes('/church/')) {
-                      // Extract church ID from URL pattern /church/{churchId}
-                      const churchId = url.split('/church/')[1];
-                      
-                      // Find the selected church
-                      const selectedChurch = context.userChurches?.find(uc => uc.church.id === churchId);
-                      if (selectedChurch) {
-                        // Show alert with church details
-                        alert(`Church Selected:\n\nName: ${selectedChurch.church.name}\nID: ${selectedChurch.church.id}\nAddress: ${selectedChurch.church.address1 || 'N/A'}\nCity: ${selectedChurch.church.city || 'N/A'}, ${selectedChurch.church.state || 'N/A'}`);
-                      }
-                      
-                      // Don't actually redirect, just close modal and return to page
-                      window.location.reload();
-                    } else {
-                      // For other redirects, follow normal behavior
-                      window.location.href = url;
-                    }
+                  handleRedirect={(url: string, user, person, userChurch) => {
+                    // Use the data passed directly from the LoginPage component
+                    const userName = person?.name?.display || 
+                                   (user?.firstName && user?.lastName ? 
+                                    `${user.firstName} ${user.lastName}` : 
+                                    user?.email || 'Unknown User');
+                    const churchName = userChurch?.church?.name || 'Unknown Church';
+                    
+                    alert(`Login Successful!\n\nUser: ${userName}\nChurch: ${churchName}\n\nRedirecting to: ${url}`);
+                    
+                    // For testing, reload instead of redirecting
+                    window.location.reload();
                   }}
                 />
             </Box>

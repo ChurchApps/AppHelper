@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { ErrorMessages, FloatingSupport, Loading } from "@churchapps/apphelper";
-import { LoginResponseInterface, UserContextInterface, ChurchInterface, UserInterface, LoginUserChurchInterface } from "@churchapps/helpers";
+import { LoginResponseInterface, UserContextInterface, ChurchInterface, UserInterface, LoginUserChurchInterface, PersonInterface } from "@churchapps/helpers";
 import { ApiHelper, ArrayHelper, UserHelper, CommonEnvironmentHelper } from "@churchapps/helpers";
 import { AnalyticsHelper, Locale } from "./helpers";
 import { useCookies, CookiesProvider } from "react-cookie"
@@ -32,7 +32,7 @@ interface Props {
 	loginContainerCssProps?: PaperProps;
 	defaultEmail?: string;
 	defaultPassword?: string;
-	handleRedirect?: (url: string) => void; // Function to handle redirects from parent component
+	handleRedirect?: (url: string, user?: UserInterface, person?: PersonInterface, userChurch?: LoginUserChurchInterface) => void; // Function to handle redirects from parent component
 }
 
 const LoginPageContent: React.FC<Props> = ({ showLogo = true, loginContainerCssProps, ...props }) => {
@@ -170,21 +170,25 @@ const LoginPageContent: React.FC<Props> = ({ showLogo = true, loginContainerCssP
 			props.context.setUser(UserHelper.user);
 			props.context.setUserChurches(UserHelper.userChurches)
 			props.context.setUserChurch(UserHelper.currentUserChurch)
+			
+			// Get or claim person before proceeding
+			let person;
 			try {
-				const p = await ApiHelper.get(`/people/${UserHelper.currentUserChurch.person?.id}`, "MembershipApi");
-				if (p) props.context.setPerson(p);
+				person = await ApiHelper.get(`/people/${UserHelper.currentUserChurch.person?.id}`, "MembershipApi");
+				if (person) props.context.setPerson(person);
 			} catch {
 				console.log("claiming person");
-				const personClaim = await ApiHelper.get("/people/claim/" + UserHelper.currentUserChurch.church.id, "MembershipApi");
-				props.context.setPerson(personClaim);
+				person = await ApiHelper.get("/people/claim/" + UserHelper.currentUserChurch.church.id, "MembershipApi");
+				props.context.setPerson(person);
 			}
 
+			// Handle redirect with actual data
 			const search = new URLSearchParams(location?.search);
 			const returnUrl = search.get("returnUrl") || props.returnUrl;
 			if (returnUrl && typeof window !== "undefined") {
 				// Use handleRedirect function if available, otherwise fallback to window.location
 				if (props.handleRedirect) {
-					props.handleRedirect(returnUrl);
+					props.handleRedirect(returnUrl, UserHelper.user, person, UserHelper.currentUserChurch);
 				} else {
 					window.location.href = returnUrl;
 				}
