@@ -1,0 +1,72 @@
+{
+  "name": "@churchapps/apphelper",
+  "version": "0.4.13",
+  "description": "Library of helper functions for React and NextJS ChurchApps",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rimraf dist",
+    "copy-languages": "copyfiles -a public/** dist",
+    "copy-assets": "npm-run-all copy-languages",
+    "tsc": "tsc",
+    "build": "npm-run-all clean tsc copy-assets"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LiveChurchSolutions/AppHelper.git"
+  },
+  "keywords": [
+    "ChurchApps"
+  ],
+  "author": "ChurchApps.org",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/LiveChurchSolutions/AppHelper/issues"
+  },
+  "homepage": "https://github.com/LiveChurchSolutions/AppHelper#readme",
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-router-dom": "^7.6.3"
+  },
+  "dependencies": {
+    "@churchapps/helpers": "^1.0.40",
+    "@emotion/cache": "^11.13.5",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/lab": "^7.0.0-beta.14",
+    "@mui/material": "^7.2.0",
+    "axios": "^1.10.0",
+    "cropperjs": "^2.0.0",
+    "date-fns": "^4.1.0",
+    "flexsearch": "0.8.205",
+    "i18next": "^25.3.1",
+    "i18next-browser-languagedetector": "^8.1.0",
+    "i18next-chained-backend": "^4.6.2",
+    "i18next-http-backend": "^3.0.2",
+    "jwt-decode": "^4.0.0",
+    "mui-tel-input": "^9.0.1",
+    "react-activity": "^2.1.3",
+    "react-cookie": "^8.0.1",
+    "react-cropper": "^2.3.3",
+    "react-csv": "^2.2.2",
+    "react-ga4": "^2.1.0",
+    "react-google-charts": "^5.2.1",
+    "react-i18next": "^15.6.0",
+    "react-to-print": "^3.1.1",
+    "slug": "^11.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.10",
+    "@types/react": "^19.1.8",
+    "@types/react-csv": "^1.1.10",
+    "@types/react-dom": "^19.1.6",
+    "@types/slug": "^5.0.7",
+    "copyfiles": "^2.4.1",
+    "npm-run-all2": "^8.0.4",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.8.3"
+  }
+}
