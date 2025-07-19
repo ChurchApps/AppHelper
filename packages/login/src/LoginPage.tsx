@@ -263,7 +263,7 @@ const LoginPageContent: React.FC<Props> = ({ showLogo = true, loginContainerCssP
 			{getWelcomeBack()}
 			{getCheckEmail()}
 			{!pendingAutoLogin && getInputBox()}
-			<SelectChurchModal show={showSelectModal} userChurches={loginResponse?.userChurches} selectChurch={selectChurch} registeredChurchCallback={handleChurchRegistered} errors={errors} appName={props.appName} />
+			<SelectChurchModal show={showSelectModal} userChurches={loginResponse?.userChurches} selectChurch={selectChurch} registeredChurchCallback={handleChurchRegistered} errors={errors} appName={props.appName} handleRedirect={props.handleRedirect} />
 			<FloatingSupport appName={props.appName} />
 		</>
 	);

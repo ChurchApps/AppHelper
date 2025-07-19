@@ -1,68 +1,20 @@
 import React from 'react';
 import { Container, Box, Typography, Button, Alert, Stack, Tab, Tabs } from '@mui/material';
 import { Link } from 'react-router-dom';
-import { LoginPage as AppHelperLoginPage, Login, ErrorMessages, SelectChurchModal } from '@churchapps/apphelper-login';
+import { LoginPage as AppHelperLoginPage } from '@churchapps/apphelper-login';
 import { ApiHelper, UserHelper } from '@churchapps/apphelper';
 import UserContext from '../UserContext';
 
 function LoginPageComponent() {
   const context = React.useContext(UserContext) as any;
   const [loginMethod, setLoginMethod] = React.useState<'mock' | 'real'>('mock');
-  const [loginTabValue, setLoginTabValue] = React.useState(0);
-  const [errors, setErrors] = React.useState<string[]>([]);
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [showSelectChurch, setShowSelectChurch] = React.useState(false);
+  // State removed - now handled by LoginPage component
 
   const handleMockLogin = () => {
     context?.mockLogin();
   };
 
-  const handleClearError = () => {
-    context.clearLoginError();
-  };
-
-  const handleRealLogin = async (data: { email: string; password: string }) => {
-    setIsSubmitting(true);
-    setErrors([]);
-    
-    try {
-      console.log("Attempting login with:", data);
-      const response = await ApiHelper.postAnonymous("/users/login", data, "MembershipApi");
-      console.log("Login response:", response);
-      
-      if (response.user && response.userChurches && response.userChurches.length > 0) {
-        context.setUser(response.user);
-        context.setUserChurches(response.userChurches);
-        
-        if (response.userChurches.length === 1) {
-          // Only one church, auto-select it
-          const firstUserChurch = response.userChurches[0];
-          context.setPerson(firstUserChurch.person);
-          context.setUserChurch(firstUserChurch);
-          console.log("Login successful - single church!");
-        } else {
-          // Multiple churches, show selection modal
-          setShowSelectChurch(true);
-          console.log("Login successful - multiple churches!");
-        }
-      } else {
-        setErrors(["Invalid credentials"]);
-      }
-    } catch (error: any) {
-      console.error("Login failed:", error);
-      setErrors([error.message || "Login failed. Please try again."]);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleShowRegister = () => {
-    setErrors(["Registration not implemented in playground"]);
-  };
-
-  const handleShowForgot = () => {
-    setErrors(["Forgot password not implemented in playground"]);
-  };
+  // Removed - now handled by LoginPage component
 
   const testApiConnection = async () => {
     console.log("Testing API connection...");
@@ -104,21 +56,7 @@ function LoginPageComponent() {
     context?.mockLogout();
   };
 
-  const handleSelectChurch = (churchId: string) => {
-    // Find the selected church from userChurches
-    const selectedChurch = context.userChurches?.find(uc => uc.church.id === churchId);
-    if (selectedChurch) {
-      // Update the context with the selected church
-      context.setUserChurch(selectedChurch);
-      context.setPerson(selectedChurch.person);
-      
-      // Close the modal
-      setShowSelectChurch(false);
-      
-      // Show alert with church details
-      alert(`Church Selected:\n\nName: ${selectedChurch.church.name}\nID: ${selectedChurch.church.id}\nAddress: ${selectedChurch.church.address1 || 'N/A'}\nCity: ${selectedChurch.church.city || 'N/A'}, ${selectedChurch.church.state || 'N/A'}`);
-    }
-  };
+  // Removed - now handled by LoginPage component
 
   // If user is already logged in, show logout option
   if (context?.user) {
@@ -160,36 +98,8 @@ function LoginPageComponent() {
             >
               Logout
             </Button>
-            
-            {context.userChurches && context.userChurches.length > 1 && (
-              <Button 
-                onClick={() => setShowSelectChurch(true)}
-                variant="outlined" 
-                color="primary" 
-                fullWidth
-                size="large"
-              >
-                Switch Church
-              </Button>
-            )}
           </Stack>
         </Box>
-        
-        {/* Select Church Modal */}
-        {showSelectChurch && context.userChurches && (
-          <SelectChurchModal
-            appName="AppHelper Playground"
-            show={showSelectChurch}
-            userChurches={context.userChurches}
-            selectChurch={handleSelectChurch}
-            errors={[]}
-            handleRedirect={(url: string) => {
-              if (url === "/logout") {
-                handleMockLogout();
-              }
-            }}
-          />
-        )}
       </Container>
     );
   }
@@ -252,22 +162,10 @@ function LoginPageComponent() {
               Connect to the actual MembershipAPI at https://membershipapi.staging.churchapps.org
             </Typography>
             
-            {context.loginError && (
-              <Alert severity="error" sx={{ mb: 2 }} onClose={handleClearError}>
-                {context.loginError}
-              </Alert>
-            )}
-
-            <Tabs value={loginTabValue} onChange={(_, value) => setLoginTabValue(value)} sx={{ mb: 2 }}>
-              <Tab label="AppHelper LoginPage" />
-              <Tab label="Direct Login Component" />
-            </Tabs>
-
-            {loginTabValue === 0 && (
-              <Box>
-                <Typography variant="caption" color="textSecondary" sx={{ display: 'block', mb: 1 }}>
-                  Debug: URL = {window.location.href}
-                </Typography>
+            <Box>
+              <Typography variant="caption" color="textSecondary" sx={{ display: 'block', mb: 1 }}>
+                Debug: URL = {window.location.href}
+              </Typography>
                 <AppHelperLoginPage
                   context={context}
                   jwt=""
@@ -317,21 +215,7 @@ function LoginPageComponent() {
                     }
                   }}
                 />
-              </Box>
-            )}
-
-            {loginTabValue === 1 && (
-              <Box>
-                <ErrorMessages errors={errors} />
-                <Login
-                  login={handleRealLogin}
-                  isSubmitting={isSubmitting}
-                  setShowRegister={handleShowRegister}
-                  setShowForgot={handleShowForgot}
-                  setErrors={setErrors}
-                />
-              </Box>
-            )}
+            </Box>
             
             {/* Debug information */}
             <Box sx={{ mt: 2, p: 2, backgroundColor: '#f5f5f5', borderRadius: 1 }}>
@@ -378,25 +262,6 @@ function LoginPageComponent() {
           </ul>
         </Box>
       </Box>
-      
-      {/* Select Church Modal for after login */}
-      {showSelectChurch && context.userChurches && (
-        <SelectChurchModal
-          appName="AppHelper Playground"
-          show={showSelectChurch}
-          userChurches={context.userChurches}
-          selectChurch={handleSelectChurch}
-          errors={[]}
-          handleRedirect={(url: string) => {
-            if (url === "/logout") {
-              // Clear the partial login state
-              context.setUser(null);
-              context.setUserChurches(null);
-              setShowSelectChurch(false);
-            }
-          }}
-        />
-      )}
     </Container>
   );
 }
