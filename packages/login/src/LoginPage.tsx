@@ -167,7 +167,7 @@ const LoginPageContent: React.FC<Props> = ({ showLogo = true, loginContainerCssP
 		props.context.setUser(UserHelper.user);
 		props.context.setUserChurches(UserHelper.userChurches)
 		props.context.setUserChurch(UserHelper.currentUserChurch)
-		
+
 		// Get or claim person before proceeding
 		let person;
 		try {
@@ -245,10 +245,9 @@ const LoginPageContent: React.FC<Props> = ({ showLogo = true, loginContainerCssP
 
 	const getInputBox = () => {
 		if (showRegister) return (
-			<Box id="loginBox" sx={{ backgroundColor: "#FFF", border: "1px solid #CCC", borderRadius: "5px", padding: "20px" }}>
-				<Typography component="h2" sx={{ fontSize: "32px", fontWeight: 500, lineHeight: 1.2, margin: "0 0 8px 0" }}>{Locale.label("login.createAccount")}</Typography>
-				<Register updateErrors={setErrors} appName={props.appName} appUrl={cleanAppUrl()} loginCallback={handleLoginCallback} userRegisteredCallback={props.userRegisteredCallback} />
-			</Box>
+
+			<Register updateErrors={setErrors} appName={props.appName} appUrl={cleanAppUrl()} loginCallback={handleLoginCallback} userRegisteredCallback={props.userRegisteredCallback} />
+
 		);
 		else if (showForgot) return (<Forgot registerCallback={handleRegisterCallback} loginCallback={handleLoginCallback} />);
 		else if (props.auth) return (<LoginSetPassword setErrors={setErrors} setShowForgot={setShowForgot} isSubmitting={isSubmitting} auth={props.auth} login={login} appName={props.appName} appUrl={cleanAppUrl()} />)
