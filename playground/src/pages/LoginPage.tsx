@@ -1,8 +1,8 @@
 import React from 'react';
 import { Container, Box, Typography, Button, Alert, Stack, Tab, Tabs } from '@mui/material';
 import { Link } from 'react-router-dom';
-import { LoginPage as AppHelperLoginPage, Login, ErrorMessages } from '@churchapps/apphelper-login';
-import { ApiHelper } from '@churchapps/apphelper';
+import { LoginPage as AppHelperLoginPage, Login, ErrorMessages, SelectChurchModal } from '@churchapps/apphelper-login';
+import { ApiHelper, UserHelper } from '@churchapps/apphelper';
 import UserContext from '../UserContext';
 
 function LoginPageComponent() {
@@ -11,6 +11,7 @@ function LoginPageComponent() {
   const [loginTabValue, setLoginTabValue] = React.useState(0);
   const [errors, setErrors] = React.useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [showSelectChurch, setShowSelectChurch] = React.useState(false);
 
   const handleMockLogin = () => {
     context?.mockLogin();
@@ -30,12 +31,20 @@ function LoginPageComponent() {
       console.log("Login response:", response);
       
       if (response.user && response.userChurches && response.userChurches.length > 0) {
-        const firstUserChurch = response.userChurches[0];
         context.setUser(response.user);
-        context.setPerson(firstUserChurch.person);
-        context.setUserChurch(firstUserChurch);
         context.setUserChurches(response.userChurches);
-        console.log("Login successful!");
+        
+        if (response.userChurches.length === 1) {
+          // Only one church, auto-select it
+          const firstUserChurch = response.userChurches[0];
+          context.setPerson(firstUserChurch.person);
+          context.setUserChurch(firstUserChurch);
+          console.log("Login successful - single church!");
+        } else {
+          // Multiple churches, show selection modal
+          setShowSelectChurch(true);
+          console.log("Login successful - multiple churches!");
+        }
       } else {
         setErrors(["Invalid credentials"]);
       }
@@ -95,6 +104,22 @@ function LoginPageComponent() {
     context?.mockLogout();
   };
 
+  const handleSelectChurch = (churchId: string) => {
+    // Find the selected church from userChurches
+    const selectedChurch = context.userChurches?.find(uc => uc.church.id === churchId);
+    if (selectedChurch) {
+      // Update the context with the selected church
+      context.setUserChurch(selectedChurch);
+      context.setPerson(selectedChurch.person);
+      
+      // Close the modal
+      setShowSelectChurch(false);
+      
+      // Show alert with church details
+      alert(`Church Selected:\n\nName: ${selectedChurch.church.name}\nID: ${selectedChurch.church.id}\nAddress: ${selectedChurch.church.address1 || 'N/A'}\nCity: ${selectedChurch.church.city || 'N/A'}, ${selectedChurch.church.state || 'N/A'}`);
+    }
+  };
+
   // If user is already logged in, show logout option
   if (context?.user) {
     return (
@@ -135,8 +160,36 @@ function LoginPageComponent() {
             >
               Logout
             </Button>
+            
+            {context.userChurches && context.userChurches.length > 1 && (
+              <Button 
+                onClick={() => setShowSelectChurch(true)}
+                variant="outlined" 
+                color="primary" 
+                fullWidth
+                size="large"
+              >
+                Switch Church
+              </Button>
+            )}
           </Stack>
         </Box>
+        
+        {/* Select Church Modal */}
+        {showSelectChurch && context.userChurches && (
+          <SelectChurchModal
+            appName="AppHelper Playground"
+            show={showSelectChurch}
+            userChurches={context.userChurches}
+            selectChurch={handleSelectChurch}
+            errors={[]}
+            handleRedirect={(url: string) => {
+              if (url === "/logout") {
+                handleMockLogout();
+              }
+            }}
+          />
+        )}
       </Container>
     );
   }
@@ -223,8 +276,17 @@ function LoginPageComponent() {
                   appUrl={window.location.origin}
                   returnUrl="/"
                   loginSuccessOverride={() => {
-                    // Custom success handler for playground
-                    console.log('Login successful via AppHelper LoginPage');
+                    // Show alert with user and church info from UserHelper
+                    const userName = UserHelper.currentUserChurch?.person?.name?.display || 
+                                   (UserHelper.user?.firstName && UserHelper.user?.lastName ? 
+                                    `${UserHelper.user.firstName} ${UserHelper.user.lastName}` : 
+                                    UserHelper.user?.email || 'Unknown User');
+                    const churchName = UserHelper.currentUserChurch?.church?.name || 'Unknown Church';
+                    
+                    alert(`Login Successful!\n\nUser: ${userName}\nChurch: ${churchName}`);
+                    
+                    // Reset the login form to show it again
+                    window.location.reload();
                   }}
                   showLogo={false}
                   loginContainerCssProps={{
@@ -232,6 +294,26 @@ function LoginPageComponent() {
                       backgroundColor: 'transparent',
                       boxShadow: 'none',
                       border: 'none'
+                    }
+                  }}
+                  handleRedirect={(url: string) => {
+                    // Check if this is a church selection redirect
+                    if (url.includes('/church/')) {
+                      // Extract church ID from URL pattern /church/{churchId}
+                      const churchId = url.split('/church/')[1];
+                      
+                      // Find the selected church
+                      const selectedChurch = context.userChurches?.find(uc => uc.church.id === churchId);
+                      if (selectedChurch) {
+                        // Show alert with church details
+                        alert(`Church Selected:\n\nName: ${selectedChurch.church.name}\nID: ${selectedChurch.church.id}\nAddress: ${selectedChurch.church.address1 || 'N/A'}\nCity: ${selectedChurch.church.city || 'N/A'}, ${selectedChurch.church.state || 'N/A'}`);
+                      }
+                      
+                      // Don't actually redirect, just close modal and return to page
+                      window.location.reload();
+                    } else {
+                      // For other redirects, follow normal behavior
+                      window.location.href = url;
                     }
                   }}
                 />
@@ -296,6 +378,25 @@ function LoginPageComponent() {
           </ul>
         </Box>
       </Box>
+      
+      {/* Select Church Modal for after login */}
+      {showSelectChurch && context.userChurches && (
+        <SelectChurchModal
+          appName="AppHelper Playground"
+          show={showSelectChurch}
+          userChurches={context.userChurches}
+          selectChurch={handleSelectChurch}
+          errors={[]}
+          handleRedirect={(url: string) => {
+            if (url === "/logout") {
+              // Clear the partial login state
+              context.setUser(null);
+              context.setUserChurches(null);
+              setShowSelectChurch(false);
+            }
+          }}
+        />
+      )}
     </Container>
   );
 }
