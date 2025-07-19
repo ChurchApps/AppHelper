@@ -8,11 +8,22 @@ import {
   SiteHeader,
   SiteWrapper
 } from '@churchapps/apphelper';
-import { 
-  mockNavItems,
-  mockChurch,
-  mockAppearance
-} from '../mockData';
+// Mock data replaced with simple inline data
+const simpleNavItems = [
+  { icon: "home", label: "Home", url: "/" },
+  { icon: "people", label: "People", url: "/people" },
+  { icon: "event", label: "Events", url: "/events" }
+];
+
+const simpleChurch = {
+  name: "Sample Church",
+  address1: "123 Main St",
+  city: "Anytown", 
+  state: "ST",
+  zip: "12345",
+  website: "https://example.com"
+};
+
 
 function ComponentPage({ children, title }: { children: React.ReactNode, title: string }) {
   return (
@@ -35,7 +46,6 @@ function ComponentPage({ children, title }: { children: React.ReactNode, title: 
 export function HeaderTestPage() {
   const context = React.useContext(UserContext);
   const [showSiteWrapper, setShowSiteWrapper] = React.useState(false);
-  const [selectedHeader, setSelectedHeader] = React.useState<string | null>(null);
 
   const handleNavigate = (url: string) => {
     console.log('Navigation:', url);
@@ -58,7 +68,7 @@ export function HeaderTestPage() {
 
   const navContent = (
     <Stack spacing={1}>
-      {mockNavItems.map((item, index) => (
+      {simpleNavItems.map((item, index) => (
         <Button
           key={index}
           startIcon={<span className="material-icons">{item.icon}</span>}
@@ -86,13 +96,13 @@ export function HeaderTestPage() {
           <Paper elevation={2} sx={{ p: 2, bgcolor: 'primary.main', color: 'primary.contrastText' }}>
             <Banner>
               <Typography variant="h5" align="center">
-                Welcome to {mockChurch.name}
+                Welcome to {simpleChurch.name}
               </Typography>
               <Typography variant="body1" align="center" sx={{ mt: 1 }}>
-                {mockChurch.address1}, {mockChurch.city}, {mockChurch.state} {mockChurch.zip}
+                {simpleChurch.address1}, {simpleChurch.city}, {simpleChurch.state} {simpleChurch.zip}
               </Typography>
               <Typography variant="body2" align="center" sx={{ mt: 1 }}>
-                Visit us at {mockChurch.website}
+                Visit us at {simpleChurch.website}
               </Typography>
             </Banner>
           </Paper>
@@ -109,7 +119,7 @@ export function HeaderTestPage() {
               primaryMenuItems={primaryMenuItems}
               secondaryMenuLabel="Dashboard"
               secondaryMenuItems={secondaryMenuItems}
-              context={context}
+              context={context!}
               appName="Playground"
               onNavigate={handleNavigate}
             />
@@ -140,10 +150,9 @@ export function HeaderTestPage() {
             <Paper elevation={2} sx={{ height: 400, overflow: 'hidden', position: 'relative' }}>
               <SiteWrapper
                 navContent={navContent}
-                context={context}
+                context={context!}
                 appName="Playground"
                 onNavigate={handleNavigate}
-                appearance={mockAppearance}
               >
                 <Box sx={{ p: 3 }}>
                   <Typography variant="h5" gutterBottom>

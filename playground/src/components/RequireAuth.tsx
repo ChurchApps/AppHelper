@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { Container, Box, Typography, Button, Alert } from '@mui/material';
 import { Link } from 'react-router-dom';
 import UserContext from '../UserContext';
@@ -40,16 +40,6 @@ export const RequireAuth: React.FC<RequireAuthProps> = ({ children }) => {
               Go to Login
             </Button>
             
-            <Button 
-              component={Link} 
-              to={`${location.pathname}?demo=true`}
-              variant="outlined" 
-              color="secondary" 
-              size="large"
-              sx={{ mb: 2 }}
-            >
-              Auto-Login (Demo)
-            </Button>
           </Box>
 
           <Box sx={{ mt: 3, width: '100%' }}>

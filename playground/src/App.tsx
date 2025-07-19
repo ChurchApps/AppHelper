@@ -10,8 +10,8 @@ import RequireAuth from './components/RequireAuth';
 // Import test pages
 import { ComponentsTestPage } from './pages/ComponentsPage';
 import { MarkdownTestPage } from './pages/MarkdownPage';
-import { WrapperTestPage } from './pages/WrapperPage';
-import { DonationTestPage } from './pages/DonationPage';
+import WrapperTestPage from './pages/WrapperPage';
+import DonationTestPage from './pages/DonationPage';
 import { ReportingTestPage } from './pages/ReportingPage';
 import { HeaderTestPage } from './pages/HeaderPage';
 import LoginPageComponent from './pages/LoginPage';
@@ -420,9 +420,12 @@ function LoginTestPage() {
 
               {selectedComponent && (
                 <Box>
-                  <Typography variant="h6" gutterBottom>
-                    {selectedComponent} Component
-                  </Typography>
+                  {/* Don't show duplicate title for components that have their own headers */}
+                  {!['Register', 'LoginPage', 'Forgot', 'LoginSetPassword'].includes(selectedComponent) && (
+                    <Typography variant="h6" gutterBottom>
+                      {selectedComponent} Component
+                    </Typography>
+                  )}
                   <Alert severity="info" sx={{ mb: 2 }}>
                     {loginComponents.find(c => c.name === selectedComponent)?.description}
                   </Alert>

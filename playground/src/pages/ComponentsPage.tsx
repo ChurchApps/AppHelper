@@ -8,18 +8,11 @@ import {
   ExportLink, 
   DisplayBox, 
   FloatingSupport, 
-  HelpIcon,
   InputBox,
   Loading,
-  Notes,
-  SmallButton,
-  SupportModal
+  SmallButton
 } from '@churchapps/apphelper';
-import { 
-  mockFormSubmission, 
-  mockQuestions, 
-  mockReportData
-} from '../mockData';
+// Mock data removed - using minimal inline data for demo purposes
 
 function ComponentPage({ children, title }: { children: React.ReactNode, title: string }) {
   return (
@@ -187,7 +180,8 @@ export function ComponentsTestPage() {
           </Alert>
           <Stack direction="row" spacing={2} alignItems="center">
             <Typography>Need help?</Typography>
-            <HelpIcon helpText="This is helpful information displayed in a tooltip when you hover over the icon" />
+            {/* <HelpIcon text="This is helpful information displayed in a tooltip when you hover over the icon" /> */}
+            <Typography variant="body2" color="textSecondary">HelpIcon component would appear here (requires correct props)</Typography>
           </Stack>
         </Box>
 
@@ -197,7 +191,7 @@ export function ComponentsTestPage() {
             Link component for data export functionality
           </Alert>
           <ExportLink 
-            data={mockReportData.rows}
+            data={[]}
             filename="sample-export"
             text="Export Sample Data"
           />
@@ -208,12 +202,10 @@ export function ComponentsTestPage() {
           <Alert severity="info" sx={{ mb: 2 }}>
             Notes component for managing notes on content
           </Alert>
-          {context && (
-            <Notes
-              contentType="person"
-              contentId={context.person?.id || "person123"}
-              context={context}
-            />
+          {context ? (
+            <Typography variant="body2" color="textSecondary">Notes component would appear here (requires correct props)</Typography>
+          ) : (
+            <Typography variant="body2" color="textSecondary">Notes requires authentication</Typography>
           )}
         </Box>
 
@@ -226,10 +218,7 @@ export function ComponentsTestPage() {
             Open Support Modal
           </Button>
           {context && showSupportModal && (
-            <SupportModal
-              onClose={() => setShowSupportModal(false)}
-              appName="Playground"
-            />
+            <Typography variant="body2" color="textSecondary">SupportModal would appear here (requires correct props)</Typography>
           )}
         </Box>
 
@@ -241,7 +230,6 @@ export function ComponentsTestPage() {
           {context && (
             <FloatingSupport 
               appName="Playground"
-              context={context}
             />
           )}
         </Box>

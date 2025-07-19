@@ -24,7 +24,6 @@ interface Props {
 	appName?: string,
 	appUrl?: string,
 	returnUrl?: string,
-	loginSuccessOverride?: () => void,
 	userRegisteredCallback?: (user: UserInterface) => Promise<void>;
 	churchRegisteredCallback?: (church: ChurchInterface) => Promise<void>;
 	callbackErrors?: string[];
@@ -165,33 +164,30 @@ const LoginPageContent: React.FC<Props> = ({ showLogo = true, loginContainerCssP
 			}
 		}
 
-		if (props.loginSuccessOverride !== undefined) props.loginSuccessOverride();
-		else {
-			props.context.setUser(UserHelper.user);
-			props.context.setUserChurches(UserHelper.userChurches)
-			props.context.setUserChurch(UserHelper.currentUserChurch)
-			
-			// Get or claim person before proceeding
-			let person;
-			try {
-				person = await ApiHelper.get(`/people/${UserHelper.currentUserChurch.person?.id}`, "MembershipApi");
-				if (person) props.context.setPerson(person);
-			} catch {
-				console.log("claiming person");
-				person = await ApiHelper.get("/people/claim/" + UserHelper.currentUserChurch.church.id, "MembershipApi");
-				props.context.setPerson(person);
-			}
+		props.context.setUser(UserHelper.user);
+		props.context.setUserChurches(UserHelper.userChurches)
+		props.context.setUserChurch(UserHelper.currentUserChurch)
+		
+		// Get or claim person before proceeding
+		let person;
+		try {
+			person = await ApiHelper.get(`/people/${UserHelper.currentUserChurch.person?.id}`, "MembershipApi");
+			if (person) props.context.setPerson(person);
+		} catch {
+			console.log("claiming person");
+			person = await ApiHelper.get("/people/claim/" + UserHelper.currentUserChurch.church.id, "MembershipApi");
+			props.context.setPerson(person);
+		}
 
-			// Handle redirect with actual data
-			const search = new URLSearchParams(location?.search);
-			const returnUrl = search.get("returnUrl") || props.returnUrl;
-			if (returnUrl && typeof window !== "undefined") {
-				// Use handleRedirect function if available, otherwise fallback to window.location
-				if (props.handleRedirect) {
-					props.handleRedirect(returnUrl, UserHelper.user, person, UserHelper.currentUserChurch);
-				} else {
-					window.location.href = returnUrl;
-				}
+		// Handle redirect with actual data
+		const search = new URLSearchParams(location?.search);
+		const returnUrl = search.get("returnUrl") || props.returnUrl;
+		if (returnUrl && typeof window !== "undefined") {
+			// Use handleRedirect function if available, otherwise fallback to window.location
+			if (props.handleRedirect) {
+				props.handleRedirect(returnUrl, UserHelper.user, person, UserHelper.currentUserChurch);
+			} else {
+				window.location.href = returnUrl;
 			}
 		}
 	}

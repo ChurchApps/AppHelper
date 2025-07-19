@@ -1,18 +1,12 @@
 import React from 'react';
-import { Container, Box, Typography, Button, Alert, Stack, Tab, Tabs } from '@mui/material';
+import { Container, Box, Typography, Button, Alert } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { LoginPage as AppHelperLoginPage } from '@churchapps/apphelper-login';
-import { ApiHelper, UserHelper } from '@churchapps/apphelper';
+import { ApiHelper } from '@churchapps/apphelper';
 import UserContext from '../UserContext';
 
 function LoginPageComponent() {
   const context = React.useContext(UserContext) as any;
-  const [loginMethod, setLoginMethod] = React.useState<'mock' | 'real'>('mock');
-  // State removed - now handled by LoginPage component
-
-  const handleMockLogin = () => {
-    context?.mockLogin();
-  };
 
   // Removed - now handled by LoginPage component
 
@@ -52,8 +46,8 @@ function LoginPageComponent() {
     }
   };
 
-  const handleMockLogout = () => {
-    context?.mockLogout();
+  const handleLogout = () => {
+    context?.logout();
   };
 
   // Removed - now handled by LoginPage component
@@ -77,7 +71,7 @@ function LoginPageComponent() {
             Church: {context.userChurch?.church?.name}
           </Alert>
 
-          <Stack spacing={2} sx={{ width: '100%' }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: '100%' }}>
             <Button 
               component={Link} 
               to="/" 
@@ -90,7 +84,7 @@ function LoginPageComponent() {
             </Button>
             
             <Button 
-              onClick={handleMockLogout}
+              onClick={handleLogout}
               variant="outlined" 
               color="secondary" 
               fullWidth
@@ -98,13 +92,13 @@ function LoginPageComponent() {
             >
               Logout
             </Button>
-          </Stack>
+          </Box>
         </Box>
       </Container>
     );
   }
 
-  // Show login options
+  // Show real login only
   return (
     <Container maxWidth="sm">
       <Box sx={{ mt: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -113,118 +107,65 @@ function LoginPageComponent() {
         </Typography>
         
         <Alert severity="info" sx={{ mb: 3, width: '100%' }}>
-          <strong>Demo Authentication</strong>
+          <strong>Real Authentication</strong>
           <br />
-          This playground demonstrates how AppHelper components work with authentication.
-          Choose a login method below to test authenticated components.
+          Login with your ChurchApps credentials to access the playground.
         </Alert>
 
-        <Box sx={{ width: '100%', mb: 3 }}>
-          <Tabs 
-            value={loginMethod} 
-            onChange={(_, value) => setLoginMethod(value)}
-            variant="fullWidth"
-            sx={{ borderBottom: 1, borderColor: 'divider' }}
-          >
-            <Tab label="Mock Login" value="mock" />
-            <Tab label="Real Login" value="real" />
-          </Tabs>
-        </Box>
-
-        {loginMethod === 'mock' && (
-          <Stack spacing={3} sx={{ width: '100%' }}>
-            <Box>
-              <Typography variant="h6" gutterBottom>
-                Mock Login (Recommended)
-              </Typography>
-              <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
-                Instantly login with pre-configured mock data to test all components.
-              </Typography>
-              <Button 
-                onClick={handleMockLogin}
-                variant="contained" 
-                color="primary" 
-                fullWidth
-                size="large"
-              >
-                Login with Mock Data
-              </Button>
-            </Box>
-          </Stack>
-        )}
-
-        {loginMethod === 'real' && (
-          <Box sx={{ width: '100%' }}>
-            <Typography variant="h6" gutterBottom>
-              Real Login via MembershipAPI
-            </Typography>
-            <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
-              Connect to the actual MembershipAPI at https://membershipapi.staging.churchapps.org
-            </Typography>
-            
-            <Box>
-              <Typography variant="caption" color="textSecondary" sx={{ display: 'block', mb: 1 }}>
-                Debug: URL = {window.location.href}
-              </Typography>
-                <AppHelperLoginPage
-                  context={context}
-                  jwt=""
-                  auth=""
-                  appName="AppHelper Playground"
-                  appUrl={window.location.origin}
-                  returnUrl="/"
-                  showLogo={false}
-                  loginContainerCssProps={{
-                    style: {
-                      backgroundColor: 'transparent',
-                      boxShadow: 'none',
-                      border: 'none'
-                    }
-                  }}
-                  handleRedirect={(url: string, user, person, userChurch) => {
-                    // Use the data passed directly from the LoginPage component
-                    const userName = person?.name?.display || 
-                                   (user?.firstName && user?.lastName ? 
-                                    `${user.firstName} ${user.lastName}` : 
-                                    user?.email || 'Unknown User');
-                    const churchName = userChurch?.church?.name || 'Unknown Church';
-                    
-                    alert(`Login Successful!\n\nUser: ${userName}\nChurch: ${churchName}\n\nRedirecting to: ${url}`);
-                    
-                    // For testing, reload instead of redirecting
-                    window.location.reload();
-                  }}
-                />
-            </Box>
-            
-            {/* Debug information */}
-            <Box sx={{ mt: 2, p: 2, backgroundColor: '#f5f5f5', borderRadius: 1 }}>
-              <Typography variant="caption" color="textSecondary" sx={{ display: 'block', mb: 1 }}>
-                Debug: Check browser console for API configuration details
-              </Typography>
-              <Button 
-                size="small" 
-                variant="outlined" 
-                onClick={testApiConnection}
-                sx={{ fontSize: '0.75rem' }}
-              >
-                Test API Connection
-              </Button>
-            </Box>
-          </Box>
-        )}
-
-        <Box sx={{ mt: 4, width: '100%' }}>
+        <Box sx={{ width: '100%' }}>
           <Typography variant="h6" gutterBottom>
-            Demo URLs
+            Login via MembershipAPI
           </Typography>
-          <Alert severity="warning" sx={{ mb: 2 }}>
-            <strong>Quick Access:</strong>
-            <br />
-            Add <code>?demo=true</code> to any URL to automatically login
-            <br />
-            Example: <code>http://localhost:3000/?demo=true</code>
-          </Alert>
+          <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+            Connect to the MembershipAPI at https://membershipapi.staging.churchapps.org
+          </Typography>
+          
+          <Box>
+            <AppHelperLoginPage
+              context={context}
+              jwt=""
+              auth=""
+              appName="AppHelper Playground"
+              appUrl={window.location.origin}
+              returnUrl="/"
+              showLogo={false}
+              loginContainerCssProps={{
+                style: {
+                  backgroundColor: 'transparent',
+                  boxShadow: 'none',
+                  border: 'none'
+                }
+              }}
+              handleRedirect={(url: string, user, person, userChurch) => {
+                // Use the data passed directly from the LoginPage component
+                const userName = person?.name?.display || 
+                               (user?.firstName && user?.lastName ? 
+                                `${user.firstName} ${user.lastName}` : 
+                                user?.email || 'Unknown User');
+                const churchName = userChurch?.church?.name || 'Unknown Church';
+                
+                alert(`Login Successful!\n\nUser: ${userName}\nChurch: ${churchName}\n\nRedirecting to: ${url}`);
+                
+                // For testing, reload instead of redirecting
+                window.location.reload();
+              }}
+            />
+          </Box>
+          
+          {/* Debug information */}
+          <Box sx={{ mt: 2, p: 2, backgroundColor: '#f5f5f5', borderRadius: 1 }}>
+            <Typography variant="caption" color="textSecondary" sx={{ display: 'block', mb: 1 }}>
+              Debug: Check browser console for API configuration details
+            </Typography>
+            <Button 
+              size="small" 
+              variant="outlined" 
+              onClick={testApiConnection}
+              sx={{ fontSize: '0.75rem' }}
+            >
+              Test API Connection
+            </Button>
+          </Box>
         </Box>
 
         <Box sx={{ mt: 3, width: '100%' }}>

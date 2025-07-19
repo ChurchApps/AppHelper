@@ -1,6 +1,5 @@
 import React from "react";
-import { type LoginUserChurchInterface, type PersonInterface, type UserContextInterface, type UserInterface, ApiHelper, UserHelper } from "@churchapps/apphelper";
-import { mockUser, mockPerson, mockUserChurch, mockUserChurches } from "./mockData";
+import { type LoginUserChurchInterface, type PersonInterface, type UserContextInterface, type UserInterface, ApiHelper } from "@churchapps/apphelper";
 
 const UserContext = React.createContext<UserContextInterface | undefined>(undefined);
 
@@ -33,31 +32,8 @@ export const UserProvider = ({ children }: Props) => {
     console.log("API configuration set:", ApiHelper.apiConfigs);
   }, []);
 
-  // Mock authentication function
-  const mockLogin = () => {
-    setUser(mockUser);
-    setPerson(mockPerson);
-    setUserChurch(mockUserChurch);
-    setUserChurches(mockUserChurches);
-    ApiHelper.isAuthenticated = true;
-    
-    // Initialize ApiHelper with mock data to prevent JWT null errors
-    try {
-      UserHelper.setupApiHelper(mockUserChurch);
-    } catch (error) {
-      console.warn('ApiHelper setup failed in mock environment:', error);
-      // Fallback: manually set up API configs to prevent null errors
-      ApiHelper.apiConfigs = mockUserChurch.apis.map(api => ({
-        keyName: api.keyName!,
-        url: "https://api.churchapps.org/" + api.keyName!.replace("Api", "").toLowerCase(),
-        jwt: api.jwt,
-        permissions: api.permissions
-      }));
-    }
-  };
-
-  // Mock logout function
-  const mockLogout = () => {
+  // Standard logout function
+  const logout = () => {
     setUser(null);
     setPerson(null);
     setUserChurch(null);
@@ -68,14 +44,6 @@ export const UserProvider = ({ children }: Props) => {
     ApiHelper.clearPermissions();
   };
 
-  // Initialize authentication state
-  React.useEffect(() => {
-    // Check if we should start logged in (for demo purposes)
-    const isDemo = window.location.search.includes('demo=true');
-    if (isDemo) {
-      mockLogin();
-    }
-  }, []);
 
   return (
     <UserContext.Provider
@@ -88,13 +56,11 @@ export const UserProvider = ({ children }: Props) => {
         setUserChurches,
         person,
         setPerson,
-        mockLogin,
-        mockLogout,
+        logout,
         loginError,
         clearLoginError: () => setLoginError(null),
       } as UserContextInterface & { 
-        mockLogin: () => void; 
-        mockLogout: () => void;
+        logout: () => void;
         loginError: string | null;
         clearLoginError: () => void;
       }}
