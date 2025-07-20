@@ -24,6 +24,7 @@ export const SiteHeader = (props:Props) => {
   const CustomAppBar = styled(AppBar)(
     ({ theme }) => ({
       zIndex: theme.zIndex.drawer + 1,
+      backgroundColor: "var(--c1, #1565C0)",
       transition: theme.transitions.create(["width", "margin"], {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen

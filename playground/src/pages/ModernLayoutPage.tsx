@@ -19,6 +19,28 @@ export default function ModernLayoutPage() {
   const context = React.useContext(UserContext);
   const [currentSection, setCurrentSection] = React.useState('people');
 
+  // Add responsive CSS for proper mobile behavior
+  React.useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      /* Mobile styles (≤740px) - hide horizontal secondary menu */
+      @media (max-width: 740px) {
+        #secondaryMenu { display: none !important; }
+        #appBarSpacer { height: 60px; }
+      }
+      
+      /* Desktop styles (≥741px) - hide mobile dropdown secondary menu */
+      @media (min-width: 741px) {
+        #secondaryMenuAlt { display: none !important; }
+      }
+    `;
+    document.head.appendChild(style);
+
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
+
   // Create comprehensive mock context
   const mockContext = React.useMemo(() => {
     if (context?.user) {
@@ -271,16 +293,21 @@ export default function ModernLayoutPage() {
               <Box>
                 <Typography variant="h6" gutterBottom>Live Demo - {sectionConfig.pageHeader.title} Section</Typography>
                 <Paper elevation={3} sx={{ overflow: 'hidden', mb: 2 }}>
-                  <SiteHeader
-                    primaryMenuLabel={sectionConfig.primaryLabel}
-                    primaryMenuItems={primaryMenuItems}
-                    secondaryMenuLabel={sectionConfig.secondaryLabel}
-                    secondaryMenuItems={sectionConfig.secondaryItems}
-                    context={mockContext}
-                    appName="CHUMS"
-                    onNavigate={handleNavigate}
-                  />
-                  <div style={{ '--c1l2': '#1976d2' } as React.CSSProperties}>
+                  <div style={{ 
+                    '--c1': '#1565C0',
+                    '--c1d1': '#1358AD', 
+                    '--c1d2': '#114A99',
+                    '--c1l2': '#1976d2'
+                  } as React.CSSProperties}>
+                    <SiteHeader
+                      primaryMenuLabel={sectionConfig.primaryLabel}
+                      primaryMenuItems={primaryMenuItems}
+                      secondaryMenuLabel={sectionConfig.secondaryLabel}
+                      secondaryMenuItems={sectionConfig.secondaryItems}
+                      context={mockContext}
+                      appName="CHUMS"
+                      onNavigate={handleNavigate}
+                    />
                     <PageHeader
                       icon={sectionConfig.pageHeader.icon}
                       title={sectionConfig.pageHeader.title}
@@ -312,11 +339,12 @@ export default function ModernLayoutPage() {
                 <Alert severity="success" sx={{ mb: 2 }}>
                   <strong>Features Demonstrated:</strong>
                   <br />• Dynamic section switching with contextual PageHeader content
-                  <br />• SiteHeader primary/secondary navigation with proper context
+                  <br />• SiteHeader with ChumsApp's darker blue color scheme (#1565C0)
+                  <br />• Selected state badge in secondary menu (darker blue #114A99)
+                  <br />• Responsive behavior: secondary menu hidden on mobile, shown in dropdown
                   <br />• PageHeader with statistics, actions, and theming
                   <br />• User menu with church switching and profile options
                   <br />• Support drawer with context-aware help articles
-                  <br />• Responsive design that works on mobile and desktop
                 </Alert>
               </Box>
 
