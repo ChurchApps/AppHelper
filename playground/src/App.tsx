@@ -596,7 +596,7 @@ function AppContent() {
         '--c1': '#1565C0',
         '--c1d1': '#1358AD', 
         '--c1d2': '#114A99',
-        '--c1l2': '#1976d2',
+        '--c1l2': '#568BDA',
         width: '100vw',
         marginLeft: 'calc(50% - 50vw)',
         marginTop: '-32px'
