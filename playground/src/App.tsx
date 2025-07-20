@@ -13,7 +13,6 @@ import { MarkdownTestPage } from './pages/MarkdownPage';
 import WrapperTestPage from './pages/WrapperPage';
 import DonationTestPage from './pages/DonationPage';
 import { ReportingTestPage } from './pages/ReportingPage';
-import { HeaderTestPage } from './pages/HeaderPage';
 import LoginPageComponent from './pages/LoginPage';
 
 // Import new package-based pages
@@ -27,7 +26,7 @@ import AppHelperHooksPage from './pages/AppHelperHooksPage';
 import LoginComponentsPage from './pages/LoginComponentsPage';
 import DonationComponentsPage from './pages/DonationComponentsPage';
 import MarkdownComponentsPage from './pages/MarkdownComponentsPage';
-import PageHeaderPage from './pages/PageHeaderPage';
+import ModernLayoutPage from './pages/ModernLayoutPage';
 
 // Test imports from login package
 import { 
@@ -76,16 +75,15 @@ function HomePage() {
               <CardContent>
                 <Typography variant="h6" color="primary">@churchapps/apphelper</Typography>
                 <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
-                  Core package with 47 components: Helpers, UI Components, Wrappers, Notes, Reporting, Headers, Hooks
+                  Core package with 48 components: Helpers, UI Components, Modern Layout, Notes, Reporting, Hooks
                 </Typography>
                 <Stack spacing={1}>
                   <Link to="/apphelper-helpers">Helpers (Re-exported & Local)</Link>
                   <Link to="/apphelper-components">Core Components 🔒</Link>
-                  <Link to="/pageheader">PageHeader Component</Link>
+                  <Link to="/modern-layout">Modern Layout (SiteHeader + PageHeader)</Link>
                   <Link to="/apphelper-wrappers">Wrapper Components 🔒</Link>
                   <Link to="/apphelper-notes">Notes Components 🔒</Link>
                   <Link to="/apphelper-reporting">Reporting Components</Link>
-                  <Link to="/apphelper-headers">Header Components</Link>
                   <Link to="/apphelper-hooks">Hooks</Link>
                 </Stack>
               </CardContent>
@@ -518,8 +516,8 @@ function AppContent() {
         <Route path="/donation-components" element={<RequireAuth><DonationComponentsPage /></RequireAuth>} />
         <Route path="/markdown-components" element={<MarkdownComponentsPage />} />
         
-        {/* PageHeader demo */}
-        <Route path="/pageheader" element={<PageHeaderPage />} />
+        {/* Modern Layout demo combining SiteHeader + PageHeader */}
+        <Route path="/modern-layout" element={<ModernLayoutPage />} />
         
         {/* Legacy routes for backward compatibility */}
         <Route path="/login" element={<LoginTestPage />} />
@@ -528,7 +526,6 @@ function AppContent() {
         <Route path="/wrapper" element={<RequireAuth><WrapperTestPage /></RequireAuth>} />
         <Route path="/donations" element={<RequireAuth><DonationTestPage /></RequireAuth>} />
         <Route path="/reporting" element={<ReportingTestPage />} />
-        <Route path="/header" element={<HeaderTestPage />} />
       </Routes>
     </>
   );

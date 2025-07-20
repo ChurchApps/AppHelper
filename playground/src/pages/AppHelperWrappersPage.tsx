@@ -28,7 +28,7 @@ export default function AppHelperWrappersPage() {
         <Alert severity="info">
           <strong>Wrapper Components from @churchapps/apphelper Package</strong>
           <br />
-          Components that were previously part of the SiteWrapper architecture. Note: SiteWrapper has been deprecated in favor of using SiteHeader with PageHeader components.
+          Components that were previously part of the SiteWrapper architecture. SiteWrapper has been deprecated in favor of modern layout components.
         </Alert>
 
         <Card>
@@ -52,7 +52,7 @@ export default function AppHelperWrappersPage() {
 
             <Alert severity="warning" sx={{ mt: 2, mb: 3 }}>
               <strong>Note:</strong> The SiteWrapper component has been removed from the package. 
-              Please use the new SiteHeader component from the header package along with PageHeader for modern layouts.
+              Please see the <Link to="/modern-layout">Modern Layout page</Link> for the recommended SiteHeader + PageHeader architecture.
             </Alert>
           </CardContent>
         </Card>
@@ -91,7 +91,9 @@ export default function AppHelperWrappersPage() {
     subtitle="Manage members"
   />
   <YourContent />
-</>`}</pre>
+</>
+
+// See the Modern Layout page for a complete working example`}</pre>
             </Box>
           </CardContent>
         </Card>
