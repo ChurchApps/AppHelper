@@ -5,8 +5,8 @@ import { Grid, TextField } from "@mui/material";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { InputBox, ErrorMessages } from "@churchapps/apphelper";
 import { ApiHelper } from "@churchapps/helpers";
-import { Locale } from "../helpers";
-import { PersonInterface, StripePaymentMethod, PaymentMethodInterface, StripeCardUpdateInterface } from "@churchapps/helpers";
+import { Locale, StripePaymentMethod } from "../helpers";
+import { PersonInterface, PaymentMethodInterface, StripeCardUpdateInterface } from "@churchapps/helpers";
 
 interface Props { card: StripePaymentMethod, customerId: string, person: PersonInterface, setMode: any, deletePayment: any, updateList: (message: string) => void }
 

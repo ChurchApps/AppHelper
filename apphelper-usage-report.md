@@ -57,33 +57,43 @@ This report provides a comprehensive analysis of how @churchapps/apphelper modul
 ### Markdown Package (@churchapps/apphelper-markdown)
 - MarkdownEditor, MarkdownPreview, MarkdownPreviewLight, MarkdownModal
 
-## Usage Analysis by Application
+## Usage Analysis by NPM Package
 
-| Module/Class | B1App | ChumsApp | LessonsApp | Internal Usage |
-|--------------|-------|----------|------------|----------------|
-| **HELPERS** |
+### @churchapps/apphelper (Core Package)
+
+#### Helpers (Re-exported from @churchapps/helpers)
+
+| Helper | B1App | ChumsApp | LessonsApp | Internal Usage |
+|--------|-------|----------|------------|----------------|
 | ApiHelper | ✅ (120+ files) | ✅ (50+ files) | ✅ (20+ files) | Used by: SiteWrapper, UserMenu, SupportDrawer |
 | UserHelper | ✅ (53 files) | ✅ (50 files) | ✅ (9 files) | Used by: SiteWrapper, Header components |
 | ArrayHelper | ✅ (25 files) | ✅ (31 files) | ✅ (21 files) | Used by: Multiple components for data manipulation |
 | DateHelper | ✅ (21 files) | ✅ (35 files) | ✅ (7 files) | Used by: ReportHelper, various components |
 | PersonHelper | ✅ (23 files) | ✅ (24 files) | ❌ | Used with PersonInterface |
-| AppearanceHelper | ✅ (13 files) | ❌ | ❌ | Used by: Theme components |
 | CurrencyHelper | ✅ (2 files) | ✅ (9 files) | ❌ | Used by: Donation components |
 | ErrorHelper | ✅ (1 file) | ✅ (2 files) | ✅ (1 file) | Used by: ApiHelper, error handling |
 | CommonEnvironmentHelper | ✅ (6 files) | ✅ (3 files) | ✅ (3 files) | Used by: Environment configuration |
 | UniqueIdHelper | ✅ (7 files) | ✅ (19 files) | ❌ | Used by: ArrayHelper, ID generation |
 | EventHelper | ✅ (5 files) | ❌ | ❌ | Used by: Event management |
+| FileHelper | ✅ (1 file) | ❌ | ❌ | Used by: File operations |
+| Permissions | ✅ (26 files) | ✅ (37 files) | ✅ (5 files) | Used by: Authorization |
+
+#### Local Helpers
+
+| Helper | B1App | ChumsApp | LessonsApp | Internal Usage |
+|--------|-------|----------|------------|----------------|
+| AppearanceHelper | ✅ (13 files) | ❌ | ❌ | Used by: Theme components |
 | AnalyticsHelper | ✅ (1 file) | ✅ (2 files) | ✅ (5 files) | Used by: Login components |
 | SlugHelper | ✅ (3 files) | ❌ | ✅ (2 files) | Used by: URL handling |
 | SocketHelper | ✅ (2 files) | ❌ | ❌ | Used by: Real-time features |
 | ReportHelper | ❌ | ✅ (5 files) | ❌ | Used by: Reporting components |
 | Locale | ✅ (14 files) | ✅ (145 files) | ✅ (3 files) | Used by: All packages for i18n |
-| DonationHelper | ❌ | ✅ (2 files) | ❌ | Used by: Donation processing |
-| FileHelper | ✅ (1 file) | ❌ | ❌ | Used by: File operations |
-| StripePaymentMethod | ✅ (1 file) | ✅ (2 files) | ❌ | Used by: Payment processing |
-| Permissions | ✅ (26 files) | ✅ (37 files) | ✅ (5 files) | Used by: Authorization |
 | createEmotionCache | ❌ | ❌ | ❌ | CSS-in-JS caching helper (unused) |
-| **CORE COMPONENTS** |
+
+#### Core Components
+
+| Component | B1App | ChumsApp | LessonsApp | Internal Usage |
+|-----------|-------|----------|------------|----------------|
 | Loading | ✅ (43 files) | ✅ (40 files) | ✅ | Used by: SiteWrapper, many async components |
 | DisplayBox | ✅ (26 files) | ✅ (28 files) | ✅ | Used by: Notes, many display components |
 | InputBox | ✅ (23 files) | ✅ (35 files) | ✅ | Used by: Forms, ReportFilter, Login/Donation packages |
@@ -96,7 +106,11 @@ This report provides a comprehensive analysis of how @churchapps/apphelper modul
 | HelpIcon | ❌ | ✅ (1 file) | ❌ | Used by: InputBox, DisplayBox |
 | QuestionEdit | ❌ | ✅ (4 files) | ❌ | Used by: Form building |
 | SupportModal | ❌ | ❌ | ✅ | Used by: Support features |
-| **WRAPPER COMPONENTS** |
+
+#### Wrapper Components
+
+| Component | B1App | ChumsApp | LessonsApp | Internal Usage |
+|-----------|-------|----------|------------|----------------|
 | SiteWrapper | ❌ | ✅ (commented) | ❌ | Uses: UserMenu, Drawers, multiple helpers |
 | NavItem | ✅ (3 files) | ✅ (mostly commented) | ✅ | Used by: PrimaryMenu, SecondaryMenuAlt, ChurchList |
 | UserMenu | ✅ (1 file) | ❌ | ❌ | Used by: SiteWrapper |
@@ -104,21 +118,50 @@ This report provides a comprehensive analysis of how @churchapps/apphelper modul
 | AppList | ❌ | ❌ | ❌ | Used by: Navigation |
 | NewPrivateMessage | ✅ (1 file) | ❌ | ❌ | Uses: AddNote, SmallButton |
 | PrivateMessageDetails | ✅ (1 file) | ❌ | ❌ | Uses: SmallButton, Notes |
-| **NOTES COMPONENTS** |
+
+#### Notes Components
+
+| Component | B1App | ChumsApp | LessonsApp | Internal Usage |
+|-----------|-------|----------|------------|----------------|
 | Notes | ✅ (2 files) | ✅ (14 files) | ❌ | Uses: Note, AddNote, DisplayBox, Loading |
 | Note | ✅ (2 files) | ✅ (minimal) | ❌ | Used by: Notes component |
 | AddNote | ✅ (2 files) | ❌ | ❌ | Used by: Notes, NewPrivateMessage |
-| **REPORTING COMPONENTS** |
+
+#### Reporting Components
+
+| Component | B1App | ChumsApp | LessonsApp | Internal Usage |
+|-----------|-------|----------|------------|----------------|
 | ReportWithFilter | ❌ | ✅ | ❌ | Uses: ReportOutput, ReportFilter, Loading |
 | ReportFilter | ❌ | ✅ | ❌ | Uses: InputBox, ReportFilterField |
 | ReportFilterField | ❌ | ✅ | ❌ | Used by: ReportFilter |
 | ReportOutput | ❌ | ✅ | ❌ | Uses: TableReport, ChartReport, TreeReport |
-| **HEADER COMPONENTS** |
+
+#### Header Components
+
+| Component | B1App | ChumsApp | LessonsApp | Internal Usage |
+|-----------|-------|----------|------------|----------------|
 | SiteHeader | ✅ (1 file) | ✅ (1 file) | ✅ | Uses: UserMenu, navigation components |
 | Banner | ✅ (1 file) | ✅ (14 files) | ✅ | Standalone alert component |
-| **HOOKS** |
+
+#### Hooks
+
+| Hook | B1App | ChumsApp | LessonsApp | Internal Usage |
+|------|-------|----------|------------|----------------|
 | useMountedState | ✅ (3 files) | ✅ (21 files) | ❌ | React state management |
-| **DONATION COMPONENTS** |
+
+### @churchapps/apphelper-donations (Donation Package)
+
+#### Helpers
+
+| Helper | B1App | ChumsApp | LessonsApp | Internal Usage |
+|--------|-------|----------|------------|----------------|
+| DonationHelper | ❌ | ✅ (2 files) | ❌ | Used by: Donation processing |
+| StripePaymentMethod | ✅ (1 file) | ✅ (2 files) | ❌ | Used by: Payment processing |
+
+#### Components
+
+| Component | B1App | ChumsApp | LessonsApp | Internal Usage |
+|-----------|-------|----------|------------|----------------|
 | DonationForm | ✅ (1 file) | ✅ (1 file) | ❌ | Uses: DonationPreviewModal |
 | PaymentMethods | ✅ (1 file) | ✅ (1 file) | ❌ | Payment management |
 | RecurringDonations | ✅ (1 file) | ✅ (1 file) | ❌ | Subscription management |
@@ -130,7 +173,11 @@ This report provides a comprehensive analysis of how @churchapps/apphelper modul
 | BankForm | ❌ | ❌ | ❌ | Bank payment form |
 | CardForm | ❌ | ❌ | ❌ | Credit card form |
 | DonationPreviewModal | ❌ | ❌ | ❌ | Used by: DonationForm |
-| **LOGIN COMPONENTS** |
+
+### @churchapps/apphelper-login (Login Package)
+
+| Component | B1App | ChumsApp | LessonsApp | Internal Usage |
+|-----------|-------|----------|------------|----------------|
 | LoginPage | ✅ (1 file) | ✅ (1 file) | ✅ | Uses: Register, SelectChurchModal, other auth components |
 | LogoutPage | ✅ (2 files) | ✅ (1 file) | ✅ | Logout handling |
 | Register | ❌ | ❌ | ✅ | Used by: LoginPage |
@@ -141,31 +188,57 @@ This report provides a comprehensive analysis of how @churchapps/apphelper modul
 | SelectChurchRegister | ❌ | ❌ | ❌ | Church selection during registration |
 | SelectChurchSearch | ❌ | ❌ | ❌ | Uses: SelectableChurch, SelectChurchRegister |
 | SelectableChurch | ❌ | ❌ | ❌ | Used by: SelectChurchModal, SelectChurchSearch |
-| **MARKDOWN COMPONENTS** |
+
+### @churchapps/apphelper-markdown (Markdown Package)
+
+| Component | B1App | ChumsApp | LessonsApp | Internal Usage |
+|-----------|-------|----------|------------|----------------|
 | MarkdownEditor | ✅ (5 files, dynamic import) | ✅ (1 file) | ✅ (extensive) | Complex plugin architecture |
 | MarkdownPreview | ✅ (11 files) | ✅ (1 file) | ❌ | Full markdown preview |
 | MarkdownPreviewLight | ✅ (11 files, dynamic import) | ❌ | ✅ (extensive) | Lightweight preview |
 | MarkdownModal | ❌ | ❌ | ❌ | Modal wrapper for editor |
 
+## Package Usage Summary by Application
+
+### @churchapps/apphelper (Core Package)
+- **B1App**: 32/51 components (62.7%) - Heavy usage across all component categories
+- **ChumsApp**: 26/51 components (51.0%) - Comprehensive usage including reporting components
+- **LessonsApp**: 17/51 components (33.3%) - Focused on core UI components
+
+### @churchapps/apphelper-donations
+- **B1App**: 8/13 components (61.5%) - Strong donation integration including helpers
+- **ChumsApp**: 10/13 components (76.9%) - Most comprehensive donation features including helpers
+- **LessonsApp**: 0/13 components (0%) - No donation functionality
+
+### @churchapps/apphelper-login
+- **B1App**: 3/10 components (30%) - Basic authentication (LoginPage, LogoutPage, Login)
+- **ChumsApp**: 3/10 components (30%) - Basic authentication (LoginPage, LogoutPage, Login)  
+- **LessonsApp**: 3/10 components (30%) - Enhanced authentication (LoginPage, LogoutPage, Register)
+
+### @churchapps/apphelper-markdown
+- **B1App**: 3/4 components (75%) - Heavy markdown usage with dynamic imports
+- **ChumsApp**: 2/4 components (50%) - Basic markdown functionality
+- **LessonsApp**: 2/4 components (50%) - Extensive markdown editing features
+
 ## Usage Patterns by Application
 
 ### B1App (Bible Study Application)
 - **Heavy usage**: 179 files using AppHelper
-- **Components used**: 34/60 (56.7%)
+- **Package breakdown**: Core (62.7%), Donations (61.5%), Login (30%), Markdown (75%)
 - **Primary focus**: Core UI components (Loading: 43 files, DisplayBox: 26 files, InputBox: 23 files), donation processing, markdown editing
 - **Notable**: Uses dynamic imports for MarkdownEditor, strong authentication integration, no reporting components
 - **Specialized features**: Bible sharing, lesson content, donation processing, private messaging
 
 ### ChumsApp (Church Management System)  
 - **Extensive usage**: 185 files using AppHelper
-- **Components used**: 28/45 (62.2%)
+- **Package breakdown**: Core (51.0%), Donations (76.9%), Login (30%), Markdown (50%)
 - **Primary focus**: Complete church management with heavy use of core components (InputBox: 35 files, Loading: 40 files, ErrorMessages: 29 files)
 - **Notable**: Only app using reporting components, extensive notes integration, comprehensive donation features
 - **Specialized features**: Church management, reporting, donation tracking, group management
 
 ### LessonsApp (Lesson Management)
 - **Moderate usage**: 71 files using AppHelper  
-- **Components used**: 17/60 (28.3%)
+- **Package breakdown**: Core (33.3%), Donations (0%), Login (30%), Markdown (50%)
 - **Primary focus**: Basic UI components, authentication pages, extensive markdown editing
 - **Notable**: Mixed import patterns (root vs dist paths), no donation/reporting/notes components, heavy markdown usage
 - **Specialized features**: Lesson content management, markdown editing, educational content
@@ -200,23 +273,74 @@ SiteWrapper (Root)
 ## Recommendations
 
 ### For Package Maintainers
+
+#### @churchapps/apphelper (Core Package)
 1. **Critical components**: Loading, InputBox, ErrorMessages, DisplayBox are universally used across all apps
-2. **App-specific features**: 
-   - Reporting components only used by ChumsApp
-   - Notes components primarily used by ChumsApp and B1App
-   - Wrapper components have limited adoption
-3. **Breaking change impact**: Focus testing on Loading, InputBox, ErrorMessages, and markdown components
-4. **Documentation priority**: Core UI components, then donation components, then specialized features
+2. **Underutilized components**: 
+   - Wrapper components (SiteWrapper, AppList, ChurchList) have limited adoption
+   - createEmotionCache helper is completely unused
+3. **Breaking change impact**: Focus testing on core UI components (Loading, InputBox, ErrorMessages) and helpers (ApiHelper, UserHelper, ArrayHelper)
+
+#### @churchapps/apphelper-donations
+1. **Strong adoption**: B1App (61.5%) and ChumsApp (76.9%) show excellent integration
+2. **Opportunity**: LessonsApp could benefit from donation functionality  
+3. **Helpers integration**: DonationHelper and StripePaymentMethod now properly housed in donation package
+4. **Unused components**: BankForm, CardForm, DonationPreviewModal, RecurringDonationsEdit
+
+#### @churchapps/apphelper-login  
+1. **Consistent usage**: All apps use 30% of components (core authentication flow)
+2. **Opportunity**: Advanced authentication features (Forgot, LoginSetPassword, church selection) are unused
+3. **Focus**: Ensure LoginPage, LogoutPage, Login, Register remain stable
+
+#### @churchapps/apphelper-markdown
+1. **Variable adoption**: B1App (75%) vs ChumsApp/LessonsApp (50%)
+2. **Performance**: Dynamic imports used effectively in B1App for MarkdownEditor
+3. **Unused**: MarkdownModal component across all apps
 
 ### For Application Developers
-1. **B1App**: Excellent component adoption (56.7%), consider adopting reporting components for analytics
-2. **ChumsApp**: Most comprehensive usage (62.2%), good model for full AppHelper integration
-3. **LessonsApp**: Room for expansion (28.3%), could benefit from Notes components and more UI components
-4. **All apps**: 
-   - Standardize import patterns (LessonsApp has mixed patterns)
-   - Consider unused wrapper components for navigation consistency
-   - Monitor bundle size for apps not using donation/reporting features
+
+#### By Package Priority
+1. **Core Package**: Essential for all apps - focus on upgrading core components first
+2. **Login Package**: Stable usage pattern - authentication flows work well
+3. **Donations Package**: High-value feature - B1App and ChumsApp benefit significantly
+4. **Markdown Package**: Specialized use case - optimize based on content management needs
+
+#### Specific Recommendations
+1. **B1App**: 
+   - Excellent overall adoption across packages
+   - Consider reporting components from core package for analytics
+   - Explore advanced login features for enhanced authentication
+
+2. **ChumsApp**: 
+   - Most comprehensive usage - good model for full integration
+   - Consider advanced login features for church management workflows
+   - Optimize markdown package usage for content features
+
+3. **LessonsApp**: 
+   - Significant growth opportunity across all packages
+   - Could benefit from donation functionality for course monetization
+   - Consider Notes components for student interaction
+   - Explore advanced login features for educational workflows
+
+4. **All Apps**:
+   - Standardize import patterns (LessonsApp has mixed root/dist imports)
+   - Monitor bundle size - unused packages may still contribute to build size
+   - Consider package-specific optimization strategies based on usage patterns
 
 ## Conclusion
 
-@churchapps/apphelper demonstrates excellent adoption across all three applications, with ChumsApp showing the most comprehensive usage, B1App showing heavy integration with specific focus areas, and LessonsApp showing solid foundational usage. The package architecture successfully supports diverse application needs while maintaining consistent patterns and reusable components.
+The @churchapps/apphelper ecosystem demonstrates strong adoption across all four npm packages, with clear usage patterns emerging:
+
+### Package-Specific Insights
+- **Core Package**: Universal adoption with Loading, InputBox, ErrorMessages, and DisplayBox as foundational components
+- **Donations Package**: Strong business value with 61-77% adoption in revenue-generating apps (B1App, ChumsApp), now includes donation-specific helpers
+- **Login Package**: Consistent 30% adoption across all apps, indicating mature authentication patterns
+- **Markdown Package**: Variable adoption (50-75%) based on content management needs
+
+### Application Maturity
+- **ChumsApp**: Most comprehensive integration (51.0% core, 76.9% donations) - ideal reference implementation
+- **B1App**: Balanced adoption (62.7% core, 61.5% donations) with specialized focus areas
+- **LessonsApp**: Foundational usage (33.3% core) with significant growth opportunities
+
+### Architecture Success
+The package separation successfully supports diverse application needs while maintaining consistent patterns. The modular approach allows applications to adopt functionality incrementally, with clear dependency relationships and minimal coupling between specialized packages. Recent refactoring moved DonationHelper and StripePaymentMethod to the donations package, improving logical organization and reducing dependencies in the core package. This architecture continues to prove effective for scaling across different church management use cases while maintaining code reusability and consistency.

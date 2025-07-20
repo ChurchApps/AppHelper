@@ -6,14 +6,12 @@ export {
   CommonEnvironmentHelper, 
   CurrencyHelper, 
   DateHelper, 
-  DonationHelper, 
   ErrorHelper, 
   EventHelper, 
   FileHelper, 
   PersonHelper, 
   UserHelper, 
   UniqueIdHelper,
-  StripePaymentMethod,
   Permissions
 } from "@churchapps/helpers";
 

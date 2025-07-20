@@ -4,10 +4,10 @@ import React from "react";
 import { ApiHelper } from "@churchapps/helpers";
 import { Locale } from "../helpers";
 import { InputBox } from "@churchapps/apphelper";
-import { StripePaymentMethod, SubscriptionInterface } from "@churchapps/helpers";
+import { SubscriptionInterface } from "@churchapps/helpers";
 import { FormControl, Grid, InputLabel, MenuItem, Select, TextField } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material";
-import { DonationHelper } from "@churchapps/helpers";
+import { DonationHelper, StripePaymentMethod } from "../helpers";
 
 interface Props { subscriptionUpdated: (message?: string) => void, customerId: string, paymentMethods: StripePaymentMethod[], editSubscription: SubscriptionInterface };
 

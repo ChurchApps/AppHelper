@@ -8,12 +8,12 @@ import { FundDonations } from ".";
 import { DonationPreviewModal } from "../modals/DonationPreviewModal";
 import { ApiHelper, CurrencyHelper, DateHelper } from "@churchapps/helpers";
 import { Locale } from "../helpers";
-import { PersonInterface, StripePaymentMethod, StripeDonationInterface, FundDonationInterface, FundInterface, ChurchInterface } from "@churchapps/helpers";
+import { PersonInterface, StripeDonationInterface, FundDonationInterface, FundInterface, ChurchInterface } from "@churchapps/helpers";
 import {
  Grid, InputLabel, MenuItem, Select, TextField, FormControl, Button, FormControlLabel, Checkbox, FormGroup, Typography 
 } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material";
-import { DonationHelper } from "@churchapps/helpers";
+import { DonationHelper, StripePaymentMethod } from "../helpers";
 
 interface Props { person: PersonInterface, customerId: string, paymentMethods: StripePaymentMethod[], stripePromise: Promise<Stripe>, donationSuccess: (message: string) => void, church?: ChurchInterface, churchLogo?: string }
 

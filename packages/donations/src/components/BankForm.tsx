@@ -6,8 +6,8 @@ import type { SelectChangeEvent } from "@mui/material";
 import { useStripe } from "@stripe/react-stripe-js";
 import { InputBox, ErrorMessages } from "@churchapps/apphelper";
 import { ApiHelper } from "@churchapps/helpers";
-import { Locale } from "../helpers";
-import { PersonInterface, StripePaymentMethod, PaymentMethodInterface, StripeBankAccountInterface, StripeBankAccountUpdateInterface, StripeBankAccountVerifyInterface } from "@churchapps/helpers";
+import { Locale, StripePaymentMethod } from "../helpers";
+import { PersonInterface, PaymentMethodInterface, StripeBankAccountInterface, StripeBankAccountUpdateInterface, StripeBankAccountVerifyInterface } from "@churchapps/helpers";
 
 interface Props { bank: StripePaymentMethod, showVerifyForm: boolean, customerId: string, person: PersonInterface, setMode: any, deletePayment: any, updateList: (message?: string) => void }
 
