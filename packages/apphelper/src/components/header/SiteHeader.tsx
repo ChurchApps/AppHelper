@@ -66,7 +66,7 @@ export const SiteHeader = (props:Props) => {
   return (<>
     <div style={{backgroundColor:"var(--c1)", color: "#FFF"}}>
       <CustomAppBar position="absolute">
-        <Toolbar sx={{ pr: "24px", backgroundColor: "var(--c1)" }}>
+        <Toolbar sx={{ pr: "24px", backgroundColor: "var(--c1)", minHeight: "64px !important" }}>
           <PrimaryMenu label={props.primaryMenuLabel} menuItems={props.primaryMenuItems} onNavigate={props.onNavigate} />
           <SecondaryMenu label={props.secondaryMenuLabel} menuItems={props.secondaryMenuItems} onNavigate={props.onNavigate} />
           <div style={{ flex: 1 }}>
@@ -77,7 +77,7 @@ export const SiteHeader = (props:Props) => {
           <SupportDrawer appName={props.appName} relatedArticles={getRelatedArticles()} />
         </Toolbar>
       </CustomAppBar>
-
+      <div id="appBarSpacer"></div>
     </div>
   </>
   );

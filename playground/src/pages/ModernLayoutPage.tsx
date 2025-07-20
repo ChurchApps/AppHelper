@@ -308,6 +308,7 @@ export default function ModernLayoutPage() {
                       appName="CHUMS"
                       onNavigate={handleNavigate}
                     />
+                    <div id="appBarSpacer"></div>
                     <PageHeader
                       icon={sectionConfig.pageHeader.icon}
                       title={sectionConfig.pageHeader.title}

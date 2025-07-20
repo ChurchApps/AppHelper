@@ -1,11 +1,13 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { CssBaseline, Container, AppBar, Toolbar, Typography, Box, Card, CardContent, Grid, Alert, Stack, Button } from '@mui/material';
+import { CssBaseline, Container, Typography, Box, Card, CardContent, Grid, Alert, Stack, Button } from '@mui/material';
 import { CookiesProvider } from 'react-cookie';
 import { ErrorBoundary } from './ErrorBoundary';
 import UserContext, { UserProvider } from './UserContext';
 import RequireAuth from './components/RequireAuth';
+import { SiteHeader, PageHeader } from '@churchapps/apphelper';
+import HomeIcon from '@mui/icons-material/Home';
 
 // Import test pages
 import { ComponentsTestPage } from './pages/ComponentsPage';
@@ -486,19 +488,124 @@ function LoginTestPage() {
 }
 
 function AppContent() {
-  const hideHeader = false; // No pages need header hidden anymore
+  const context = React.useContext(UserContext);
+  
+  // Create mock context for SiteHeader
+  const mockContext = React.useMemo(() => {
+    if (context?.user) {
+      return context;
+    }
+    return {
+      user: { 
+        id: 'demo-user', 
+        firstName: 'Demo', 
+        lastName: 'User', 
+        email: 'demo@churchapps.org' 
+      },
+      person: { 
+        id: 'demo-person', 
+        name: { display: 'Demo User' },
+        contactInfo: { email: 'demo@churchapps.org' },
+        photo: undefined
+      },
+      userChurch: {
+        church: { 
+          id: 'demo-church', 
+          name: 'AppHelper Playground',
+          address: { city: 'Demo City', state: 'DS' }
+        },
+        person: { 
+          id: 'demo-person', 
+          roles: [],
+          name: { display: 'Demo User' },
+          contactInfo: { email: 'demo@churchapps.org' }
+        },
+        apis: [],
+        jwt: 'mock-jwt',
+        groups: []
+      },
+      userChurches: [
+        { 
+          church: { 
+            id: 'demo-church', 
+            name: 'AppHelper Playground',
+            address: { city: 'Demo City', state: 'DS' }
+          },
+          person: { 
+            id: 'demo-person', 
+            roles: [],
+            name: { display: 'Demo User' },
+            contactInfo: { email: 'demo@churchapps.org' }
+          },
+          apis: [],
+          jwt: 'mock-jwt',
+          groups: []
+        }
+      ],
+      logout: () => {
+        console.log('Logout called');
+      },
+      setUser: () => {},
+      setPerson: () => {},
+      setUserChurch: () => {},
+      setUserChurches: () => {}
+    };
+  }, [context]);
+
+  const handleNavigate = (url: string) => {
+    console.log('Navigation:', url);
+    // Handle navigation for playground
+    if (url === '/') {
+      window.location.href = '/';
+    }
+  };
+
+  const primaryMenuItems = [
+    { url: '/', icon: 'home', label: 'Playground' },
+    { url: '/apphelper-components', icon: 'widgets', label: 'Components' },
+    { url: '/modern-layout', icon: 'view_quilt', label: 'Layout' },
+    { url: '/login-components', icon: 'login', label: 'Login' }
+  ];
+
+  const secondaryMenuItems = [
+    { url: '/', label: 'Home' },
+    { url: '/apphelper-helpers', label: 'Helpers' },
+    { url: '/apphelper-components', label: 'Components' },
+    { url: '/modern-layout', label: 'Modern Layout' }
+  ];
 
   return (
     <>
-      {!hideHeader && (
-        <AppBar position="static">
-          <Toolbar>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              AppHelper Component Playground
-            </Typography>
-          </Toolbar>
-        </AppBar>
-      )}
+      <div style={{ 
+        '--c1': '#1565C0',
+        '--c1d1': '#1358AD', 
+        '--c1d2': '#114A99',
+        '--c1l2': '#1976d2'
+      } as React.CSSProperties}>
+        <SiteHeader
+          primaryMenuLabel="Playground"
+          primaryMenuItems={primaryMenuItems}
+          secondaryMenuLabel="Components"
+          secondaryMenuItems={secondaryMenuItems}
+          context={mockContext}
+          appName="PLAYGROUND"
+          onNavigate={handleNavigate}
+        />
+      </div>
+      <div style={{ 
+        '--c1': '#1565C0',
+        '--c1d1': '#1358AD', 
+        '--c1d2': '#114A99',
+        '--c1l2': '#1976d2',
+        width: '100vw',
+        marginLeft: 'calc(50% - 50vw)'
+      } as React.CSSProperties}>
+        <PageHeader
+          icon={<HomeIcon />}
+          title="AppHelper Component Playground"
+          subtitle="Test and preview all exported components from @churchapps/apphelper"
+        />
+      </div>
       
       <Routes>
         <Route path="/" element={<HomePage />} />
