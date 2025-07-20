@@ -1,10 +1,9 @@
 import React from 'react';
-import { Typography, Box, Alert, List, Button, Card, CardContent } from '@mui/material';
+import { Typography, Box, Alert, List, Button } from '@mui/material';
 import { SiteWrapper, NavItem, UserHelper, Locale } from '@churchapps/apphelper';
 import { useNavigate } from 'react-router-dom';
 import UserContext from '../UserContext';
 import { ErrorBoundary } from '../ErrorBoundary';
-import Icon from '@mui/material/Icon';
 
 export default function SiteWrapperPage() {
   const context = React.useContext(UserContext) as any;
@@ -160,94 +159,6 @@ export default function SiteWrapperPage() {
     </List>
   );
 
-  // Demo content for selected tab with localized labels
-  const renderDemoContent = () => {
-    const contentMap: { [key: string]: { title: string, icon: string, description: string } } = {
-      dashboard: { 
-        title: getLabel('wrapper.dash', 'Dashboard'), 
-        icon: 'dashboard', 
-        description: getLabel('wrapper.dashDescription', 'Welcome to the dashboard! This is where you would see an overview of your church data, recent activities, and quick stats.') 
-      },
-      people: { 
-        title: getLabel('wrapper.ppl', 'People'), 
-        icon: 'people', 
-        description: getLabel('wrapper.pplDescription', 'Manage your church members, visitors, and contacts. Add new people, update information, and track engagement.') 
-      },
-      groups: { 
-        title: getLabel('wrapper.groups', 'Groups'), 
-        icon: 'group', 
-        description: getLabel('wrapper.groupsDescription', 'Organize and manage small groups, ministries, and teams. Track attendance and member participation.') 
-      },
-      attendance: { 
-        title: getLabel('wrapper.att', 'Attendance'), 
-        icon: 'event_available', 
-        description: getLabel('wrapper.attDescription', 'Record and analyze attendance for services, events, and groups. View trends and generate reports.') 
-      },
-      donations: { 
-        title: getLabel('wrapper.don', 'Donations'), 
-        icon: 'volunteer_activism', 
-        description: getLabel('wrapper.donDescription', 'Process donations, manage funds, track giving trends, and generate contribution statements.') 
-      },
-      forms: { 
-        title: getLabel('wrapper.form', 'Forms'), 
-        icon: 'description', 
-        description: getLabel('wrapper.formDescription', 'Create and manage forms for events, registrations, surveys, and data collection.') 
-      },
-      reports: { 
-        title: getLabel('wrapper.reports', 'Reports'), 
-        icon: 'assessment', 
-        description: getLabel('wrapper.reportsDescription', 'Generate various reports for attendance, giving, membership, and more. Export data for analysis.') 
-      },
-      settings: { 
-        title: getLabel('wrapper.set', 'Settings'), 
-        icon: 'settings', 
-        description: getLabel('wrapper.setDescription', 'Configure church settings, manage users and permissions, customize appearance, and set up integrations.') 
-      }
-    };
-
-    const content = contentMap[selectedTab] || contentMap.dashboard;
-
-    return (
-      <Box sx={{ p: 3 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-          <Icon sx={{ fontSize: 40, mr: 2, color: 'primary.main' }}>{content.icon}</Icon>
-          <Typography variant="h4">{content.title}</Typography>
-        </Box>
-        
-        <Card sx={{ mb: 3 }}>
-          <CardContent>
-            <Typography variant="body1" paragraph>
-              {content.description}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              This is a demo content area. In a real application, this would show the actual {content.title.toLowerCase()} interface.
-            </Typography>
-          </CardContent>
-        </Card>
-
-        <Alert severity="info" sx={{ mb: 3 }}>
-          <strong>SiteWrapper Features Demonstrated:</strong>
-          <br />• Responsive navigation drawer (click menu icon to toggle)
-          <br />• User menu with profile and church switching
-          <br />• Notification system integration
-          <br />• Theme customization support
-          <br />• Mobile-friendly responsive design
-        </Alert>
-
-        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-          <Button variant="contained" onClick={() => alert(`${getLabel('common.save', 'Save')} ${content.title}`)}>
-            {getLabel('common.save', 'Save')}
-          </Button>
-          <Button variant="outlined" onClick={() => alert(`${getLabel('common.edit', 'Edit')} ${content.title}`)}>
-            {getLabel('common.edit', 'Edit')}
-          </Button>
-          <Button variant="outlined" onClick={() => alert(`${getLabel('common.add', 'Add')} ${content.title}`)}>
-            {getLabel('common.add', 'Add')}
-          </Button>
-        </Box>
-      </Box>
-    );
-  };
 
 
   // Fallback render if something is broken
@@ -278,30 +189,10 @@ export default function SiteWrapperPage() {
             logoDark: '/images/logo-dark.png'
           }}
         >
-          <Box sx={{ p: 2 }}>
-            <Alert severity={context?.user ? 'success' : 'info'} sx={{ mb: 3 }}>
-              <strong>{getLabel('wrapper.demo', 'SiteWrapper Demo')}</strong>
-              <br />
-              {context?.user 
-                ? (() => {
-                    const template = getLabel('wrapper.loggedInAs', 'Logged in as {name} - Full authentication features available');
-                    const userName = context.person?.name?.display || context.user.email || 'Unknown User';
-                    return template.replace('{name}', userName);
-                  })()
-                : getLabel('wrapper.usingMockData', 'Using mock data for demonstration - Login for full functionality')
-              }
-            </Alert>
-            
-            {renderDemoContent()}
-            
-            <Box sx={{ mt: 4 }}>
-              <Button 
-                variant="outlined" 
-                onClick={() => navigate('/apphelper-wrappers')}
-              >
-                ← {getLabel('common.back', 'Back')} to {getLabel('wrapper.components', 'Wrapper Components')}
-              </Button>
-            </Box>
+          <Box sx={{ p: 3, display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '200px' }}>
+            <Typography variant="h3" component="h1" color="primary">
+              Hello World
+            </Typography>
           </Box>
         </SiteWrapper>
       </ErrorBoundary>

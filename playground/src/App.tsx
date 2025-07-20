@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline, Container, AppBar, Toolbar, Typography, Box, Card, CardContent, Grid, Alert, Stack, Button } from '@mui/material';
 import { CookiesProvider } from 'react-cookie';
@@ -486,6 +486,54 @@ function LoginTestPage() {
   );
 }
 
+function AppContent() {
+  const location = useLocation();
+  const hideHeader = location.pathname === '/sitewrapper-demo';
+
+  return (
+    <>
+      {!hideHeader && (
+        <AppBar position="static">
+          <Toolbar>
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+              AppHelper Component Playground
+            </Typography>
+          </Toolbar>
+        </AppBar>
+      )}
+      
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/auth" element={<LoginPageComponent />} />
+        
+        {/* Package-based organization */}
+        <Route path="/apphelper-helpers" element={<AppHelperHelpersPage />} />
+        <Route path="/apphelper-components" element={<RequireAuth><AppHelperComponentsPage /></RequireAuth>} />
+        <Route path="/apphelper-wrappers" element={<RequireAuth><AppHelperWrappersPage /></RequireAuth>} />
+        <Route path="/apphelper-notes" element={<RequireAuth><AppHelperNotesPage /></RequireAuth>} />
+        <Route path="/apphelper-reporting" element={<AppHelperReportingPage />} />
+        <Route path="/apphelper-headers" element={<AppHelperHeadersPage />} />
+        <Route path="/apphelper-hooks" element={<AppHelperHooksPage />} />
+        <Route path="/login-components" element={<LoginComponentsPage />} />
+        <Route path="/donation-components" element={<RequireAuth><DonationComponentsPage /></RequireAuth>} />
+        <Route path="/markdown-components" element={<MarkdownComponentsPage />} />
+        
+        {/* SiteWrapper demo */}
+        <Route path="/sitewrapper-demo" element={<SiteWrapperPage />} />
+        
+        {/* Legacy routes for backward compatibility */}
+        <Route path="/login" element={<LoginTestPage />} />
+        <Route path="/components" element={<RequireAuth><ComponentsTestPage /></RequireAuth>} />
+        <Route path="/markdown" element={<MarkdownTestPage />} />
+        <Route path="/wrapper" element={<RequireAuth><WrapperTestPage /></RequireAuth>} />
+        <Route path="/donations" element={<RequireAuth><DonationTestPage /></RequireAuth>} />
+        <Route path="/reporting" element={<ReportingTestPage />} />
+        <Route path="/header" element={<HeaderTestPage />} />
+      </Routes>
+    </>
+  );
+}
+
 function App() {
   return (
     <CookiesProvider>
@@ -493,42 +541,7 @@ function App() {
         <CssBaseline />
         <UserProvider>
           <Router>
-            <AppBar position="static">
-              <Toolbar>
-                <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                  AppHelper Component Playground
-                </Typography>
-              </Toolbar>
-            </AppBar>
-            
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/auth" element={<LoginPageComponent />} />
-              
-              {/* Package-based organization */}
-              <Route path="/apphelper-helpers" element={<AppHelperHelpersPage />} />
-              <Route path="/apphelper-components" element={<RequireAuth><AppHelperComponentsPage /></RequireAuth>} />
-              <Route path="/apphelper-wrappers" element={<RequireAuth><AppHelperWrappersPage /></RequireAuth>} />
-              <Route path="/apphelper-notes" element={<RequireAuth><AppHelperNotesPage /></RequireAuth>} />
-              <Route path="/apphelper-reporting" element={<AppHelperReportingPage />} />
-              <Route path="/apphelper-headers" element={<AppHelperHeadersPage />} />
-              <Route path="/apphelper-hooks" element={<AppHelperHooksPage />} />
-              <Route path="/login-components" element={<LoginComponentsPage />} />
-              <Route path="/donation-components" element={<RequireAuth><DonationComponentsPage /></RequireAuth>} />
-              <Route path="/markdown-components" element={<MarkdownComponentsPage />} />
-              
-              {/* SiteWrapper demo */}
-              <Route path="/sitewrapper-demo" element={<SiteWrapperPage />} />
-              
-              {/* Legacy routes for backward compatibility */}
-              <Route path="/login" element={<LoginTestPage />} />
-              <Route path="/components" element={<RequireAuth><ComponentsTestPage /></RequireAuth>} />
-              <Route path="/markdown" element={<MarkdownTestPage />} />
-              <Route path="/wrapper" element={<RequireAuth><WrapperTestPage /></RequireAuth>} />
-              <Route path="/donations" element={<RequireAuth><DonationTestPage /></RequireAuth>} />
-              <Route path="/reporting" element={<ReportingTestPage />} />
-              <Route path="/header" element={<HeaderTestPage />} />
-            </Routes>
+            <AppContent />
           </Router>
         </UserProvider>
       </ThemeProvider>
