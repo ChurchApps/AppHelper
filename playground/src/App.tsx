@@ -27,6 +27,7 @@ import AppHelperHooksPage from './pages/AppHelperHooksPage';
 import LoginComponentsPage from './pages/LoginComponentsPage';
 import DonationComponentsPage from './pages/DonationComponentsPage';
 import MarkdownComponentsPage from './pages/MarkdownComponentsPage';
+import SiteWrapperPage from './pages/SiteWrapperPage';
 
 // Test imports from login package
 import { 
@@ -515,6 +516,9 @@ function App() {
               <Route path="/login-components" element={<LoginComponentsPage />} />
               <Route path="/donation-components" element={<RequireAuth><DonationComponentsPage /></RequireAuth>} />
               <Route path="/markdown-components" element={<MarkdownComponentsPage />} />
+              
+              {/* SiteWrapper demo */}
+              <Route path="/sitewrapper-demo" element={<SiteWrapperPage />} />
               
               {/* Legacy routes for backward compatibility */}
               <Route path="/login" element={<LoginTestPage />} />

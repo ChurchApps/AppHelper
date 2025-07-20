@@ -1,12 +1,13 @@
 import React from 'react';
 import { Container, Box, Typography, Button, Alert } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { LoginPage as AppHelperLoginPage } from '@churchapps/apphelper-login';
 import { ApiHelper } from '@churchapps/apphelper';
 import UserContext from '../UserContext';
 
 function LoginPageComponent() {
   const context = React.useContext(UserContext) as any;
+  const navigate = useNavigate();
 
   // Removed - now handled by LoginPage component
 
@@ -144,10 +145,10 @@ function LoginPageComponent() {
                                 user?.email || 'Unknown User');
                 const churchName = userChurch?.church?.name || 'Unknown Church';
                 
-                alert(`Login Successful!\n\nUser: ${userName}\nChurch: ${churchName}\n\nRedirecting to: ${url}`);
+                console.log(`Login Successful! User: ${userName}, Church: ${churchName}, Redirecting to: ${url}`);
                 
-                // For testing, reload instead of redirecting
-                window.location.reload();
+                // Navigate to the playground instead of reloading
+                navigate(url || '/');
               }}
             />
           </Box>
