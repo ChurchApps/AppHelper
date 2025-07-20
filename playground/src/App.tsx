@@ -16,6 +16,18 @@ import { ReportingTestPage } from './pages/ReportingPage';
 import { HeaderTestPage } from './pages/HeaderPage';
 import LoginPageComponent from './pages/LoginPage';
 
+// Import new package-based pages
+import AppHelperHelpersPage from './pages/AppHelperHelpersPage';
+import AppHelperComponentsPage from './pages/AppHelperComponentsPage';
+import AppHelperWrappersPage from './pages/AppHelperWrappersPage';
+import AppHelperNotesPage from './pages/AppHelperNotesPage';
+import AppHelperReportingPage from './pages/AppHelperReportingPage';
+import AppHelperHeadersPage from './pages/AppHelperHeadersPage';
+import AppHelperHooksPage from './pages/AppHelperHooksPage';
+import LoginComponentsPage from './pages/LoginComponentsPage';
+import DonationComponentsPage from './pages/DonationComponentsPage';
+import MarkdownComponentsPage from './pages/MarkdownComponentsPage';
+
 // Test imports from login package
 import { 
   LoginPage, 
@@ -50,19 +62,85 @@ function HomePage() {
           <Link to="/auth">Go to Authentication</Link> or add <code>?demo=true</code> to any URL for instant access.
         </Alert>
         
+        <Typography variant="h5" component="h2" gutterBottom sx={{ mt: 4 }}>
+          Component Packages
+        </Typography>
+        <Typography variant="body1" color="textSecondary" paragraph>
+          Organized by npm package for comprehensive coverage based on apphelper-usage-report.md
+        </Typography>
+        
         <Grid container spacing={3} sx={{ mt: 2 }}>
-          <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-            <Card>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Card sx={{ height: '100%' }}>
               <CardContent>
-                <Typography variant="h6">Login Components</Typography>
-                <Typography variant="body2" color="textSecondary">
-                  Authentication components from @churchapps/apphelper-login
+                <Typography variant="h6" color="primary">@churchapps/apphelper</Typography>
+                <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+                  Core package with 47 components: Helpers, UI Components, Wrappers, Notes, Reporting, Headers, Hooks
                 </Typography>
-                <Link to="/login">View Components</Link>
+                <Stack spacing={1}>
+                  <Link to="/apphelper-helpers">Helpers (Re-exported & Local)</Link>
+                  <Link to="/apphelper-components">Core Components 🔒</Link>
+                  <Link to="/apphelper-wrappers">Wrapper Components 🔒</Link>
+                  <Link to="/apphelper-notes">Notes Components 🔒</Link>
+                  <Link to="/apphelper-reporting">Reporting Components</Link>
+                  <Link to="/apphelper-headers">Header Components</Link>
+                  <Link to="/apphelper-hooks">Hooks</Link>
+                </Stack>
               </CardContent>
             </Card>
           </Grid>
           
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Card sx={{ height: '100%' }}>
+              <CardContent>
+                <Typography variant="h6" color="primary">@churchapps/apphelper-login</Typography>
+                <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+                  Authentication package with 10 components: Login forms, registration, password reset, church selection
+                </Typography>
+                <Stack spacing={1}>
+                  <Link to="/login-components">All Login Components</Link>
+                </Stack>
+              </CardContent>
+            </Card>
+          </Grid>
+          
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Card sx={{ height: '100%' }}>
+              <CardContent>
+                <Typography variant="h6" color="primary">@churchapps/apphelper-donations</Typography>
+                <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+                  Stripe donation package with 13 components: Payment forms, recurring donations, fund management 🔒
+                </Typography>
+                <Stack spacing={1}>
+                  <Link to="/donation-components">All Donation Components 🔒</Link>
+                </Stack>
+              </CardContent>
+            </Card>
+          </Grid>
+          
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Card sx={{ height: '100%' }}>
+              <CardContent>
+                <Typography variant="h6" color="primary">@churchapps/apphelper-markdown</Typography>
+                <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+                  Lexical rich text package with 4 components: Editor, preview variants, modal wrapper
+                </Typography>
+                <Stack spacing={1}>
+                  <Link to="/markdown-components">All Markdown Components</Link>
+                </Stack>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+        
+        <Typography variant="h5" component="h2" gutterBottom sx={{ mt: 4 }}>
+          Legacy Organization (Deprecated)
+        </Typography>
+        <Alert severity="warning" sx={{ mb: 2 }}>
+          The following organization is deprecated. Use the package-based organization above for complete coverage.
+        </Alert>
+        
+        <Grid container spacing={3} sx={{ mt: 1 }}>
           <Grid size={{ xs: 12, sm: 6, md: 4 }}>
             <Card>
               <CardContent>
@@ -505,6 +583,20 @@ function App() {
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/auth" element={<LoginPageComponent />} />
+              
+              {/* Package-based organization */}
+              <Route path="/apphelper-helpers" element={<AppHelperHelpersPage />} />
+              <Route path="/apphelper-components" element={<RequireAuth><AppHelperComponentsPage /></RequireAuth>} />
+              <Route path="/apphelper-wrappers" element={<RequireAuth><AppHelperWrappersPage /></RequireAuth>} />
+              <Route path="/apphelper-notes" element={<RequireAuth><AppHelperNotesPage /></RequireAuth>} />
+              <Route path="/apphelper-reporting" element={<AppHelperReportingPage />} />
+              <Route path="/apphelper-headers" element={<AppHelperHeadersPage />} />
+              <Route path="/apphelper-hooks" element={<AppHelperHooksPage />} />
+              <Route path="/login-components" element={<LoginComponentsPage />} />
+              <Route path="/donation-components" element={<RequireAuth><DonationComponentsPage /></RequireAuth>} />
+              <Route path="/markdown-components" element={<MarkdownComponentsPage />} />
+              
+              {/* Legacy routes for backward compatibility */}
               <Route path="/login" element={<LoginTestPage />} />
               <Route path="/components" element={<RequireAuth><ComponentsTestPage /></RequireAuth>} />
               <Route path="/markdown" element={<MarkdownTestPage />} />

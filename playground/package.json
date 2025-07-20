@@ -27,7 +27,19 @@
     "react-google-recaptcha": "^3.1.0",
     "react-i18next": "^15.6.0",
     "i18next": "^25.3.1",
-    "react-ga4": "^2.1.0"
+    "react-ga4": "^2.1.0",
+    "@lexical/code": "^0.33.0",
+    "@lexical/link": "^0.33.0",
+    "@lexical/list": "^0.33.0",
+    "@lexical/markdown": "^0.33.0",
+    "@lexical/react": "^0.33.0",
+    "@lexical/rich-text": "^0.33.0",
+    "@lexical/selection": "^0.33.0",
+    "@lexical/table": "^0.33.0",
+    "@lexical/utils": "^0.33.0",
+    "lexical": "^0.33.0",
+    "marked": "^16.0.0",
+    "material-symbols": "^0.32.0"
   },
   "devDependencies": {
     "@types/react": "^19.1.8",
