@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline, Container, AppBar, Toolbar, Typography, Box, Card, CardContent, Grid, Alert, Stack, Button } from '@mui/material';
 import { CookiesProvider } from 'react-cookie';
@@ -27,7 +27,7 @@ import AppHelperHooksPage from './pages/AppHelperHooksPage';
 import LoginComponentsPage from './pages/LoginComponentsPage';
 import DonationComponentsPage from './pages/DonationComponentsPage';
 import MarkdownComponentsPage from './pages/MarkdownComponentsPage';
-import SiteWrapperPage from './pages/SiteWrapperPage';
+import PageHeaderPage from './pages/PageHeaderPage';
 
 // Test imports from login package
 import { 
@@ -81,6 +81,7 @@ function HomePage() {
                 <Stack spacing={1}>
                   <Link to="/apphelper-helpers">Helpers (Re-exported & Local)</Link>
                   <Link to="/apphelper-components">Core Components 🔒</Link>
+                  <Link to="/pageheader">PageHeader Component</Link>
                   <Link to="/apphelper-wrappers">Wrapper Components 🔒</Link>
                   <Link to="/apphelper-notes">Notes Components 🔒</Link>
                   <Link to="/apphelper-reporting">Reporting Components</Link>
@@ -487,8 +488,7 @@ function LoginTestPage() {
 }
 
 function AppContent() {
-  const location = useLocation();
-  const hideHeader = location.pathname === '/sitewrapper-demo';
+  const hideHeader = false; // No pages need header hidden anymore
 
   return (
     <>
@@ -518,8 +518,8 @@ function AppContent() {
         <Route path="/donation-components" element={<RequireAuth><DonationComponentsPage /></RequireAuth>} />
         <Route path="/markdown-components" element={<MarkdownComponentsPage />} />
         
-        {/* SiteWrapper demo */}
-        <Route path="/sitewrapper-demo" element={<SiteWrapperPage />} />
+        {/* PageHeader demo */}
+        <Route path="/pageheader" element={<PageHeaderPage />} />
         
         {/* Legacy routes for backward compatibility */}
         <Route path="/login" element={<LoginTestPage />} />

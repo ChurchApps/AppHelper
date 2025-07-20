@@ -1,6 +1,6 @@
 import React from 'react';
-import { Container, Box, Typography, Alert, Stack, Button, Card, CardContent } from '@mui/material';
-import { Link, useNavigate } from 'react-router-dom';
+import { Container, Box, Typography, Alert, Stack, Card, CardContent } from '@mui/material';
+import { Link } from 'react-router-dom';
 import { ErrorBoundary } from '../ErrorBoundary';
 
 function ComponentPage({ children, title }: { children: React.ReactNode, title: string }) {
@@ -22,78 +22,48 @@ function ComponentPage({ children, title }: { children: React.ReactNode, title: 
 }
 
 export default function AppHelperWrappersPage() {
-  const navigate = useNavigate();
-
   return (
-    <ComponentPage title="@churchapps/apphelper - SiteWrapper Component">
+    <ComponentPage title="@churchapps/apphelper - Wrapper Components">
       <Stack spacing={4}>
         <Alert severity="info">
-          <strong>SiteWrapper from @churchapps/apphelper Package</strong>
+          <strong>Wrapper Components from @churchapps/apphelper Package</strong>
           <br />
-          The main application shell component that provides navigation drawer, user authentication context, and notification system.
+          Components that were previously part of the SiteWrapper architecture. Note: SiteWrapper has been deprecated in favor of using SiteHeader with PageHeader components.
         </Alert>
 
         <Card>
           <CardContent>
             <Typography variant="h5" gutterBottom>
-              SiteWrapper Component
+              Available Wrapper Components
             </Typography>
             
             <Typography variant="body1" paragraph>
-              SiteWrapper is the primary layout component that wraps entire ChurchApps applications. It provides:
+              The wrapper package still contains several useful components:
             </Typography>
             
             <Box component="ul" sx={{ pl: 3 }}>
-              <li>Responsive navigation drawer with menu items</li>
-              <li>User authentication context integration</li>
-              <li>Church selection and switching</li>
-              <li>Notification system with real-time updates</li>
-              <li>Theme customization support</li>
-              <li>Mobile-friendly responsive design</li>
-              <li>User menu with profile and settings</li>
+              <li><strong>NavItem</strong> - Navigation item component for building menus</li>
+              <li><strong>AppList</strong> - List of available ChurchApps applications</li>
+              <li><strong>ChurchList</strong> - Church selection and switching component</li>
+              <li><strong>UserMenu</strong> - User profile menu with logout and settings</li>
+              <li><strong>NewPrivateMessage</strong> - Private messaging interface</li>
+              <li><strong>PrivateMessageDetails</strong> - Detailed message view component</li>
             </Box>
 
-            <Alert severity="success" sx={{ mt: 2, mb: 3 }}>
-              <strong>Live Demo Available!</strong>
-              <br />
-              Click the button below to see a fully functional SiteWrapper in action.
+            <Alert severity="warning" sx={{ mt: 2, mb: 3 }}>
+              <strong>Note:</strong> The SiteWrapper component has been removed from the package. 
+              Please use the new SiteHeader component from the header package along with PageHeader for modern layouts.
             </Alert>
-
-            <Button 
-              variant="contained" 
-              size="large"
-              onClick={() => navigate('/sitewrapper-demo')}
-              sx={{ mt: 2 }}
-            >
-              View SiteWrapper Demo
-            </Button>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent>
-            <Typography variant="h6" gutterBottom>Implementation Details</Typography>
+            <Typography variant="h6" gutterBottom>Migration Guide</Typography>
             
-            <Typography variant="subtitle2" gutterBottom sx={{ mt: 2 }}>Required Props:</Typography>
-            <Box component="ul" sx={{ pl: 3 }}>
-              <li><code>navContent</code>: React element containing navigation items</li>
-              <li><code>context</code>: UserContextInterface with user, church, and auth data</li>
-              <li><code>appName</code>: Name of the application</li>
-              <li><code>onNavigate</code>: Callback function for navigation events</li>
-              <li><code>children</code>: Main content to render</li>
-            </Box>
-            
-            <Typography variant="subtitle2" gutterBottom sx={{ mt: 2 }}>Optional Props:</Typography>
-            <Box component="ul" sx={{ pl: 3 }}>
-              <li><code>appearance</code>: Theme customization object</li>
-              <li><code>omitOverflow</code>: Boolean to control overflow behavior</li>
-            </Box>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent>
-            <Typography variant="h6" gutterBottom>Usage Example</Typography>
+            <Typography variant="body2" paragraph>
+              If you were using SiteWrapper, migrate to the new architecture:
+            </Typography>
             
             <Box sx={{ 
               backgroundColor: '#f5f5f5', 
@@ -103,38 +73,52 @@ export default function AppHelperWrappersPage() {
               fontSize: '0.875rem',
               overflow: 'auto'
             }}>
-              <pre style={{ margin: 0 }}>{`<SiteWrapper
-  navContent={
-    <List>
-      <NavItem url="/" label="Dashboard" icon="dashboard" />
-      <NavItem url="/people" label="People" icon="people" />
-      <NavItem url="/groups" label="Groups" icon="group" />
-    </List>
-  }
-  context={userContext}
-  appName="Church Management"
-  onNavigate={(url) => navigate(url)}
-  appearance={{
-    primaryColor: '#1976d2',
-    wrapperBackground: '#333333'
-  }}
->
-  {/* Your main app content */}
-  <YourAppContent />
-</SiteWrapper>`}</pre>
+              <pre style={{ margin: 0 }}>{`// Old approach with SiteWrapper
+<SiteWrapper navContent={...} context={...}>
+  <YourContent />
+</SiteWrapper>
+
+// New approach with SiteHeader + PageHeader
+<>
+  <SiteHeader 
+    primaryMenuItems={menuItems}
+    context={context}
+    appName="YourApp"
+  />
+  <PageHeader
+    icon={<PersonIcon />}
+    title="People"
+    subtitle="Manage members"
+  />
+  <YourContent />
+</>`}</pre>
             </Box>
           </CardContent>
         </Card>
 
-        <Alert severity="warning">
-          <strong>Context Requirements</strong>
-          <br />
-          SiteWrapper requires extensive React context setup including:
-          <br />• UserContext with authentication state
-          <br />• API configurations for notifications
-          <br />• Church and user data structures
-          <br />• Permission and role information
-        </Alert>
+        <Card>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>Individual Component Usage</Typography>
+            
+            <Typography variant="subtitle2" gutterBottom sx={{ mt: 2 }}>NavItem Example:</Typography>
+            <Box sx={{ 
+              backgroundColor: '#f5f5f5', 
+              p: 2, 
+              borderRadius: 1,
+              fontFamily: 'monospace',
+              fontSize: '0.875rem',
+              overflow: 'auto'
+            }}>
+              <pre style={{ margin: 0 }}>{`<NavItem 
+  url="/people" 
+  label="People" 
+  icon="person" 
+  selected={currentPath === '/people'}
+  onClick={() => navigate('/people')}
+/>`}</pre>
+            </Box>
+          </CardContent>
+        </Card>
       </Stack>
     </ComponentPage>
   );

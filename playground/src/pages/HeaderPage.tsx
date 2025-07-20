@@ -1,19 +1,12 @@
 import React from 'react';
-import { Container, Box, Typography, Alert, Stack, Button, Paper } from '@mui/material';
+import { Container, Box, Typography, Alert, Stack, Paper } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { ErrorBoundary } from '../ErrorBoundary';
 import UserContext from '../UserContext';
 import { 
   Banner,
-  SiteHeader,
-  SiteWrapper
+  SiteHeader
 } from '@churchapps/apphelper';
-// Mock data replaced with simple inline data
-const simpleNavItems = [
-  { icon: "home", label: "Home", url: "/" },
-  { icon: "people", label: "People", url: "/people" },
-  { icon: "event", label: "Events", url: "/events" }
-];
 
 const simpleChurch = {
   name: "Sample Church",
@@ -45,7 +38,6 @@ function ComponentPage({ children, title }: { children: React.ReactNode, title: 
 
 export function HeaderTestPage() {
   const context = React.useContext(UserContext);
-  const [showSiteWrapper, setShowSiteWrapper] = React.useState(false);
 
   const handleNavigate = (url: string) => {
     console.log('Navigation:', url);
@@ -66,20 +58,6 @@ export function HeaderTestPage() {
     { url: '/forms', label: 'Forms' }
   ];
 
-  const navContent = (
-    <Stack spacing={1}>
-      {simpleNavItems.map((item, index) => (
-        <Button
-          key={index}
-          startIcon={<span className="material-icons">{item.icon}</span>}
-          onClick={() => handleNavigate(item.url)}
-          sx={{ justifyContent: 'flex-start', textTransform: 'none' }}
-        >
-          {item.label}
-        </Button>
-      ))}
-    </Stack>
-  );
 
   return (
     <ComponentPage title="Header Components - Functional Examples">
@@ -134,44 +112,10 @@ export function HeaderTestPage() {
           </Alert>
         </Box>
 
-        <Box>
-          <Typography variant="h6" gutterBottom>SiteWrapper</Typography>
-          <Alert severity="info" sx={{ mb: 2 }}>
-            Main application wrapper with collapsible navigation drawer
-          </Alert>
-          <Button 
-            onClick={() => setShowSiteWrapper(!showSiteWrapper)}
-            variant="outlined"
-            sx={{ mb: 2 }}
-          >
-            {showSiteWrapper ? 'Hide' : 'Show'} SiteWrapper Demo
-          </Button>
-          {showSiteWrapper && (
-            <Paper elevation={2} sx={{ height: 400, overflow: 'hidden', position: 'relative' }}>
-              <SiteWrapper
-                navContent={navContent}
-                context={context!}
-                appName="Playground"
-                onNavigate={handleNavigate}
-              >
-                <Box sx={{ p: 3 }}>
-                  <Typography variant="h5" gutterBottom>
-                    Main Content Area
-                  </Typography>
-                  <Typography variant="body1" paragraph>
-                    This is the main content area within the SiteWrapper.
-                    The navigation drawer on the left can be collapsed/expanded.
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    Current user: {context?.person?.name?.display || 'Not logged in'}
-                    <br />
-                    Church: {context?.userChurch?.church?.name || 'No church selected'}
-                  </Typography>
-                </Box>
-              </SiteWrapper>
-            </Paper>
-          )}
-        </Box>
+        <Alert severity="warning">
+          <strong>Note:</strong> SiteWrapper has been deprecated and removed from AppHelper. 
+          Please use the new SiteHeader component combined with PageHeader for modern layouts.
+        </Alert>
 
         <Box>
           <Typography variant="h6" gutterBottom>Component Information</Typography>

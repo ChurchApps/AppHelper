@@ -8,6 +8,7 @@ export { ImageEditor } from "./ImageEditor";
 export { InputBox } from "./InputBox";
 export { Loading } from "./Loading";
 export { Notes } from "./notes/Notes";
+export { PageHeader } from "./PageHeader";
 export { QuestionEdit } from "./QuestionEdit";
 export { SmallButton } from "./SmallButton";
 export { SupportModal } from "./SupportModal";
