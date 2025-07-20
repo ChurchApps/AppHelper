@@ -598,7 +598,8 @@ function AppContent() {
         '--c1d2': '#114A99',
         '--c1l2': '#1976d2',
         width: '100vw',
-        marginLeft: 'calc(50% - 50vw)'
+        marginLeft: 'calc(50% - 50vw)',
+        marginTop: '-32px'
       } as React.CSSProperties}>
         <PageHeader
           icon={<HomeIcon />}
