@@ -76,7 +76,7 @@ export const NewPrivateMessage: React.FC<Props> = (props) => {
   }
 
   const createConversation = async () => {
-    const conv: ConversationInterface = { allowAnonymousPosts: false, contentType: "privateMessage", contentId: props.context.person.id, title: props.context.person.name.display + " " + Locale.label("wrapper.privateMessage"), visibility: "hidden" }
+    const conv: ConversationInterface = { allowAnonymousPosts: false, contentType: "privateMessage", contentId: props.context.person.id, title: props.context.person.name.display + " " + (Locale.label("wrapper.privateMessage") || "Private Message"), visibility: "hidden" }
     const result: ConversationInterface[] = await ApiHelper.post("/conversations", [conv], "MessagingApi");
 
     const pm: PrivateMessageInterface = {
@@ -116,7 +116,7 @@ export const NewPrivateMessage: React.FC<Props> = (props) => {
             <ArrowBackIcon />
           </IconButton>
           <Typography variant="h6" component="h2">
-            {Locale.label("wrapper.newPrivateMessage")}
+            {Locale.label("wrapper.newPrivateMessage") || "New Private Message"}
           </Typography>
         </Stack>
       </Box>
@@ -125,7 +125,7 @@ export const NewPrivateMessage: React.FC<Props> = (props) => {
         <Stack spacing={3}>
           <Box>
             <Typography variant="body1" color="textSecondary" gutterBottom>
-              {Locale.label("wrapper.searchForPerson")}
+              {Locale.label("wrapper.searchForPerson") || "Search for a person to message"}
             </Typography>
             <TextField 
               fullWidth 
@@ -152,7 +152,7 @@ export const NewPrivateMessage: React.FC<Props> = (props) => {
                       onClick={handleSearchSubmit}
                       disabled={!searchText.trim() || isSearching}
                     >
-                      {Locale.label("common.search")}
+                      {Locale.label("common.search") || "Search"}
                     </Button>
                   </InputAdornment>
                 )
@@ -223,7 +223,7 @@ export const NewPrivateMessage: React.FC<Props> = (props) => {
               <ArrowBackIcon />
             </IconButton>
             <Typography variant="h6" component="h2">
-              {Locale.label("wrapper.newPrivateMessage")}
+              {Locale.label("wrapper.newPrivateMessage") || "New Private Message"}
             </Typography>
           </Stack>
         </Box>

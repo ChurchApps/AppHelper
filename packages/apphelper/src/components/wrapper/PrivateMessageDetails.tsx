@@ -41,7 +41,7 @@ export const PrivateMessageDetails: React.FC<Props> = (props) => {
                 {props.privateMessage.person.name.display}
               </Typography>
               <Typography variant="caption" color="textSecondary">
-                {Locale.label("wrapper.privateConversation")}
+                {Locale.label("wrapper.privateConversation") || "Private Conversation"}
               </Typography>
             </Box>
           </Stack>
