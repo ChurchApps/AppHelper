@@ -294,25 +294,60 @@ function AppContent() {
   };
 
   const primaryMenuItems = [
-    { url: '/', icon: 'home', label: 'Playground' },
-    { url: '/apphelper-components', icon: 'widgets', label: 'Components' },
-    { url: '/modern-layout', icon: 'view_quilt', label: 'Layout' },
-    { url: '/login-components', icon: 'login', label: 'Login' }
+    { url: '/', icon: 'home', label: 'Home' },
+    { url: '/apphelper-components', icon: 'widgets', label: 'AppHelper' },
+    { url: '/login-components', icon: 'login', label: 'Login' },
+    { url: '/donation-components', icon: 'attach_money', label: 'Donations' },
+    { url: '/markdown-components', icon: 'edit_note', label: 'Markdown' },
+    { url: '/apphelper-reporting', icon: 'analytics', label: 'Reporting' }
   ];
 
-  const secondaryMenuItems = [
-    { url: '/', label: 'Home' },
-    { url: '/apphelper-helpers', label: 'Helpers' },
-    { url: '/apphelper-components', label: 'Components' },
-    { url: '/modern-layout', label: 'Modern Layout' }
-  ];
+  // Secondary menu items change based on current section
+  const getSecondaryMenuItems = () => {
+    const path = window.location.pathname;
+    
+    if (path.startsWith('/apphelper')) {
+      return [
+        { url: '/apphelper-components', label: 'Components' },
+        { url: '/apphelper-wrappers', label: 'Wrappers' },
+        { url: '/apphelper-headers', label: 'Headers' },
+        { url: '/apphelper-notes', label: 'Notes' },
+        { url: '/apphelper-helpers', label: 'Helpers' },
+        { url: '/apphelper-hooks', label: 'Hooks' }
+      ];
+    } else if (path.startsWith('/login')) {
+      return [
+        { url: '/login-components', label: 'Login Components' },
+        { url: '/auth', label: 'Test Login' }
+      ];
+    } else if (path.startsWith('/donation')) {
+      return [
+        { url: '/donation-components', label: 'Donation Components' },
+        { url: '/donations', label: 'Test Donations (Legacy)' }
+      ];
+    } else if (path.startsWith('/markdown')) {
+      return [
+        { url: '/markdown-components', label: 'Markdown Editor' },
+        { url: '/markdown', label: 'Test Editor (Legacy)' }
+      ];
+    } else {
+      // Default/Home secondary menu
+      return [
+        { url: '/modern-layout', label: 'Modern Layout Demo' },
+        { url: '/components', label: 'Legacy Components Test' },
+        { url: '/reporting', label: 'Legacy Reporting Test' }
+      ];
+    }
+  };
+  
+  const secondaryMenuItems = getSecondaryMenuItems();
 
   return (
     <>
       <SiteHeader
-        primaryMenuLabel="Playground"
+        primaryMenuLabel="Packages"
         primaryMenuItems={primaryMenuItems}
-        secondaryMenuLabel="Components"
+        secondaryMenuLabel="Test Pages"
         secondaryMenuItems={secondaryMenuItems}
         context={effectiveContext}
         appName="PLAYGROUND"
