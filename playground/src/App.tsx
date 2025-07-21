@@ -576,37 +576,20 @@ function AppContent() {
 
   return (
     <>
-      <div style={{ 
-        '--c1': '#1565C0',
-        '--c1d1': '#1358AD', 
-        '--c1d2': '#114A99',
-        '--c1l2': '#1976d2'
-      } as React.CSSProperties}>
-        <SiteHeader
-          primaryMenuLabel="Playground"
-          primaryMenuItems={primaryMenuItems}
-          secondaryMenuLabel="Components"
-          secondaryMenuItems={secondaryMenuItems}
-          context={mockContext}
-          appName="PLAYGROUND"
-          onNavigate={handleNavigate}
-        />
-      </div>
-      <div style={{ 
-        '--c1': '#1565C0',
-        '--c1d1': '#1358AD', 
-        '--c1d2': '#114A99',
-        '--c1l2': '#568BDA',
-        width: '100vw',
-        marginLeft: 'calc(50% - 50vw)',
-        marginTop: '-32px'
-      } as React.CSSProperties}>
-        <PageHeader
-          icon={<HomeIcon />}
-          title="AppHelper Component Playground"
-          subtitle="Test and preview all exported components from @churchapps/apphelper"
-        />
-      </div>
+      <SiteHeader
+        primaryMenuLabel="Playground"
+        primaryMenuItems={primaryMenuItems}
+        secondaryMenuLabel="Components"
+        secondaryMenuItems={secondaryMenuItems}
+        context={mockContext}
+        appName="PLAYGROUND"
+        onNavigate={handleNavigate}
+      />
+      <PageHeader
+        icon={<HomeIcon />}
+        title="AppHelper Component Playground"
+        subtitle="Test and preview all exported components from @churchapps/apphelper"
+      />
       
       <Routes>
         <Route path="/" element={<HomePage />} />

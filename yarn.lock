@@ -213,7 +213,7 @@
   version "0.4.17"
   resolved "file:packages/apphelper-markdown"
   dependencies:
-    "@churchapps/apphelper" "^0.4.12"
+    "@churchapps/apphelper" "^0.4.17"
     "@churchapps/helpers" "^1.0.40"
     "@lexical/code" "^0.33.0"
     "@lexical/link" "^0.33.0"
@@ -1264,6 +1264,7 @@ ansi-styles@^6.1.0, ansi-styles@^6.2.1:
     lexical "^0.33.0"
     marked "^16.0.0"
     material-symbols "^0.32.0"
+    playwright "^1.54.1"
     react "^19.1.0"
     react-cookie "^8.0.1"
     react-dom "^19.1.0"

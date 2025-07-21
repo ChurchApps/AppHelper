@@ -64,7 +64,14 @@ export const SiteHeader = (props:Props) => {
 
   /*<Typography variant="h6" noWrap>{UserHelper.currentUserChurch?.church?.name || ""}</Typography>*/
   return (<>
-    <div style={{backgroundColor:"var(--c1)", color: "#FFF"}}>
+    <div style={{
+      '--c1': '#1565C0',
+      '--c1d1': '#1358AD', 
+      '--c1d2': '#114A99',
+      '--c1l2': '#568BDA',
+      backgroundColor:"var(--c1)", 
+      color: "#FFF"
+    } as React.CSSProperties}>
       <CustomAppBar position="absolute">
         <Toolbar sx={{ pr: "24px", backgroundColor: "var(--c1)", minHeight: "64px !important" }}>
           <PrimaryMenu label={props.primaryMenuLabel} menuItems={props.primaryMenuItems} onNavigate={props.onNavigate} />
