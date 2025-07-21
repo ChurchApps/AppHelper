@@ -137,8 +137,52 @@ function LoginPageComponent() {
                   border: 'none'
                 }
               }}
-              handleRedirect={(url: string, user, person, userChurch) => {
-                // Use the data passed directly from the LoginPage component
+              handleRedirect={(url: string, user, person, userChurch, userChurches) => {
+                console.log('HandleRedirect called with parameters:', {
+                  user,
+                  person,
+                  userChurch,
+                  userChurches,
+                  context: context ? 'available' : 'missing'
+                });
+                
+                // Update the UserContext with the logged-in user data
+                if (user && context?.setUser) {
+                  console.log('Setting user:', user);
+                  context.setUser(user);
+                }
+                
+                // Create a proper person object from the user data
+                if (user && context?.setPerson) {
+                  const personData = person || {
+                    id: userChurch?.person?.id || 'unknown',
+                    name: { 
+                      display: `${user.firstName} ${user.lastName}`.trim() || user.email 
+                    },
+                    contactInfo: { email: user.email },
+                    membershipStatus: userChurch?.person?.membershipStatus || 'Guest'
+                  };
+                  console.log('Setting person:', personData);
+                  context.setPerson(personData);
+                }
+                
+                if (userChurch && context?.setUserChurch) {
+                  console.log('Setting userChurch:', userChurch);
+                  context.setUserChurch(userChurch);
+                  
+                  // Set the JWT in ApiHelper for authenticated requests
+                  if (userChurch.jwt) {
+                    ApiHelper.setDefaultPermissions(userChurch.jwt);
+                    ApiHelper.isAuthenticated = true;
+                    console.log('Set ApiHelper authenticated with JWT');
+                  }
+                }
+                
+                if (userChurches && context?.setUserChurches) {
+                  console.log('Setting userChurches:', userChurches);
+                  context.setUserChurches(userChurches);
+                }
+                
                 const userName = person?.name?.display || 
                                (user?.firstName && user?.lastName ? 
                                 `${user.firstName} ${user.lastName}` : 
@@ -146,6 +190,7 @@ function LoginPageComponent() {
                 const churchName = userChurch?.church?.name || 'Unknown Church';
                 
                 console.log(`Login Successful! User: ${userName}, Church: ${churchName}, Redirecting to: ${url}`);
+                console.log('Context after updates:', context);
                 
                 // Navigate to the playground instead of reloading
                 navigate(url || '/');

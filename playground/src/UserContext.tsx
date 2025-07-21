@@ -1,5 +1,5 @@
 import React from "react";
-import { type LoginUserChurchInterface, type PersonInterface, type UserContextInterface, type UserInterface, ApiHelper } from "@churchapps/apphelper";
+import { type LoginUserChurchInterface, type PersonInterface, type UserContextInterface, type UserInterface, ApiHelper, CommonEnvironmentHelper } from "@churchapps/apphelper";
 
 const UserContext = React.createContext<UserContextInterface | undefined>(undefined);
 
@@ -15,21 +15,58 @@ export const UserProvider = ({ children }: Props) => {
   const [userChurches, setUserChurches] = React.useState<LoginUserChurchInterface[] | null>(null);
   const [loginError, setLoginError] = React.useState<string | null>(null);
 
-  // Configure ApiHelper with MembershipAPI
+  // Configure ApiHelper like ChumsApp does
   React.useEffect(() => {
-    // Set up the MembershipAPI URL for playground
+    // Initialize the staging environment like ChumsApp
+    CommonEnvironmentHelper.init("staging");
+    
+    // Set up all API configurations like ChumsApp
     ApiHelper.apiConfigs = [
-      { 
-        keyName: "MembershipApi", 
-        url: "https://membershipapi.staging.churchapps.org", 
+      {
+        keyName: "AttendanceApi",
+        url: CommonEnvironmentHelper.AttendanceApi,
         jwt: "",
-        permissions: []
-      }
+        permissions: [],
+      },
+      {
+        keyName: "GivingApi",
+        url: CommonEnvironmentHelper.GivingApi,
+        jwt: "",
+        permissions: [],
+      },
+      {
+        keyName: "MembershipApi",
+        url: CommonEnvironmentHelper.MembershipApi,
+        jwt: "",
+        permissions: [],
+      },
+      {
+        keyName: "ReportingApi",
+        url: CommonEnvironmentHelper.ReportingApi,
+        jwt: "",
+        permissions: [],
+      },
+      {
+        keyName: "DoingApi",
+        url: CommonEnvironmentHelper.DoingApi,
+        jwt: "",
+        permissions: [],
+      },
+      {
+        keyName: "MessagingApi",
+        url: CommonEnvironmentHelper.MessagingApi,
+        jwt: "",
+        permissions: [],
+      },
+      {
+        keyName: "ContentApi",
+        url: CommonEnvironmentHelper.ContentApi,
+        jwt: "",
+        permissions: [],
+      },
     ];
     
-    // Also set up the default API configuration
-    ApiHelper.setDefaultPermissions("");
-    console.log("API configuration set:", ApiHelper.apiConfigs);
+    console.log("API configuration set for staging environment:", ApiHelper.apiConfigs);
   }, []);
 
   // Standard logout function

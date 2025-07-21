@@ -79,8 +79,8 @@ export const SiteHeader = (props:Props) => {
           <div style={{ flex: 1 }}>
             <SecondaryMenuAlt label={props.secondaryMenuLabel} menuItems={props.secondaryMenuItems} onNavigate={props.onNavigate} />
           </div>
-          {UserHelper.user && <UserMenu profilePicture={PersonHelper.getPhotoUrl(props.context?.person)} userName={`${UserHelper.user?.firstName} ${UserHelper.user?.lastName}`} userChurches={UserHelper.userChurches} currentUserChurch={UserHelper.currentUserChurch} context={props.context} appName={props.appName} loadCounts={() => {}} notificationCounts={{notificationCount:0, pmCount:0}} onNavigate={props.onNavigate} />}
-          {!UserHelper.user && <Link href="/login" color="inherit" style={{ textDecoration: "none" }}>Login</Link>}
+          {props.context?.user?.id && <UserMenu profilePicture={PersonHelper.getPhotoUrl(props.context?.person)} userName={`${props.context.user?.firstName} ${props.context.user?.lastName}`} userChurches={props.context?.userChurches} currentUserChurch={props.context?.userChurch} context={props.context} appName={props.appName} loadCounts={() => {}} notificationCounts={{notificationCount:0, pmCount:0}} onNavigate={props.onNavigate} />}
+          {!props.context?.user?.id && <Link href="/login" color="inherit" style={{ textDecoration: "none" }}>Login</Link>}
           <SupportDrawer appName={props.appName} relatedArticles={getRelatedArticles()} />
         </Toolbar>
       </CustomAppBar>

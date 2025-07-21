@@ -132,42 +132,33 @@ function HomePage() {
 function AppContent() {
   const context = React.useContext(UserContext);
   
-  // Create mock context for SiteHeader
-  const mockContext = React.useMemo(() => {
+  // Create context for SiteHeader - use demo only when explicitly requested
+  const effectiveContext = React.useMemo(() => {
+    // Check if demo mode is requested via URL parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const isDemoMode = urlParams.get('demo') === 'true';
+    
+    // If user is logged in, use real context
     if (context?.user) {
       return context;
     }
-    return {
-      user: { 
-        id: 'demo-user', 
-        firstName: 'Demo', 
-        lastName: 'User', 
-        email: 'demo@churchapps.org' 
-      },
-      person: { 
-        id: 'demo-person', 
-        name: { display: 'Demo User' },
-        contactInfo: { email: 'demo@churchapps.org' },
-        photo: undefined
-      },
-      userChurch: {
-        church: { 
-          id: 'demo-church', 
-          name: 'AppHelper Playground',
-          address: { city: 'Demo City', state: 'DS' }
+    
+    // If demo mode is requested, provide mock context
+    if (isDemoMode) {
+      return {
+        user: { 
+          id: 'demo-user', 
+          firstName: 'Demo', 
+          lastName: 'User', 
+          email: 'demo@churchapps.org' 
         },
         person: { 
           id: 'demo-person', 
-          roles: [],
           name: { display: 'Demo User' },
-          contactInfo: { email: 'demo@churchapps.org' }
+          contactInfo: { email: 'demo@churchapps.org' },
+          photo: undefined
         },
-        apis: [],
-        jwt: 'mock-jwt',
-        groups: []
-      },
-      userChurches: [
-        { 
+        userChurch: {
           church: { 
             id: 'demo-church', 
             name: 'AppHelper Playground',
@@ -182,11 +173,64 @@ function AppContent() {
           apis: [],
           jwt: 'mock-jwt',
           groups: []
-        }
-      ],
-      logout: () => {
-        console.log('Logout called');
+        },
+        userChurches: [
+          { 
+            church: { 
+              id: 'demo-church', 
+              name: 'AppHelper Playground',
+              address: { city: 'Demo City', state: 'DS' }
+            },
+            person: { 
+              id: 'demo-person', 
+              roles: [],
+              name: { display: 'Demo User' },
+              contactInfo: { email: 'demo@churchapps.org' }
+            },
+            apis: [],
+            jwt: 'mock-jwt',
+            groups: []
+          }
+        ],
+        logout: () => {
+          console.log('Logout called');
+        },
+        setUser: () => {},
+        setPerson: () => {},
+        setUserChurch: () => {},
+        setUserChurches: () => {}
+      };
+    }
+    
+    // Otherwise, return a context with empty but valid structure
+    return context || {
+      user: {
+        id: '',
+        email: '',
+        firstName: '',
+        lastName: ''
       },
+      person: {
+        id: '',
+        name: { display: '' },
+        contactInfo: { email: '' }
+      },
+      userChurch: {
+        person: {
+          id: '',
+          name: { display: '' },
+          contactInfo: { email: '' }
+        },
+        church: {
+          id: '',
+          name: '',
+          address: { city: '', state: '' }
+        },
+        apis: [],
+        jwt: '',
+        groups: []
+      },
+      userChurches: [],
       setUser: () => {},
       setPerson: () => {},
       setUserChurch: () => {},
@@ -223,7 +267,7 @@ function AppContent() {
         primaryMenuItems={primaryMenuItems}
         secondaryMenuLabel="Components"
         secondaryMenuItems={secondaryMenuItems}
-        context={mockContext}
+        context={effectiveContext}
         appName="PLAYGROUND"
         onNavigate={handleNavigate}
       />
