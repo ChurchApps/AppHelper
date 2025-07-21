@@ -77,7 +77,8 @@ export const PrivateMessages: React.FC<Props> = (props) => {
       <List sx={{ width: '100%' }}>
         {privateMessages.map((pm, index) => {
           const person = pm.person;
-          const message = pm.conversation.messages[0];
+          const message = pm.conversation?.messages?.[0];
+          if (!message || !person) return null;
           let datePosted = new Date(message.timeUpdated || message.timeSent);
           const displayDuration = DateHelper.getDisplayDuration(datePosted);
           const contents = message.content?.split("\n")[0];
