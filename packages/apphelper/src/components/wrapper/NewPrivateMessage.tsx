@@ -6,6 +6,7 @@ import { ApiHelper, Locale, PersonHelper } from "../../helpers";
 import { ConversationInterface, PersonInterface, PrivateMessageInterface, UserContextInterface } from "@churchapps/helpers";
 import { AddNote } from "../notes/AddNote";
 import { SmallButton } from "../SmallButton";
+import { PersonAvatar } from "../PersonAvatar";
 
 interface Props {
   context: UserContextInterface;
@@ -56,7 +57,7 @@ export const NewPrivateMessage: React.FC<Props> = (props) => {
     for (let i = 0; i < searchResults.length; i++) {
       const p = searchResults[i];
       result.push(<TableRow key={p.id}>
-        <TableCell><img src={PersonHelper.getPhotoUrl(p)} alt="avatar" /></TableCell>
+        <TableCell><PersonAvatar person={p} size="small" onClick={() => handlePersonSelected(p)} /></TableCell>
         <TableCell><a href="about:blank" onClick={(e) => { e.preventDefault(); handlePersonSelected(p) }}>{p.name.display}</a></TableCell>
       </TableRow>);
     }

@@ -9,6 +9,7 @@ export { InputBox } from "./InputBox";
 export { Loading } from "./Loading";
 export { Notes } from "./notes/Notes";
 export { PageHeader } from "./PageHeader";
+export { PersonAvatar } from "./PersonAvatar";
 export { QuestionEdit } from "./QuestionEdit";
 export { SmallButton } from "./SmallButton";
 export { SupportModal } from "./SupportModal";
