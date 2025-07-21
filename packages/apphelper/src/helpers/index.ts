@@ -46,3 +46,5 @@ export { createEmotionCache } from "./createEmotionCache";
 export { Locale } from "./Locale";
 export { SlugHelper } from "./SlugHelper";
 export { SocketHelper } from "./SocketHelper";
+export { NotificationService } from "./NotificationService";
+export type { NotificationCounts } from "./NotificationService";

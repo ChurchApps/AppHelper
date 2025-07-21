@@ -69,7 +69,6 @@ const UserMenuContent: React.FC<Props> = (props) => {
     // Create logout URL with current page as return URL
     const currentPath = typeof window !== 'undefined' ? window.location.pathname + window.location.search : '/';
     const logoutUrl = `/login?action=logout&returnUrl=${encodeURIComponent(currentPath)}`;
-    console.log('Generated logout URL:', logoutUrl);
     result.push(<NavItem url={logoutUrl} label={getLabel("wrapper.logout", "Logout")} icon="logout" key="/logout" onNavigate={props.onNavigate} />);
     result.push(<div style={{borderTop:"1px solid #CCC", paddingTop:2, paddingBottom:2}}></div>)
     result.push(<NavItem label={getLabel("wrapper.switchApp", "Switch App")} key="Switch App" icon="apps" onClick={() => { setTabIndex(1); }} />);
@@ -94,7 +93,7 @@ const UserMenuContent: React.FC<Props> = (props) => {
   };
 
   const handleItemClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    console.log(e);
+    // Handle menu item clicks if needed
   }
 
   const [tabIndex, setTabIndex] = React.useState(0);
@@ -144,7 +143,6 @@ const UserMenuContent: React.FC<Props> = (props) => {
   const totalNotifcations = props.notificationCounts.notificationCount + props.notificationCounts.pmCount;
 
   React.useEffect(() => {
-    console.log("THE COUNTS CHANGED")
     setRefreshKey(Math.random());
   }, [props.notificationCounts]);
 

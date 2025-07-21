@@ -7,7 +7,8 @@ import { PrimaryMenu } from "./PrimaryMenu";
 import { SecondaryMenu } from "./SecondaryMenu";
 import { SecondaryMenuAlt } from "./SecondaryMenuAlt";
 import { SupportDrawer } from "./SupportDrawer";
-import { UserContextInterface } from "@churchapps/helpers";
+import { UserContextInterface, CommonEnvironmentHelper } from "@churchapps/helpers";
+import { useNotifications } from "../../hooks/useNotifications";
 
 type Props = {
   primaryMenuLabel: string;
@@ -20,6 +21,8 @@ type Props = {
 }
 
 export const SiteHeader = (props:Props) => {
+  // Initialize websocket notifications
+  const { counts, refresh } = useNotifications(props.context);
 
   const CustomAppBar = styled(AppBar)(
     ({ theme }) => ({
@@ -79,7 +82,7 @@ export const SiteHeader = (props:Props) => {
           <div style={{ flex: 1 }}>
             <SecondaryMenuAlt label={props.secondaryMenuLabel} menuItems={props.secondaryMenuItems} onNavigate={props.onNavigate} />
           </div>
-          {props.context?.user?.id && <UserMenu profilePicture={PersonHelper.getPhotoUrl(props.context?.person)} userName={`${props.context.user?.firstName} ${props.context.user?.lastName}`} userChurches={props.context?.userChurches} currentUserChurch={props.context?.userChurch} context={props.context} appName={props.appName} loadCounts={() => {}} notificationCounts={{notificationCount:0, pmCount:0}} onNavigate={props.onNavigate} />}
+          {props.context?.user?.id && <UserMenu profilePicture={PersonHelper.getPhotoUrl(props.context?.person)} userName={`${props.context.user?.firstName} ${props.context.user?.lastName}`} userChurches={props.context?.userChurches} currentUserChurch={props.context?.userChurch} context={props.context} appName={props.appName} loadCounts={refresh} notificationCounts={counts} onNavigate={props.onNavigate} />}
           {!props.context?.user?.id && <Link href="/login" color="inherit" style={{ textDecoration: "none" }}>Login</Link>}
           <SupportDrawer appName={props.appName} relatedArticles={getRelatedArticles()} />
         </Toolbar>

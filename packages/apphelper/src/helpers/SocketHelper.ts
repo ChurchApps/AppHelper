@@ -12,7 +12,6 @@ export class SocketHelper {
 
   static setPersonChurch = (pc: {personId:string, churchId:string}) => {
     if (pc?.personId && pc.personId && pc.churchId!==this.personIdChurchId.churchId && pc.personId!==this.personIdChurchId.personId) {
-    //if (pc?.personId && pc.personId!==this.personIdChurchId.personId && this.socketId!==undefined && this.socketId) {
       this.personIdChurchId = pc;
       this.createAlertConnection();
     }
@@ -21,7 +20,10 @@ export class SocketHelper {
   static createAlertConnection = () => {
     if (SocketHelper.personIdChurchId.personId && SocketHelper.socketId) {
       const connection: ConnectionInterface = { conversationId: "alerts", churchId: SocketHelper.personIdChurchId.churchId, displayName: "Test", socketId: SocketHelper.socketId, personId:SocketHelper.personIdChurchId.personId }
-      ApiHelper.postAnonymous("/connections", [connection], "MessagingApi");
+      
+      ApiHelper.postAnonymous("/connections", [connection], "MessagingApi").catch((error: any) => {
+        console.error("❌ Failed to create alert connection:", error);
+      });
     }
   }
 
@@ -32,11 +34,11 @@ export class SocketHelper {
     // Reset cleanup flag
     SocketHelper.isCleanedUp = false;
     
-    if (SocketHelper.socket !== undefined && SocketHelper.socket.readyState !== SocketHelper.socket.CLOSED) {
+    if (SocketHelper.socket && SocketHelper.socket.readyState !== SocketHelper.socket.CLOSED) {
       try { 
         SocketHelper.socket.close(); 
       } catch (e) { 
-        console.log("Error closing existing socket:", e); 
+        console.error("❌ Error closing existing socket:", e); 
       }
     }
 
@@ -45,19 +47,19 @@ export class SocketHelper {
         SocketHelper.socket = new WebSocket(CommonEnvironmentHelper.MessagingApiSocket);
         
         SocketHelper.socket.onmessage = (event) => {
-          if (SocketHelper.isCleanedUp) return; // Don't process messages after cleanup
+          if (SocketHelper.isCleanedUp) return;
           
           try {
             const payload = JSON.parse(event.data);
             SocketHelper.handleMessage(payload);
           } catch (error) {
-            console.error("Error parsing socket message:", error);
+            console.error("❌ Error parsing socket message:", error);
           }
         };
         
         SocketHelper.socket.onopen = async (e) => {
           SocketHelper.reconnectAttempts = 0; // Reset reconnect attempts on successful connection
-          SocketHelper.socket.send("getId");  //not sure this is needed.  It auto-sends socketId on connect
+          SocketHelper.socket.send("getId");  // Request socket ID
           setTimeout(() => { resolve(null); }, 500);
         };
         
@@ -71,27 +73,31 @@ export class SocketHelper {
           // Only attempt reconnection if not manually cleaned up and within retry limits
           if (!SocketHelper.isCleanedUp && SocketHelper.reconnectAttempts < SocketHelper.maxReconnectAttempts) {
             SocketHelper.reconnectAttempts++;
-            const backoffDelay = Math.min(1000 * Math.pow(2, SocketHelper.reconnectAttempts - 1), 30000); // Exponential backoff with max 30s
+            const backoffDelay = Math.min(1000 * Math.pow(2, SocketHelper.reconnectAttempts - 1), 30000);
+            
+            console.log(`🔄 WebSocket reconnecting... attempt ${SocketHelper.reconnectAttempts}/${SocketHelper.maxReconnectAttempts}`);
             
             SocketHelper.reconnectTimeout = setTimeout(() => {
-              if (!SocketHelper.isCleanedUp && SocketHelper.socket.readyState === SocketHelper.socket.CLOSED) {
+              if (!SocketHelper.isCleanedUp && SocketHelper.socket && SocketHelper.socket.readyState === SocketHelper.socket.CLOSED) {
                 SocketHelper.init().then(() => {
                   SocketHelper.handleMessage({ action: "reconnect", data: null });
                 }).catch((error) => {
-                  console.error("Reconnection failed:", error);
+                  console.error("❌ Reconnection failed:", error);
                 });
               }
             }, backoffDelay);
+          } else if (SocketHelper.reconnectAttempts >= SocketHelper.maxReconnectAttempts) {
+            console.error("❌ WebSocket max reconnection attempts reached");
           }
         };
         
         SocketHelper.socket.onerror = (error) => {
-          console.error("WebSocket error:", error);
+          console.error("❌ WebSocket connection error:", error);
           reject(error);
         };
         
       } catch (error) {
-        console.error("Error initializing socket:", error);
+        console.error("❌ Error initializing socket:", error);
         reject(error);
       }
     });
@@ -119,25 +125,25 @@ export class SocketHelper {
   }
 
   static handleMessage = (payload: SocketPayloadInterface) => {
-    if (SocketHelper.isCleanedUp) return; // Don't handle messages after cleanup
+    if (SocketHelper.isCleanedUp) return;
     
     try {
-      //console.log("MESSAGE", payload)
       if (payload.action==="socketId") {
         SocketHelper.socketId = payload.data;
         SocketHelper.createAlertConnection();
       }
       else {
-        ArrayHelper.getAll(SocketHelper.actionHandlers, "action", payload.action).forEach((handler) => {
+        const matchingHandlers = ArrayHelper.getAll(SocketHelper.actionHandlers, "action", payload.action);
+        matchingHandlers.forEach((handler) => {
           try {
             handler.handleMessage(payload.data);
           } catch (error) {
-            console.error(`Error in handler ${handler.id}:`, error);
+            console.error(`❌ Error in handler ${handler.id}:`, error);
           }
         });
       }
     } catch (error) {
-      console.error("Error handling socket message:", error);
+      console.error("❌ Error handling socket message:", error);
     }
   }
 

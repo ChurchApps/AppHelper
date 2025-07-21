@@ -38,7 +38,6 @@ export const PrivateMessages: React.FC<Props> = (props) => {
   const [inAddMode, setInAddMode] = useState(false);
 
   const loadData = async () => {
-    console.log("loading data");
     const pms: PrivateMessageInterface[] = await ApiHelper.get("/privateMessages", "MessagingApi");
     const peopleIds: string[] = [];
     pms.forEach(pm => {
@@ -56,7 +55,7 @@ export const PrivateMessages: React.FC<Props> = (props) => {
     props.onUpdate();
   }
 
-  React.useEffect(() => { console.log("RELOADED PMS") }, []);
+  React.useEffect(() => { }, []);
 
   const getMessageList = () => {
     if (privateMessages.length === 0) {
