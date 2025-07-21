@@ -2,10 +2,8 @@ import React from 'react';
 import { Box, Typography, Alert, Stack, Button, Paper } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { ErrorBoundary } from '../ErrorBoundary';
-import UserContext from '../UserContext';
 import {
 	Banner,
-	SiteHeader,
 	PageHeader
 } from '@churchapps/apphelper';
 import PersonIcon from '@mui/icons-material/Person';
@@ -16,7 +14,6 @@ import AddIcon from '@mui/icons-material/Add';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 
 export default function ModernLayoutPage() {
-	const context = React.useContext(UserContext);
 	const [currentSection, setCurrentSection] = React.useState('people');
 
 	// Add responsive CSS for proper mobile behavior
@@ -40,84 +37,6 @@ export default function ModernLayoutPage() {
 		};
 	}, []);
 
-	// Create comprehensive mock context
-	const mockContext = React.useMemo(() => {
-		if (context?.user) {
-			return context;
-		}
-		return {
-			user: {
-				id: 'demo-user',
-				firstName: 'Demo',
-				lastName: 'User',
-				email: 'demo@churchapps.org'
-			},
-			person: {
-				id: 'demo-person',
-				name: { display: 'Demo User' },
-				contactInfo: { email: 'demo@churchapps.org' },
-				photo: undefined
-			},
-			userChurch: {
-				church: {
-					id: 'demo-church',
-					name: 'Demo Church',
-					address: { city: 'Demo City', state: 'DS' }
-				},
-				person: {
-					id: 'demo-person',
-					roles: [],
-					name: { display: 'Demo User' },
-					contactInfo: { email: 'demo@churchapps.org' }
-				},
-				apis: [],
-				jwt: 'mock-jwt',
-				groups: []
-			},
-			userChurches: [
-				{
-					church: {
-						id: 'demo-church',
-						name: 'Demo Church',
-						address: { city: 'Demo City', state: 'DS' }
-					},
-					person: {
-						id: 'demo-person',
-						roles: [],
-						name: { display: 'Demo User' },
-						contactInfo: { email: 'demo@churchapps.org' }
-					},
-					apis: [],
-					jwt: 'mock-jwt',
-					groups: []
-				}
-			],
-			logout: () => {
-				console.log('Logout called');
-				alert('Would logout user');
-			},
-			setUser: () => { },
-			setPerson: () => { },
-			setUserChurch: () => { },
-			setUserChurches: () => { }
-		};
-	}, [context]);
-
-	const handleNavigate = (url: string) => {
-		console.log('Navigation:', url);
-		// Extract section from URL for demo purposes
-		if (url.includes('/people')) setCurrentSection('people');
-		else if (url.includes('/donations')) setCurrentSection('donations');
-		else if (url.includes('/plans') || url.includes('/serving')) setCurrentSection('serving');
-		else if (url.includes('/settings')) setCurrentSection('settings');
-	};
-
-	const primaryMenuItems = [
-		{ url: '/people', icon: 'person', label: 'People' },
-		{ url: '/donations', icon: 'volunteer_activism', label: 'Donations' },
-		{ url: '/plans', icon: 'assignment', label: 'Serving' },
-		{ url: '/settings', icon: 'settings', label: 'Settings' }
-	];
 
 	const getSectionConfig = () => {
 		switch (currentSection) {
