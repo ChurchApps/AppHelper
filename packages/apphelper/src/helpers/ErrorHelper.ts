@@ -1,5 +1,5 @@
 import { ErrorLogInterface, ErrorAppDataInterface } from "@churchapps/helpers";
-import { ApiHelper } from "./ApiHelper";
+import { ApiHelper } from "@churchapps/helpers";
 
 
 export class ErrorHelper {

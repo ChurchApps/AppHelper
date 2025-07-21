@@ -52,7 +52,7 @@ export const CardForm: React.FC<Props> = (props) => {
     } else {
       const pm = { ...paymentMethod };
       pm.id = stripePM.paymentMethod.id;
-      await ApiHelper.post("/paymentmethods/addcard", pm, "GivingApi").then(result => {
+      await ApiHelper.post("/paymentmethods/addcard", pm, "GivingApi").then((result: any) => {
         if (result?.raw?.message) {
           setErrorMessage(result.raw.message);
           setShowSave(true);
@@ -67,7 +67,7 @@ export const CardForm: React.FC<Props> = (props) => {
   const updateCard = async () => {
     if (!cardUpdate.cardData.card.exp_month || !cardUpdate.cardData.card.exp_year) setErrorMessage("Expiration month and year cannot be blank.");
     else {
-      await ApiHelper.post("/paymentmethods/updatecard", cardUpdate, "GivingApi").then(result => {
+      await ApiHelper.post("/paymentmethods/updatecard", cardUpdate, "GivingApi").then((result: any) => {
         if (result?.raw?.message) {
           setErrorMessage(result.raw.message);
           setShowSave(true);

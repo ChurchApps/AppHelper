@@ -72,7 +72,7 @@ export const Register: React.FC<Props> = (props) => {
           if (resp.errors) handleRegisterErrors(resp.errors);
           else handleRegisterSuccess(resp);
         })
-        .catch((e) => { props.updateErrors([e.toString()]); throw e; })
+        .catch((e: any) => { props.updateErrors([e.toString()]); throw e; })
         .finally(() => {
           setIsSubmitting(false)
         });

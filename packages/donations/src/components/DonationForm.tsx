@@ -49,11 +49,11 @@ export const DonationForm: React.FC<Props> = (props) => {
   });
 
   const loadData = useCallback(() => {
-    ApiHelper.get("/funds", "GivingApi").then(data => {
+    ApiHelper.get("/funds", "GivingApi").then((data: any) => {
       setFunds(data);
       if (data.length) setFundDonations([{ fundId: data[0].id }]);
     });
-    ApiHelper.get("/gateways", "GivingApi").then((data) => {
+    ApiHelper.get("/gateways", "GivingApi").then((data: any) => {
       if (data.length !== 0) setGateway(data[0]);
     });
   }, []);

@@ -1,4 +1,4 @@
-import { ApiHelper } from "./ApiHelper"
+import { ApiHelper } from "@churchapps/helpers"
 import { UserInterface, UserContextInterface, IApiPermission, PersonInterface, LoginUserChurchInterface } from "@churchapps/helpers";
 
 export class UserHelper {
@@ -44,7 +44,7 @@ export class UserHelper {
 
 		let result = false;
 		if (permissions !== undefined) {
-			permissions.forEach(element => {
+			permissions.forEach((element: any) => {
 				if (element.contentType === contentType && element.action === action) result = true;
 			});
 		}

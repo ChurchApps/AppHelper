@@ -31,7 +31,7 @@ export function AddNote({ context, ...props }: Props) {
   const headerText = props.messageId ? "Edit note" : "Add a note"
 
   useEffect(() => {
-    if (props.messageId) ApiHelper.get(`/messages/${props.messageId}`, "MessagingApi").then(n => setMessage(n));
+    if (props.messageId) ApiHelper.get(`/messages/${props.messageId}`, "MessagingApi").then((n: any) => setMessage(n));
     else setMessage({ conversationId: props.conversationId, content: "" });
     return () => {
       setMessage(null);
@@ -67,7 +67,7 @@ export function AddNote({ context, ...props }: Props) {
           m.content = "";
           setMessage(m);
         })
-        .catch((error) => {
+        .catch((error: any) => {
           if (error?.message === "Forbidden") setErrors(["You can't edit the message sent by others."])
         })
         .finally(() => { setIsSubmitting(false); });

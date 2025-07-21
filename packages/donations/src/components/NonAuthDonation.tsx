@@ -14,7 +14,7 @@ export const NonAuthDonation: React.FC<Props> = ({ mainContainerCssProps, showHe
   const [stripePromise, setStripe] = React.useState<Promise<Stripe>>(null);
 
   const init = () => {
-    ApiHelper.get("/gateways/churchId/" + props.churchId, "GivingApi").then(data => {
+    ApiHelper.get("/gateways/churchId/" + props.churchId, "GivingApi").then((data: any) => {
       if (data.length && data[0]?.publicKey) {
         setStripe(loadStripe(data[0].publicKey));
       }

@@ -31,12 +31,12 @@
   },
   "homepage": "https://github.com/LiveChurchSolutions/AppHelper#readme",
   "peerDependencies": {
+    "@churchapps/helpers": "^1.0.42",
+    "@churchapps/apphelper": "^0.4.17",
     "react": "^18.0.0",
     "react-dom": "^18.0.0"
   },
   "dependencies": {
-    "@churchapps/helpers": "^1.0.40",
-    "@churchapps/apphelper": "^0.4.17",
     "@lexical/code": "^0.33.0",
     "@lexical/link": "^0.33.0",
     "@lexical/list": "^0.33.0",

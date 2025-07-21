@@ -177,8 +177,6 @@
   version "0.4.17"
   resolved "file:packages/donations"
   dependencies:
-    "@churchapps/apphelper" "*"
-    "@churchapps/helpers" "^1.0.40"
     "@emotion/react" "^11.14.0"
     "@emotion/styled" "^11.14.1"
     "@mui/material" "^7.2.0"
@@ -196,8 +194,6 @@
   version "0.4.17"
   resolved "file:packages/login"
   dependencies:
-    "@churchapps/apphelper" "*"
-    "@churchapps/helpers" "^1.0.40"
     "@emotion/react" "^11.14.0"
     "@emotion/styled" "^11.14.1"
     "@mui/material" "^7.2.0"
@@ -213,8 +209,6 @@
   version "0.4.17"
   resolved "file:packages/apphelper-markdown"
   dependencies:
-    "@churchapps/apphelper" "^0.4.17"
-    "@churchapps/helpers" "^1.0.40"
     "@lexical/code" "^0.33.0"
     "@lexical/link" "^0.33.0"
     "@lexical/list" "^0.33.0"
@@ -259,13 +253,14 @@
     react-to-print "^3.1.1"
     slug "^11.0.0"
 
-"@churchapps/helpers@^1.0.40":
-  version "1.0.40"
-  resolved "https://registry.npmjs.org/@churchapps/helpers/-/helpers-1.0.40.tgz"
-  integrity sha512-4n4tcnu85sTT3AMgakrpauiZnRoLfzEhSfNDabHyGh8mR5+hpPc7nppZ7HRWSQrH2J64UfCW7rW5zSo5r2H36Q==
+"@churchapps/helpers@^1.0.40", "@churchapps/helpers@^1.0.42", "@churchapps/helpers@^1.0.44":
+  version "1.0.44"
+  resolved "https://registry.npmjs.org/@churchapps/helpers/-/helpers-1.0.44.tgz"
+  integrity sha512-YldsrRhf5I0s1fZi6gjC1jPFGAo3ZdnTHDHYsJdQ4C8su9waLn/qrz1YGhdnecgtfqjDVxT2ixUaW3+QjEQ5ng==
   dependencies:
     date-fns "^4.1.0"
     dayjs "^1.11.13"
+    fs-extra "^11.3.0"
     react-ga4 "^2.1.0"
     rrule "^2.8.1"
 
@@ -1619,6 +1614,15 @@ form-data@^4.0.0:
     hasown "^2.0.2"
     mime-types "^2.1.12"
 
+fs-extra@^11.3.0:
+  version "11.3.0"
+  resolved "https://registry.npmjs.org/fs-extra/-/fs-extra-11.3.0.tgz"
+  integrity sha512-Z4XaCL6dUDHfP/jT25jJKMmtxvuwbkrD1vNSMFlo9lNLY2c5FHYSQgHPRZUjAB26TpDEoW9HCOgplrdbaPV/ew==
+  dependencies:
+    graceful-fs "^4.2.0"
+    jsonfile "^6.0.1"
+    universalify "^2.0.0"
+
 fs.realpath@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npmjs.org/fs.realpath/-/fs.realpath-1.0.0.tgz"
@@ -1701,6 +1705,11 @@ gopd@^1.2.0:
   version "1.2.0"
   resolved "https://registry.npmjs.org/gopd/-/gopd-1.2.0.tgz"
   integrity sha512-ZUKRh6/kUFoAiTAtTYPZJ3hw9wNxx+BIBOijnlG9PnrJsCcSjs1wyyD6vJpaYtgnzDrKYRSqf3OO6Rfa93xsRg==
+
+graceful-fs@^4.1.6, graceful-fs@^4.2.0:
+  version "4.2.11"
+  resolved "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.2.11.tgz"
+  integrity sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==
 
 has-symbols@^1.0.3, has-symbols@^1.1.0:
   version "1.1.0"
@@ -1857,6 +1866,15 @@ json5@^2.2.3:
   version "2.2.3"
   resolved "https://registry.npmjs.org/json5/-/json5-2.2.3.tgz"
   integrity sha512-XmOWe7eyHYH14cLdVPoyg+GOH3rYX++KpzrylJwSW98t3Nk+U8XOl8FWKOgwtzdb8lXGf6zYwDUzeHMWfxasyg==
+
+jsonfile@^6.0.1:
+  version "6.1.0"
+  resolved "https://registry.npmjs.org/jsonfile/-/jsonfile-6.1.0.tgz"
+  integrity sha512-5dgndWOriYSm5cnYaJNhalLNDKOqFwyDB/rr1E9ZsGciGvKPs8R2xYGCacuf3z6K1YKDz182fd+fY3cn3pMqXQ==
+  dependencies:
+    universalify "^2.0.0"
+  optionalDependencies:
+    graceful-fs "^4.1.6"
 
 jwt-decode@^4.0.0:
   version "4.0.0"
@@ -2557,6 +2575,11 @@ universal-cookie@^8.0.0:
   integrity sha512-B6ks9FLLnP1UbPPcveOidfvB9pHjP+wekP2uRYB9YDfKVpvcjKgy1W5Zj+cEXJ9KTPnqOKGfVDQBmn8/YCQfRg==
   dependencies:
     cookie "^1.0.2"
+
+universalify@^2.0.0:
+  version "2.0.1"
+  resolved "https://registry.npmjs.org/universalify/-/universalify-2.0.1.tgz"
+  integrity sha512-gptHNQghINnc/vTGIk0SOFGFNXw7JVrlRUtConJRlvaw6DuX0wO5Jeko9sWrMBhh+PsYAZ7oXAiOnf/UKogyiw==
 
 untildify@^4.0.0:
   version "4.0.0"
