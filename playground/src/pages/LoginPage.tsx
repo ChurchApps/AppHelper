@@ -9,6 +9,31 @@ function LoginPageComponent() {
   const context = React.useContext(UserContext) as any;
   const navigate = useNavigate();
 
+  // Handle logout action on page load
+  React.useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const action = urlParams.get('action');
+    const returnUrl = urlParams.get('returnUrl') || '/';
+    
+    console.log('LoginPage loaded with URL params:', {
+      action,
+      returnUrl,
+      fullUrl: window.location.href
+    });
+    
+    if (action === 'logout') {
+      console.log('Logout action detected, logging out user...');
+      console.log('Current context user:', context?.user);
+      context?.logout();
+      console.log('Logout called, redirecting to:', returnUrl);
+      
+      // Redirect back to the return URL after a short delay
+      setTimeout(() => {
+        navigate(returnUrl);
+      }, 100);
+    }
+  }, [context, navigate]);
+
   // Removed - now handled by LoginPage component
 
   const testApiConnection = async () => {

@@ -7,6 +7,7 @@ import UserContext, { UserProvider } from './UserContext';
 import RequireAuth from './components/RequireAuth';
 import { SiteHeader, PageHeader } from '@churchapps/apphelper';
 import HomeIcon from '@mui/icons-material/Home';
+import '@churchapps/apphelper-markdown/dist/components/markdownEditor/editor.css';
 
 // Import test pages
 import { ComponentsTestPage } from './pages/ComponentsPage';
@@ -32,6 +33,48 @@ import ModernLayoutPage from './pages/ModernLayoutPage';
 const theme = createTheme({
   palette: {
     mode: 'light',
+    InputBox: { headerText: '#333333' },
+  },
+  components: {
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          '& .MuiInputBase-root': {
+            fontSize: '0.875rem',
+          },
+        },
+      },
+    },
+    MuiFormControl: {
+      styleOverrides: {
+        root: {
+          '& .MuiInputBase-root': {
+            fontSize: '0.875rem',
+          },
+        },
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          borderRadius: 8,
+        },
+      },
+    },
+  },
+  typography: {
+    fontSize: 14,
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+  },
+  shape: {
+    borderRadius: 8,
   },
 });
 
@@ -241,8 +284,12 @@ function AppContent() {
   const handleNavigate = (url: string) => {
     console.log('Navigation:', url);
     // Handle navigation for playground
-    if (url === '/') {
-      window.location.href = '/';
+    if (url.startsWith('/')) {
+      // Use React Router navigate for internal URLs
+      window.location.href = url;
+    } else {
+      // External URLs
+      window.open(url, '_blank');
     }
   };
 
