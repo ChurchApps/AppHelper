@@ -2,7 +2,29 @@
 
 import React, { useState } from "react";
 import { ApiHelper } from "../../helpers/ApiHelper";
-import { Box, Icon, Stack } from "@mui/material";
+import { 
+  Box, 
+  Icon, 
+  Stack, 
+  Typography, 
+  Paper, 
+  List, 
+  ListItem, 
+  ListItemAvatar, 
+  ListItemText, 
+  Avatar, 
+  Chip, 
+  Divider, 
+  IconButton, 
+  Skeleton, 
+  useTheme 
+} from "@mui/material";
+import { 
+  Notifications as NotificationsIcon, 
+  Task as TaskIcon, 
+  Assignment as AssignmentIcon, 
+  OpenInNew as OpenInNewIcon 
+} from "@mui/icons-material";
 import { NotificationInterface, UserContextInterface } from "@churchapps/helpers";
 import { DateHelper } from "../../helpers";
 import { Navigate } from "react-router-dom";
@@ -16,10 +38,14 @@ interface Props {
 
 export const Notifications: React.FC<Props> = (props) => {
   const [notifications, setNotifications] = useState<NotificationInterface[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const theme = useTheme();
 
   const loadData = async () => {
+    setIsLoading(true);
     const n: NotificationInterface[] = await ApiHelper.get("/notifications/my", "MessagingApi");
     setNotifications(n);
+    setIsLoading(false);
     props.onUpdate();
   }
 
@@ -52,37 +78,148 @@ export const Notifications: React.FC<Props> = (props) => {
     }
   }
 
-  const getMainLinks = () => {
-    let result: React.ReactElement[] = [];
-    notifications.forEach(notification => {
-      let datePosted = new Date(notification.timeSent);
-      const displayDuration = DateHelper.getDisplayDuration(datePosted);
+  const getNotificationIcon = (contentType: string) => {
+    switch (contentType) {
+      case "task": return <TaskIcon />;
+      case "assignment": return <AssignmentIcon />;
+      default: return <NotificationsIcon />;
+    }
+  }
 
-      result.push(
-        <div className="note" style={{ cursor: "pointer" }} onClick={(e) => { e.preventDefault(); }} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClick(notification); } }}>
-          <Box sx={{ width: "100%" }} className="note-contents">
-            <Stack direction="row" justifyContent="space-between">
-              <div style={{width:"100%"}} onClick={(e) => { e.preventDefault(); handleClick(notification); }} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClick(notification); } }} aria-label={`View notification: ${notification.message}`}>
-                <span className="text-grey" style={{float:"right"}}>{displayDuration}</span>
-                <p>
-                  <Icon>notifications</Icon> 
-                  {notification.message} 
-                  <span>{notification?.link ? <a href={notification.link} onClick={(e) => { e.stopPropagation() }} target="_blank">View Details</a> : null}</span>
-                </p>
-              </div>
-            </Stack>
-          </Box>
-        </div>
+  const getNotificationList = () => {
+    if (notifications.length === 0) {
+      return (
+        <Box sx={{ textAlign: 'center', py: 4 }}>
+          <NotificationsIcon sx={{ fontSize: 48, color: 'grey.400', mb: 2 }} />
+          <Typography variant="h6" color="textSecondary">
+            No notifications
+          </Typography>
+          <Typography variant="body2" color="textSecondary">
+            You're all caught up!
+          </Typography>
+        </Box>
       );
-    })
-    return result;
+    }
+
+    return (
+      <List sx={{ width: '100%' }}>
+        {notifications.map((notification, index) => {
+          let datePosted = new Date(notification.timeSent);
+          const displayDuration = DateHelper.getDisplayDuration(datePosted);
+          const isUnread = notification.isNew;
+
+          return (
+            <React.Fragment key={notification.id}>
+              <ListItem
+                component="button"
+                onClick={() => handleClick(notification)}
+                sx={{
+                  alignItems: 'flex-start',
+                  py: 2,
+                  cursor: 'pointer',
+                  bgcolor: isUnread ? 'action.hover' : 'transparent',
+                  '&:hover': {
+                    bgcolor: 'action.hover'
+                  },
+                  borderRadius: 1,
+                  mb: 0.5
+                }}
+              >
+                <ListItemAvatar>
+                  <Avatar 
+                    sx={{ 
+                      bgcolor: isUnread ? 'primary.main' : 'grey.400',
+                      width: 48,
+                      height: 48
+                    }}
+                  >
+                    {getNotificationIcon(notification.contentType)}
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText
+                  primary={
+                    <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
+                      <Typography
+                        variant="body1"
+                        sx={{ 
+                          fontWeight: isUnread ? 600 : 400,
+                          flex: 1,
+                          pr: 1
+                        }}
+                      >
+                        {notification.message}
+                      </Typography>
+                      <Stack direction="row" alignItems="center" spacing={1}>
+                        {isUnread && (
+                          <Chip
+                            size="small"
+                            label="New"
+                            color="primary"
+                            sx={{ height: 20, fontSize: '0.7rem' }}
+                          />
+                        )}
+                        <Typography variant="caption" color="textSecondary">
+                          {displayDuration}
+                        </Typography>
+                      </Stack>
+                    </Stack>
+                  }
+                  secondary={
+                    notification.link && (
+                      <Box sx={{ mt: 1 }}>
+                        <IconButton
+                          size="small"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            window.open(notification.link, '_blank');
+                          }}
+                          sx={{ p: 0.5 }}
+                        >
+                          <OpenInNewIcon fontSize="small" />
+                          <Typography variant="caption" sx={{ ml: 0.5 }}>
+                            View Details
+                          </Typography>
+                        </IconButton>
+                      </Box>
+                    )
+                  }
+                />
+              </ListItem>
+              {index < notifications.length - 1 && <Divider variant="inset" component="li" />}
+            </React.Fragment>
+          );
+        })}
+      </List>
+    );
   }
 
   React.useEffect(() => { console.log("RELOADED NOTIFICATIONS") }, []);
 
   return (
-    <>
-      {getMainLinks()}
-    </>
+    <Paper elevation={0} sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
+        <Typography variant="h6" component="h2">
+          Notifications
+        </Typography>
+      </Box>
+      
+      <Box sx={{ flex: 1, overflow: 'auto' }}>
+        {isLoading ? (
+          <Box sx={{ p: 2 }}>
+            {[...Array(3)].map((_, index) => (
+              <Box key={index} sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <Skeleton variant="circular" width={48} height={48} sx={{ mr: 2 }} />
+                <Box sx={{ flex: 1 }}>
+                  <Skeleton variant="text" width="80%" height={24} />
+                  <Skeleton variant="text" width="40%" height={20} />
+                </Box>
+              </Box>
+            ))}
+          </Box>
+        ) : (
+          getNotificationList()
+        )}
+      </Box>
+    </Paper>
   );
 };

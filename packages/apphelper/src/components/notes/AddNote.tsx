@@ -3,7 +3,16 @@
 import React, { useState, useEffect } from "react"
 import { ApiHelper, Locale, PersonHelper } from "../../helpers"
 import { MessageInterface, UserContextInterface } from "@churchapps/helpers"
-import { Icon, Stack, TextField } from "@mui/material"
+import { 
+  Box,
+  Stack,
+  TextField,
+  IconButton,
+  Paper,
+  CircularProgress,
+  Avatar
+} from "@mui/material"
+import { Send as SendIcon, Delete as DeleteIcon } from "@mui/icons-material"
 import { ErrorMessages } from "../ErrorMessages"
 import { SmallButton } from "../SmallButton"
 
@@ -75,21 +84,93 @@ export function AddNote({ context, ...props }: Props) {
   const image = PersonHelper.getPhotoUrl(context?.person)
 
   return (
-    <>
+    <Box sx={{ width: '100%' }}>
       <ErrorMessages errors={errors} />
-
-      <Stack direction="row" spacing={1.5} style={{ marginTop: 15 }} justifyContent="end">
-
-        {image ? <img src={image} alt="user" style={{ width: 60, height: 45, borderRadius: 5, marginLeft: 8 }} /> : <Icon>person</Icon>}
-        <Stack direction="column" spacing={2} style={{ width: "100%" }} justifyContent="end">
-          <div><b>{context?.person?.name?.display}</b></div>
-          <TextField fullWidth name="noteText" aria-label={headerText} placeholder="Add a note" multiline style={{ marginTop: 0, border: "none" }} variant="standard" onChange={handleChange} value={message?.content} />
+      
+      <Paper 
+        variant="outlined" 
+        sx={{ 
+          p: 2, 
+          bgcolor: 'grey.50',
+          borderColor: 'grey.300'
+        }}
+      >
+        <Stack direction="row" spacing={2} alignItems="flex-start">
+          <Avatar 
+            src={image} 
+            alt={context?.person?.name?.display}
+            sx={{ width: 48, height: 48 }}
+          />
+          
+          <Box sx={{ flex: 1 }}>
+            <TextField
+              fullWidth
+              multiline
+              rows={2}
+              name="noteText"
+              aria-label={headerText}
+              placeholder={props.messageId ? "Edit your message..." : "Type a message..."}
+              variant="standard"
+              value={message?.content || ''}
+              onChange={handleChange}
+              disabled={isSubmitting}
+              InputProps={{
+                disableUnderline: true,
+                sx: { 
+                  fontSize: '1rem',
+                  '& textarea': {
+                    resize: 'vertical',
+                    minHeight: '40px'
+                  }
+                }
+              }}
+              sx={{ 
+                bgcolor: 'white',
+                borderRadius: 1,
+                p: 1,
+                border: '1px solid',
+                borderColor: 'grey.300',
+                '&:hover': {
+                  borderColor: 'grey.400'
+                },
+                '&.Mui-focused': {
+                  borderColor: 'primary.main'
+                }
+              }}
+            />
+            
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1, gap: 0.5 }}>
+              {deleteFunction && (
+                <IconButton
+                  size="small"
+                  onClick={deleteFunction}
+                  disabled={isSubmitting}
+                  sx={{ color: 'error.main' }}
+                >
+                  <DeleteIcon fontSize="small" />
+                </IconButton>
+              )}
+              <IconButton
+                size="small"
+                color="primary"
+                onClick={handleSave}
+                disabled={isSubmitting || !message?.content?.trim()}
+                sx={{ 
+                  bgcolor: 'primary.main', 
+                  color: 'white',
+                  '&:hover': { bgcolor: 'primary.dark' },
+                  '&:disabled': { 
+                    bgcolor: 'action.disabledBackground',
+                    color: 'action.disabled'
+                  }
+                }}
+              >
+                {isSubmitting ? <CircularProgress size={18} color="inherit" /> : <SendIcon fontSize="small" />}
+              </IconButton>
+            </Box>
+          </Box>
         </Stack>
-        <Stack direction="column" spacing={1} justifyContent="end">
-          <SmallButton icon="send" onClick={handleSave} />
-          {deleteFunction && <SmallButton icon="delete" onClick={deleteFunction} disabled={isSubmitting} />}
-        </Stack>
-      </Stack>
-    </>
+      </Paper>
+    </Box>
   );
 }

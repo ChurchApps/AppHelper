@@ -1,11 +1,34 @@
 "use client";
 
-import { Button, TextField, TableRow, TableCell, Table, TableBody } from "@mui/material";
-import React, { useEffect } from "react";
+import { 
+  Button, 
+  TextField, 
+  Paper, 
+  Box, 
+  Typography, 
+  Stack, 
+  IconButton, 
+  List, 
+  ListItem, 
+  ListItemAvatar, 
+  ListItemText, 
+  ListItemButton,
+  InputAdornment,
+  Divider,
+  Skeleton,
+  Avatar,
+  useTheme
+} from "@mui/material";
+import { 
+  ArrowBack as ArrowBackIcon, 
+  Search as SearchIcon,
+  PersonSearch as PersonSearchIcon,
+  Chat as ChatIcon
+} from "@mui/icons-material";
+import React, { useEffect, useState } from "react";
 import { ApiHelper, Locale, PersonHelper } from "../../helpers";
 import { ConversationInterface, PersonInterface, PrivateMessageInterface, UserContextInterface } from "@churchapps/helpers";
 import { AddNote } from "../notes/AddNote";
-import { SmallButton } from "../SmallButton";
 import { PersonAvatar } from "../PersonAvatar";
 
 interface Props {
@@ -21,11 +44,6 @@ export const NewPrivateMessage: React.FC<Props> = (props) => {
   const [searchResults, setSearchResults] = React.useState([]);
   const [selectedPerson, setSelectedPerson] = React.useState<PersonInterface>(null);
 
-  const handleSubmit = (e: React.MouseEvent) => {
-    if (e !== null) e.preventDefault();
-    let term = escape(searchText.trim());
-    ApiHelper.get("/people/search?term=" + term, "MembershipApi").then(data => setSearchResults(data));
-  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchText(e.currentTarget.value);
@@ -52,17 +70,6 @@ export const NewPrivateMessage: React.FC<Props> = (props) => {
     setSelectedPerson(person);
   }
 
-  const getPeople = () => {
-    let result = [];
-    for (let i = 0; i < searchResults.length; i++) {
-      const p = searchResults[i];
-      result.push(<TableRow key={p.id}>
-        <TableCell><PersonAvatar person={p} size="small" onClick={() => handlePersonSelected(p)} /></TableCell>
-        <TableCell><a href="about:blank" onClick={(e) => { e.preventDefault(); handlePersonSelected(p) }}>{p.name.display}</a></TableCell>
-      </TableRow>);
-    }
-    return result;
-  }
 
   const handleNoteAdded = () => {
     handlePersonSelected(selectedPerson);
@@ -87,34 +94,163 @@ export const NewPrivateMessage: React.FC<Props> = (props) => {
   }, [props.selectedPerson]);
 
 
-  if (!selectedPerson) return (
-    <div style={{ paddingLeft: 10, paddingRight: 10 }}>
-      <span style={{ float: "right" }}>
-        <SmallButton icon="chevron_left" text="Back" onClick={props.onBack} />
-      </span>
-      <b>{Locale.label("wrapper.newPrivateMessage")}</b>
-      <div>{Locale.label("wrapper.searchForPerson")}</div>
+  const theme = useTheme();
+  const [isSearching, setIsSearching] = useState(false);
 
-      <TextField fullWidth label="Name" id="searchText" data-testid="search-input" name="searchText" type="text" placeholder="Name" value={searchText} onChange={handleChange}
-        onKeyDown={(e) => {e.stopPropagation()}}
-        InputProps={{ endAdornment: <Button variant="contained" id="searchButton" data-testid="search-button" onClick={handleSubmit}>{Locale.label("common.search")}</Button> }}
-      />
-      <br />
-      <Table id="smallPeopleTable" size="small">
-        <TableBody>{getPeople()}</TableBody>
-      </Table>
-    </div>
+  const handleSearchSubmit = async (e: React.MouseEvent) => {
+    if (e !== null) e.preventDefault();
+    if (!searchText.trim()) return;
+    
+    setIsSearching(true);
+    let term = escape(searchText.trim());
+    const data = await ApiHelper.get("/people/search?term=" + term, "MembershipApi");
+    setSearchResults(data);
+    setIsSearching(false);
+  };
+
+  if (!selectedPerson) return (
+    <Paper elevation={0} sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
+        <Stack direction="row" alignItems="center" spacing={2}>
+          <IconButton onClick={props.onBack}>
+            <ArrowBackIcon />
+          </IconButton>
+          <Typography variant="h6" component="h2">
+            {Locale.label("wrapper.newPrivateMessage")}
+          </Typography>
+        </Stack>
+      </Box>
+
+      <Box sx={{ p: 3 }}>
+        <Stack spacing={3}>
+          <Box>
+            <Typography variant="body1" color="textSecondary" gutterBottom>
+              {Locale.label("wrapper.searchForPerson")}
+            </Typography>
+            <TextField 
+              fullWidth 
+              placeholder="Search by name..." 
+              id="searchText" 
+              data-testid="search-input" 
+              value={searchText} 
+              onChange={handleChange}
+              onKeyDown={(e) => {
+                e.stopPropagation();
+                if (e.key === 'Enter') handleSearchSubmit(null);
+              }}
+              InputProps={{ 
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <PersonSearchIcon color="action" />
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <Button 
+                      variant="contained" 
+                      size="small"
+                      onClick={handleSearchSubmit}
+                      disabled={!searchText.trim() || isSearching}
+                    >
+                      {Locale.label("common.search")}
+                    </Button>
+                  </InputAdornment>
+                )
+              }}
+              sx={{ mt: 1 }}
+            />
+          </Box>
+
+          {isSearching && (
+            <Box>
+              {[...Array(3)].map((_, index) => (
+                <Box key={index} sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  <Skeleton variant="circular" width={48} height={48} sx={{ mr: 2 }} />
+                  <Skeleton variant="text" width="60%" height={24} />
+                </Box>
+              ))}
+            </Box>
+          )}
+
+          {!isSearching && searchResults.length > 0 && (
+            <Box>
+              <Typography variant="subtitle2" color="textSecondary" gutterBottom>
+                {searchResults.length} {searchResults.length === 1 ? 'person' : 'people'} found
+              </Typography>
+              <List sx={{ bgcolor: 'background.paper', borderRadius: 1 }}>
+                {searchResults.map((person, index) => (
+                  <React.Fragment key={person.id}>
+                    <ListItemButton 
+                      onClick={() => handlePersonSelected(person)}
+                      sx={{ py: 2 }}
+                    >
+                      <ListItemAvatar>
+                        <PersonAvatar person={person} size="small" />
+                      </ListItemAvatar>
+                      <ListItemText 
+                        primary={person.name.display}
+                        secondary={person.contactInfo?.email || ''}
+                      />
+                    </ListItemButton>
+                    {index < searchResults.length - 1 && <Divider />}
+                  </React.Fragment>
+                ))}
+              </List>
+            </Box>
+          )}
+
+          {!isSearching && searchText && searchResults.length === 0 && (
+            <Box sx={{ textAlign: 'center', py: 4 }}>
+              <PersonSearchIcon sx={{ fontSize: 48, color: 'grey.400', mb: 2 }} />
+              <Typography variant="h6" color="textSecondary">
+                No people found
+              </Typography>
+              <Typography variant="body2" color="textSecondary">
+                Try searching with a different name
+              </Typography>
+            </Box>
+          )}
+        </Stack>
+      </Box>
+    </Paper>
   );
   else {
     return (
-      <div style={{ paddingLeft: 10, paddingRight: 10 }}>
-        <span style={{ float: "right" }}>
-          <SmallButton icon="chevron_left" text="Back" onClick={props.onBack} />
-        </span>
-        <b>{Locale.label("wrapper.newPrivateMessage")}</b>
-        <div>To: {selectedPerson.name.display}</div>
-        <AddNote context={props.context} conversationId={null} onUpdate={handleNoteAdded} createConversation={createConversation} />
-      </div>
+      <Paper elevation={0} sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+        <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
+          <Stack direction="row" alignItems="center" spacing={2}>
+            <IconButton onClick={props.onBack}>
+              <ArrowBackIcon />
+            </IconButton>
+            <Typography variant="h6" component="h2">
+              {Locale.label("wrapper.newPrivateMessage")}
+            </Typography>
+          </Stack>
+        </Box>
+
+        <Box sx={{ p: 3 }}>
+          <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 3 }}>
+            <PersonAvatar person={selectedPerson} size="medium" />
+            <Box>
+              <Typography variant="subtitle1" fontWeight="medium">
+                {selectedPerson.name.display}
+              </Typography>
+              {selectedPerson.contactInfo?.email && (
+                <Typography variant="body2" color="textSecondary">
+                  {selectedPerson.contactInfo.email}
+                </Typography>
+              )}
+            </Box>
+          </Stack>
+          <Divider sx={{ mb: 3 }} />
+          <AddNote 
+            context={props.context} 
+            conversationId={null} 
+            onUpdate={handleNoteAdded} 
+            createConversation={createConversation} 
+          />
+        </Box>
+      </Paper>
     )
   }
 }
