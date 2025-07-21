@@ -47,7 +47,7 @@ export function AddNote({ context, ...props }: Props) {
 
   const validate = () => {
     const result = [];
-    if (!message.content.trim()) result.push(Locale.label("notes.validate.content") || "Please enter a message");
+    if (!message.content.trim()) result.push(Locale.label("notes.validate.content", "Please enter a message"));
     setErrors(result);
     return result.length === 0;
   }

@@ -103,7 +103,12 @@ export class Locale {
 	}
 
 	// Keep the old method for backward compatibility
-	static label(key: string): string {
-		return this.t(key);
+	static label(key: string, fallback?: string): string {
+		const translation = this.t(key);
+		// If translation equals the key, it means no translation was found
+		if (translation === key && fallback) {
+			return fallback;
+		}
+		return translation;
 	}
 }
