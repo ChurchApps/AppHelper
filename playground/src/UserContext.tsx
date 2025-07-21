@@ -1,5 +1,5 @@
 import React from "react";
-import { type LoginUserChurchInterface, type PersonInterface, type UserContextInterface, type UserInterface, ApiHelper, CommonEnvironmentHelper } from "@churchapps/apphelper";
+import { type LoginUserChurchInterface, type PersonInterface, type UserContextInterface, type UserInterface, ApiHelper, CommonEnvironmentHelper, Locale } from "@churchapps/apphelper";
 
 const UserContext = React.createContext<UserContextInterface | undefined>(undefined);
 
@@ -15,10 +15,13 @@ export const UserProvider = ({ children }: Props) => {
   const [userChurches, setUserChurches] = React.useState<LoginUserChurchInterface[] | null>(null);
   const [loginError, setLoginError] = React.useState<string | null>(null);
 
-  // Configure ApiHelper like ChumsApp does
+  // Configure ApiHelper and Locale like ChumsApp does
   React.useEffect(() => {
     // Initialize the staging environment like ChumsApp
     CommonEnvironmentHelper.init("staging");
+    
+    // Initialize locale with English translations
+    Locale.init(["/locales/{{lng}}.json"]).catch(console.error);
     
     // Set up all API configurations like ChumsApp
     ApiHelper.apiConfigs = [

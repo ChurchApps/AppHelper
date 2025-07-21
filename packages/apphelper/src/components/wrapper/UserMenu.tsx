@@ -54,17 +54,22 @@ const UserMenuContent: React.FC<Props> = (props) => {
     const churchId = UserHelper.currentUserChurch.church.id;
     let result: React.ReactElement[] = [];
 
+    // Helper function to get label with fallback
+    const getLabel = (key: string, fallback: string) => {
+      const label = Locale.label(key);
+      return label && label !== key ? label : fallback;
+    };
 
-    result.push(<NavItem onClick={() => {setShowPM(true)}} label={Locale.label("wrapper.messages")} icon="mail" key="/messages" onNavigate={props.onNavigate} badgeCount={props.notificationCounts.pmCount} />);
+    result.push(<NavItem onClick={() => {setShowPM(true)}} label={getLabel("wrapper.messages", "Messages")} icon="mail" key="/messages" onNavigate={props.onNavigate} badgeCount={props.notificationCounts.pmCount} />);
 
-    result.push(<NavItem onClick={() => {setShowNotifications(true)}} label={Locale.label("wrapper.notifications")} icon="notifications" key="/notifications" onNavigate={props.onNavigate} badgeCount={props.notificationCounts.notificationCount} />);
+    result.push(<NavItem onClick={() => {setShowNotifications(true)}} label={getLabel("wrapper.notifications", "Notifications")} icon="notifications" key="/notifications" onNavigate={props.onNavigate} badgeCount={props.notificationCounts.notificationCount} />);
 
-    if (props.appName === "CHUMS") result.push(<NavItem url={"/profile"} key="/profile" label={Locale.label("wrapper.profile")} icon="person" onNavigate={props.onNavigate} />);
-    else result.push(<NavItem url={`${CommonEnvironmentHelper.ChumsRoot}/login?jwt=${jwt}&churchId=${churchId}&returnUrl=/profile`} key="/profile" label={Locale.label("wrapper.profile")} icon="person" external={true} onNavigate={props.onNavigate} />);
-    result.push(<NavItem url="/logout" label={Locale.label("wrapper.logout")} icon="logout" key="/logout" onNavigate={props.onNavigate} />);
+    if (props.appName === "CHUMS") result.push(<NavItem url={"/profile"} key="/profile" label={getLabel("wrapper.profile", "Profile")} icon="person" onNavigate={props.onNavigate} />);
+    else result.push(<NavItem url={`${CommonEnvironmentHelper.ChumsRoot}/login?jwt=${jwt}&churchId=${churchId}&returnUrl=/profile`} key="/profile" label={getLabel("wrapper.profile", "Profile")} icon="person" external={true} onNavigate={props.onNavigate} />);
+    result.push(<NavItem url="/logout" label={getLabel("wrapper.logout", "Logout")} icon="logout" key="/logout" onNavigate={props.onNavigate} />);
     result.push(<div style={{borderTop:"1px solid #CCC", paddingTop:2, paddingBottom:2}}></div>)
-    result.push(<NavItem label="Switch App" key={Locale.label("wrapper.switchApp")} icon="apps" onClick={() => { setTabIndex(1); }} />);
-    result.push(<NavItem label={Locale.label("wrapper.switchChurch")} key="Switch Church" icon="church" onClick={handleSwitchChurch} />);
+    result.push(<NavItem label={getLabel("wrapper.switchApp", "Switch App")} key="Switch App" icon="apps" onClick={() => { setTabIndex(1); }} />);
+    result.push(<NavItem label={getLabel("wrapper.switchChurch", "Switch Church")} key="Switch Church" icon="church" onClick={handleSwitchChurch} />);
     return result;
   }
 
@@ -110,15 +115,21 @@ const UserMenuContent: React.FC<Props> = (props) => {
   );
 
   const getModals = () => {
+    // Helper function to get label with fallback
+    const getLabel = (key: string, fallback: string) => {
+      const label = Locale.label(key);
+      return label && label !== key ? label : fallback;
+    };
+    
     if (showPM) return (
       <Dialog open onClose={() => setShowPM(false)} maxWidth="md" fullWidth>
-        <DialogTitle>{Locale.label("wrapper.messages")}</DialogTitle>
+        <DialogTitle>{getLabel("wrapper.messages", "Messages")}</DialogTitle>
         <DialogContent>
           <PrivateMessages context={props.context} refreshKey={refreshKey} onUpdate={props.loadCounts} />
         </DialogContent>
       </Dialog>);
     else if (showNotifications) return (<Dialog open onClose={() => setShowNotifications(false)} maxWidth="md" fullWidth>
-      <DialogTitle>{Locale.label("wrapper.notifications")}</DialogTitle>
+      <DialogTitle>{getLabel("wrapper.notifications", "Notifications")}</DialogTitle>
       <DialogContent>
       		<Notifications context={props.context} appName={props.appName} onUpdate={props.loadCounts} onNavigate={props.onNavigate} />
       	</DialogContent>
