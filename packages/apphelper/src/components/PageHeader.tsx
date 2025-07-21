@@ -14,14 +14,21 @@ export const PageHeader: React.FC<PageHeaderProps> = ({ icon, title, subtitle, c
     <Box sx={{ 
       backgroundColor: "var(--c1l2)", 
       color: "#FFF", 
+      position: 'relative',
+      left: '50%',
+      right: '50%',
+      marginLeft: '-50vw',
+      marginRight: '-50vw',
       width: '100vw',
-      marginLeft: 'calc(50% - 50vw)',
       '--c1': '#1565C0',
       '--c1d1': '#1358AD', 
       '--c1d2': '#114A99',
       '--c1l2': '#568BDA'
     }}>
-      <Box sx={{ padding: "24px", maxWidth: "1200px", margin: "0 auto" }}>
+      <Box sx={{ 
+        paddingX: { xs: 2, sm: 3, md: 4 }, 
+        paddingY: 3
+      }}>
         <Stack direction={{ xs: "column", md: "row" }} spacing={{ xs: 2, md: 4 }} alignItems={{ xs: "flex-start", md: "center" }} sx={{ width: "100%" }}>
         {/* Left side: Title and Icon */}
         <Stack direction="row" spacing={2} alignItems="center" sx={{ flex: 1 }}>
