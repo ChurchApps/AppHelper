@@ -39,19 +39,78 @@ export const PrivateMessages: React.FC<Props> = (props) => {
 
   const loadData = async () => {
     const pms: PrivateMessageInterface[] = await ApiHelper.get("/privateMessages", "MessagingApi");
+    
+    // Group messages by person (conversation)
+    const conversationMap = new Map<string, PrivateMessageInterface>();
     const peopleIds: string[] = [];
-    pms.forEach(pm => {
+    
+    pms.forEach((pm) => {
       const personId = (pm.fromPersonId === props.context.person.id) ? pm.toPersonId : pm.fromPersonId;
       if (peopleIds.indexOf(personId) === -1) peopleIds.push(personId);
+      
+      // Keep only the most recent message per conversation
+      const currentMessage = pm.conversation?.messages?.[0];
+      const existingPm = conversationMap.get(personId);
+      const existingMessage = existingPm?.conversation?.messages?.[0];
+      
+      if (!conversationMap.has(personId)) {
+        // First message for this person
+        conversationMap.set(personId, pm);
+      } else if (currentMessage && existingMessage) {
+        // Compare timestamps to keep the most recent
+        const currentTime = new Date(currentMessage.timeUpdated || currentMessage.timeSent);
+        const existingTime = new Date(existingMessage.timeUpdated || existingMessage.timeSent);
+        if (currentTime > existingTime) {
+          conversationMap.set(personId, pm);
+        }
+      } else if (currentMessage && !existingMessage) {
+        // Current has message but existing doesn't, use current
+        conversationMap.set(personId, pm);
+      }
+      // If !currentMessage but existingMessage, keep existing (do nothing)
     });
-    if (peopleIds.length > 0) {
-      const people = await ApiHelper.get("/people/basic?ids=" + peopleIds.join(","), "MembershipApi");
-      pms.forEach(pm => {
-        const personId = (pm.fromPersonId === props.context.person.id) ? pm.toPersonId : pm.fromPersonId;
-        pm.person = ArrayHelper.getOne(people, "id", personId);
-      })
+    
+    // Convert map back to array (one message per conversation)
+    let conversations = Array.from(conversationMap.values());
+    
+    // Filter out conversations without messages first
+    conversations = conversations.filter(pm => pm.conversation?.messages?.[0]);
+    
+    // Get the filtered people IDs (only for conversations with messages)
+    const filteredPeopleIds = conversations.map(pm => 
+      (pm.fromPersonId === props.context.person.id) ? pm.toPersonId : pm.fromPersonId
+    ).filter((id, index, arr) => arr.indexOf(id) === index); // Remove duplicates
+    
+    if (filteredPeopleIds.length > 0) {
+      try {
+        const people = await ApiHelper.get("/people/basic?ids=" + filteredPeopleIds.join(","), "MembershipApi");
+        
+        conversations.forEach(pm => {
+          const personId = (pm.fromPersonId === props.context.person.id) ? pm.toPersonId : pm.fromPersonId;
+          pm.person = ArrayHelper.getOne(people, "id", personId);
+        });
+      } catch (error) {
+        console.error("❌ Failed to load people data:", error);
+      }
     }
-    setPrivateMessages(pms);
+    
+    // Sort by most recent message (same logic as displayed in UI)
+    conversations.sort((a, b) => {
+      const aMessage = a.conversation?.messages?.[0];
+      const bMessage = b.conversation?.messages?.[0];
+      
+      if (!aMessage && !bMessage) return 0;
+      if (!aMessage) return 1; // b comes first
+      if (!bMessage) return -1; // a comes first
+      
+      const aTime = new Date(aMessage.timeUpdated || aMessage.timeSent).getTime();
+      const bTime = new Date(bMessage.timeUpdated || bMessage.timeSent).getTime();
+      
+      // Most recent first (descending order)
+      return bTime - aTime;
+    });
+    
+    setPrivateMessages(conversations);
     props.onUpdate();
   }
 
@@ -158,11 +217,20 @@ export const PrivateMessages: React.FC<Props> = (props) => {
         {privateMessages.map((pm, index) => {
           const person = pm.person;
           const message = pm.conversation?.messages?.[0];
-          if (!message || !person) return null;
+          
+          // Only filter out if there's no message - show conversations even without person data
+          if (!message) {
+            return null;
+          }
           let datePosted = new Date(message.timeUpdated || message.timeSent);
           const displayDuration = DateHelper.getDisplayDuration(datePosted);
           const contents = message.content?.split("\n")[0];
           const isUnread = false; // TODO: Implement read status tracking
+          
+          // Determine who sent the last message for better context  
+          const isMyMessage = pm.fromPersonId === props.context.person.id;
+          const messagePrefix = isMyMessage ? "You: " : "";
+          const displayContent = contents ? `${messagePrefix}${contents}` : 'No message preview available';
 
           return (
             <Box key={pm.id} sx={{ px: 2, py: 0.5 }}>
@@ -211,7 +279,7 @@ export const PrivateMessages: React.FC<Props> = (props) => {
               >
                 <ListItemAvatar sx={{ mr: 2 }}>
                   <Box sx={{ position: 'relative' }}>
-                    <PersonAvatar person={person} size="medium" />
+                    <PersonAvatar person={person || { name: { display: "Unknown User" } } as any} size="medium" />
                     {isUnread && (
                       <Box
                         sx={{
@@ -243,7 +311,7 @@ export const PrivateMessages: React.FC<Props> = (props) => {
                           lineHeight: 1.3
                         }}
                       >
-                        {person.name?.display}
+                        {person?.name?.display || "Unknown User"}
                       </Typography>
                       <Typography 
                         variant="caption" 
@@ -277,6 +345,18 @@ export const PrivateMessages: React.FC<Props> = (props) => {
                         fontStyle: contents ? 'normal' : 'italic'
                       }}
                     >
+                      {isMyMessage && contents && (
+                        <Typography 
+                          component="span" 
+                          sx={{ 
+                            fontWeight: 600, 
+                            color: 'text.primary',
+                            opacity: 0.8 
+                          }}
+                        >
+                          You:{" "}
+                        </Typography>
+                      )}
                       {contents || 'No message preview available'}
                     </Typography>
                   }

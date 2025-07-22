@@ -11,6 +11,7 @@ export class NotificationService {
   private counts: NotificationCounts = { notificationCount: 0, pmCount: 0 };
   private listeners: Array<(counts: NotificationCounts) => void> = [];
   private isInitialized: boolean = false;
+  private currentPersonId: string | null = null;
 
   private constructor() {}
 
@@ -28,6 +29,9 @@ export class NotificationService {
     if (this.isInitialized) return;
 
     try {
+      // Store current person ID for conversation counting
+      this.currentPersonId = context?.person?.id || null;
+      
       // Initialize WebSocket connection
       await SocketHelper.init();
 
@@ -83,9 +87,24 @@ export class NotificationService {
    */
   async loadNotificationCounts(): Promise<void> {
     try {
-      // Load private message count
+      // Load private message count (count unique conversations, not individual messages)
       const privateMessages = await ApiHelper.get("/privateMessages", "MessagingApi");
-      const pmCount = Array.isArray(privateMessages) ? privateMessages.length : 0;
+      let pmCount = 0;
+      
+      if (Array.isArray(privateMessages)) {
+        // Count unique conversations by grouping messages by person
+        const uniquePeople = new Set<string>();
+        const currentPersonId = this.currentPersonId;
+        
+        privateMessages.forEach((pm: any) => {
+          if (currentPersonId) {
+            const personId = (pm.fromPersonId === currentPersonId) ? pm.toPersonId : pm.fromPersonId;
+            uniquePeople.add(personId);
+          }
+        });
+        
+        pmCount = uniquePeople.size;
+      }
 
       // Load general notification count
       let notificationCount = 0;
@@ -174,6 +193,7 @@ export class NotificationService {
     
     // Reset state
     this.counts = { notificationCount: 0, pmCount: 0 };
+    this.currentPersonId = null;
     this.isInitialized = false;
   }
 
