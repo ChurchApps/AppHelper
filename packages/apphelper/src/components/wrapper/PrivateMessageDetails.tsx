@@ -14,7 +14,7 @@ import {
 import { ArrowBack as ArrowBackIcon } from "@mui/icons-material";
 import { PrivateMessageInterface, UserContextInterface } from "@churchapps/helpers";
 import { Notes } from "../notes/Notes";
-import { ApiHelper, Locale } from "../../helpers";
+import { ApiHelper, Locale, NotificationService } from "../../helpers";
 import { PersonAvatar } from "../PersonAvatar";
 
 interface Props {
@@ -22,6 +22,7 @@ interface Props {
   privateMessage: PrivateMessageInterface;
   onBack: () => void
   refreshKey: number;
+  onMessageRead?: () => void;
 }
 
 export const PrivateMessageDetails: React.FC<Props> = (props) => {
@@ -32,8 +33,21 @@ export const PrivateMessageDetails: React.FC<Props> = (props) => {
     const clearNotification = async () => {
       if (props.privateMessage.notifyPersonId === props.context.person.id) {
         try {
+          console.log("Marking private message as read:", props.privateMessage.id);
+          
           // Clear the notification by getting the private message details
           await ApiHelper.get(`/privateMessages/${props.privateMessage.id}`, "MessagingApi");
+          
+          // Manually refresh notification counts to ensure immediate UI update
+          const notificationService = NotificationService.getInstance();
+          await notificationService.refresh();
+          
+          console.log("Private message marked as read and notifications refreshed");
+          
+          // Notify parent component that message was marked as read
+          if (props.onMessageRead) {
+            props.onMessageRead();
+          }
         } catch (error) {
           console.error("Failed to clear notification:", error);
         }

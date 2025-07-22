@@ -431,7 +431,7 @@ export const PrivateMessages: React.FC<Props> = (props) => {
   const theme = useTheme();
 
   if (inAddMode) return <NewPrivateMessage context={props.context} onSelectMessage={(pm: PrivateMessageInterface) => { setSelectedMessage(pm); setInAddMode(false); }} onBack={handleBack} />
-  if (selectedMessage) return <PrivateMessageDetails privateMessage={selectedMessage} context={props.context} onBack={handleBack} refreshKey={props.refreshKey} />
+  if (selectedMessage) return <PrivateMessageDetails privateMessage={selectedMessage} context={props.context} onBack={handleBack} refreshKey={props.refreshKey} onMessageRead={loadData} />
   
   return (
     <Paper elevation={0} sx={{ 

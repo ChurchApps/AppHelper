@@ -92,18 +92,18 @@ export class NotificationService {
       let pmCount = 0;
       
       if (Array.isArray(privateMessages)) {
-        // Count unique conversations by grouping messages by person
-        const uniquePeople = new Set<string>();
+        // Count unique conversations with unread messages only
+        const uniqueUnreadPeople = new Set<string>();
         const currentPersonId = this.currentPersonId;
         
         privateMessages.forEach((pm: any) => {
-          if (currentPersonId) {
+          if (currentPersonId && pm.notifyPersonId === currentPersonId) {
             const personId = (pm.fromPersonId === currentPersonId) ? pm.toPersonId : pm.fromPersonId;
-            uniquePeople.add(personId);
+            uniqueUnreadPeople.add(personId);
           }
         });
         
-        pmCount = uniquePeople.size;
+        pmCount = uniqueUnreadPeople.size;
       }
 
       // Load general notification count
