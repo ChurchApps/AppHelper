@@ -125,9 +125,31 @@ const UserMenuContent: React.FC<Props> = (props) => {
     };
     
     if (showPM) return (
-      <Dialog open onClose={() => setShowPM(false)} maxWidth="md" fullWidth>
+      <Dialog 
+        open 
+        onClose={() => setShowPM(false)} 
+        maxWidth="md" 
+        fullWidth
+        PaperProps={{
+          sx: {
+            height: '80vh',
+            maxHeight: '700px',
+            display: 'flex',
+            flexDirection: 'column'
+          }
+        }}
+      >
         <DialogTitle>{getLabel("wrapper.messages", "Messages")}</DialogTitle>
-        <DialogContent>
+        <DialogContent 
+          sx={{ 
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            p: 0,
+            overflow: 'hidden',
+            minHeight: 0
+          }}
+        >
           <PrivateMessages context={props.context} refreshKey={refreshKey} onUpdate={props.loadCounts} />
         </DialogContent>
       </Dialog>);

@@ -58,8 +58,22 @@ export const PrivateMessageDetails: React.FC<Props> = (props) => {
   }, [props.privateMessage.id, props.privateMessage.notifyPersonId, props.context.person.id]);
   
   return (
-    <Paper elevation={0} sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
+    <Paper elevation={0} sx={{ 
+      height: '100%', 
+      display: 'flex', 
+      flexDirection: 'column', 
+      overflow: 'hidden',
+      position: 'relative'
+    }}>
+      {/* Fixed Header - Always visible */}
+      <Box sx={{ 
+        p: 2, 
+        borderBottom: 1, 
+        borderColor: 'divider',
+        flexShrink: 0,
+        backgroundColor: 'background.paper',
+        zIndex: 1
+      }}>
         <Stack direction="row" alignItems="center" spacing={2}>
           <IconButton onClick={props.onBack}>
             <ArrowBackIcon />
@@ -78,9 +92,16 @@ export const PrivateMessageDetails: React.FC<Props> = (props) => {
         </Stack>
       </Box>
       
-      <Box sx={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+      {/* Chat area - Scrollable content */}
+      <Box sx={{ 
+        flex: 1, 
+        display: 'flex', 
+        flexDirection: 'column',
+        minHeight: 0,
+        overflow: 'hidden'
+      }}>
         <Notes 
-          maxHeight={"100%"} 
+          maxHeight="100%" 
           context={props.context} 
           conversationId={props.privateMessage.conversationId} 
           noDisplayBox={true} 

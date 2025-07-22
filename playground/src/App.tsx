@@ -28,6 +28,7 @@ import LoginComponentsPage from './pages/LoginComponentsPage';
 import DonationComponentsPage from './pages/DonationComponentsPage';
 import MarkdownComponentsPage from './pages/MarkdownComponentsPage';
 import ModernLayoutPage from './pages/ModernLayoutPage';
+import PrivateMessageTestPage from './pages/PrivateMessageTestPage';
 // import MessagingTestPage from './pages/MessagingTestPage';
 
 
@@ -115,6 +116,7 @@ function HomePage() {
                   <Link to="/apphelper-helpers">Helpers (Re-exported & Local)</Link>
                   <Link to="/apphelper-components">Core Components 🔒</Link>
                   <Link to="/modern-layout">Modern Layout (SiteHeader + PageHeader)</Link>
+                  <Link to="/private-message-test">🔧 Private Message Scrolling Test</Link>
                   <Link to="/apphelper-wrappers">Wrapper Components 🔒</Link>
                   {/* <Link to="/messaging-test">Messaging & Notifications Test 🔒</Link> */}
                   <Link to="/apphelper-notes">Notes Components 🔒</Link>
@@ -381,6 +383,7 @@ function AppContent() {
         
         {/* Modern Layout demo combining SiteHeader + PageHeader */}
         <Route path="/modern-layout" element={<ModernLayoutPage />} />
+        <Route path="/private-message-test" element={<PrivateMessageTestPage />} />
         
         {/* Legacy routes for backward compatibility */}
         <Route path="/login" element={<LoginPageComponent />} />
