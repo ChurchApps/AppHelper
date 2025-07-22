@@ -165,8 +165,11 @@ const UserMenuContent: React.FC<Props> = (props) => {
   const totalNotifcations = props.notificationCounts.notificationCount + props.notificationCounts.pmCount;
 
   React.useEffect(() => {
-    setRefreshKey(Math.random());
-  }, [props.notificationCounts]);
+    // Only update refresh key when modal is not open to prevent modal closing
+    if (!showPM && !showNotifications) {
+      setRefreshKey(Math.random());
+    }
+  }, [props.notificationCounts, showPM, showNotifications]);
 
   return (
     <>
