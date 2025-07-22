@@ -45,7 +45,22 @@ export function Notes(props: Props) {
 
   const getNotesWrapper = () => {
     const notes = getNotes();
-    if (props.maxHeight) return <div id="notesScroll" style={{maxHeight: props.maxHeight, overflowY: "scroll"}}>{notes}</div>
+    if (props.maxHeight) {
+      return (
+        <div 
+          id="notesScroll" 
+          style={{
+            height: props.maxHeight,
+            overflowY: "auto",
+            overflowX: "hidden",
+            display: "flex",
+            flexDirection: "column"
+          }}
+        >
+          {notes}
+        </div>
+      );
+    }
     else return notes;
   }
 
@@ -85,19 +100,43 @@ export function Notes(props: Props) {
     };
   }, [props.conversationId]); //eslint-disable-line
 
+  // Auto-scroll to bottom when messages change or component mounts
   React.useEffect(() => {
-    if (props.maxHeight && messages?.length>0) {
-      setTimeout(() => {
+    if (props.maxHeight && messages?.length > 0) {
+      // Use requestAnimationFrame for smoother scrolling
+      requestAnimationFrame(() => {
         const element = window?.document?.getElementById("notesScroll");
-        if (element) element.scrollTop = element.scrollHeight;
-      }, 100);
+        if (element) {
+          element.scrollTop = element.scrollHeight;
+        }
+      });
     }
   }, [messages, props.maxHeight]);
 
-  let result = <>
-    {getNotesWrapper()}
-    {messages && (<AddNote context={props.context} conversationId={props.conversationId} onUpdate={loadNotes} createConversation={props.createConversation} messageId={editMessageId} />)}
-  </>
+  let result = props.maxHeight ? (
+    <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+      <div style={{ flex: 1, minHeight: 0 }}>
+        {getNotesWrapper()}
+      </div>
+      {messages && (
+        <div style={{ flexShrink: 0, borderTop: "1px solid #e0e0e0", backgroundColor: "#fafafa", padding: "8px" }}>
+          <AddNote 
+            context={props.context} 
+            conversationId={props.conversationId} 
+            onUpdate={loadNotes} 
+            createConversation={props.createConversation} 
+            messageId={editMessageId} 
+          />
+        </div>
+      )}
+    </div>
+  ) : (
+    <>
+      {getNotesWrapper()}
+      {messages && (<AddNote context={props.context} conversationId={props.conversationId} onUpdate={loadNotes} createConversation={props.createConversation} messageId={editMessageId} />)}
+    </>
+  );
+  
   if (props.noDisplayBox) return result;
   else return (<DisplayBox id="notesBox" data-testid="notes-box" headerIcon="sticky_note_2" headerText={Locale.label("notes.notes", "Notes")}>{result}</DisplayBox>);
 };

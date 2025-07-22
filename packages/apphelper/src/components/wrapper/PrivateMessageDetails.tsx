@@ -14,7 +14,7 @@ import {
 import { ArrowBack as ArrowBackIcon } from "@mui/icons-material";
 import { PrivateMessageInterface, UserContextInterface } from "@churchapps/helpers";
 import { Notes } from "../notes/Notes";
-import { Locale } from "../../helpers";
+import { ApiHelper, Locale } from "../../helpers";
 import { PersonAvatar } from "../PersonAvatar";
 
 interface Props {
@@ -26,6 +26,22 @@ interface Props {
 
 export const PrivateMessageDetails: React.FC<Props> = (props) => {
   const theme = useTheme();
+  
+  // Clear notification when conversation is opened
+  React.useEffect(() => {
+    const clearNotification = async () => {
+      if (props.privateMessage.notifyPersonId === props.context.person.id) {
+        try {
+          // Clear the notification by getting the private message details
+          await ApiHelper.get(`/privateMessages/${props.privateMessage.id}`, "MessagingApi");
+        } catch (error) {
+          console.error("Failed to clear notification:", error);
+        }
+      }
+    };
+    
+    clearNotification();
+  }, [props.privateMessage.id, props.privateMessage.notifyPersonId, props.context.person.id]);
   
   return (
     <Paper elevation={0} sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -48,9 +64,9 @@ export const PrivateMessageDetails: React.FC<Props> = (props) => {
         </Stack>
       </Box>
       
-      <Box sx={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', position: 'relative' }}>
         <Notes 
-          maxHeight={"calc(100vh - 200px)"} 
+          maxHeight={"100%"} 
           context={props.context} 
           conversationId={props.privateMessage.conversationId} 
           noDisplayBox={true} 

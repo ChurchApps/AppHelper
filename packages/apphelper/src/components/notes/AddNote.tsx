@@ -68,7 +68,12 @@ export function AddNote({ context, ...props }: Props) {
           setMessage(m);
         })
         .catch((error: any) => {
-          if (error?.message === "Forbidden") setErrors(["You can't edit the message sent by others."])
+          console.error("Error saving message:", error);
+          if (error?.message === "Forbidden") {
+            setErrors(["You can't edit the message sent by others."]);
+          } else {
+            setErrors([error?.message || "Failed to save message. Please try again."]);
+          }
         })
         .finally(() => { setIsSubmitting(false); });
     }

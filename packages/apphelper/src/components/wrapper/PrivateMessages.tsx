@@ -36,8 +36,10 @@ export const PrivateMessages: React.FC<Props> = (props) => {
   const [privateMessages, setPrivateMessages] = useState<PrivateMessageInterface[]>([]);
   const [selectedMessage, setSelectedMessage] = useState<PrivateMessageInterface>(null);
   const [inAddMode, setInAddMode] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const loadData = async () => {
+    setIsLoading(true);
     const pms: PrivateMessageInterface[] = await ApiHelper.get("/privateMessages", "MessagingApi");
     
     // Group messages by person (conversation)
@@ -111,6 +113,7 @@ export const PrivateMessages: React.FC<Props> = (props) => {
     });
     
     setPrivateMessages(conversations);
+    setIsLoading(false);
     props.onUpdate();
   }
 
@@ -242,7 +245,7 @@ export const PrivateMessages: React.FC<Props> = (props) => {
         width: '100%', 
         p: 0,
         '& .MuiListItem-root': {
-          transition: 'all 0.2s ease-in-out'
+          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
         }
       }}>
         {privateMessages.map((pm, index) => {
@@ -256,12 +259,12 @@ export const PrivateMessages: React.FC<Props> = (props) => {
           const contents = message.content?.split("\n")[0];
           let datePosted = new Date(message.timeUpdated || message.timeSent);
           const displayDuration = DateHelper.getDisplayDuration(datePosted);
-          const isUnread = false; // TODO: Implement read status tracking
+          // Check if this conversation has unread messages
+          const isUnread = pm.notifyPersonId === props.context.person.id;
           
-          // Determine who sent the last message for better context  
-          const isMyMessage = pm.fromPersonId === props.context.person.id;
-          const messagePrefix = isMyMessage ? "You: " : "";
-          const displayContent = contents ? `${messagePrefix}${contents}` : 'No message preview available';
+          // Determine who sent the last message for better context
+          const isLastMessageFromMe = message.personId === props.context.person.id;
+          const isFromOtherPerson = pm.fromPersonId !== props.context.person.id;
 
           return (
             <Box key={pm.id} sx={{ px: 2, py: 0.5 }}>
@@ -376,7 +379,7 @@ export const PrivateMessages: React.FC<Props> = (props) => {
                         fontStyle: contents ? 'normal' : 'italic'
                       }}
                     >
-                      {isMyMessage && contents && (
+                      {isLastMessageFromMe && contents && (
                         <Typography 
                           component="span" 
                           sx={{ 
@@ -426,16 +429,6 @@ export const PrivateMessages: React.FC<Props> = (props) => {
   }
 
   const theme = useTheme();
-  const [isLoading, setIsLoading] = useState(true);
-
-  React.useEffect(() => {
-    const loadDataWithLoading = async () => {
-      setIsLoading(true);
-      await loadData();
-      setIsLoading(false);
-    };
-    loadDataWithLoading();
-  }, [props.refreshKey]);
 
   if (inAddMode) return <NewPrivateMessage context={props.context} onSelectMessage={(pm: PrivateMessageInterface) => { setSelectedMessage(pm); setInAddMode(false); }} onBack={handleBack} />
   if (selectedMessage) return <PrivateMessageDetails privateMessage={selectedMessage} context={props.context} onBack={handleBack} refreshKey={props.refreshKey} />
