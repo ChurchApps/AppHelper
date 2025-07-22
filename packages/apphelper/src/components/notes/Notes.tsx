@@ -2,7 +2,7 @@ import React from "react";
 import { Note } from "./Note";
 import { AddNote } from "./AddNote";
 import { DisplayBox, Loading } from "../";
-import { ApiHelper, ArrayHelper, Locale } from "../../helpers";
+import { ApiHelper, ArrayHelper, Locale, SocketHelper } from "../../helpers";
 import { MessageInterface, UserContextInterface } from "@churchapps/helpers";
 
 interface Props {
@@ -50,6 +50,40 @@ export function Notes(props: Props) {
   }
 
   React.useEffect(() => { loadNotes() }, [props.conversationId, props.refreshKey]); //eslint-disable-line
+
+  // Set up WebSocket listeners for real-time message updates
+  React.useEffect(() => {
+    if (!props.conversationId) return;
+
+    const handleMessageUpdate = (data: any) => {
+      // Check if the message update is for this conversation
+      if (data?.conversationId === props.conversationId || data?.message?.conversationId === props.conversationId) {
+        console.log('📨 Real-time message update received for conversation:', props.conversationId);
+        loadNotes(); // Reload messages when a new message arrives
+      }
+    };
+
+    const handlePrivateMessage = (data: any) => {
+      // Check if this private message affects our conversation
+      if (data?.conversationId === props.conversationId) {
+        console.log('📨 Real-time private message received for conversation:', props.conversationId);
+        loadNotes(); // Reload messages when a new private message arrives
+      }
+    };
+
+    // Register WebSocket handlers
+    const messageHandlerId = `Notes-MessageUpdate-${props.conversationId}`;
+    const privateMessageHandlerId = `Notes-PrivateMessage-${props.conversationId}`;
+    
+    SocketHelper.addHandler("messageUpdate", messageHandlerId, handleMessageUpdate);
+    SocketHelper.addHandler("privateMessage", privateMessageHandlerId, handlePrivateMessage);
+
+    // Cleanup function to remove handlers when component unmounts or conversationId changes
+    return () => {
+      SocketHelper.removeHandler(messageHandlerId);
+      SocketHelper.removeHandler(privateMessageHandlerId);
+    };
+  }, [props.conversationId]); //eslint-disable-line
 
   React.useEffect(() => {
     if (props.maxHeight && messages?.length>0) {

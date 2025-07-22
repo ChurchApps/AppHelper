@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ApiHelper } from "@churchapps/helpers";
 import { 
   Box, 
@@ -21,7 +21,7 @@ import { Add as AddIcon, ChatBubbleOutline as ChatIcon } from "@mui/icons-materi
 import { SmallButton } from "../SmallButton";
 import { PersonAvatar } from "../PersonAvatar";
 import { PrivateMessageInterface, UserContextInterface } from "@churchapps/helpers";
-import { ArrayHelper, DateHelper, PersonHelper } from "../../helpers";
+import { ArrayHelper, DateHelper, PersonHelper, SocketHelper } from "../../helpers";
 import { PrivateMessageDetails } from "./PrivateMessageDetails";
 import { NewPrivateMessage } from "./NewPrivateMessage";
 
@@ -114,7 +114,38 @@ export const PrivateMessages: React.FC<Props> = (props) => {
     props.onUpdate();
   }
 
-  React.useEffect(() => { }, []);
+  // Initialize data and set up WebSocket listeners
+  useEffect(() => {
+    loadData(); // Load initial data
+
+    const handleMessageUpdate = (data: any) => {
+      console.log('📨 Private message update received, refreshing conversation list');
+      loadData(); // Reload the conversation list when any message is updated
+    };
+
+    const handlePrivateMessage = (data: any) => {
+      console.log('📨 New private message received, refreshing conversation list');
+      loadData(); // Reload the conversation list when a new private message arrives
+    };
+
+    // Register WebSocket handlers
+    const messageHandlerId = `PrivateMessages-MessageUpdate-${props.context.person.id}`;
+    const privateMessageHandlerId = `PrivateMessages-PrivateMessage-${props.context.person.id}`;
+    
+    SocketHelper.addHandler("messageUpdate", messageHandlerId, handleMessageUpdate);
+    SocketHelper.addHandler("privateMessage", privateMessageHandlerId, handlePrivateMessage);
+
+    // Cleanup function to remove handlers when component unmounts
+    return () => {
+      SocketHelper.removeHandler(messageHandlerId);
+      SocketHelper.removeHandler(privateMessageHandlerId);
+    };
+  }, []); //eslint-disable-line
+
+  // Reload data when refreshKey changes
+  useEffect(() => {
+    loadData();
+  }, [props.refreshKey]); //eslint-disable-line
 
   const getMessageList = () => {
     if (privateMessages.length === 0) {
