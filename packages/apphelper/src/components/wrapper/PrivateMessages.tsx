@@ -253,9 +253,9 @@ export const PrivateMessages: React.FC<Props> = (props) => {
           if (!message) {
             return null;
           }
+          const contents = message.content?.split("\n")[0];
           let datePosted = new Date(message.timeUpdated || message.timeSent);
           const displayDuration = DateHelper.getDisplayDuration(datePosted);
-          const contents = message.content?.split("\n")[0];
           const isUnread = false; // TODO: Implement read status tracking
           
           // Determine who sent the last message for better context  

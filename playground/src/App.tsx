@@ -28,7 +28,7 @@ import LoginComponentsPage from './pages/LoginComponentsPage';
 import DonationComponentsPage from './pages/DonationComponentsPage';
 import MarkdownComponentsPage from './pages/MarkdownComponentsPage';
 import ModernLayoutPage from './pages/ModernLayoutPage';
-import MessagingTestPage from './pages/MessagingTestPage';
+// import MessagingTestPage from './pages/MessagingTestPage';
 
 
 const theme = createTheme({
@@ -116,7 +116,7 @@ function HomePage() {
                   <Link to="/apphelper-components">Core Components 🔒</Link>
                   <Link to="/modern-layout">Modern Layout (SiteHeader + PageHeader)</Link>
                   <Link to="/apphelper-wrappers">Wrapper Components 🔒</Link>
-                  <Link to="/messaging-test">Messaging & Notifications Test 🔒</Link>
+                  {/* <Link to="/messaging-test">Messaging & Notifications Test 🔒</Link> */}
                   <Link to="/apphelper-notes">Notes Components 🔒</Link>
                   <Link to="/apphelper-reporting">Reporting Components</Link>
                   <Link to="/apphelper-hooks">Hooks</Link>
@@ -370,7 +370,7 @@ function AppContent() {
         <Route path="/apphelper-helpers" element={<AppHelperHelpersPage />} />
         <Route path="/apphelper-components" element={<RequireAuth><AppHelperComponentsPage /></RequireAuth>} />
         <Route path="/apphelper-wrappers" element={<RequireAuth><AppHelperWrappersPage /></RequireAuth>} />
-        <Route path="/messaging-test" element={<RequireAuth><MessagingTestPage /></RequireAuth>} />
+        {/* <Route path="/messaging-test" element={<RequireAuth><MessagingTestPage /></RequireAuth>} /> */}
         <Route path="/apphelper-notes" element={<RequireAuth><AppHelperNotesPage /></RequireAuth>} />
         <Route path="/apphelper-reporting" element={<AppHelperReportingPage />} />
         <Route path="/apphelper-headers" element={<AppHelperHeadersPage />} />

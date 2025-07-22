@@ -8,6 +8,7 @@ declare global {
       readonly MODE: string;
       readonly VITE_MESSAGING_API?: string;
       readonly VITE_MESSAGING_API_SOCKET?: string;
+      readonly VITE_MEMBERSHIP_API?: string;
     }
   }
 }
@@ -17,22 +18,30 @@ export class EnvironmentHelper {
   static init = () => {
     let stage = import.meta.env.VITE_STAGE;
     if (stage === undefined) stage = import.meta.env.MODE;
+    
+    CommonEnvironmentHelper.init(stage || "development");
+    
     if (stage === "production") EnvironmentHelper.initProd();
     else if (stage === "staging") EnvironmentHelper.initStaging();
     else EnvironmentHelper.initDev();
     
-    CommonEnvironmentHelper.init(stage || "development");
     EnvironmentHelper.populateConfigs();
     Locale.init([]);
   }
 
   static initDev = () => {
-    EnvironmentHelper.initStaging();
     // Override with local development URLs if provided
     if (import.meta.env.VITE_MESSAGING_API) {
       CommonEnvironmentHelper.MessagingApi = import.meta.env.VITE_MESSAGING_API;
       CommonEnvironmentHelper.MessagingApiSocket = import.meta.env.VITE_MESSAGING_API_SOCKET || "ws://localhost:8087";
     }
+    if (import.meta.env.VITE_MEMBERSHIP_API) {
+      CommonEnvironmentHelper.MembershipApi = import.meta.env.VITE_MEMBERSHIP_API;
+    }
+    
+    console.log("🔧 Development environment configured:");
+    console.log("   MessagingApi:", CommonEnvironmentHelper.MessagingApi);
+    console.log("   MembershipApi:", CommonEnvironmentHelper.MembershipApi);
   }
 
   static initStaging = () => {
@@ -50,7 +59,14 @@ export class EnvironmentHelper {
       { keyName: "MembershipApi", url: CommonEnvironmentHelper.MembershipApi, jwt: "", permissions: [] },
       { keyName: "MessagingApi", url: CommonEnvironmentHelper.MessagingApi, jwt: "", permissions: [] },
       { keyName: "ReportingApi", url: CommonEnvironmentHelper.ReportingApi, jwt: "", permissions: [] },
+      { keyName: "DoingApi", url: CommonEnvironmentHelper.DoingApi, jwt: "", permissions: [] },
+      { keyName: "ContentApi", url: CommonEnvironmentHelper.ContentApi, jwt: "", permissions: [] },
     ];
+    
+    console.log("📡 API Configs populated:");
+    ApiHelper.apiConfigs.forEach(config => {
+      console.log(`   ${config.keyName}: ${config.url}`);
+    });
   }
 
 }

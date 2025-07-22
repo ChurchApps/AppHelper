@@ -15,62 +15,9 @@ export const UserProvider = ({ children }: Props) => {
   const [userChurches, setUserChurches] = React.useState<LoginUserChurchInterface[] | null>(null);
   const [loginError, setLoginError] = React.useState<string | null>(null);
 
-  // Configure ApiHelper and Locale like ChumsApp does
-  React.useEffect(() => {
-    // Initialize the staging environment like ChumsApp
-    CommonEnvironmentHelper.init("staging");
-    
-    // Initialize locale with English translations
-    Locale.init(["/locales/{{lng}}.json"]).catch(console.error);
-    
-    // Set up all API configurations like ChumsApp
-    ApiHelper.apiConfigs = [
-      {
-        keyName: "AttendanceApi",
-        url: CommonEnvironmentHelper.AttendanceApi,
-        jwt: "",
-        permissions: [],
-      },
-      {
-        keyName: "GivingApi",
-        url: CommonEnvironmentHelper.GivingApi,
-        jwt: "",
-        permissions: [],
-      },
-      {
-        keyName: "MembershipApi",
-        url: CommonEnvironmentHelper.MembershipApi,
-        jwt: "",
-        permissions: [],
-      },
-      {
-        keyName: "ReportingApi",
-        url: CommonEnvironmentHelper.ReportingApi,
-        jwt: "",
-        permissions: [],
-      },
-      {
-        keyName: "DoingApi",
-        url: CommonEnvironmentHelper.DoingApi,
-        jwt: "",
-        permissions: [],
-      },
-      {
-        keyName: "MessagingApi",
-        url: CommonEnvironmentHelper.MessagingApi,
-        jwt: "",
-        permissions: [],
-      },
-      {
-        keyName: "ContentApi",
-        url: CommonEnvironmentHelper.ContentApi,
-        jwt: "",
-        permissions: [],
-      },
-    ];
-    
-    console.log("API configuration set for staging environment:", ApiHelper.apiConfigs);
-  }, []);
+  // Note: Environment configuration is handled by playground/src/helpers/EnvironmentHelper.ts
+  // which is called in main.tsx before the React app renders.
+  // We don't need to configure it again here.
 
   // Standard logout function
   const logout = () => {
