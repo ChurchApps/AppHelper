@@ -1,11 +1,7 @@
 import React from 'react';
 import { Box, Typography, Container, Card, CardContent } from '@mui/material';
-import { WebSocketTestPanel } from '@churchapps/apphelper';
-import UserContext from '../UserContext';
 
 const PrivateMessageTestPage: React.FC = () => {
-  const context = React.useContext(UserContext);
-
   return (
     <Container maxWidth="lg">
       <Box sx={{ py: 4 }}>
@@ -20,7 +16,10 @@ const PrivateMessageTestPage: React.FC = () => {
 
         <Card>
           <CardContent>
-            <WebSocketTestPanel context={context} />
+            <Typography variant="body1">
+              WebSocket testing functionality has been moved to the integrated messaging system.
+              Use the private messages modal to test real-time functionality.
+            </Typography>
           </CardContent>
         </Card>
       </Box>

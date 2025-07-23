@@ -64,7 +64,7 @@ export class EnvironmentHelper {
     ];
     
     console.log("📡 API Configs populated:");
-    ApiHelper.apiConfigs.forEach(config => {
+    ApiHelper.apiConfigs.forEach((config: any) => {
       console.log(`   ${config.keyName}: ${config.url}`);
     });
   }
