@@ -39,22 +39,17 @@ export function useNotifications(context: UserContextInterface | null): UseNotif
 
   // Initialize the service when context becomes available
   useEffect(() => {
-    console.log('🔍 useNotifications: Initialize effect triggered. Person ID:', context?.person?.id, 'Church ID:', context?.userChurch?.church?.id);
-    
     if (!context?.person?.id || !context?.userChurch?.church?.id) {
-      console.log('🔍 useNotifications: Missing context, setting loading to false');
       setIsLoading(false);
       return;
     }
 
     const initializeService = async () => {
       try {
-        console.log('🔍 useNotifications: Starting service initialization');
         setIsLoading(true);
         setError(null);
         
         await notificationService.initialize(context);
-        console.log('🔍 useNotifications: Service initialization completed');
       } catch (err) {
         console.error("❌ useNotifications: Failed to initialize:", err);
         setError(err instanceof Error ? err.message : 'Failed to initialize notifications');
@@ -68,15 +63,12 @@ export function useNotifications(context: UserContextInterface | null): UseNotif
 
   // Subscribe to notification count changes
   useEffect(() => {
-    console.log('🔍 useNotifications: Setting up subscription');
     const unsubscribe = notificationService.subscribe((newCounts) => {
-      console.log('🔍 useNotifications: Received new counts:', newCounts);
       setCounts(newCounts);
     });
 
     // Cleanup subscription on unmount
     return () => {
-      console.log('🔍 useNotifications: Cleaning up subscription');
       unsubscribe();
     };
   }, [notificationService]);

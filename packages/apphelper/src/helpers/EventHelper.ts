@@ -21,7 +21,6 @@ export class EventHelper {
   static getFullRRule = (event:EventInterface) => {
     let rrule = RRule.fromString(event.recurrenceRule);
     rrule.options.dtstart = new Date(event.start);
-    console.log("START", rrule.options.dtstart, event.start, rrule)
     return rrule;
   }
 
@@ -39,7 +38,6 @@ export class EventHelper {
   static getPartialRRuleString = (options:ParsedOptions) => {
     const parts = new RRule(options).toString().split("RRULE:");
     const result = parts.length===2 ? parts[1] : "";
-    console.log("getPartialRRuleString", options, new RRule(options).toString(), result);
     return result;
   }
 

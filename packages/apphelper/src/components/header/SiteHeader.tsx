@@ -21,19 +21,10 @@ type Props = {
 }
 
 export const SiteHeader = React.memo((props:Props) => {
-  // Log component lifecycle
-  React.useEffect(() => {
-    console.log('🆕 SiteHeader: Component CREATED/MOUNTED');
-    return () => {
-      console.log('🚪 SiteHeader: Component UNMOUNTED');
-    };
-  }, []);
-  
   // Initialize NotificationService without subscribing to count changes to prevent re-renders
   React.useEffect(() => {
     const initializeNotifications = async () => {
       if (props.context?.person?.id && props.context?.userChurch?.church?.id) {
-        console.log('🔔 SiteHeader: Initializing NotificationService');
         const service = NotificationService.getInstance();
         await service.initialize(props.context);
       }
@@ -174,14 +165,12 @@ export const SiteHeader = React.memo((props:Props) => {
   if (prevProps.primaryMenuLabel !== nextProps.primaryMenuLabel ||
       prevProps.secondaryMenuLabel !== nextProps.secondaryMenuLabel ||
       prevProps.appName !== nextProps.appName) {
-    console.log('🔄 SiteHeader: Re-rendering due to menu/app name change');
     return false;
   }
   
   // Check if menu items arrays have changed (shallow comparison)
   if (prevProps.primaryMenuItems?.length !== nextProps.primaryMenuItems?.length ||
       prevProps.secondaryMenuItems?.length !== nextProps.secondaryMenuItems?.length) {
-    console.log('🔄 SiteHeader: Re-rendering due to menu items change');
     return false;
   }
   
@@ -192,30 +181,25 @@ export const SiteHeader = React.memo((props:Props) => {
   if (prevUser?.id !== nextUser?.id ||
       prevUser?.firstName !== nextUser?.firstName ||
       prevUser?.lastName !== nextUser?.lastName) {
-    console.log('🔄 SiteHeader: Re-rendering due to user change');
     return false;
   }
   
   // Check if person context has changed
   if (prevProps.context?.person?.id !== nextProps.context?.person?.id) {
-    console.log('🔄 SiteHeader: Re-rendering due to person change');
     return false;
   }
   
   // Check if church context has changed
   if (prevProps.context?.userChurch?.church?.id !== nextProps.context?.userChurch?.church?.id) {
-    console.log('🔄 SiteHeader: Re-rendering due to church change');
     return false;
   }
   
   // Check if onNavigate function reference has changed
   if (prevProps.onNavigate !== nextProps.onNavigate) {
-    console.log('🔄 SiteHeader: Re-rendering due to onNavigate change');
     return false;
   }
   
   // All essential props are the same, skip re-render
-  console.log('⏭️ SiteHeader: Skipping re-render, props unchanged');
   return true;
 });
 

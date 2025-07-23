@@ -38,13 +38,11 @@ const privateMessagesStateStore = {
   listeners: new Set<() => void>(),
   
   setSelectedMessage(value: PrivateMessageInterface | null) {
-    console.log('🔍 StateStore: Setting selectedMessage to:', value?.id || 'null');
     this.selectedMessage = value;
     this.listeners.forEach((listener: () => void) => listener());
   },
   
   setInAddMode(value: boolean) {
-    console.log('🔍 StateStore: Setting inAddMode to:', value);
     this.inAddMode = value;
     this.listeners.forEach((listener: () => void) => listener());
   },
@@ -69,17 +67,8 @@ export const PrivateMessages: React.FC<Props> = React.memo((props) => {
   const selectedMessage = privateMessagesStateStore.selectedMessage;
   const inAddMode = privateMessagesStateStore.inAddMode;
 
-  // Add logging for state changes
-  React.useEffect(() => {
-    console.log('🔍 PrivateMessages: selectedMessage changed to:', selectedMessage?.id || 'null');
-  }, [selectedMessage]);
-
-  React.useEffect(() => {
-    console.log('🔍 PrivateMessages: refreshKey changed to:', props.refreshKey);
-  }, [props.refreshKey]);
 
   const loadData = async () => {
-    console.log('🔍 PrivateMessages: loadData called. Current selectedMessage:', selectedMessage?.id || 'null');
     setIsLoading(true);
     const pms: PrivateMessageInterface[] = await ApiHelper.get("/privateMessages", "MessagingApi");
     
@@ -89,7 +78,6 @@ export const PrivateMessages: React.FC<Props> = React.memo((props) => {
         selectedMessage.toPersonId : selectedMessage.fromPersonId 
       : null;
     
-    console.log('🔍 PrivateMessages: Stored currentSelectedPersonId:', currentSelectedPersonId);
     
     // Group messages by person (conversation)
     const conversationMap = new Map<string, PrivateMessageInterface>();
@@ -166,25 +154,19 @@ export const PrivateMessages: React.FC<Props> = React.memo((props) => {
     // If a conversation is currently selected, update the selectedMessage to the new data
     // This prevents the dialog from closing when new messages arrive
     if (currentSelectedPersonId) {
-      console.log('🔍 PrivateMessages: Looking for updated message for personId:', currentSelectedPersonId);
       const updatedSelectedMessage = conversations.find(pm => {
         const personId = (pm.fromPersonId === props.context.person.id) ? pm.toPersonId : pm.fromPersonId;
         return personId === currentSelectedPersonId;
       });
       
       if (updatedSelectedMessage) {
-        console.log('📨 PrivateMessages: Updating selected message with new data to keep dialog open. New ID:', updatedSelectedMessage.id);
         privateMessagesStateStore.setSelectedMessage(updatedSelectedMessage);
       } else {
-        console.log('⚠️ PrivateMessages: Selected conversation no longer exists, closing dialog');
         privateMessagesStateStore.setSelectedMessage(null);
       }
-    } else {
-      console.log('🔍 PrivateMessages: No conversation currently selected, not updating selectedMessage');
     }
     
     setIsLoading(false);
-    console.log('🔍 PrivateMessages: Calling props.onUpdate()');
     props.onUpdate();
   }
 
@@ -479,7 +461,7 @@ export const PrivateMessages: React.FC<Props> = React.memo((props) => {
   const theme = useTheme();
 
   if (inAddMode) return <NewPrivateMessage context={props.context} onSelectMessage={(pm: PrivateMessageInterface) => { privateMessagesStateStore.setSelectedMessage(pm); privateMessagesStateStore.setInAddMode(false); }} onBack={handleBack} />
-  if (selectedMessage) return <PrivateMessageDetails privateMessage={selectedMessage} context={props.context} onBack={handleBack} refreshKey={props.refreshKey} onMessageRead={() => { console.log('🔍 PrivateMessages: onMessageRead called from PrivateMessageDetails'); loadData(); }} />
+  if (selectedMessage) return <PrivateMessageDetails privateMessage={selectedMessage} context={props.context} onBack={handleBack} refreshKey={props.refreshKey} onMessageRead={loadData} />
   
   return (
     <Paper elevation={0} sx={{ 
@@ -584,15 +566,12 @@ export const PrivateMessages: React.FC<Props> = React.memo((props) => {
   const refreshKeyChanged = prevProps.refreshKey !== nextProps.refreshKey;
   
   if (personChanged) {
-    console.log('🔍 PrivateMessages: Re-rendering due to person change');
     return false; // Re-render
   }
   
   if (refreshKeyChanged) {
-    console.log('🔍 PrivateMessages: Re-rendering due to refreshKey change');
     return false; // Re-render
   }
   
-  console.log('🔍 PrivateMessages: Skipping re-render, props unchanged');
   return true; // Skip re-render
 });

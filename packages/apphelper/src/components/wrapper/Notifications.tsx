@@ -73,7 +73,6 @@ export const Notifications: React.FC<Props> = (props) => {
       props.onNavigate(path);
     }
     else {
-      console.log("REDIRECTING TO", appUrl + path)
       window.open(appUrl + path, "_blank");
     }
   }
@@ -193,7 +192,6 @@ export const Notifications: React.FC<Props> = (props) => {
     );
   }
 
-  React.useEffect(() => { console.log("RELOADED NOTIFICATIONS") }, []);
 
   return (
     <Paper elevation={0} sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>

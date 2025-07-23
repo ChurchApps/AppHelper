@@ -49,14 +49,6 @@ const modalStateStore = {
 };
 
 const UserMenuContent: React.FC<Props> = React.memo((props) => {
-  // Log component creation
-  React.useEffect(() => {
-    console.log('🆕 UserMenuContent: Component CREATED/MOUNTED');
-    return () => {
-      console.log('🚪 UserMenuContent: Component UNMOUNTED');
-    };
-  }, []);
-  
   const userName = props.userName;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [, forceUpdate] = React.useReducer(x => x + 1, 0);
@@ -74,7 +66,6 @@ const UserMenuContent: React.FC<Props> = React.memo((props) => {
   React.useEffect(() => {
     const notificationService = NotificationService.getInstance();
     const unsubscribe = notificationService.subscribe((newCounts) => {
-      console.log('🔍 UserMenu: Direct notification subscription received:', newCounts);
       setDirectNotificationCounts(newCounts);
     });
     
@@ -191,7 +182,6 @@ const UserMenuContent: React.FC<Props> = React.memo((props) => {
         <Dialog 
           open={showPM}
           onClose={() => {
-            console.log('🔍 UserMenu: PM Dialog onClose triggered');
             modalStateStore.setShowPM(false);
           }} 
           maxWidth="md" 
@@ -223,7 +213,6 @@ const UserMenuContent: React.FC<Props> = React.memo((props) => {
         <Dialog 
           open={showNotifications} 
           onClose={() => {
-            console.log('🔍 UserMenu: Notifications Dialog onClose triggered');
             modalStateStore.setShowNotifications(false);
           }} 
           maxWidth="md" 
@@ -248,36 +237,27 @@ const UserMenuContent: React.FC<Props> = React.memo((props) => {
     if (!props.context?.person?.id) return;
     
     const handleMessageUpdate = (data: any) => {
-      console.log('🔔 UserMenu: WebSocket message update received:', data);
-      
       // Only update refreshKey if a modal is open to trigger child updates
       if (modalStateStore.showPM || modalStateStore.showNotifications) {
         const newKey = Math.random();
-        console.log('🔔 UserMenu: Updating refreshKey for open modal:', newKey);
         setRefreshKey(newKey);
         stableRefreshKeyRef.current = newKey;
       }
     };
     
     const handlePrivateMessage = (data: any) => {
-      console.log('🔔 UserMenu: WebSocket private message received:', data);
-      
       // Only update refreshKey if PM modal is open
       if (modalStateStore.showPM) {
         const newKey = Math.random();
-        console.log('🔔 UserMenu: Updating refreshKey for private messages:', newKey);
         setRefreshKey(newKey);
         stableRefreshKeyRef.current = newKey;
       }
     };
     
     const handleNotification = (data: any) => {
-      console.log('🔔 UserMenu: WebSocket notification received:', data);
-      
       // Update refreshKey if any modal is open to trigger child updates
       if (modalStateStore.showPM || modalStateStore.showNotifications) {
         const newKey = Math.random();
-        console.log('🔔 UserMenu: Updating refreshKey for notification:', newKey);
         setRefreshKey(newKey);
         stableRefreshKeyRef.current = newKey;
       }
@@ -288,15 +268,12 @@ const UserMenuContent: React.FC<Props> = React.memo((props) => {
     const privateMessageHandlerId = `UserMenu-PrivateMessage-${props.context.person.id}`;
     const notificationHandlerId = `UserMenu-Notification-${props.context.person.id}`;
     
-    console.log('🔌 UserMenu: Registering WebSocket handlers:', messageHandlerId, privateMessageHandlerId, notificationHandlerId);
     SocketHelper.addHandler("message", messageHandlerId, handleMessageUpdate);
     SocketHelper.addHandler("privateMessage", privateMessageHandlerId, handlePrivateMessage);
     SocketHelper.addHandler("notification", notificationHandlerId, handleNotification);
-    console.log('🔌 UserMenu: WebSocket handlers registered successfully');
     
     // Cleanup
     return () => {
-      console.log('🚮 UserMenu: Removing WebSocket handlers:', messageHandlerId, privateMessageHandlerId, notificationHandlerId);
       SocketHelper.removeHandler(messageHandlerId);
       SocketHelper.removeHandler(privateMessageHandlerId);
       SocketHelper.removeHandler(notificationHandlerId);
@@ -326,14 +303,6 @@ const UserMenuContent: React.FC<Props> = React.memo((props) => {
 });
 
 export const UserMenu: React.FC<Props> = React.memo((props) => {
-  // Log component creation
-  React.useEffect(() => {
-    console.log('🆕 UserMenu: Component CREATED/MOUNTED');
-    return () => {
-      console.log('🚪 UserMenu: Component UNMOUNTED');
-    };
-  }, []);
-  
   return (
     <CookiesProvider defaultSetOptions={{ path: '/' }}>
       <UserMenuContent {...props} />
@@ -342,40 +311,33 @@ export const UserMenu: React.FC<Props> = React.memo((props) => {
 }, (prevProps, nextProps) => {
   // Only re-render if essential props change, ignore notification count changes completely
   if (prevProps.userName !== nextProps.userName) {
-    console.log('🔍 UserMenu: Re-rendering due to userName change');
     return false;
   }
   
   if (prevProps.profilePicture !== nextProps.profilePicture) {
-    console.log('🔍 UserMenu: Re-rendering due to profilePicture change');
     return false;
   }
   
   if (prevProps.appName !== nextProps.appName) {
-    console.log('🔍 UserMenu: Re-rendering due to appName change');
     return false;
   }
   
   // Check if context has actually changed (deep comparison of relevant parts)
   if (prevProps.context?.person?.id !== nextProps.context?.person?.id ||
       prevProps.context?.userChurch?.church?.id !== nextProps.context?.userChurch?.church?.id) {
-    console.log('🔍 UserMenu: Re-rendering due to context change');
     return false;
   }
   
   // Check if userChurches array changed
   if (prevProps.userChurches?.length !== nextProps.userChurches?.length) {
-    console.log('🔍 UserMenu: Re-rendering due to userChurches change');
     return false;
   }
   
   // Check if loadCounts function reference changed (important for functionality)
   if (prevProps.loadCounts !== nextProps.loadCounts) {
-    console.log('🔍 UserMenu: Re-rendering due to loadCounts function change');
     return false;
   }
   
   // Ignore both notificationCounts and onNavigate changes as they don't affect the component
-  console.log('🔍 UserMenu: Skipping re-render, all essential props are the same');
   return true; // Skip re-render
 });

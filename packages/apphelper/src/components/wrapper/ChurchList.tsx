@@ -10,11 +10,6 @@ import { Locale } from "../../helpers";
 export interface Props { userChurches: LoginUserChurchInterface[], currentUserChurch: LoginUserChurchInterface, context: UserContextInterface, onDelete?: () => void }
 
 export const ChurchList: React.FC<Props> = props => {
-	console.log('ChurchList props:', {
-		userChurches: props.userChurches,
-		currentUserChurch: props.currentUserChurch,
-		context: props.context
-	});
 	
 	const [userChurches, setUserChurches] = useState(() => {
 		try {
