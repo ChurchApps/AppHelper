@@ -21,6 +21,14 @@ export function Notes(props: Props) {
   const [editMessageId, setEditMessageId] = React.useState(null)
   const [isInitialLoad, setIsInitialLoad] = React.useState(true)
   const [previousMessageCount, setPreviousMessageCount] = React.useState(0)
+  
+  // Use ref to access current messages in WebSocket handlers without triggering re-renders
+  const messagesRef = React.useRef<MessageInterface[]>(null);
+  
+  // Update ref when messages change
+  React.useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
 
   // Add CSS for custom scrollbar styling
   React.useEffect(() => {
@@ -131,25 +139,80 @@ export function Notes(props: Props) {
 
   React.useEffect(() => { loadNotes() }, [props.conversationId, props.refreshKey]); //eslint-disable-line
 
+  // Create stable callback functions for WebSocket handlers
+  const handleMessageUpdate = React.useCallback(async (data: any) => {
+      // Check if the message update is for this conversation
+      if (data?.conversationId === props.conversationId || data?.message?.conversationId === props.conversationId) {
+        console.log('📨 Real-time message update received for conversation:', props.conversationId, data);
+        
+        // If we have the new message data, add it directly to avoid full reload
+        if (data?.message && messagesRef.current) {
+          try {
+            // Get person data for the new message if not already present
+            if (!data.message.person && data.message.personId) {
+              const people = await ApiHelper.get("/people/basic?ids=" + data.message.personId, "MembershipApi");
+              data.message.person = people?.[0];
+            }
+            
+            // Check if message already exists (avoid duplicates)
+            const existingMessage = messagesRef.current.find(m => m.id === data.message.id);
+            if (!existingMessage) {
+              console.log('📨 Adding new message directly to state to avoid reload');
+              setMessages(prevMessages => [...prevMessages, data.message]);
+              return; // Don't reload if we successfully added the message
+            } else {
+              console.log('📨 Message already exists, updating it');
+              setMessages(prevMessages => 
+                prevMessages.map(m => m.id === data.message.id ? data.message : m)
+              );
+              return;
+            }
+          } catch (error) {
+            console.error('❌ Failed to update message directly, falling back to reload:', error);
+          }
+        }
+        
+        // Fallback to full reload only if direct update failed
+        console.log('📨 Falling back to full reload');
+        loadNotes();
+      }
+    }, [props.conversationId]);
+
+  const handlePrivateMessage = React.useCallback(async (data: any) => {
+      // Check if this private message affects our conversation
+      if (data?.conversationId === props.conversationId) {
+        console.log('📨 Real-time private message received for conversation:', props.conversationId, data);
+        
+        // Try to add the message directly if we have the data
+        if (data?.message && messagesRef.current) {
+          try {
+            // Get person data for the new message if not already present
+            if (!data.message.person && data.message.personId) {
+              const people = await ApiHelper.get("/people/basic?ids=" + data.message.personId, "MembershipApi");
+              data.message.person = people?.[0];
+            }
+            
+            // Check if message already exists (avoid duplicates)
+            const existingMessage = messagesRef.current.find(m => m.id === data.message.id);
+            if (!existingMessage) {
+              console.log('📨 Adding new private message directly to state');
+              setMessages(prevMessages => [...prevMessages, data.message]);
+              return;
+            }
+          } catch (error) {
+            console.error('❌ Failed to update private message directly, falling back to reload:', error);
+          }
+        }
+        
+        // Fallback to full reload
+        console.log('📨 Falling back to full reload for private message');
+        loadNotes();
+      }
+    }, [props.conversationId]);
+
   // Set up WebSocket listeners for real-time message updates
   React.useEffect(() => {
     if (!props.conversationId) return;
-
-    const handleMessageUpdate = (data: any) => {
-      // Check if the message update is for this conversation
-      if (data?.conversationId === props.conversationId || data?.message?.conversationId === props.conversationId) {
-        console.log('📨 Real-time message update received for conversation:', props.conversationId);
-        loadNotes(); // Reload messages when a new message arrives
-      }
-    };
-
-    const handlePrivateMessage = (data: any) => {
-      // Check if this private message affects our conversation
-      if (data?.conversationId === props.conversationId) {
-        console.log('📨 Real-time private message received for conversation:', props.conversationId);
-        loadNotes(); // Reload messages when a new private message arrives
-      }
-    };
 
     // Register WebSocket handlers
     const messageHandlerId = `Notes-MessageUpdate-${props.conversationId}`;
@@ -163,7 +226,7 @@ export function Notes(props: Props) {
       SocketHelper.removeHandler(messageHandlerId);
       SocketHelper.removeHandler(privateMessageHandlerId);
     };
-  }, [props.conversationId]); //eslint-disable-line
+  }, [props.conversationId, handleMessageUpdate, handlePrivateMessage]); //eslint-disable-line
 
   // Auto-scroll to bottom only when new messages are added (not on initial load)
   React.useEffect(() => {

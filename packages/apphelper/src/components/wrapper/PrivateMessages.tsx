@@ -31,14 +31,68 @@ interface Props {
   onUpdate: () => void;
 }
 
-export const PrivateMessages: React.FC<Props> = (props) => {
+// Create a persistent store for PrivateMessages state that survives component re-renders
+const privateMessagesStateStore = {
+  selectedMessage: null as PrivateMessageInterface | null,
+  inAddMode: false,
+  listeners: new Set<() => void>(),
+  
+  setSelectedMessage(value: PrivateMessageInterface | null) {
+    console.log('🔍 StateStore: Setting selectedMessage to:', value?.id || 'null');
+    this.selectedMessage = value;
+    this.listeners.forEach((listener: () => void) => listener());
+  },
+  
+  setInAddMode(value: boolean) {
+    console.log('🔍 StateStore: Setting inAddMode to:', value);
+    this.inAddMode = value;
+    this.listeners.forEach((listener: () => void) => listener());
+  },
+  
+  subscribe(listener: () => void) {
+    this.listeners.add(listener);
+    return () => this.listeners.delete(listener);
+  }
+};
+
+export const PrivateMessages: React.FC<Props> = React.memo((props) => {
 
   const [privateMessages, setPrivateMessages] = useState<PrivateMessageInterface[]>([]);
-  const [selectedMessage, setSelectedMessage] = useState<PrivateMessageInterface>(null);
-  const [inAddMode, setInAddMode] = useState(false);
+  const [, forceUpdate] = React.useReducer(x => x + 1, 0);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // Use refs to access current state in WebSocket handlers without triggering re-renders
+  const privateMessagesRef = React.useRef<PrivateMessageInterface[]>([]);
+  const selectedMessageRef = React.useRef<PrivateMessageInterface | null>(null);
+  
+  // Subscribe to state changes
+  React.useEffect(() => {
+    return privateMessagesStateStore.subscribe(forceUpdate);
+  }, [forceUpdate]);
+
+  const selectedMessage = privateMessagesStateStore.selectedMessage;
+  const inAddMode = privateMessagesStateStore.inAddMode;
+  
+  // Update refs when state changes
+  React.useEffect(() => {
+    privateMessagesRef.current = privateMessages;
+  }, [privateMessages]);
+  
+  React.useEffect(() => {
+    selectedMessageRef.current = selectedMessage;
+  }, [selectedMessage]);
+
+  // Add logging for state changes
+  React.useEffect(() => {
+    console.log('🔍 PrivateMessages: selectedMessage changed to:', selectedMessage?.id || 'null');
+  }, [selectedMessage]);
+
+  React.useEffect(() => {
+    console.log('🔍 PrivateMessages: refreshKey changed to:', props.refreshKey);
+  }, [props.refreshKey]);
 
   const loadData = async () => {
+    console.log('🔍 PrivateMessages: loadData called. Current selectedMessage:', selectedMessage?.id || 'null');
     setIsLoading(true);
     const pms: PrivateMessageInterface[] = await ApiHelper.get("/privateMessages", "MessagingApi");
     
@@ -47,6 +101,8 @@ export const PrivateMessages: React.FC<Props> = (props) => {
       (selectedMessage.fromPersonId === props.context.person.id) ? 
         selectedMessage.toPersonId : selectedMessage.fromPersonId 
       : null;
+    
+    console.log('🔍 PrivateMessages: Stored currentSelectedPersonId:', currentSelectedPersonId);
     
     // Group messages by person (conversation)
     const conversationMap = new Map<string, PrivateMessageInterface>();
@@ -123,39 +179,76 @@ export const PrivateMessages: React.FC<Props> = (props) => {
     // If a conversation is currently selected, update the selectedMessage to the new data
     // This prevents the dialog from closing when new messages arrive
     if (currentSelectedPersonId) {
+      console.log('🔍 PrivateMessages: Looking for updated message for personId:', currentSelectedPersonId);
       const updatedSelectedMessage = conversations.find(pm => {
         const personId = (pm.fromPersonId === props.context.person.id) ? pm.toPersonId : pm.fromPersonId;
         return personId === currentSelectedPersonId;
       });
       
       if (updatedSelectedMessage) {
-        console.log('📨 Updating selected message with new data to keep dialog open');
-        setSelectedMessage(updatedSelectedMessage);
+        console.log('📨 PrivateMessages: Updating selected message with new data to keep dialog open. New ID:', updatedSelectedMessage.id);
+        privateMessagesStateStore.setSelectedMessage(updatedSelectedMessage);
       } else {
-        console.log('⚠️ Selected conversation no longer exists, closing dialog');
-        setSelectedMessage(null);
+        console.log('⚠️ PrivateMessages: Selected conversation no longer exists, closing dialog');
+        privateMessagesStateStore.setSelectedMessage(null);
       }
+    } else {
+      console.log('🔍 PrivateMessages: No conversation currently selected, not updating selectedMessage');
     }
     
     setIsLoading(false);
+    console.log('🔍 PrivateMessages: Calling props.onUpdate()');
     props.onUpdate();
   }
+
+  // Create stable callback functions for WebSocket handlers
+  const handleMessageUpdate = React.useCallback((data: any) => {
+    console.log('📨 PrivateMessages: Message update received:', data);
+    
+    // Use refs to access current state without dependencies
+    const currentSelectedMessage = selectedMessageRef.current;
+    
+    // Only reload conversation list if this is a new conversation or affects conversation previews
+    // If a conversation is currently open, let the Notes component handle the message directly
+    if (currentSelectedMessage?.conversationId === data?.conversationId) {
+      console.log('📨 PrivateMessages: Message is for open conversation, letting Notes component handle it');
+      // Still update notification counts but don't reload conversation list
+      props.onUpdate();
+      return;
+    }
+    
+    console.log('📨 PrivateMessages: Message affects conversation list, reloading');
+    loadData(); // Only reload if it affects the conversation list view
+  }, [props.onUpdate]);
+
+  const handlePrivateMessage = React.useCallback((data: any) => {
+    console.log('📨 PrivateMessages: New private message received:', data);
+    
+    // Use refs to access current state without dependencies
+    const currentPrivateMessages = privateMessagesRef.current;
+    const currentSelectedMessage = selectedMessageRef.current;
+    
+    // Check if this creates a new conversation or updates an existing one
+    const existingConversation = currentPrivateMessages.find(pm => 
+      pm.conversationId === data?.conversationId ||
+      (pm.fromPersonId === data?.fromPersonId && pm.toPersonId === data?.toPersonId) ||
+      (pm.fromPersonId === data?.toPersonId && pm.toPersonId === data?.fromPersonId)
+    );
+    
+    if (existingConversation && currentSelectedMessage?.conversationId === data?.conversationId) {
+      console.log('📨 PrivateMessages: Private message is for open conversation, letting Notes component handle it');
+      // Still update notification counts but don't reload conversation list
+      props.onUpdate();
+      return;
+    }
+    
+    console.log('📨 PrivateMessages: Private message creates new conversation or affects list, reloading');
+    loadData(); // Reload for new conversations or conversation list updates
+  }, [props.onUpdate]);
 
   // Initialize data and set up WebSocket listeners
   useEffect(() => {
     loadData(); // Load initial data
-
-    const handleMessageUpdate = (data: any) => {
-      // Only reload if this is relevant to our conversations
-      console.log('📨 Private message update received:', data);
-      loadData(); // Reload the conversation list when any message is updated
-    };
-
-    const handlePrivateMessage = (data: any) => {
-      // Always reload for new private messages as they create new conversations
-      console.log('📨 New private message received:', data);
-      loadData(); // Reload the conversation list when a new private message arrives
-    };
 
     // Register WebSocket handlers
     const messageHandlerId = `PrivateMessages-MessageUpdate-${props.context.person.id}`;
@@ -169,7 +262,7 @@ export const PrivateMessages: React.FC<Props> = (props) => {
       SocketHelper.removeHandler(messageHandlerId);
       SocketHelper.removeHandler(privateMessageHandlerId);
     };
-  }, []); //eslint-disable-line
+  }, [handleMessageUpdate, handlePrivateMessage]); //eslint-disable-line
 
   // Reload data when refreshKey changes
   useEffect(() => {
@@ -296,7 +389,7 @@ export const PrivateMessages: React.FC<Props> = (props) => {
             <Box key={pm.id} sx={{ px: 2, py: 0.5 }}>
               <ListItem
                 component="button"
-                onClick={() => setSelectedMessage(pm)}
+                onClick={() => privateMessagesStateStore.setSelectedMessage(pm)}
                 sx={{
                   alignItems: 'flex-start',
                   p: 3,
@@ -449,15 +542,15 @@ export const PrivateMessages: React.FC<Props> = (props) => {
   }
 
   const handleBack = () => {
-    setInAddMode(false);
-    setSelectedMessage(null);
+    privateMessagesStateStore.setInAddMode(false);
+    privateMessagesStateStore.setSelectedMessage(null);
     loadData();
   }
 
   const theme = useTheme();
 
-  if (inAddMode) return <NewPrivateMessage context={props.context} onSelectMessage={(pm: PrivateMessageInterface) => { setSelectedMessage(pm); setInAddMode(false); }} onBack={handleBack} />
-  if (selectedMessage) return <PrivateMessageDetails privateMessage={selectedMessage} context={props.context} onBack={handleBack} refreshKey={props.refreshKey} onMessageRead={loadData} />
+  if (inAddMode) return <NewPrivateMessage context={props.context} onSelectMessage={(pm: PrivateMessageInterface) => { privateMessagesStateStore.setSelectedMessage(pm); privateMessagesStateStore.setInAddMode(false); }} onBack={handleBack} />
+  if (selectedMessage) return <PrivateMessageDetails privateMessage={selectedMessage} context={props.context} onBack={handleBack} refreshKey={props.refreshKey} onMessageRead={() => { console.log('🔍 PrivateMessages: onMessageRead called from PrivateMessageDetails'); loadData(); }} />
   
   return (
     <Paper elevation={0} sx={{ 
@@ -495,7 +588,7 @@ export const PrivateMessages: React.FC<Props> = (props) => {
             </Typography>
           </Box>
           <IconButton
-            onClick={() => setInAddMode(true)}
+            onClick={() => privateMessagesStateStore.setInAddMode(true)}
             sx={{ 
               bgcolor: 'primary.main', 
               color: 'white',
@@ -556,4 +649,21 @@ export const PrivateMessages: React.FC<Props> = (props) => {
       </Box>
     </Paper>
   );
-};
+}, (prevProps, nextProps) => {
+  // Only re-render if context.person.id changes or if we're explicitly forcing with refreshKey
+  const personChanged = prevProps.context?.person?.id !== nextProps.context?.person?.id;
+  const refreshKeyChanged = prevProps.refreshKey !== nextProps.refreshKey;
+  
+  if (personChanged) {
+    console.log('🔍 PrivateMessages: Re-rendering due to person change');
+    return false; // Re-render
+  }
+  
+  if (refreshKeyChanged) {
+    console.log('🔍 PrivateMessages: Re-rendering due to refreshKey change');
+    return false; // Re-render
+  }
+  
+  console.log('🔍 PrivateMessages: Skipping re-render, props unchanged');
+  return true; // Skip re-render
+});

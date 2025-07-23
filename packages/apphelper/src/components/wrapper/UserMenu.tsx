@@ -10,6 +10,7 @@ import { Locale } from "../../helpers";
 import { PrivateMessages } from "./PrivateMessages";
 import { Notifications } from "./Notifications";
 import { useCookies, CookiesProvider } from "react-cookie";
+import { NotificationService } from "../../helpers/NotificationService";
 
 
 interface Props {
@@ -24,14 +25,82 @@ interface Props {
   onNavigate: (url: string) => void;
 }
 
-const UserMenuContent: React.FC<Props> = (props) => {
+// Create a persistent store for modal state that survives component re-renders
+const modalStateStore = {
+  showPM: false,
+  showNotifications: false,
+  listeners: new Set<() => void>(),
+  
+  setShowPM(value: boolean) {
+    this.showPM = value;
+    this.listeners.forEach((listener: () => void) => listener());
+  },
+  
+  setShowNotifications(value: boolean) {
+    this.showNotifications = value;
+    this.listeners.forEach((listener: () => void) => listener());
+  },
+  
+  subscribe(listener: () => void) {
+    this.listeners.add(listener);
+    return () => this.listeners.delete(listener);
+  }
+};
+
+const UserMenuContent: React.FC<Props> = React.memo((props) => {
   const userName = props.userName;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [showPM, setShowPM] = React.useState(false);
-  const [showNotifications, setShowNotifications] = React.useState(false);
+  const [, forceUpdate] = React.useReducer(x => x + 1, 0);
   const [refreshKey, setRefreshKey] = React.useState(0);
   const [, , removeCookie] = useCookies(["lastChurchId"]);
+  const [directNotificationCounts, setDirectNotificationCounts] = React.useState({ notificationCount: 0, pmCount: 0 });
   const open = Boolean(anchorEl);
+
+  // Subscribe to modal state changes
+  React.useEffect(() => {
+    return modalStateStore.subscribe(forceUpdate);
+  }, [forceUpdate]);
+  
+  // Subscribe directly to NotificationService to update badge counts without re-renders
+  React.useEffect(() => {
+    const notificationService = NotificationService.getInstance();
+    const unsubscribe = notificationService.subscribe((newCounts) => {
+      console.log('🔍 UserMenu: Direct notification subscription received:', newCounts);
+      setDirectNotificationCounts(newCounts);
+    });
+    
+    // Initialize with current counts
+    if (notificationService.isReady()) {
+      setDirectNotificationCounts(notificationService.getCounts());
+    }
+    
+    return unsubscribe;
+  }, []);
+
+  const showPM = modalStateStore.showPM;
+  const showNotifications = modalStateStore.showNotifications;
+
+  // Add comprehensive logging for state changes
+  React.useEffect(() => {
+    console.log('🔍 UserMenu: showPM state changed to:', showPM);
+  }, [showPM]);
+
+  React.useEffect(() => {
+    console.log('🔍 UserMenu: showNotifications state changed to:', showNotifications);
+  }, [showNotifications]);
+
+  React.useEffect(() => {
+    console.log('🔍 UserMenu: refreshKey changed to:', refreshKey);
+  }, [refreshKey]);
+
+  React.useEffect(() => {
+    console.log('🔍 UserMenu: directNotificationCounts changed to:', directNotificationCounts);
+  }, [directNotificationCounts]);
+
+  // Create a stable callback for onUpdate
+  const stableOnUpdate = React.useCallback(() => {
+    props.loadCounts();
+  }, [props.loadCounts]);
 
 
   const handleClick = (e: React.MouseEvent<HTMLElement>) => {
@@ -60,9 +129,9 @@ const UserMenuContent: React.FC<Props> = (props) => {
       return label && label !== key ? label : fallback;
     };
 
-    result.push(<NavItem onClick={() => {setShowPM(true)}} label={getLabel("wrapper.messages", "Messages")} icon="mail" key="/messages" onNavigate={props.onNavigate} badgeCount={props.notificationCounts.pmCount} />);
+    result.push(<NavItem onClick={() => {modalStateStore.setShowPM(true)}} label={getLabel("wrapper.messages", "Messages")} icon="mail" key="/messages" onNavigate={props.onNavigate} badgeCount={directNotificationCounts.pmCount} />);
 
-    result.push(<NavItem onClick={() => {setShowNotifications(true)}} label={getLabel("wrapper.notifications", "Notifications")} icon="notifications" key="/notifications" onNavigate={props.onNavigate} badgeCount={props.notificationCounts.notificationCount} />);
+    result.push(<NavItem onClick={() => {modalStateStore.setShowNotifications(true)}} label={getLabel("wrapper.notifications", "Notifications")} icon="notifications" key="/notifications" onNavigate={props.onNavigate} badgeCount={directNotificationCounts.notificationCount} />);
 
     if (props.appName === "CHUMS") result.push(<NavItem url={"/profile"} key="/profile" label={getLabel("wrapper.profile", "Profile")} icon="person" onNavigate={props.onNavigate} />);
     else result.push(<NavItem url={`${CommonEnvironmentHelper.ChumsRoot}/login?jwt=${jwt}&churchId=${churchId}&returnUrl=/profile`} key="/profile" label={getLabel("wrapper.profile", "Profile")} icon="person" external={true} onNavigate={props.onNavigate} />);
@@ -70,7 +139,7 @@ const UserMenuContent: React.FC<Props> = (props) => {
     const currentPath = typeof window !== 'undefined' ? window.location.pathname + window.location.search : '/';
     const logoutUrl = `/login?action=logout&returnUrl=${encodeURIComponent(currentPath)}`;
     result.push(<NavItem url={logoutUrl} label={getLabel("wrapper.logout", "Logout")} icon="logout" key="/logout" onNavigate={props.onNavigate} />);
-    result.push(<div style={{borderTop:"1px solid #CCC", paddingTop:2, paddingBottom:2}}></div>)
+    result.push(<div key="divider" style={{borderTop:"1px solid #CCC", paddingTop:2, paddingBottom:2}}></div>)
     result.push(<NavItem label={getLabel("wrapper.switchApp", "Switch App")} key="Switch App" icon="apps" onClick={() => { setTabIndex(1); }} />);
     result.push(<NavItem label={getLabel("wrapper.switchChurch", "Switch Church")} key="Switch Church" icon="church" onClick={handleSwitchChurch} />);
     return result;
@@ -124,52 +193,79 @@ const UserMenuContent: React.FC<Props> = (props) => {
       return label && label !== key ? label : fallback;
     };
     
-    if (showPM) return (
-      <Dialog 
-        open 
-        onClose={() => setShowPM(false)} 
-        maxWidth="md" 
-        fullWidth
-        PaperProps={{
-          sx: {
-            height: '80vh',
-            maxHeight: '700px',
-            display: 'flex',
-            flexDirection: 'column'
-          }
-        }}
-      >
-        <DialogTitle>{getLabel("wrapper.messages", "Messages")}</DialogTitle>
-        <DialogContent 
-          sx={{ 
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            p: 0,
-            overflow: 'hidden',
-            minHeight: 0
+    return (
+      <>
+        <Dialog 
+          open={showPM}
+          onClose={() => {
+            console.log('🔍 UserMenu: PM Dialog onClose triggered');
+            modalStateStore.setShowPM(false);
+          }} 
+          maxWidth="md" 
+          fullWidth
+          PaperProps={{
+            sx: {
+              height: '80vh',
+              maxHeight: '700px',
+              display: 'flex',
+              flexDirection: 'column'
+            }
           }}
         >
-          <PrivateMessages context={props.context} refreshKey={refreshKey} onUpdate={props.loadCounts} />
-        </DialogContent>
-      </Dialog>);
-    else if (showNotifications) return (<Dialog open onClose={() => setShowNotifications(false)} maxWidth="md" fullWidth>
-      <DialogTitle>{getLabel("wrapper.notifications", "Notifications")}</DialogTitle>
-      <DialogContent>
-      		<Notifications context={props.context} appName={props.appName} onUpdate={props.loadCounts} onNavigate={props.onNavigate} />
-      	</DialogContent>
-    </Dialog>);
-    else return <></>;
+          <DialogTitle>{getLabel("wrapper.messages", "Messages")}</DialogTitle>
+          <DialogContent 
+            sx={{ 
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              p: 0,
+              overflow: 'hidden',
+              minHeight: 0
+            }}
+          >
+            <PrivateMessages context={props.context} refreshKey={currentRefreshKey} onUpdate={stableOnUpdate} />
+          </DialogContent>
+        </Dialog>
+        
+        <Dialog 
+          open={showNotifications} 
+          onClose={() => {
+            console.log('🔍 UserMenu: Notifications Dialog onClose triggered');
+            modalStateStore.setShowNotifications(false);
+          }} 
+          maxWidth="md" 
+          fullWidth
+        >
+          <DialogTitle>{getLabel("wrapper.notifications", "Notifications")}</DialogTitle>
+          <DialogContent>
+            <Notifications context={props.context} appName={props.appName} onUpdate={props.loadCounts} onNavigate={props.onNavigate} />
+          </DialogContent>
+        </Dialog>
+      </>
+    );
   }
 
-  const totalNotifcations = props.notificationCounts.notificationCount + props.notificationCounts.pmCount;
+  const totalNotifcations = directNotificationCounts.notificationCount + directNotificationCounts.pmCount;
 
+  // Use a ref to track if we should update refresh key
+  const stableRefreshKeyRef = React.useRef(refreshKey);
+  
   React.useEffect(() => {
-    // Only update refresh key when modal is not open to prevent modal closing
+    console.log('🔍 UserMenu: refreshKey effect triggered. showPM:', showPM, 'showNotifications:', showNotifications, 'directNotificationCounts:', directNotificationCounts);
+    
+    // Only update refresh key when modals are not open
     if (!showPM && !showNotifications) {
-      setRefreshKey(Math.random());
+      const newKey = Math.random();
+      console.log('🔍 UserMenu: Setting new refreshKey:', newKey);
+      setRefreshKey(newKey);
+      stableRefreshKeyRef.current = newKey;
+    } else {
+      console.log('🔍 UserMenu: Skipping refreshKey update because modals are open');
     }
-  }, [props.notificationCounts, showPM, showNotifications]);
+  }, [directNotificationCounts, showPM, showNotifications]);
+  
+  // Use stable refresh key when modals are open
+  const currentRefreshKey = (showPM || showNotifications) ? stableRefreshKeyRef.current : refreshKey;
 
   return (
     <>
@@ -185,12 +281,51 @@ const UserMenuContent: React.FC<Props> = (props) => {
       {getModals()}
     </>
   );
-};
+});
 
-export const UserMenu: React.FC<Props> = (props) => {
+export const UserMenu: React.FC<Props> = React.memo((props) => {
   return (
     <CookiesProvider defaultSetOptions={{ path: '/' }}>
       <UserMenuContent {...props} />
     </CookiesProvider>
   );
-};
+}, (prevProps, nextProps) => {
+  // Only re-render if essential props change, ignore notification count changes completely
+  if (prevProps.userName !== nextProps.userName) {
+    console.log('🔍 UserMenu: Re-rendering due to userName change');
+    return false;
+  }
+  
+  if (prevProps.profilePicture !== nextProps.profilePicture) {
+    console.log('🔍 UserMenu: Re-rendering due to profilePicture change');
+    return false;
+  }
+  
+  if (prevProps.appName !== nextProps.appName) {
+    console.log('🔍 UserMenu: Re-rendering due to appName change');
+    return false;
+  }
+  
+  // Check if context has actually changed (deep comparison of relevant parts)
+  if (prevProps.context?.person?.id !== nextProps.context?.person?.id ||
+      prevProps.context?.userChurch?.church?.id !== nextProps.context?.userChurch?.church?.id) {
+    console.log('🔍 UserMenu: Re-rendering due to context change');
+    return false;
+  }
+  
+  // Check if userChurches array changed
+  if (prevProps.userChurches?.length !== nextProps.userChurches?.length) {
+    console.log('🔍 UserMenu: Re-rendering due to userChurches change');
+    return false;
+  }
+  
+  // Check if loadCounts function reference changed (important for functionality)
+  if (prevProps.loadCounts !== nextProps.loadCounts) {
+    console.log('🔍 UserMenu: Re-rendering due to loadCounts function change');
+    return false;
+  }
+  
+  // Explicitly ignore notificationCounts changes to prevent re-renders
+  console.log('🔍 UserMenu: Skipping re-render, ignoring notification count changes');
+  return true; // Skip re-render
+});
