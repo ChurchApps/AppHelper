@@ -11,6 +11,7 @@ import { PrivateMessages } from "./PrivateMessages";
 import { Notifications } from "./Notifications";
 import { useCookies, CookiesProvider } from "react-cookie";
 import { NotificationService } from "../../helpers/NotificationService";
+import { SocketHelper } from "../../helpers";
 
 
 interface Props {
@@ -250,10 +251,52 @@ const UserMenuContent: React.FC<Props> = React.memo((props) => {
   // Use a ref to track if we should update refresh key
   const stableRefreshKeyRef = React.useRef(refreshKey);
   
+  // Set up WebSocket handlers to update refreshKey when messages arrive
+  React.useEffect(() => {
+    if (!props.context?.person?.id) return;
+    
+    const handleMessageUpdate = (data: any) => {
+      console.log('🔔 UserMenu: WebSocket message update received:', data);
+      
+      // Update refreshKey to trigger child component updates
+      if (showPM || showNotifications) {
+        const newKey = Math.random();
+        console.log('🔔 UserMenu: Updating refreshKey for open modal:', newKey);
+        setRefreshKey(newKey);
+        stableRefreshKeyRef.current = newKey;
+      }
+    };
+    
+    const handlePrivateMessage = (data: any) => {
+      console.log('🔔 UserMenu: WebSocket private message received:', data);
+      
+      // Update refreshKey to trigger child component updates
+      if (showPM) {
+        const newKey = Math.random();
+        console.log('🔔 UserMenu: Updating refreshKey for private messages:', newKey);
+        setRefreshKey(newKey);
+        stableRefreshKeyRef.current = newKey;
+      }
+    };
+    
+    // Register WebSocket handlers
+    const messageHandlerId = `UserMenu-MessageUpdate-${props.context.person.id}`;
+    const privateMessageHandlerId = `UserMenu-PrivateMessage-${props.context.person.id}`;
+    
+    SocketHelper.addHandler("message", messageHandlerId, handleMessageUpdate);
+    SocketHelper.addHandler("privateMessage", privateMessageHandlerId, handlePrivateMessage);
+    
+    // Cleanup
+    return () => {
+      SocketHelper.removeHandler(messageHandlerId);
+      SocketHelper.removeHandler(privateMessageHandlerId);
+    };
+  }, [props.context?.person?.id, showPM, showNotifications]);
+  
   React.useEffect(() => {
     console.log('🔍 UserMenu: refreshKey effect triggered. showPM:', showPM, 'showNotifications:', showNotifications, 'directNotificationCounts:', directNotificationCounts);
     
-    // Only update refresh key when modals are not open
+    // Only update refresh key when modals are not open and counts change
     if (!showPM && !showNotifications) {
       const newKey = Math.random();
       console.log('🔍 UserMenu: Setting new refreshKey:', newKey);
@@ -264,8 +307,8 @@ const UserMenuContent: React.FC<Props> = React.memo((props) => {
     }
   }, [directNotificationCounts, showPM, showNotifications]);
   
-  // Use stable refresh key when modals are open
-  const currentRefreshKey = (showPM || showNotifications) ? stableRefreshKeyRef.current : refreshKey;
+  // Use current refresh key
+  const currentRefreshKey = refreshKey;
 
   return (
     <>

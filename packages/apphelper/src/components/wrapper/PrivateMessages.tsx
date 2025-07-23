@@ -21,7 +21,7 @@ import { Add as AddIcon, ChatBubbleOutline as ChatIcon } from "@mui/icons-materi
 import { SmallButton } from "../SmallButton";
 import { PersonAvatar } from "../PersonAvatar";
 import { PrivateMessageInterface, UserContextInterface } from "@churchapps/helpers";
-import { ArrayHelper, DateHelper, PersonHelper, SocketHelper } from "../../helpers";
+import { ArrayHelper, DateHelper, PersonHelper } from "../../helpers";
 import { PrivateMessageDetails } from "./PrivateMessageDetails";
 import { NewPrivateMessage } from "./NewPrivateMessage";
 
@@ -61,10 +61,6 @@ export const PrivateMessages: React.FC<Props> = React.memo((props) => {
   const [, forceUpdate] = React.useReducer(x => x + 1, 0);
   const [isLoading, setIsLoading] = useState(true);
   
-  // Use refs to access current state in WebSocket handlers without triggering re-renders
-  const privateMessagesRef = React.useRef<PrivateMessageInterface[]>([]);
-  const selectedMessageRef = React.useRef<PrivateMessageInterface | null>(null);
-  
   // Subscribe to state changes
   React.useEffect(() => {
     return privateMessagesStateStore.subscribe(forceUpdate);
@@ -72,15 +68,6 @@ export const PrivateMessages: React.FC<Props> = React.memo((props) => {
 
   const selectedMessage = privateMessagesStateStore.selectedMessage;
   const inAddMode = privateMessagesStateStore.inAddMode;
-  
-  // Update refs when state changes
-  React.useEffect(() => {
-    privateMessagesRef.current = privateMessages;
-  }, [privateMessages]);
-  
-  React.useEffect(() => {
-    selectedMessageRef.current = selectedMessage;
-  }, [selectedMessage]);
 
   // Add logging for state changes
   React.useEffect(() => {
@@ -201,68 +188,10 @@ export const PrivateMessages: React.FC<Props> = React.memo((props) => {
     props.onUpdate();
   }
 
-  // Create stable callback functions for WebSocket handlers
-  const handleMessageUpdate = React.useCallback((data: any) => {
-    console.log('📨 PrivateMessages: Message update received:', data);
-    
-    // Use refs to access current state without dependencies
-    const currentSelectedMessage = selectedMessageRef.current;
-    
-    // Only reload conversation list if this is a new conversation or affects conversation previews
-    // If a conversation is currently open, let the Notes component handle the message directly
-    if (currentSelectedMessage?.conversationId === data?.conversationId) {
-      console.log('📨 PrivateMessages: Message is for open conversation, letting Notes component handle it');
-      // Still update notification counts but don't reload conversation list
-      props.onUpdate();
-      return;
-    }
-    
-    console.log('📨 PrivateMessages: Message affects conversation list, reloading');
-    loadData(); // Only reload if it affects the conversation list view
-  }, [props.onUpdate]);
-
-  const handlePrivateMessage = React.useCallback((data: any) => {
-    console.log('📨 PrivateMessages: New private message received:', data);
-    
-    // Use refs to access current state without dependencies
-    const currentPrivateMessages = privateMessagesRef.current;
-    const currentSelectedMessage = selectedMessageRef.current;
-    
-    // Check if this creates a new conversation or updates an existing one
-    const existingConversation = currentPrivateMessages.find(pm => 
-      pm.conversationId === data?.conversationId ||
-      (pm.fromPersonId === data?.fromPersonId && pm.toPersonId === data?.toPersonId) ||
-      (pm.fromPersonId === data?.toPersonId && pm.toPersonId === data?.fromPersonId)
-    );
-    
-    if (existingConversation && currentSelectedMessage?.conversationId === data?.conversationId) {
-      console.log('📨 PrivateMessages: Private message is for open conversation, letting Notes component handle it');
-      // Still update notification counts but don't reload conversation list
-      props.onUpdate();
-      return;
-    }
-    
-    console.log('📨 PrivateMessages: Private message creates new conversation or affects list, reloading');
-    loadData(); // Reload for new conversations or conversation list updates
-  }, [props.onUpdate]);
-
-  // Initialize data and set up WebSocket listeners
+  // Initialize data on mount
   useEffect(() => {
-    loadData(); // Load initial data
-
-    // Register WebSocket handlers
-    const messageHandlerId = `PrivateMessages-MessageUpdate-${props.context.person.id}`;
-    const privateMessageHandlerId = `PrivateMessages-PrivateMessage-${props.context.person.id}`;
-    
-    SocketHelper.addHandler("message", messageHandlerId, handleMessageUpdate);
-    SocketHelper.addHandler("privateMessage", privateMessageHandlerId, handlePrivateMessage);
-
-    // Cleanup function to remove handlers when component unmounts
-    return () => {
-      SocketHelper.removeHandler(messageHandlerId);
-      SocketHelper.removeHandler(privateMessageHandlerId);
-    };
-  }, [handleMessageUpdate, handlePrivateMessage]); //eslint-disable-line
+    loadData();
+  }, []); //eslint-disable-line
 
   // Reload data when refreshKey changes
   useEffect(() => {
