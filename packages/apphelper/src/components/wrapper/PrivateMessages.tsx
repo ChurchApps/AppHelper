@@ -122,12 +122,14 @@ export const PrivateMessages: React.FC<Props> = (props) => {
     loadData(); // Load initial data
 
     const handleMessageUpdate = (data: any) => {
-      console.log('📨 Private message update received, refreshing conversation list');
+      // Only reload if this is relevant to our conversations
+      console.log('📨 Private message update received:', data);
       loadData(); // Reload the conversation list when any message is updated
     };
 
     const handlePrivateMessage = (data: any) => {
-      console.log('📨 New private message received, refreshing conversation list');
+      // Always reload for new private messages as they create new conversations
+      console.log('📨 New private message received:', data);
       loadData(); // Reload the conversation list when a new private message arrives
     };
 
@@ -135,7 +137,7 @@ export const PrivateMessages: React.FC<Props> = (props) => {
     const messageHandlerId = `PrivateMessages-MessageUpdate-${props.context.person.id}`;
     const privateMessageHandlerId = `PrivateMessages-PrivateMessage-${props.context.person.id}`;
     
-    SocketHelper.addHandler("messageUpdate", messageHandlerId, handleMessageUpdate);
+    SocketHelper.addHandler("message", messageHandlerId, handleMessageUpdate);
     SocketHelper.addHandler("privateMessage", privateMessageHandlerId, handlePrivateMessage);
 
     // Cleanup function to remove handlers when component unmounts

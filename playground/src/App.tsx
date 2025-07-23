@@ -116,7 +116,7 @@ function HomePage() {
                   <Link to="/apphelper-helpers">Helpers (Re-exported & Local)</Link>
                   <Link to="/apphelper-components">Core Components 🔒</Link>
                   <Link to="/modern-layout">Modern Layout (SiteHeader + PageHeader)</Link>
-                  <Link to="/private-message-test">🔧 Private Message Scrolling Test</Link>
+                  <Link to="/private-message-test">🔧 WebSocket & Private Message Testing</Link>
                   <Link to="/apphelper-wrappers">Wrapper Components 🔒</Link>
                   {/* <Link to="/messaging-test">Messaging & Notifications Test 🔒</Link> */}
                   <Link to="/apphelper-notes">Notes Components 🔒</Link>

@@ -1,4 +1,5 @@
 export { ErrorMessages } from "./ErrorMessages";
+export { WebSocketTestPanel } from "./test/WebSocketTestPanel";
 export { ExportLink } from "./ExportLink";
 export { DisplayBox } from "./DisplayBox";
 export { FloatingSupport } from "./FloatingSupport";

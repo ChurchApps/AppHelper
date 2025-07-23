@@ -12,6 +12,7 @@ export class NotificationService {
   private listeners: Array<(counts: NotificationCounts) => void> = [];
   private isInitialized: boolean = false;
   private currentPersonId: string | null = null;
+  private loadTimeout: any | null = null;
 
   private constructor() {}
 
@@ -63,23 +64,44 @@ export class NotificationService {
   private registerWebSocketHandlers(): void {
     // Handler for new private messages
     SocketHelper.addHandler("privateMessage", "NotificationService-PM", (data: any) => {
-      this.loadNotificationCounts();
+      console.log('🔔 NotificationService: New private message received, updating counts');
+      this.debouncedLoadNotificationCounts();
     });
 
     // Handler for general notifications
     SocketHelper.addHandler("notification", "NotificationService-Notification", (data: any) => {
-      this.loadNotificationCounts();
+      console.log('🔔 NotificationService: New notification received, updating counts');
+      this.debouncedLoadNotificationCounts();
     });
 
-    // Handler for message updates (could affect counts)
-    SocketHelper.addHandler("messageUpdate", "NotificationService-MessageUpdate", (data: any) => {
-      this.loadNotificationCounts();
+    // Handler for message updates that could affect notification counts
+    SocketHelper.addHandler("message", "NotificationService-MessageUpdate", (data: any) => {
+      // Only update counts if the message update involves the current person
+      if (data?.message?.personId === this.currentPersonId || 
+          data?.notifyPersonId === this.currentPersonId) {
+        console.log('🔔 NotificationService: Message update affecting current user, updating counts');
+        this.debouncedLoadNotificationCounts();
+      }
     });
 
     // Handler for reconnect events
     SocketHelper.addHandler("reconnect", "NotificationService-Reconnect", (data: any) => {
-      this.loadNotificationCounts();
+      console.log('🔔 NotificationService: WebSocket reconnected, refreshing counts');
+      this.loadNotificationCounts(); // Don't debounce reconnect - need immediate update
     });
+  }
+
+  /**
+   * Load notification counts from the API with debouncing
+   */
+  private debouncedLoadNotificationCounts(): void {
+    if (this.loadTimeout) {
+      clearTimeout(this.loadTimeout);
+    }
+    
+    this.loadTimeout = setTimeout(() => {
+      this.loadNotificationCounts();
+    }, 300); // 300ms debounce
   }
 
   /**
@@ -182,6 +204,12 @@ export class NotificationService {
    * Cleanup the service
    */
   cleanup(): void {
+    // Clear any pending timeout
+    if (this.loadTimeout) {
+      clearTimeout(this.loadTimeout);
+      this.loadTimeout = null;
+    }
+
     // Remove websocket handlers
     SocketHelper.removeHandler("NotificationService-PM");
     SocketHelper.removeHandler("NotificationService-Notification");

@@ -146,7 +146,7 @@ export function Notes(props: Props) {
     const messageHandlerId = `Notes-MessageUpdate-${props.conversationId}`;
     const privateMessageHandlerId = `Notes-PrivateMessage-${props.conversationId}`;
     
-    SocketHelper.addHandler("messageUpdate", messageHandlerId, handleMessageUpdate);
+    SocketHelper.addHandler("message", messageHandlerId, handleMessageUpdate);
     SocketHelper.addHandler("privateMessage", privateMessageHandlerId, handlePrivateMessage);
 
     // Cleanup function to remove handlers when component unmounts or conversationId changes
