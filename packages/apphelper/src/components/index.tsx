@@ -1,5 +1,4 @@
 export { ErrorMessages } from "./ErrorMessages";
-export { WebSocketTestPanel } from "./test/WebSocketTestPanel";
 export { ExportLink } from "./ExportLink";
 export { DisplayBox } from "./DisplayBox";
 export { FloatingSupport } from "./FloatingSupport";
@@ -13,7 +12,6 @@ export { PageHeader } from "./PageHeader";
 export { PersonAvatar } from "./PersonAvatar";
 export { QuestionEdit } from "./QuestionEdit";
 export { SmallButton } from "./SmallButton";
-export { SocketDebugger } from "./SocketDebugger";
 export { SupportModal } from "./SupportModal";
 export * from "./wrapper";
 export * from "./notes";
