@@ -109,36 +109,13 @@ export class NotificationService {
    */
   async loadNotificationCounts(): Promise<void> {
     try {
-      // Load private message count (count unique conversations, not individual messages)
-      const privateMessages = await ApiHelper.get("/privateMessages", "MessagingApi");
-      let pmCount = 0;
+      // Use the unreadCount endpoint which returns both notification and PM counts
+      const counts = await ApiHelper.get("/notifications/unreadCount", "MessagingApi");
       
-      if (Array.isArray(privateMessages)) {
-        // Count unique conversations with unread messages only
-        const uniqueUnreadPeople = new Set<string>();
-        const currentPersonId = this.currentPersonId;
-        
-        privateMessages.forEach((pm: any) => {
-          if (currentPersonId && pm.notifyPersonId === currentPersonId) {
-            const personId = (pm.fromPersonId === currentPersonId) ? pm.toPersonId : pm.fromPersonId;
-            uniqueUnreadPeople.add(personId);
-          }
-        });
-        
-        pmCount = uniqueUnreadPeople.size;
-      }
-
-      // Load general notification count
-      let notificationCount = 0;
-      try {
-        const notifications = await ApiHelper.get("/notifications", "MessagingApi");
-        notificationCount = Array.isArray(notifications) ? notifications.length : 0;
-      } catch (error) {
-        // Notifications endpoint not available, default to 0
-        notificationCount = 0;
-      }
-
-      const newCounts = { notificationCount, pmCount };
+      const newCounts = { 
+        notificationCount: counts?.notificationCount || 0, 
+        pmCount: counts?.pmCount || 0
+      };
 
       // Update counts and notify listeners
       this.updateCounts(newCounts);

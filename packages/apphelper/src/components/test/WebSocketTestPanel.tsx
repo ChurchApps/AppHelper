@@ -28,6 +28,7 @@ import {
 import { SocketHelper } from '../../helpers/SocketHelper';
 import { NotificationService } from '../../helpers/NotificationService';
 import { WebSocketTest } from '../../test/WebSocketTest';
+import { ConversationDialogTest } from '../../test/ConversationDialogTest';
 import { UserContextInterface } from '@churchapps/helpers';
 
 interface Props {
@@ -152,6 +153,16 @@ export const WebSocketTestPanel: React.FC<Props> = ({ context }) => {
     }
   };
 
+  const testDialogPersistence = async () => {
+    addLogMessage('🧪 Testing conversation dialog persistence...');
+    try {
+      await ConversationDialogTest.runComprehensiveDialogTests(testConversationId);
+      addLogMessage('✅ Dialog persistence test completed - check console for details');
+    } catch (error) {
+      addLogMessage(`❌ Dialog persistence test failed: ${error.message}`);
+    }
+  };
+
   const getConnectionChip = () => {
     const color = connectionState === 'OPEN' ? 'success' : 
                  connectionState === 'CONNECTING' ? 'warning' : 'error';
@@ -219,6 +230,15 @@ export const WebSocketTestPanel: React.FC<Props> = ({ context }) => {
           onClick={debugWebSocket}
         >
           Debug WebSocket
+        </Button>
+
+        <Button
+          variant="outlined"
+          color="warning"
+          onClick={testDialogPersistence}
+          disabled={isRunning}
+        >
+          Test Dialog Persistence
         </Button>
       </Stack>
 

@@ -61,20 +61,29 @@ export function Notes(props: Props) {
   }, []);
 
   const loadNotes = async () => {
-    const messages: MessageInterface[] = (props.conversationId) ? await ApiHelper.get("/messages/conversation/" + props.conversationId, "MessagingApi") : [];
-    if (messages.length > 0) {
-      const peopleIds = ArrayHelper.getIds(messages, "personId");
-      const people = await ApiHelper.get("/people/basic?ids=" + peopleIds.join(","), "MembershipApi");
-      messages.forEach(n => {
-        n.person = ArrayHelper.getOne(people, "id", n.personId);
-      })
-    }
-    setMessages(messages);
-    setEditMessageId(null);
-    
-    // Mark as no longer initial load after first load
-    if (isInitialLoad) {
-      setIsInitialLoad(false);
+    try {
+      const messages: MessageInterface[] = (props.conversationId) ? await ApiHelper.get("/messages/conversation/" + props.conversationId, "MessagingApi") : [];
+      if (messages.length > 0) {
+        const peopleIds = ArrayHelper.getIds(messages, "personId");
+        const people = await ApiHelper.get("/people/basic?ids=" + peopleIds.join(","), "MembershipApi");
+        messages.forEach(n => {
+          n.person = ArrayHelper.getOne(people, "id", n.personId);
+        })
+      }
+      setMessages(messages);
+      setEditMessageId(null);
+      
+      // Mark as no longer initial load after first load
+      if (isInitialLoad) {
+        setIsInitialLoad(false);
+      }
+    } catch (error) {
+      console.error("❌ Failed to load messages for conversation:", props.conversationId, error);
+      // Don't clear messages on error - keep showing existing messages
+      // Only set isInitialLoad to false if this was the first load attempt
+      if (isInitialLoad) {
+        setIsInitialLoad(false);
+      }
     }
   };
 

@@ -42,6 +42,12 @@ export const PrivateMessages: React.FC<Props> = (props) => {
     setIsLoading(true);
     const pms: PrivateMessageInterface[] = await ApiHelper.get("/privateMessages", "MessagingApi");
     
+    // Store the current selected conversation ID if dialog is open
+    const currentSelectedPersonId = selectedMessage ? 
+      (selectedMessage.fromPersonId === props.context.person.id) ? 
+        selectedMessage.toPersonId : selectedMessage.fromPersonId 
+      : null;
+    
     // Group messages by person (conversation)
     const conversationMap = new Map<string, PrivateMessageInterface>();
     const peopleIds: string[] = [];
@@ -113,6 +119,24 @@ export const PrivateMessages: React.FC<Props> = (props) => {
     });
     
     setPrivateMessages(conversations);
+    
+    // If a conversation is currently selected, update the selectedMessage to the new data
+    // This prevents the dialog from closing when new messages arrive
+    if (currentSelectedPersonId) {
+      const updatedSelectedMessage = conversations.find(pm => {
+        const personId = (pm.fromPersonId === props.context.person.id) ? pm.toPersonId : pm.fromPersonId;
+        return personId === currentSelectedPersonId;
+      });
+      
+      if (updatedSelectedMessage) {
+        console.log('📨 Updating selected message with new data to keep dialog open');
+        setSelectedMessage(updatedSelectedMessage);
+      } else {
+        console.log('⚠️ Selected conversation no longer exists, closing dialog');
+        setSelectedMessage(null);
+      }
+    }
+    
     setIsLoading(false);
     props.onUpdate();
   }
