@@ -8,7 +8,7 @@ import { SecondaryMenu } from "./SecondaryMenu";
 import { SecondaryMenuAlt } from "./SecondaryMenuAlt";
 import { SupportDrawer } from "./SupportDrawer";
 import { UserContextInterface, CommonEnvironmentHelper } from "@churchapps/helpers";
-import { useNotifications } from "../../hooks/useNotifications";
+import { NotificationService } from "../../helpers/NotificationService";
 
 type Props = {
   primaryMenuLabel: string;
@@ -20,9 +20,72 @@ type Props = {
   onNavigate: (url: string) => void;
 }
 
-export const SiteHeader = (props:Props) => {
-  // Initialize websocket notifications
-  const { counts, refresh } = useNotifications(props.context);
+export const SiteHeader = React.memo((props:Props) => {
+  // Log component lifecycle
+  React.useEffect(() => {
+    console.log('🆕 SiteHeader: Component CREATED/MOUNTED');
+    return () => {
+      console.log('🚪 SiteHeader: Component UNMOUNTED');
+    };
+  }, []);
+  
+  // Initialize NotificationService without subscribing to count changes to prevent re-renders
+  React.useEffect(() => {
+    const initializeNotifications = async () => {
+      if (props.context?.person?.id && props.context?.userChurch?.church?.id) {
+        console.log('🔔 SiteHeader: Initializing NotificationService');
+        const service = NotificationService.getInstance();
+        await service.initialize(props.context);
+      }
+    };
+    
+    initializeNotifications();
+  }, [props.context?.person?.id, props.context?.userChurch?.church?.id]);
+  
+  const refresh = React.useCallback(async () => {
+    // Direct access to NotificationService for refresh functionality
+    await NotificationService.getInstance().refresh();
+  }, []);
+  
+  // Memoize userName to prevent recreation
+  const userName = React.useMemo(() => {
+    if (props.context?.user) {
+      return `${props.context.user.firstName} ${props.context.user.lastName}`;
+    }
+    return '';
+  }, [props.context?.user?.firstName, props.context?.user?.lastName]);
+  
+  // Memoize profilePicture URL
+  const profilePicture = React.useMemo(() => {
+    return PersonHelper.getPhotoUrl(props.context?.person);
+  }, [props.context?.person]);
+  
+  // Create a stable context object to prevent UserMenu recreation
+  const stableContext = React.useMemo(() => {
+    if (!props.context) return undefined;
+    
+    return {
+      user: props.context.user,
+      person: props.context.person,
+      userChurch: props.context.userChurch,
+      userChurches: props.context.userChurches,
+      setUser: props.context.setUser,
+      setPerson: props.context.setPerson,
+      setUserChurch: props.context.setUserChurch,
+      setUserChurches: props.context.setUserChurches
+    };
+  }, [
+    props.context?.user?.id,
+    props.context?.user?.firstName,
+    props.context?.user?.lastName,
+    props.context?.person?.id,
+    props.context?.userChurch?.church?.id,
+    props.context?.userChurches,
+    props.context?.setUser,
+    props.context?.setPerson,
+    props.context?.setUserChurch,
+    props.context?.setUserChurches
+  ]);
 
   const CustomAppBar = styled(AppBar)(
     ({ theme }) => ({
@@ -82,7 +145,20 @@ export const SiteHeader = (props:Props) => {
           <div style={{ flex: 1 }}>
             <SecondaryMenuAlt label={props.secondaryMenuLabel} menuItems={props.secondaryMenuItems} onNavigate={props.onNavigate} />
           </div>
-          {props.context?.user?.id && <UserMenu profilePicture={PersonHelper.getPhotoUrl(props.context?.person)} userName={`${props.context.user?.firstName} ${props.context.user?.lastName}`} userChurches={props.context?.userChurches} currentUserChurch={props.context?.userChurch} context={props.context} appName={props.appName} loadCounts={refresh} notificationCounts={counts} onNavigate={props.onNavigate} />}
+          {props.context?.user?.id && (
+            <UserMenu 
+              key="user-menu-stable" 
+              profilePicture={profilePicture} 
+              userName={userName} 
+              userChurches={props.context?.userChurches} 
+              currentUserChurch={props.context?.userChurch} 
+              context={stableContext} 
+              appName={props.appName} 
+              loadCounts={refresh} 
+              notificationCounts={{notificationCount: 0, pmCount: 0}} 
+              onNavigate={props.onNavigate} 
+            />
+          )}
           {!props.context?.user?.id && <Link href="/login" color="inherit" style={{ textDecoration: "none" }}>Login</Link>}
           <SupportDrawer appName={props.appName} relatedArticles={getRelatedArticles()} />
         </Toolbar>
@@ -91,4 +167,56 @@ export const SiteHeader = (props:Props) => {
     </div>
   </>
   );
-}
+}, (prevProps, nextProps) => {
+  // Custom comparison to prevent unnecessary re-renders
+  
+  // Check if essential props have changed
+  if (prevProps.primaryMenuLabel !== nextProps.primaryMenuLabel ||
+      prevProps.secondaryMenuLabel !== nextProps.secondaryMenuLabel ||
+      prevProps.appName !== nextProps.appName) {
+    console.log('🔄 SiteHeader: Re-rendering due to menu/app name change');
+    return false;
+  }
+  
+  // Check if menu items arrays have changed (shallow comparison)
+  if (prevProps.primaryMenuItems?.length !== nextProps.primaryMenuItems?.length ||
+      prevProps.secondaryMenuItems?.length !== nextProps.secondaryMenuItems?.length) {
+    console.log('🔄 SiteHeader: Re-rendering due to menu items change');
+    return false;
+  }
+  
+  // Check if user context has actually changed (deep comparison of essential parts)
+  const prevUser = prevProps.context?.user;
+  const nextUser = nextProps.context?.user;
+  
+  if (prevUser?.id !== nextUser?.id ||
+      prevUser?.firstName !== nextUser?.firstName ||
+      prevUser?.lastName !== nextUser?.lastName) {
+    console.log('🔄 SiteHeader: Re-rendering due to user change');
+    return false;
+  }
+  
+  // Check if person context has changed
+  if (prevProps.context?.person?.id !== nextProps.context?.person?.id) {
+    console.log('🔄 SiteHeader: Re-rendering due to person change');
+    return false;
+  }
+  
+  // Check if church context has changed
+  if (prevProps.context?.userChurch?.church?.id !== nextProps.context?.userChurch?.church?.id) {
+    console.log('🔄 SiteHeader: Re-rendering due to church change');
+    return false;
+  }
+  
+  // Check if onNavigate function reference has changed
+  if (prevProps.onNavigate !== nextProps.onNavigate) {
+    console.log('🔄 SiteHeader: Re-rendering due to onNavigate change');
+    return false;
+  }
+  
+  // All essential props are the same, skip re-render
+  console.log('⏭️ SiteHeader: Skipping re-render, props unchanged');
+  return true;
+});
+
+SiteHeader.displayName = 'SiteHeader';

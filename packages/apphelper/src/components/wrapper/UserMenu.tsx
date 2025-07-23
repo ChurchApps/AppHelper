@@ -49,12 +49,20 @@ const modalStateStore = {
 };
 
 const UserMenuContent: React.FC<Props> = React.memo((props) => {
+  // Log component creation
+  React.useEffect(() => {
+    console.log('🆕 UserMenuContent: Component CREATED/MOUNTED');
+    return () => {
+      console.log('🚪 UserMenuContent: Component UNMOUNTED');
+    };
+  }, []);
+  
   const userName = props.userName;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [, forceUpdate] = React.useReducer(x => x + 1, 0);
-  const [refreshKey, setRefreshKey] = React.useState(0);
+  const [refreshKey, setRefreshKey] = React.useState(() => Math.random());
   const [, , removeCookie] = useCookies(["lastChurchId"]);
-  const [directNotificationCounts, setDirectNotificationCounts] = React.useState({ notificationCount: 0, pmCount: 0 });
+  const [directNotificationCounts, setDirectNotificationCounts] = React.useState(() => props.notificationCounts || { notificationCount: 0, pmCount: 0 });
   const open = Boolean(anchorEl);
 
   // Subscribe to modal state changes
@@ -81,27 +89,11 @@ const UserMenuContent: React.FC<Props> = React.memo((props) => {
   const showPM = modalStateStore.showPM;
   const showNotifications = modalStateStore.showNotifications;
 
-  // Add comprehensive logging for state changes
-  React.useEffect(() => {
-    console.log('🔍 UserMenu: showPM state changed to:', showPM);
-  }, [showPM]);
-
-  React.useEffect(() => {
-    console.log('🔍 UserMenu: showNotifications state changed to:', showNotifications);
-  }, [showNotifications]);
-
-  React.useEffect(() => {
-    console.log('🔍 UserMenu: refreshKey changed to:', refreshKey);
-  }, [refreshKey]);
-
-  React.useEffect(() => {
-    console.log('🔍 UserMenu: directNotificationCounts changed to:', directNotificationCounts);
-  }, [directNotificationCounts]);
-
-  // Create a stable callback for onUpdate
+  // Create a stable callback for onUpdate that doesn't depend on props
   const stableOnUpdate = React.useCallback(() => {
-    props.loadCounts();
-  }, [props.loadCounts]);
+    // Use NotificationService directly to avoid dependency on props.loadCounts
+    NotificationService.getInstance().refresh();
+  }, []);
 
 
   const handleClick = (e: React.MouseEvent<HTMLElement>) => {
@@ -258,8 +250,8 @@ const UserMenuContent: React.FC<Props> = React.memo((props) => {
     const handleMessageUpdate = (data: any) => {
       console.log('🔔 UserMenu: WebSocket message update received:', data);
       
-      // Update refreshKey to trigger child component updates
-      if (showPM || showNotifications) {
+      // Only update refreshKey if a modal is open to trigger child updates
+      if (modalStateStore.showPM || modalStateStore.showNotifications) {
         const newKey = Math.random();
         console.log('🔔 UserMenu: Updating refreshKey for open modal:', newKey);
         setRefreshKey(newKey);
@@ -270,10 +262,22 @@ const UserMenuContent: React.FC<Props> = React.memo((props) => {
     const handlePrivateMessage = (data: any) => {
       console.log('🔔 UserMenu: WebSocket private message received:', data);
       
-      // Update refreshKey to trigger child component updates
-      if (showPM) {
+      // Only update refreshKey if PM modal is open
+      if (modalStateStore.showPM) {
         const newKey = Math.random();
         console.log('🔔 UserMenu: Updating refreshKey for private messages:', newKey);
+        setRefreshKey(newKey);
+        stableRefreshKeyRef.current = newKey;
+      }
+    };
+    
+    const handleNotification = (data: any) => {
+      console.log('🔔 UserMenu: WebSocket notification received:', data);
+      
+      // Update refreshKey if any modal is open to trigger child updates
+      if (modalStateStore.showPM || modalStateStore.showNotifications) {
+        const newKey = Math.random();
+        console.log('🔔 UserMenu: Updating refreshKey for notification:', newKey);
         setRefreshKey(newKey);
         stableRefreshKeyRef.current = newKey;
       }
@@ -282,30 +286,25 @@ const UserMenuContent: React.FC<Props> = React.memo((props) => {
     // Register WebSocket handlers
     const messageHandlerId = `UserMenu-MessageUpdate-${props.context.person.id}`;
     const privateMessageHandlerId = `UserMenu-PrivateMessage-${props.context.person.id}`;
+    const notificationHandlerId = `UserMenu-Notification-${props.context.person.id}`;
     
+    console.log('🔌 UserMenu: Registering WebSocket handlers:', messageHandlerId, privateMessageHandlerId, notificationHandlerId);
     SocketHelper.addHandler("message", messageHandlerId, handleMessageUpdate);
     SocketHelper.addHandler("privateMessage", privateMessageHandlerId, handlePrivateMessage);
+    SocketHelper.addHandler("notification", notificationHandlerId, handleNotification);
+    console.log('🔌 UserMenu: WebSocket handlers registered successfully');
     
     // Cleanup
     return () => {
+      console.log('🚮 UserMenu: Removing WebSocket handlers:', messageHandlerId, privateMessageHandlerId, notificationHandlerId);
       SocketHelper.removeHandler(messageHandlerId);
       SocketHelper.removeHandler(privateMessageHandlerId);
+      SocketHelper.removeHandler(notificationHandlerId);
     };
-  }, [props.context?.person?.id, showPM, showNotifications]);
+  }, [props.context?.person?.id]); // Removed showPM, showNotifications dependencies
   
-  React.useEffect(() => {
-    console.log('🔍 UserMenu: refreshKey effect triggered. showPM:', showPM, 'showNotifications:', showNotifications, 'directNotificationCounts:', directNotificationCounts);
-    
-    // Only update refresh key when modals are not open and counts change
-    if (!showPM && !showNotifications) {
-      const newKey = Math.random();
-      console.log('🔍 UserMenu: Setting new refreshKey:', newKey);
-      setRefreshKey(newKey);
-      stableRefreshKeyRef.current = newKey;
-    } else {
-      console.log('🔍 UserMenu: Skipping refreshKey update because modals are open');
-    }
-  }, [directNotificationCounts, showPM, showNotifications]);
+  // Removed the effect that was updating refreshKey based on notification counts
+  // This was causing unnecessary re-renders when modals were closed
   
   // Use current refresh key
   const currentRefreshKey = refreshKey;
@@ -327,6 +326,14 @@ const UserMenuContent: React.FC<Props> = React.memo((props) => {
 });
 
 export const UserMenu: React.FC<Props> = React.memo((props) => {
+  // Log component creation
+  React.useEffect(() => {
+    console.log('🆕 UserMenu: Component CREATED/MOUNTED');
+    return () => {
+      console.log('🚪 UserMenu: Component UNMOUNTED');
+    };
+  }, []);
+  
   return (
     <CookiesProvider defaultSetOptions={{ path: '/' }}>
       <UserMenuContent {...props} />
@@ -368,7 +375,7 @@ export const UserMenu: React.FC<Props> = React.memo((props) => {
     return false;
   }
   
-  // Explicitly ignore notificationCounts changes to prevent re-renders
-  console.log('🔍 UserMenu: Skipping re-render, ignoring notification count changes');
+  // Ignore both notificationCounts and onNavigate changes as they don't affect the component
+  console.log('🔍 UserMenu: Skipping re-render, all essential props are the same');
   return true; // Skip re-render
 });

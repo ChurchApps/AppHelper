@@ -81,16 +81,16 @@ export function useNotifications(context: UserContextInterface | null): UseNotif
     };
   }, [notificationService]);
 
-  // Refresh function
+  // Refresh function - memoized without dependencies for stable reference
   const refresh = useCallback(async () => {
     try {
       setError(null);
-      await notificationService.refresh();
+      await NotificationService.getInstance().refresh();
     } catch (err) {
       console.error("❌ useNotifications: Refresh failed:", err);
       setError(err instanceof Error ? err.message : 'Failed to refresh notifications');
     }
-  }, [notificationService]);
+  }, []);
 
   return {
     counts,
