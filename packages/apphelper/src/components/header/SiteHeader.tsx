@@ -53,6 +53,10 @@ export const SiteHeader = React.memo((props:Props) => {
   
   // Create a stable context object to prevent UserMenu recreation
   const stableContext = React.useMemo(() => {
+    console.log('SiteHeader - Creating stableContext');
+    console.log('SiteHeader - props.context:', props.context);
+    console.log('SiteHeader - props.context.userChurches:', props.context?.userChurches);
+    
     if (!props.context) return undefined;
     
     return {
@@ -141,8 +145,6 @@ export const SiteHeader = React.memo((props:Props) => {
               key="user-menu-stable" 
               profilePicture={profilePicture} 
               userName={userName} 
-              userChurches={props.context?.userChurches} 
-              currentUserChurch={props.context?.userChurch} 
               context={stableContext} 
               appName={props.appName} 
               loadCounts={refresh} 

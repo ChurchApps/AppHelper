@@ -31,7 +31,7 @@ interface Props {
 	loginContainerCssProps?: PaperProps;
 	defaultEmail?: string;
 	defaultPassword?: string;
-	handleRedirect?: (url: string, user?: UserInterface, person?: PersonInterface, userChurch?: LoginUserChurchInterface, church?: ChurchInterface) => void; // Function to handle redirects from parent component
+	handleRedirect?: (url: string, user?: UserInterface, person?: PersonInterface, userChurch?: LoginUserChurchInterface, userChurches?: LoginUserChurchInterface[]) => void; // Function to handle redirects from parent component
 }
 
 const LoginPageContent: React.FC<Props> = ({ showLogo = true, loginContainerCssProps, ...props }) => {
@@ -185,7 +185,8 @@ const LoginPageContent: React.FC<Props> = ({ showLogo = true, loginContainerCssP
 		if (returnUrl && typeof window !== "undefined") {
 			// Use handleRedirect function if available, otherwise fallback to window.location
 			if (props.handleRedirect) {
-				props.handleRedirect(returnUrl, UserHelper.user, person, UserHelper.currentUserChurch, UserHelper.currentUserChurch?.church);
+				console.log('Login handleRedirect - Passing userChurches:', UserHelper.userChurches);
+				props.handleRedirect(returnUrl, UserHelper.user, person, UserHelper.currentUserChurch, UserHelper.userChurches);
 			} else {
 				window.location.href = returnUrl;
 			}

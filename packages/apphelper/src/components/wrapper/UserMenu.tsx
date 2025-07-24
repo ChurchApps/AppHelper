@@ -19,8 +19,6 @@ interface Props {
 	loadCounts: () => void;
   userName: string;
   profilePicture: string;
-  userChurches: LoginUserChurchInterface[];
-  currentUserChurch: LoginUserChurchInterface;
   context: UserContextInterface;
   appName: string;
   onNavigate: (url: string) => void;
@@ -98,8 +96,10 @@ const UserMenuContent: React.FC<Props> = React.memo((props) => {
   };
 
   const handleSwitchChurch = () => {
+    console.log('UserMenu - handleSwitchChurch called');
     removeCookie("lastChurchId", { path: "/" });
     setTabIndex(2);
+    console.log('UserMenu - tabIndex set to 2');
   };
 
   const getMainLinks = () => {
@@ -151,24 +151,58 @@ const UserMenuContent: React.FC<Props> = React.memo((props) => {
 
   const [tabIndex, setTabIndex] = React.useState(0);
 
-  const getTabs = () => (
-    <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-      <TabPanel value={tabIndex} index={0}>
-        {getMainLinks()}
-      </TabPanel>
-      <TabPanel value={tabIndex} index={1}>
-        <NavItem label="Back" key="AppBack" icon="arrow_back" onClick={() => { setTabIndex(0); }} />
-        <AppList currentUserChurch={props.currentUserChurch} appName={props.appName} onNavigate={props.onNavigate} />
-      </TabPanel>
-      <TabPanel value={tabIndex} index={2}>
-        <div style={{ maxHeight: '70vh', overflowY: "auto" }}>
-          <NavItem label="Back" key="ChurchBack" icon="arrow_back" onClick={() => { setTabIndex(0); }} />
-          <ChurchList userChurches={props.userChurches} currentUserChurch={props.currentUserChurch} context={props.context} onDelete={handleClose} />
-        </div>
-      </TabPanel>
-
-    </Box>
-  );
+  const getTabs = () => {
+    console.log('UserMenu getTabs - Current tabIndex:', tabIndex);
+    return (
+      <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+        <TabPanel value={tabIndex} index={0}>
+          {getMainLinks()}
+        </TabPanel>
+        <TabPanel value={tabIndex} index={1}>
+          <NavItem label="Back" key="AppBack" icon="arrow_back" onClick={() => { setTabIndex(0); }} />
+          <AppList currentUserChurch={props.context?.userChurch} appName={props.appName} onNavigate={props.onNavigate} />
+        </TabPanel>
+        <TabPanel value={tabIndex} index={2}>
+          <div style={{ maxHeight: '70vh', overflowY: "auto" }}>
+            <NavItem label="Back" key="ChurchBack" icon="arrow_back" onClick={() => { setTabIndex(0); }} />
+            {(() => {
+              console.log('UserMenu Church Tab - Rendering church list section');
+              console.log('UserMenu Church Tab - Full context:', props.context);
+              console.log('UserMenu Church Tab - context.userChurches:', props.context?.userChurches);
+              console.log('UserMenu Church Tab - context.userChurches[0]:', props.context?.userChurches?.[0]);
+              console.log('UserMenu Church Tab - context.userChurch:', props.context?.userChurch);
+              console.log('UserMenu Church Tab - userChurches type:', typeof props.context?.userChurches);
+              console.log('UserMenu Church Tab - userChurches is array?', Array.isArray(props.context?.userChurches));
+              console.log('UserMenu Church Tab - userChurches length:', props.context?.userChurches?.length);
+              
+              // Check if userChurches is actually the userChurch object
+              if (props.context?.userChurches && !Array.isArray(props.context.userChurches) && (props.context.userChurches as any).id) {
+                console.error('UserMenu - ERROR: context.userChurches contains a single church object instead of an array!');
+                console.log('UserMenu - Attempting to use context.userChurch as single item array');
+                const churchArray = props.context.userChurch ? [props.context.userChurch] : [];
+                return <ChurchList userChurches={churchArray} currentUserChurch={props.context?.userChurch} context={props.context} onDelete={handleClose} />;
+              }
+              
+              if (!props.context?.userChurches) {
+                return <Typography sx={{ p: 2, color: 'text.secondary' }}>Loading churches...</Typography>;
+              } else if (!Array.isArray(props.context.userChurches)) {
+                return <Typography sx={{ p: 2, color: 'text.secondary', fontWeight: 'bold' }}>Error: Invalid church data format</Typography>;
+              } else if (props.context.userChurches.length === 0) {
+                return <Typography sx={{ p: 2, color: 'text.secondary' }}>No churches available</Typography>;
+              } else {
+                // Ensure we always pass an array
+                const churchesArray = Array.isArray(props.context.userChurches) 
+                  ? props.context.userChurches 
+                  : [props.context.userChurches];
+                console.log('UserMenu - Passing to ChurchList:', churchesArray);
+                return <ChurchList userChurches={churchesArray} currentUserChurch={props.context?.userChurch} context={props.context} onDelete={handleClose} />;
+              }
+            })()}
+          </div>
+        </TabPanel>
+      </Box>
+    );
+  };
 
   const getModals = () => {
     // Helper function to get label with fallback
@@ -328,8 +362,8 @@ export const UserMenu: React.FC<Props> = React.memo((props) => {
     return false;
   }
   
-  // Check if userChurches array changed
-  if (prevProps.userChurches?.length !== nextProps.userChurches?.length) {
+  // Check if userChurches array changed in context
+  if (prevProps.context?.userChurches?.length !== nextProps.context?.userChurches?.length) {
     return false;
   }
   

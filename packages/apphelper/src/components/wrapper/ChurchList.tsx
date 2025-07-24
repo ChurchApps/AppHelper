@@ -10,17 +10,53 @@ import { Locale } from "../../helpers";
 export interface Props { userChurches: LoginUserChurchInterface[], currentUserChurch: LoginUserChurchInterface, context: UserContextInterface, onDelete?: () => void }
 
 export const ChurchList: React.FC<Props> = props => {
+	console.log('ChurchList - Rendering with props:', props);
 	
 	const [userChurches, setUserChurches] = useState(() => {
 		try {
-			// Handle both array and single object cases
-			let churches = props.userChurches;
-			if (!Array.isArray(churches)) {
-				churches = churches ? [churches] : [];
+			// If we have currentUserChurch, use it as fallback
+			if (props.currentUserChurch && (!props.userChurches || !Array.isArray(props.userChurches))) {
+				console.log('ChurchList - Using currentUserChurch as single item array');
+				return [props.currentUserChurch];
 			}
-			return churches.filter(uc => uc && uc.apis && uc.apis.length > 0);
+			
+			let churches = props.userChurches;
+			
+			// Ensure we have an array
+			if (!Array.isArray(churches)) {
+				console.warn('ChurchList - Expected array but got:', typeof churches, churches);
+				// If it's a plain church object and we have currentUserChurch, use that
+				if (props.currentUserChurch) {
+					return [props.currentUserChurch];
+				}
+				churches = [];
+			}
+			
+			console.log('ChurchList - Processing churches array:', churches);
+			
+			// Filter for valid userChurch objects (should have church property)
+			const validChurches = churches.filter(uc => {
+				const isValid = uc && uc.church && uc.church.id;
+				if (!isValid) {
+					console.warn('ChurchList - Invalid church structure:', uc);
+				}
+				return isValid;
+			});
+			
+			// If no valid churches but we have currentUserChurch, use it
+			if (validChurches.length === 0 && props.currentUserChurch) {
+				console.log('ChurchList - No valid churches found, using currentUserChurch');
+				return [props.currentUserChurch];
+			}
+			
+			console.log('ChurchList - Valid churches:', validChurches);
+			return validChurches;
 		} catch (error) {
-			console.error('Error filtering userChurches:', error);
+			console.error('ChurchList - Error processing churches:', error);
+			// Last resort: if we have currentUserChurch, use it
+			if (props.currentUserChurch) {
+				return [props.currentUserChurch];
+			}
 			return [];
 		}
 	});
@@ -28,17 +64,41 @@ export const ChurchList: React.FC<Props> = props => {
 	// Update local state when props change
 	React.useEffect(() => {
 		try {
-			// Handle both array and single object cases
-			let churches = props.userChurches;
-			if (!Array.isArray(churches)) {
-				churches = churches ? [churches] : [];
+			// If we have currentUserChurch, use it as fallback
+			if (props.currentUserChurch && (!props.userChurches || !Array.isArray(props.userChurches))) {
+				setUserChurches([props.currentUserChurch]);
+				return;
 			}
-			setUserChurches(churches.filter(uc => uc && uc.apis && uc.apis.length > 0));
+			
+			let churches = props.userChurches;
+			
+			// Ensure we have an array
+			if (!Array.isArray(churches)) {
+				if (props.currentUserChurch) {
+					setUserChurches([props.currentUserChurch]);
+					return;
+				}
+				churches = [];
+			}
+			
+			// Filter for valid userChurch objects
+			const validChurches = churches.filter(uc => uc && uc.church && uc.church.id);
+			
+			// If no valid churches but we have currentUserChurch, use it
+			if (validChurches.length === 0 && props.currentUserChurch) {
+				setUserChurches([props.currentUserChurch]);
+			} else {
+				setUserChurches(validChurches);
+			}
 		} catch (error) {
-			console.error('Error updating userChurches:', error);
-			setUserChurches([]);
+			console.error('ChurchList useEffect - Error updating churches:', error);
+			if (props.currentUserChurch) {
+				setUserChurches([props.currentUserChurch]);
+			} else {
+				setUserChurches([]);
+			}
 		}
-	}, [props.userChurches]);
+	}, [props.userChurches, props.currentUserChurch]);
 
 	const handleDelete = async (uc: LoginUserChurchInterface) => {
 		// Helper function to get label with fallback
@@ -65,6 +125,7 @@ export const ChurchList: React.FC<Props> = props => {
 	};
 
 	let result: React.ReactElement[] = [];
+	
 	userChurches.forEach(uc => {
 		const userChurch = uc;
 		const churchName = uc.church.name;
@@ -80,5 +141,5 @@ export const ChurchList: React.FC<Props> = props => {
 		/>);
 	});
 
-	return <>{result}</>;
+	return <div id="church-list">{result}</div>;
 };
