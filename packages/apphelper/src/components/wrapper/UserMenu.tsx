@@ -180,7 +180,10 @@ const UserMenuContent: React.FC<Props> = React.memo((props) => {
                 console.error('UserMenu - ERROR: context.userChurches contains a single church object instead of an array!');
                 console.log('UserMenu - Attempting to use context.userChurch as single item array');
                 const churchArray = props.context.userChurch ? [props.context.userChurch] : [];
-                return <ChurchList userChurches={churchArray} currentUserChurch={props.context?.userChurch} context={props.context} onDelete={handleClose} />;
+                return <ChurchList userChurches={churchArray} currentUserChurch={props.context?.userChurch} context={props.context} onDelete={handleClose} onChurchChange={() => {
+                    handleClose();
+                    // Don't navigate - just close the menu and let the context update trigger re-renders
+                }} />;
               }
               
               if (!props.context?.userChurches) {
@@ -195,7 +198,10 @@ const UserMenuContent: React.FC<Props> = React.memo((props) => {
                   ? props.context.userChurches 
                   : [props.context.userChurches];
                 console.log('UserMenu - Passing to ChurchList:', churchesArray);
-                return <ChurchList userChurches={churchesArray} currentUserChurch={props.context?.userChurch} context={props.context} onDelete={handleClose} />;
+                return <ChurchList userChurches={churchesArray} currentUserChurch={props.context?.userChurch} context={props.context} onDelete={handleClose} onChurchChange={() => {
+                    handleClose();
+                    // Don't navigate - just close the menu and let the context update trigger re-renders
+                }} />;
               }
             })()}
           </div>

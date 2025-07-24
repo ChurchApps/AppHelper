@@ -7,7 +7,7 @@ import { UserHelper } from "../../helpers/UserHelper";
 import { NavItem } from "./NavItem";
 import { Locale } from "../../helpers";
 
-export interface Props { userChurches: LoginUserChurchInterface[], currentUserChurch: LoginUserChurchInterface, context: UserContextInterface, onDelete?: () => void }
+export interface Props { userChurches: LoginUserChurchInterface[], currentUserChurch: LoginUserChurchInterface, context: UserContextInterface, onDelete?: () => void, onChurchChange?: () => void }
 
 export const ChurchList: React.FC<Props> = props => {
 	console.log('ChurchList - Rendering with props:', props);
@@ -132,7 +132,16 @@ export const ChurchList: React.FC<Props> = props => {
 		result.push(<NavItem
 			key={userChurch.church.id}
 			selected={(uc.church.id === props.currentUserChurch.church.id) && true}
-			onClick={() => UserHelper.selectChurch(props.context, userChurch.church.id, null)}
+			onClick={async () => {
+				console.log('ChurchList - Selecting church:', userChurch.church.name);
+				await UserHelper.selectChurch(props.context, userChurch.church.id, null);
+				console.log('ChurchList - Church selected');
+				
+				// Call the onChurchChange callback if provided
+				if (props.onChurchChange) {
+					props.onChurchChange();
+				}
+			}}
 			label={churchName || "Unknown"}
 			icon="church"
 			deleteIcon={uc.church.id !== props.currentUserChurch.church.id ? "delete" : null}
