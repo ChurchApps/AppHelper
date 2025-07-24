@@ -17,7 +17,6 @@ export class ArrayHelper {
       const valB = b[propertyName];
       if (valA < valB) return descending ? 1 : -1;
       else return descending ? -1 : 1;
-      //console.log(valA, valB, valA < valB, )
     });
   }
 

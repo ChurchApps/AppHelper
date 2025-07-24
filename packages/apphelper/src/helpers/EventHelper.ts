@@ -29,7 +29,6 @@ export class EventHelper {
       if (events[i].exceptionDates?.length>0)
       {
         const parsedDates = events[i].exceptionDates.map(d=>new Date(d).toISOString());
-        //console.log("Compare", events[i].start.toISOString(), parsedDates, parsedDates.indexOf(events[i].start.toISOString()));
         if (parsedDates.indexOf(events[i].start.toISOString())>-1) events.splice(i,1);
       }
     }

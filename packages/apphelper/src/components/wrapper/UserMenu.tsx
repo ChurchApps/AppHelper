@@ -280,8 +280,6 @@ const UserMenuContent: React.FC<Props> = React.memo((props) => {
     };
   }, [props.context?.person?.id]); // Removed showPM, showNotifications dependencies
   
-  // Removed the effect that was updating refreshKey based on notification counts
-  // This was causing unnecessary re-renders when modals were closed
   
   // Use current refresh key
   const currentRefreshKey = refreshKey;
