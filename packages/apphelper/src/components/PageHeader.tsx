@@ -11,7 +11,7 @@ interface PageHeaderProps {
 
 export const PageHeader: React.FC<PageHeaderProps> = ({ icon, title, subtitle, children, statistics }) => {
   return (
-    <Box sx={{ 
+    <Box id="page-header" sx={{ 
       backgroundColor: "var(--c1l2)", 
       color: "#FFF", 
       position: 'relative',
@@ -31,8 +31,9 @@ export const PageHeader: React.FC<PageHeaderProps> = ({ icon, title, subtitle, c
       }}>
         <Stack direction={{ xs: "column", md: "row" }} spacing={{ xs: 2, md: 4 }} alignItems={{ xs: "flex-start", md: "center" }} sx={{ width: "100%" }}>
         {/* Left side: Title and Icon */}
-        <Stack direction="row" spacing={2} alignItems="center" sx={{ flex: 1 }}>
+        <Stack id="page-header-title-section" direction="row" spacing={2} alignItems="center" sx={{ flex: 1 }}>
           <Box
+            id="page-header-icon"
             sx={{
               backgroundColor: "rgba(255,255,255,0.2)",
               borderRadius: "12px",
@@ -44,8 +45,9 @@ export const PageHeader: React.FC<PageHeaderProps> = ({ icon, title, subtitle, c
           >
             {React.cloneElement(icon as React.ReactElement<any>, { sx: { fontSize: 32, color: "#FFF" } })}
           </Box>
-          <Box>
+          <Box id="page-header-text">
             <Typography
+              id="page-header-title"
               variant="h4"
               sx={{
                 fontWeight: 600,
@@ -57,6 +59,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({ icon, title, subtitle, c
             </Typography>
             {subtitle && (
               <Typography
+                id="page-header-subtitle"
                 variant="body1"
                 sx={{
                   color: "rgba(255,255,255,0.9)",
@@ -72,6 +75,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({ icon, title, subtitle, c
         {/* Right side: Action Buttons/Tabs */}
         {children && (
           <Stack
+            id="page-header-actions"
             direction="row"
             spacing={1}
             sx={{
@@ -87,7 +91,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({ icon, title, subtitle, c
 
       {/* Statistics row */}
       {statistics && statistics.length > 0 && (
-        <Stack direction={{ xs: "column", sm: "row" }} spacing={3} sx={{ mt: 3 }}>
+        <Stack id="page-header-statistics" direction={{ xs: "column", sm: "row" }} spacing={3} sx={{ mt: 3 }}>
           {statistics.map((stat, index) => (
             <Stack key={index} direction="row" spacing={1} alignItems="center">
               {React.cloneElement(stat.icon as React.ReactElement<any>, { sx: { color: "#FFF", fontSize: 20 } })}

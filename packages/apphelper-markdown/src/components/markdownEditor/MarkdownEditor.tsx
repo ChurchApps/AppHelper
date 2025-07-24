@@ -14,5 +14,5 @@ interface Props {
 }
 
 export function MarkdownEditor({ value: markdownString = "", onChange, style, textAlign, placeholder }: Props) {
-  return <Suspense fallback={<Loading />}><Editor value={markdownString} onChange={onChange} style={style} textAlign={textAlign} placeholder={placeholder} /></Suspense>
+  return <div id="markdown-editor-wrapper"><Suspense fallback={<Loading />}><Editor value={markdownString} onChange={onChange} style={style} textAlign={textAlign} placeholder={placeholder} /></Suspense></div>
 }

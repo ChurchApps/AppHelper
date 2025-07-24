@@ -88,7 +88,7 @@ export const Notifications: React.FC<Props> = (props) => {
   const getNotificationList = () => {
     if (notifications.length === 0) {
       return (
-        <Box sx={{ textAlign: 'center', py: 4 }}>
+        <Box id="notifications-empty" sx={{ textAlign: 'center', py: 4 }}>
           <NotificationsIcon sx={{ fontSize: 48, color: 'grey.400', mb: 2 }} />
           <Typography variant="h6" color="textSecondary">
             No notifications
@@ -101,7 +101,7 @@ export const Notifications: React.FC<Props> = (props) => {
     }
 
     return (
-      <List sx={{ width: '100%' }}>
+      <List id="notifications-list" sx={{ width: '100%' }}>
         {notifications.map((notification, index) => {
           let datePosted = new Date(notification.timeSent);
           const displayDuration = DateHelper.getDisplayDuration(datePosted);
@@ -110,6 +110,7 @@ export const Notifications: React.FC<Props> = (props) => {
           return (
             <React.Fragment key={notification.id}>
               <ListItem
+                id={`notification-item-${notification.id}`}
                 component="button"
                 onClick={() => handleClick(notification)}
                 sx={{
@@ -194,14 +195,14 @@ export const Notifications: React.FC<Props> = (props) => {
 
 
   return (
-    <Paper elevation={0} sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
+    <Paper id="notifications-panel" elevation={0} sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <Box id="notifications-header" sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
         <Typography variant="h6" component="h2">
           Notifications
         </Typography>
       </Box>
       
-      <Box sx={{ flex: 1, overflow: 'auto' }}>
+      <Box id="notifications-content" sx={{ flex: 1, overflow: 'auto' }}>
         {isLoading ? (
           <Box sx={{ p: 2 }}>
             {[...Array(3)].map((_, index) => (

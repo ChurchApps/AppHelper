@@ -180,6 +180,7 @@ const UserMenuContent: React.FC<Props> = React.memo((props) => {
     return (
       <>
         <Dialog 
+          id="private-messages-modal"
           open={showPM}
           onClose={() => {
             modalStateStore.setShowPM(false);
@@ -195,7 +196,7 @@ const UserMenuContent: React.FC<Props> = React.memo((props) => {
             }
           }}
         >
-          <DialogTitle>{getLabel("wrapper.messages", "Messages")}</DialogTitle>
+          <DialogTitle id="private-messages-title">{getLabel("wrapper.messages", "Messages")}</DialogTitle>
           <DialogContent 
             sx={{ 
               flex: 1,
@@ -211,6 +212,7 @@ const UserMenuContent: React.FC<Props> = React.memo((props) => {
         </Dialog>
         
         <Dialog 
+          id="notifications-modal"
           open={showNotifications} 
           onClose={() => {
             modalStateStore.setShowNotifications(false);
@@ -218,7 +220,7 @@ const UserMenuContent: React.FC<Props> = React.memo((props) => {
           maxWidth="md" 
           fullWidth
         >
-          <DialogTitle>{getLabel("wrapper.notifications", "Notifications")}</DialogTitle>
+          <DialogTitle id="notifications-title">{getLabel("wrapper.notifications", "Notifications")}</DialogTitle>
           <DialogContent>
             <Notifications context={props.context} appName={props.appName} onUpdate={props.loadCounts} onNavigate={props.onNavigate} />
           </DialogContent>
@@ -286,13 +288,13 @@ const UserMenuContent: React.FC<Props> = React.memo((props) => {
 
   return (
     <>
-      <Button onClick={handleClick} color="inherit" aria-controls={open ? "account-menu" : undefined} aria-haspopup="true" aria-expanded={open ? "true" : undefined} style={{ textTransform: "none" }} endIcon={<Icon>expand_more</Icon>}>
-        <Badge badgeContent={totalNotifcations} color="error" invisible={totalNotifcations===0}>
-          <Avatar src={getProfilePic()} sx={{ width: 32, height: 32, marginRight: 1 }}></Avatar>
+      <Button id="user-menu-button" onClick={handleClick} color="inherit" aria-controls={open ? "account-menu" : undefined} aria-haspopup="true" aria-expanded={open ? "true" : undefined} style={{ textTransform: "none" }} endIcon={<Icon>expand_more</Icon>}>
+        <Badge id="user-menu-notification-badge" badgeContent={totalNotifcations} color="error" invisible={totalNotifcations===0}>
+          <Avatar id="user-menu-avatar" src={getProfilePic()} sx={{ width: 32, height: 32, marginRight: 1 }}></Avatar>
         </Badge>
       </Button>
 
-      <Menu anchorEl={anchorEl} id="account-menu" open={open} onClose={handleClose} onClick={(e) => { handleItemClick(e) }} slotProps={{ paper: paperProps }} transformOrigin={{ horizontal: "right", vertical: "top" }} anchorOrigin={{ horizontal: "right", vertical: "bottom" }} sx={{ "& .MuiBox-root": { borderBottom: 0 } }}>
+      <Menu anchorEl={anchorEl} id="user-menu-dropdown" open={open} onClose={handleClose} onClick={(e) => { handleItemClick(e) }} slotProps={{ paper: paperProps }} transformOrigin={{ horizontal: "right", vertical: "top" }} anchorOrigin={{ horizontal: "right", vertical: "bottom" }} sx={{ "& .MuiBox-root": { borderBottom: 0 } }}>
         {getTabs()}
       </Menu>
       {getModals()}

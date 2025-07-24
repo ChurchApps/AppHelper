@@ -121,7 +121,7 @@ export const SiteHeader = React.memo((props:Props) => {
 
   /*<Typography variant="h6" noWrap>{UserHelper.currentUserChurch?.church?.name || ""}</Typography>*/
   return (<>
-    <div style={{
+    <div id="site-header" style={{
       '--c1': '#1565C0',
       '--c1d1': '#1358AD', 
       '--c1d2': '#114A99',
@@ -129,11 +129,11 @@ export const SiteHeader = React.memo((props:Props) => {
       backgroundColor:"var(--c1)", 
       color: "#FFF"
     } as React.CSSProperties}>
-      <CustomAppBar position="absolute">
-        <Toolbar sx={{ pr: "24px", backgroundColor: "var(--c1)", minHeight: "64px !important" }}>
+      <CustomAppBar id="site-app-bar" position="absolute">
+        <Toolbar id="site-toolbar" sx={{ pr: "24px", backgroundColor: "var(--c1)", minHeight: "64px !important" }}>
           <PrimaryMenu label={props.primaryMenuLabel} menuItems={props.primaryMenuItems} onNavigate={props.onNavigate} />
           <SecondaryMenu label={props.secondaryMenuLabel} menuItems={props.secondaryMenuItems} onNavigate={props.onNavigate} />
-          <div style={{ flex: 1 }}>
+          <div id="secondary-menu-container" style={{ flex: 1 }}>
             <SecondaryMenuAlt label={props.secondaryMenuLabel} menuItems={props.secondaryMenuItems} onNavigate={props.onNavigate} />
           </div>
           {props.context?.user?.id && (
@@ -150,11 +150,11 @@ export const SiteHeader = React.memo((props:Props) => {
               onNavigate={props.onNavigate} 
             />
           )}
-          {!props.context?.user?.id && <Link href="/login" color="inherit" style={{ textDecoration: "none" }}>Login</Link>}
+          {!props.context?.user?.id && <Link id="login-link" href="/login" color="inherit" style={{ textDecoration: "none" }}>Login</Link>}
           <SupportDrawer appName={props.appName} relatedArticles={getRelatedArticles()} />
         </Toolbar>
       </CustomAppBar>
-      <div id="appBarSpacer"></div>
+      <div id="app-bar-spacer" style={{ height: '64px' }}></div>
     </div>
   </>
   );

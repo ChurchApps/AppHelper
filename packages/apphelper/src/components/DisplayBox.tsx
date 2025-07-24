@@ -60,22 +60,22 @@ export const DisplayBox = React.forwardRef<HTMLDivElement, Props>((props, ref) =
   else if (props.editContent !== undefined) editContent = props.editContent;
 
   return (
-    <Paper sx={{ padding: 2, marginBottom: 4 }} id={props.id} data-testid={props["data-testid"] || ""}>
+    <Paper sx={{ padding: 2, marginBottom: 4 }} id={props.id || "display-box"} data-testid={props["data-testid"] || ""}>
       {props.help && <HelpIcon article={props.help} />}
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          {props.headerIcon && <Icon sx={{ color: headerText }}>{props.headerIcon}</Icon>}
-          <Typography component="h2" sx={{ display: "inline-block", marginLeft: props.headerIcon ? 1 : 0 }} variant="h6" color={headerText}>
+      <Box id="display-box-header" sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <Box id="display-box-title-section" sx={{ display: "flex", alignItems: "center" }}>
+          {props.headerIcon && <Icon id="display-box-icon" sx={{ color: headerText }}>{props.headerIcon}</Icon>}
+          <Typography id="display-box-title" component="h2" sx={{ display: "inline-block", marginLeft: props.headerIcon ? 1 : 0 }} variant="h6" color={headerText}>
             {props.headerText}
           </Typography>
 
         </Box>
-        <Box>
+        <Box id="display-box-actions">
           {editContent}
         </Box>
       </Box>
-      <CustomContextBox ref={ref} data-testid="display-box-content">{props.children}</CustomContextBox>
-      {props.footerContent && (<div style={{ marginLeft: -16, marginRight: -16, marginBottom: -15, marginTop: 15 }}>{props.footerContent}</div>)}
+      <CustomContextBox id="display-box-content" ref={ref} data-testid="display-box-content">{props.children}</CustomContextBox>
+      {props.footerContent && (<div id="display-box-footer" style={{ marginLeft: -16, marginRight: -16, marginBottom: -15, marginTop: 15 }}>{props.footerContent}</div>)}
     </Paper>
   );
 })

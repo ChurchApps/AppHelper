@@ -72,23 +72,23 @@ export function InputBox({ mainContainerCssProps = {}, ...props }: Props) {
   }
 
   return (
-    <Paper id={props.id} sx={{ padding: 2, marginBottom: 4 }} data-testid={props["data-testid"]} {...mainContainerCssProps}>
+    <Paper id={props.id || "input-box"} sx={{ padding: 2, marginBottom: 4 }} data-testid={props["data-testid"]} {...mainContainerCssProps}>
       {props.help && <HelpIcon article={props.help} />}
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", position: "relative" }} data-testid="input-box-header">
-        <Box display="flex" alignItems="center">
-          {props.headerIcon && <Icon sx={{ color: headerText }}>{props.headerIcon}</Icon>}
+      <Box id="input-box-header" sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", position: "relative" }} data-testid="input-box-header">
+        <Box id="input-box-title-section" display="flex" alignItems="center">
+          {props.headerIcon && <Icon id="input-box-icon" sx={{ color: headerText }}>{props.headerIcon}</Icon>}
           {props.headerText && (
-            <Typography component="h2" sx={{ display: "inline-block", marginLeft: props.headerIcon ? 1 : 0 }} variant="h6" color={headerText}>
+            <Typography id="input-box-title" component="h2" sx={{ display: "inline-block", marginLeft: props.headerIcon ? 1 : 0 }} variant="h6" color={headerText}>
               {props.headerText}
             </Typography>
           )}
         </Box>
-        <Box>
+        <Box id="input-box-actions">
           {props.headerActionContent}
         </Box>
       </Box>
-      <CustomContextBox>{props.children}</CustomContextBox>
-      <Stack direction="row" sx={{ marginTop: 1 }} spacing={1} justifyContent="end">
+      <CustomContextBox id="input-box-content">{props.children}</CustomContextBox>
+      <Stack id="input-box-buttons" direction="row" sx={{ marginTop: 1 }} spacing={1} justifyContent="end">
         {buttons}
       </Stack>
     </Paper>
