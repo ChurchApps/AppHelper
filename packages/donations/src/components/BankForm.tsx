@@ -6,8 +6,8 @@ import type { SelectChangeEvent } from "@mui/material";
 import { useStripe } from "@stripe/react-stripe-js";
 import { InputBox, ErrorMessages } from "@churchapps/apphelper";
 import { ApiHelper } from "@churchapps/helpers";
-import { Locale } from "../helpers";
-import { PersonInterface, StripePaymentMethod, PaymentMethodInterface, StripeBankAccountInterface, StripeBankAccountUpdateInterface, StripeBankAccountVerifyInterface } from "@churchapps/helpers";
+import { Locale, StripePaymentMethod } from "../helpers";
+import { PersonInterface, PaymentMethodInterface, StripeBankAccountInterface, StripeBankAccountUpdateInterface, StripeBankAccountVerifyInterface } from "@churchapps/helpers";
 
 interface Props { bank: StripePaymentMethod, showVerifyForm: boolean, customerId: string, person: PersonInterface, setMode: any, deletePayment: any, updateList: (message?: string) => void }
 
@@ -36,7 +36,7 @@ export const BankForm: React.FC<Props> = (props) => {
         else {
           const pm = { ...paymentMethod };
           pm.id = response.token.id;
-          ApiHelper.post("/paymentmethods/addbankaccount", pm, "GivingApi").then(result => {
+          ApiHelper.post("/paymentmethods/addbankaccount", pm, "GivingApi").then((result: any) => {
             if (result?.raw?.message) setErrorMessage(result.raw.message);
             else {
               props.updateList(Locale.label("donation.bankForm.added"));
@@ -55,7 +55,7 @@ export const BankForm: React.FC<Props> = (props) => {
       const bank = { ...updateBankData };
       bank.bankData.account_holder_name = bankAccount.account_holder_name;
       bank.bankData.account_holder_type = bankAccount.account_holder_type;
-      ApiHelper.post("/paymentmethods/updatebank", bank, "GivingApi").then(response => {
+      ApiHelper.post("/paymentmethods/updatebank", bank, "GivingApi").then((response: any) => {
         if (response?.raw?.message) setErrorMessage(response.raw.message);
         else {
           props.updateList(Locale.label("donation.bankForm.updated"));
@@ -69,7 +69,7 @@ export const BankForm: React.FC<Props> = (props) => {
   const verifyBank = () => {
     const amounts = verifyBankData?.amountData?.amounts;
     if (amounts && amounts.length === 2 && amounts[0] !== "" && amounts[1] !== "") {
-      ApiHelper.post("/paymentmethods/verifyBank", verifyBankData, "GivingApi").then(response => {
+      ApiHelper.post("/paymentmethods/verifyBank", verifyBankData, "GivingApi").then((response: any) => {
         if (response?.raw?.message) setErrorMessage(response.raw.message);
         else {
           props.updateList(Locale.label("donation.bankForm.verified"));

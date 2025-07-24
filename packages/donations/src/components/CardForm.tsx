@@ -5,8 +5,8 @@ import { Grid, TextField } from "@mui/material";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { InputBox, ErrorMessages } from "@churchapps/apphelper";
 import { ApiHelper } from "@churchapps/helpers";
-import { Locale } from "../helpers";
-import { PersonInterface, StripePaymentMethod, PaymentMethodInterface, StripeCardUpdateInterface } from "@churchapps/helpers";
+import { Locale, StripePaymentMethod } from "../helpers";
+import { PersonInterface, PaymentMethodInterface, StripeCardUpdateInterface } from "@churchapps/helpers";
 
 interface Props { card: StripePaymentMethod, customerId: string, person: PersonInterface, setMode: any, deletePayment: any, updateList: (message: string) => void }
 
@@ -52,7 +52,7 @@ export const CardForm: React.FC<Props> = (props) => {
     } else {
       const pm = { ...paymentMethod };
       pm.id = stripePM.paymentMethod.id;
-      await ApiHelper.post("/paymentmethods/addcard", pm, "GivingApi").then(result => {
+      await ApiHelper.post("/paymentmethods/addcard", pm, "GivingApi").then((result: any) => {
         if (result?.raw?.message) {
           setErrorMessage(result.raw.message);
           setShowSave(true);
@@ -67,7 +67,7 @@ export const CardForm: React.FC<Props> = (props) => {
   const updateCard = async () => {
     if (!cardUpdate.cardData.card.exp_month || !cardUpdate.cardData.card.exp_year) setErrorMessage("Expiration month and year cannot be blank.");
     else {
-      await ApiHelper.post("/paymentmethods/updatecard", cardUpdate, "GivingApi").then(result => {
+      await ApiHelper.post("/paymentmethods/updatecard", cardUpdate, "GivingApi").then((result: any) => {
         if (result?.raw?.message) {
           setErrorMessage(result.raw.message);
           setShowSave(true);

@@ -58,10 +58,9 @@ export const FormSubmissionEdit: React.FC<Props> = ({showHeader = true, noBackgr
   }
 
   const loadData = () => {
-    console.log("loadData", "fs", props.formSubmissionId, "af", props.addFormId, props.unRestrictedFormId)
-    if (!UniqueIdHelper.isMissing(props.formSubmissionId)) ApiHelper.get("/formsubmissions/" + props.formSubmissionId + "/?include=questions,answers,form", "MembershipApi").then(data => setFormSubmission(data));
-    else if (!UniqueIdHelper.isMissing(props.addFormId)) ApiHelper.get("/questions/?formId=" + props.addFormId, "MembershipApi").then(data => setFormSubmissionData(data));
-    else if (!UniqueIdHelper.isMissing(props.unRestrictedFormId)) ApiHelper.get("/questions/unrestricted?formId=" + props.unRestrictedFormId, "MembershipApi").then(data => setFormSubmissionData(data));
+    if (!UniqueIdHelper.isMissing(props.formSubmissionId)) ApiHelper.get("/formsubmissions/" + props.formSubmissionId + "/?include=questions,answers,form", "MembershipApi").then((data: any) => setFormSubmission(data));
+    else if (!UniqueIdHelper.isMissing(props.addFormId)) ApiHelper.get("/questions/?formId=" + props.addFormId, "MembershipApi").then((data: any) => setFormSubmissionData(data));
+    else if (!UniqueIdHelper.isMissing(props.unRestrictedFormId)) ApiHelper.get("/questions/unrestricted?formId=" + props.unRestrictedFormId, "MembershipApi").then((data: any) => setFormSubmissionData(data));
   }
 
   const getDefaultValue = (q: QuestionInterface) => {
@@ -116,7 +115,7 @@ export const FormSubmissionEdit: React.FC<Props> = ({showHeader = true, noBackgr
       fs.submissionDate = new Date();
       fs.churchId = props.churchId || null;
 
-      ApiHelper.post("/formsubmissions/", [fs], "MembershipApi").then((res) => {
+      ApiHelper.post("/formsubmissions/", [fs], "MembershipApi").then((res: any) => {
         if (res?.[0]?.error) {
           setErrors([res?.[0].error]);
         } else {
@@ -143,7 +142,7 @@ export const FormSubmissionEdit: React.FC<Props> = ({showHeader = true, noBackgr
 
   React.useEffect(() => {
     if (props.churchId) {
-      ApiHelper.get("/gateways/churchId/" + props.churchId, "GivingApi").then(data => {
+      ApiHelper.get("/gateways/churchId/" + props.churchId, "GivingApi").then((data: any) => {
         if (data.length && data[0]?.publicKey) {
           setStripe(loadStripe(data[0].publicKey));
         }

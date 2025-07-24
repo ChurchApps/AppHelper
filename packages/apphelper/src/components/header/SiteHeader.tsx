@@ -7,7 +7,8 @@ import { PrimaryMenu } from "./PrimaryMenu";
 import { SecondaryMenu } from "./SecondaryMenu";
 import { SecondaryMenuAlt } from "./SecondaryMenuAlt";
 import { SupportDrawer } from "./SupportDrawer";
-import { UserContextInterface } from "@churchapps/helpers";
+import { UserContextInterface, CommonEnvironmentHelper } from "@churchapps/helpers";
+import { NotificationService } from "../../helpers/NotificationService";
 
 type Props = {
   primaryMenuLabel: string;
@@ -19,11 +20,72 @@ type Props = {
   onNavigate: (url: string) => void;
 }
 
-export const SiteHeader = (props:Props) => {
+export const SiteHeader = React.memo((props:Props) => {
+  // Initialize NotificationService without subscribing to count changes to prevent re-renders
+  React.useEffect(() => {
+    const initializeNotifications = async () => {
+      if (props.context?.person?.id && props.context?.userChurch?.church?.id) {
+        const service = NotificationService.getInstance();
+        await service.initialize(props.context);
+      }
+    };
+    
+    initializeNotifications();
+  }, [props.context?.person?.id, props.context?.userChurch?.church?.id]);
+  
+  const refresh = React.useCallback(async () => {
+    // Direct access to NotificationService for refresh functionality
+    await NotificationService.getInstance().refresh();
+  }, []);
+  
+  // Memoize userName to prevent recreation
+  const userName = React.useMemo(() => {
+    if (props.context?.user) {
+      return `${props.context.user.firstName} ${props.context.user.lastName}`;
+    }
+    return '';
+  }, [props.context?.user?.firstName, props.context?.user?.lastName]);
+  
+  // Memoize profilePicture URL
+  const profilePicture = React.useMemo(() => {
+    return PersonHelper.getPhotoUrl(props.context?.person);
+  }, [props.context?.person]);
+  
+  // Create a stable context object to prevent UserMenu recreation
+  const stableContext = React.useMemo(() => {
+    console.log('SiteHeader - Creating stableContext');
+    console.log('SiteHeader - props.context:', props.context);
+    console.log('SiteHeader - props.context.userChurches:', props.context?.userChurches);
+    
+    if (!props.context) return undefined;
+    
+    return {
+      user: props.context.user,
+      person: props.context.person,
+      userChurch: props.context.userChurch,
+      userChurches: props.context.userChurches,
+      setUser: props.context.setUser,
+      setPerson: props.context.setPerson,
+      setUserChurch: props.context.setUserChurch,
+      setUserChurches: props.context.setUserChurches
+    };
+  }, [
+    props.context?.user?.id,
+    props.context?.user?.firstName,
+    props.context?.user?.lastName,
+    props.context?.person?.id,
+    props.context?.userChurch?.church?.id,
+    props.context?.userChurches,
+    props.context?.setUser,
+    props.context?.setPerson,
+    props.context?.setUserChurch,
+    props.context?.setUserChurches
+  ]);
 
   const CustomAppBar = styled(AppBar)(
     ({ theme }) => ({
       zIndex: theme.zIndex.drawer + 1,
+      backgroundColor: "var(--c1, #1565C0)",
       transition: theme.transitions.create(["width", "margin"], {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen
@@ -63,21 +125,84 @@ export const SiteHeader = (props:Props) => {
 
   /*<Typography variant="h6" noWrap>{UserHelper.currentUserChurch?.church?.name || ""}</Typography>*/
   return (<>
-    <div style={{backgroundColor:"var(--c1)", color: "#FFF"}}>
-      <CustomAppBar position="absolute">
-        <Toolbar sx={{ pr: "24px", backgroundColor: "var(--c1)" }}>
+    <div id="site-header" style={{
+      '--c1': '#1565C0',
+      '--c1d1': '#1358AD', 
+      '--c1d2': '#114A99',
+      '--c1l2': '#568BDA',
+      backgroundColor:"var(--c1)", 
+      color: "#FFF"
+    } as React.CSSProperties}>
+      <CustomAppBar id="site-app-bar" position="absolute">
+        <Toolbar id="site-toolbar" sx={{ pr: "24px", backgroundColor: "var(--c1)", minHeight: "64px !important" }}>
           <PrimaryMenu label={props.primaryMenuLabel} menuItems={props.primaryMenuItems} onNavigate={props.onNavigate} />
           <SecondaryMenu label={props.secondaryMenuLabel} menuItems={props.secondaryMenuItems} onNavigate={props.onNavigate} />
-          <div style={{ flex: 1 }}>
+          <div id="secondary-menu-container" style={{ flex: 1 }}>
             <SecondaryMenuAlt label={props.secondaryMenuLabel} menuItems={props.secondaryMenuItems} onNavigate={props.onNavigate} />
           </div>
-          {UserHelper.user && <UserMenu profilePicture={PersonHelper.getPhotoUrl(props.context?.person)} userName={`${UserHelper.user?.firstName} ${UserHelper.user?.lastName}`} userChurches={UserHelper.userChurches} currentUserChurch={UserHelper.currentUserChurch} context={props.context} appName={props.appName} loadCounts={() => {}} notificationCounts={{notificationCount:0, pmCount:0}} onNavigate={props.onNavigate} />}
-          {!UserHelper.user && <Link href="/login" color="inherit" style={{ textDecoration: "none" }}>Login</Link>}
+          {props.context?.user?.id && (
+            <UserMenu 
+              key="user-menu-stable" 
+              profilePicture={profilePicture} 
+              userName={userName} 
+              context={stableContext} 
+              appName={props.appName} 
+              loadCounts={refresh} 
+              notificationCounts={{notificationCount: 0, pmCount: 0}} 
+              onNavigate={props.onNavigate} 
+            />
+          )}
+          {!props.context?.user?.id && <Link id="login-link" href="/login" color="inherit" style={{ textDecoration: "none" }}>Login</Link>}
           <SupportDrawer appName={props.appName} relatedArticles={getRelatedArticles()} />
         </Toolbar>
       </CustomAppBar>
-
+      <div id="app-bar-spacer" style={{ height: '64px' }}></div>
     </div>
   </>
   );
-}
+}, (prevProps, nextProps) => {
+  // Custom comparison to prevent unnecessary re-renders
+  
+  // Check if essential props have changed
+  if (prevProps.primaryMenuLabel !== nextProps.primaryMenuLabel ||
+      prevProps.secondaryMenuLabel !== nextProps.secondaryMenuLabel ||
+      prevProps.appName !== nextProps.appName) {
+    return false;
+  }
+  
+  // Check if menu items arrays have changed (shallow comparison)
+  if (prevProps.primaryMenuItems?.length !== nextProps.primaryMenuItems?.length ||
+      prevProps.secondaryMenuItems?.length !== nextProps.secondaryMenuItems?.length) {
+    return false;
+  }
+  
+  // Check if user context has actually changed (deep comparison of essential parts)
+  const prevUser = prevProps.context?.user;
+  const nextUser = nextProps.context?.user;
+  
+  if (prevUser?.id !== nextUser?.id ||
+      prevUser?.firstName !== nextUser?.firstName ||
+      prevUser?.lastName !== nextUser?.lastName) {
+    return false;
+  }
+  
+  // Check if person context has changed
+  if (prevProps.context?.person?.id !== nextProps.context?.person?.id) {
+    return false;
+  }
+  
+  // Check if church context has changed
+  if (prevProps.context?.userChurch?.church?.id !== nextProps.context?.userChurch?.church?.id) {
+    return false;
+  }
+  
+  // Check if onNavigate function reference has changed
+  if (prevProps.onNavigate !== nextProps.onNavigate) {
+    return false;
+  }
+  
+  // All essential props are the same, skip re-render
+  return true;
+});
+
+SiteHeader.displayName = 'SiteHeader';

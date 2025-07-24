@@ -70,7 +70,7 @@ export const Loading: React.FC<Props> = (props) => {
   }
 
   return (
-    <div style={{ textAlign: "center", fontFamily: "Roboto" }}>
+    <div id="loading-component" style={{ textAlign: "center", fontFamily: "Roboto" }}>
       {getContents()}
     </div>
   )

@@ -17,9 +17,9 @@ export const RecurringDonations: React.FC<Props> = (props) => {
 
   const loadData = () => {
     if (props.customerId) {
-      ApiHelper.get("/customers/" + props.customerId + "/subscriptions", "GivingApi").then(subResult => {
+      ApiHelper.get("/customers/" + props.customerId + "/subscriptions", "GivingApi").then((subResult: any) => {
         const subs: SubscriptionInterface[] = [];
-        const requests = subResult.data?.map((s: any) => ApiHelper.get("/subscriptionfunds?subscriptionId=" + s.id, "GivingApi").then(subFunds => {
+        const requests = subResult.data?.map((s: any) => ApiHelper.get("/subscriptionfunds?subscriptionId=" + s.id, "GivingApi").then((subFunds: any) => {
           s.funds = subFunds;
           subs.push(s);
         }));

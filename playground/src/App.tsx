@@ -1,35 +1,82 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { CssBaseline, Container, AppBar, Toolbar, Typography, Box, Card, CardContent, Grid, Alert, Stack, Button } from '@mui/material';
+import { CssBaseline, Container, Typography, Box, Card, CardContent, Grid, Alert, Stack } from '@mui/material';
 import { CookiesProvider } from 'react-cookie';
-import { ErrorBoundary } from './ErrorBoundary';
 import UserContext, { UserProvider } from './UserContext';
 import RequireAuth from './components/RequireAuth';
+import { SiteHeader, PageHeader } from '@churchapps/apphelper';
+import HomeIcon from '@mui/icons-material/Home';
+import '@churchapps/apphelper-markdown/dist/components/markdownEditor/editor.css';
 
 // Import test pages
 import { ComponentsTestPage } from './pages/ComponentsPage';
 import { MarkdownTestPage } from './pages/MarkdownPage';
-import WrapperTestPage from './pages/WrapperPage';
 import DonationTestPage from './pages/DonationPage';
 import { ReportingTestPage } from './pages/ReportingPage';
-import { HeaderTestPage } from './pages/HeaderPage';
 import LoginPageComponent from './pages/LoginPage';
 
-// Test imports from login package
-import { 
-  LoginPage, 
-  Register, 
-  Login, 
-  Forgot, 
-  LoginSetPassword,
-  SelectChurchRegister,
-  SelectChurchSearch
-} from '@churchapps/apphelper-login';
+// Import new package-based pages
+import AppHelperHelpersPage from './pages/AppHelperHelpersPage';
+import AppHelperComponentsPage from './pages/AppHelperComponentsPage';
+import AppHelperWrappersPage from './pages/AppHelperWrappersPage';
+import AppHelperNotesPage from './pages/AppHelperNotesPage';
+import AppHelperReportingPage from './pages/AppHelperReportingPage';
+import AppHelperHeadersPage from './pages/AppHelperHeadersPage';
+import AppHelperHooksPage from './pages/AppHelperHooksPage';
+import LoginComponentsPage from './pages/LoginComponentsPage';
+import DonationComponentsPage from './pages/DonationComponentsPage';
+import MarkdownComponentsPage from './pages/MarkdownComponentsPage';
+import ModernLayoutPage from './pages/ModernLayoutPage';
+import PrivateMessageTestPage from './pages/PrivateMessageTestPage';
+// import MessagingTestPage from './pages/MessagingTestPage';
+
 
 const theme = createTheme({
   palette: {
     mode: 'light',
+    InputBox: { headerText: '#333333' },
+  },
+  components: {
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          '& .MuiInputBase-root': {
+            fontSize: '0.875rem',
+          },
+        },
+      },
+    },
+    MuiFormControl: {
+      styleOverrides: {
+        root: {
+          '& .MuiInputBase-root': {
+            fontSize: '0.875rem',
+          },
+        },
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          borderRadius: 8,
+        },
+      },
+    },
+  },
+  typography: {
+    fontSize: 14,
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+  },
+  shape: {
+    borderRadius: 8,
   },
 });
 
@@ -50,440 +97,302 @@ function HomePage() {
           <Link to="/auth">Go to Authentication</Link> or add <code>?demo=true</code> to any URL for instant access.
         </Alert>
         
+        <Typography variant="h5" component="h2" gutterBottom sx={{ mt: 4 }}>
+          Component Packages
+        </Typography>
+        <Typography variant="body1" color="textSecondary" paragraph>
+          Organized by npm package for comprehensive coverage based on apphelper-usage-report.md
+        </Typography>
+        
         <Grid container spacing={3} sx={{ mt: 2 }}>
-          <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-            <Card>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Card sx={{ height: '100%' }}>
               <CardContent>
-                <Typography variant="h6">Login Components</Typography>
-                <Typography variant="body2" color="textSecondary">
-                  Authentication components from @churchapps/apphelper-login
+                <Typography variant="h6" color="primary">@churchapps/apphelper</Typography>
+                <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+                  Core package with 48 components: Helpers, UI Components, Modern Layout, Notes, Reporting, Hooks
                 </Typography>
-                <Link to="/login">View Components</Link>
+                <Stack spacing={1}>
+                  <Link to="/apphelper-helpers">Helpers (Re-exported & Local)</Link>
+                  <Link to="/apphelper-components">Core Components 🔒</Link>
+                  <Link to="/modern-layout">Modern Layout (SiteHeader + PageHeader)</Link>
+                  <Link to="/private-message-test">🔧 WebSocket & Private Message Testing</Link>
+                  <Link to="/apphelper-wrappers">Wrapper Components 🔒</Link>
+                  {/* <Link to="/messaging-test">Messaging & Notifications Test 🔒</Link> */}
+                  <Link to="/apphelper-notes">Notes Components 🔒</Link>
+                  <Link to="/apphelper-reporting">Reporting Components</Link>
+                  <Link to="/apphelper-hooks">Hooks</Link>
+                </Stack>
               </CardContent>
             </Card>
           </Grid>
           
-          <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-            <Card>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Card sx={{ height: '100%' }}>
               <CardContent>
-                <Typography variant="h6">Core Components 🔒</Typography>
-                <Typography variant="body2" color="textSecondary">
-                  Basic UI components, forms, loading, buttons (Login Required)
+                <Typography variant="h6" color="primary">@churchapps/apphelper-login</Typography>
+                <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+                  Authentication package with 10 components: Login forms, registration, password reset, church selection
                 </Typography>
-                <Link to="/components">View Components</Link>
+                <Stack spacing={1}>
+                  <Link to="/login-components">All Login Components</Link>
+                </Stack>
               </CardContent>
             </Card>
           </Grid>
           
-          <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-            <Card>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Card sx={{ height: '100%' }}>
               <CardContent>
-                <Typography variant="h6">Markdown Components</Typography>
-                <Typography variant="body2" color="textSecondary">
-                  Rich text editor, preview, and markdown tools
+                <Typography variant="h6" color="primary">@churchapps/apphelper-donations</Typography>
+                <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+                  Stripe donation package with 13 components: Payment forms, recurring donations, fund management 🔒
                 </Typography>
-                <Link to="/markdown">View Components</Link>
+                <Stack spacing={1}>
+                  <Link to="/donation-components">All Donation Components 🔒</Link>
+                </Stack>
               </CardContent>
             </Card>
           </Grid>
           
-          <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-            <Card>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Card sx={{ height: '100%' }}>
               <CardContent>
-                <Typography variant="h6">Wrapper Components 🔒</Typography>
-                <Typography variant="body2" color="textSecondary">
-                  Site wrapper, navigation, menus, messaging (Login Required)
+                <Typography variant="h6" color="primary">@churchapps/apphelper-markdown</Typography>
+                <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+                  Lexical rich text package with 4 components: Editor, preview variants, modal wrapper
                 </Typography>
-                <Link to="/wrapper">View Components</Link>
-              </CardContent>
-            </Card>
-          </Grid>
-          
-          <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6">Donation Components 🔒</Typography>
-                <Typography variant="body2" color="textSecondary">
-                  Payment forms, Stripe integration, recurring donations (Login Required)
-                </Typography>
-                <Link to="/donations">View Components</Link>
-              </CardContent>
-            </Card>
-          </Grid>
-          
-          <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6">Reporting Components</Typography>
-                <Typography variant="body2" color="textSecondary">
-                  Filters, charts, data tables, exports
-                </Typography>
-                <Link to="/reporting">View Components</Link>
-              </CardContent>
-            </Card>
-          </Grid>
-          
-          <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6">Header Components</Typography>
-                <Typography variant="body2" color="textSecondary">
-                  Site headers, banners, navigation bars
-                </Typography>
-                <Link to="/header">View Components</Link>
+                <Stack spacing={1}>
+                  <Link to="/markdown-components">All Markdown Components</Link>
+                </Stack>
               </CardContent>
             </Card>
           </Grid>
         </Grid>
+        
       </Box>
     </Container>
   );
 }
 
-function LoginTestPage() {
-  const [selectedComponent, setSelectedComponent] = React.useState<string | null>(null);
-  const [mockEmail, setMockEmail] = React.useState('demo@churchapps.org');
-  const [mockPassword, setMockPassword] = React.useState('password');
-  const context = React.useContext(UserContext) as any;
 
-  const loginComponents = [
-    { 
-      name: 'LoginPage', 
-      component: LoginPage, 
-      description: 'Complete login page with integrated authentication flow',
-      props: {
-        auth: {
-          loginUser: (email: string, password: string) => {
-            console.log('Mock login:', email, password);
-            return Promise.resolve({ user: { email }, jwt: 'mock-jwt-token' });
-          },
-          selectChurch: (churchId: string) => {
-            console.log('Mock church selection:', churchId);
-            return Promise.resolve({ church: { id: churchId, name: 'Mock Church' } });
-          }
-        },
-        context: context,
-        jwt: 'mock-jwt-token',
-        appName: 'Playground',
-        returnUrl: '/',
-        handleRedirect: (url: string) => {
-          console.log('Redirect to:', url);
-          alert(`Would redirect to: ${url}`);
-        },
-        defaultEmail: mockEmail,
-        defaultPassword: mockPassword
-      }
-    },
-    { 
-      name: 'Login', 
-      component: Login,
-      description: 'Basic login form component',
-      props: {
-        login: (data: any) => {
-          console.log('Mock login:', data);
-          alert(`Mock login with email: ${data.email}`);
-        },
-        isSubmitting: false,
-        setShowRegister: (show: boolean) => {
-          console.log('Show register:', show);
-          alert(`Would show register: ${show}`);
-        },
-        setShowForgot: (show: boolean) => {
-          console.log('Show forgot:', show);
-          alert(`Would show forgot: ${show}`);
-        },
-        setErrors: (errors: string[]) => {
-          console.log('Validation errors:', errors);
-          if (errors.length > 0) {
-            alert(`Validation errors: ${errors.join(', ')}`);
-          }
-        },
-        defaultEmail: mockEmail,
-        defaultPassword: mockPassword
-      }
-    },
-    { 
-      name: 'Register', 
-      component: Register,
-      description: 'User registration form component',
-      props: {
-        auth: {
-          registerUser: (userData: any) => {
-            console.log('Mock registration:', userData);
-            return Promise.resolve({ user: userData, jwt: 'mock-jwt-token' });
-          }
-        },
-        context: context,
-        jwt: 'mock-jwt-token',
-        appName: 'Playground',
-        returnUrl: '/',
-        handleRedirect: (url: string) => {
-          console.log('Redirect to:', url);
-          alert(`Would redirect to: ${url}`);
-        }
-      }
-    },
-    { 
-      name: 'Forgot', 
-      component: Forgot,
-      description: 'Forgot password form component',
-      props: {
-        auth: {
-          forgotPassword: (email: string) => {
-            console.log('Mock forgot password:', email);
-            return Promise.resolve({ success: true });
-          }
-        },
-        context: context,
-        jwt: 'mock-jwt-token',
-        appName: 'Playground',
-        returnUrl: '/',
-        handleRedirect: (url: string) => {
-          console.log('Redirect to:', url);
-          alert(`Would redirect to: ${url}`);
-        }
-      }
-    },
-    { 
-      name: 'LoginSetPassword', 
-      component: LoginSetPassword,
-      description: 'Set password for new users',
-      props: {
-        auth: {
-          setPassword: (password: string) => {
-            console.log('Mock set password:', password);
-            return Promise.resolve({ success: true });
-          }
-        },
-        context: context,
-        jwt: 'mock-jwt-token',
-        appName: 'Playground',
-        returnUrl: '/',
-        handleRedirect: (url: string) => {
-          console.log('Redirect to:', url);
-          alert(`Would redirect to: ${url}`);
-        }
-      }
-    },
-    { 
-      name: 'SelectChurchRegister', 
-      component: SelectChurchRegister,
-      description: 'Church selection during registration',
-      props: {
-        initialChurchName: 'Sample Church',
-        appName: 'Playground',
-        selectChurch: (churchId: string) => {
-          console.log('Church selected:', churchId);
-          alert(`Church selected: ${churchId}`);
-        },
-        registeredChurchCallback: (church: any) => {
-          console.log('Church registered:', church);
-          alert(`Church registered: ${church.name}`);
-        }
-      },
-      wrapperStyle: {
-        '& .MuiTextField-root': { marginBottom: 2 },
-        '& .MuiFormControl-root': { marginBottom: 2 },
-        '& button[type="submit"]:empty::after': { content: '"Register"' },
-        '& .MuiButton-root.MuiButton-containedPrimary:empty::after': { content: '"Register"' }
-      }
-    },
-    { 
-      name: 'SelectChurchSearch', 
-      component: SelectChurchSearch,
-      description: 'Church search component',
-      props: {
-        appName: 'Playground',
-        selectChurch: (churchId: string) => {
-          console.log('Church selected:', churchId);
-          alert(`Church selected: ${churchId}`);
-        },
-        includeRegister: true
-      }
+function AppContent() {
+  const context = React.useContext(UserContext);
+  
+  // Create context for SiteHeader - use demo only when explicitly requested
+  const effectiveContext = React.useMemo(() => {
+    // Check if demo mode is requested via URL parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const isDemoMode = urlParams.get('demo') === 'true';
+    
+    // If user is logged in, use real context
+    if (context?.user) {
+      return context;
     }
-  ];
+    
+    // If demo mode is requested, provide mock context
+    if (isDemoMode) {
+      return {
+        user: { 
+          id: 'demo-user', 
+          firstName: 'Demo', 
+          lastName: 'User', 
+          email: 'demo@churchapps.org' 
+        },
+        person: { 
+          id: 'demo-person', 
+          name: { display: 'Demo User' },
+          contactInfo: { email: 'demo@churchapps.org' },
+          photo: undefined
+        },
+        userChurch: {
+          church: { 
+            id: 'demo-church', 
+            name: 'AppHelper Playground',
+            address: { city: 'Demo City', state: 'DS' }
+          },
+          person: { 
+            id: 'demo-person', 
+            roles: [],
+            name: { display: 'Demo User' },
+            contactInfo: { email: 'demo@churchapps.org' }
+          },
+          apis: [],
+          jwt: 'mock-jwt',
+          groups: []
+        },
+        userChurches: [
+          { 
+            church: { 
+              id: 'demo-church', 
+              name: 'AppHelper Playground',
+              address: { city: 'Demo City', state: 'DS' }
+            },
+            person: { 
+              id: 'demo-person', 
+              roles: [],
+              name: { display: 'Demo User' },
+              contactInfo: { email: 'demo@churchapps.org' }
+            },
+            apis: [],
+            jwt: 'mock-jwt',
+            groups: []
+          }
+        ],
+        logout: () => {
+          console.log('Logout called');
+        },
+        setUser: () => {},
+        setPerson: () => {},
+        setUserChurch: () => {},
+        setUserChurches: () => {}
+      };
+    }
+    
+    // Otherwise, return a context with empty but valid structure
+    return context || {
+      user: {
+        id: '',
+        email: '',
+        firstName: '',
+        lastName: ''
+      },
+      person: {
+        id: '',
+        name: { display: '' },
+        contactInfo: { email: '' }
+      },
+      userChurch: {
+        person: {
+          id: '',
+          name: { display: '' },
+          contactInfo: { email: '' }
+        },
+        church: {
+          id: '',
+          name: '',
+          address: { city: '', state: '' }
+        },
+        apis: [],
+        jwt: '',
+        groups: []
+      },
+      userChurches: [],
+      setUser: () => {},
+      setPerson: () => {},
+      setUserChurch: () => {},
+      setUserChurches: () => {}
+    };
+  }, [context]);
 
-  const renderComponent = (item: any) => {
-    const Component = item.component;
-    console.log('Rendering component:', item.name, 'with props:', item.props);
-    return (
-      <ErrorBoundary>
-        <Box sx={{ 
-          border: 1, 
-          borderColor: 'divider', 
-          borderRadius: 1, 
-          p: 2, 
-          minHeight: 400,
-          ...(item.wrapperStyle || {})
-        }}>
-          <Component {...item.props} />
-          {/* Add CSS fix for missing button labels and spacing */}
-          {item.name === 'SelectChurchRegister' && (
-            <style>{`
-              .custom-context-box .MuiTextField-root,
-              .custom-context-box .MuiFormControl-root {
-                margin-bottom: 16px !important;
-              }
-              
-              .MuiButton-containedPrimary:empty::after,
-              button[type="submit"]:empty::after {
-                content: "Register";
-              }
-              
-              /* Fix Grid spacing */
-              .MuiGrid2-root {
-                row-gap: 16px;
-              }
-              
-              /* Fix TextField label positioning to prevent cutoff */
-              .MuiOutlinedInput-root .MuiInputLabel-root {
-                transform: translate(14px, -6px) scale(0.75) !important;
-              }
-              
-              .MuiOutlinedInput-root .MuiInputLabel-root.MuiInputLabel-shrink {
-                transform: translate(14px, -9px) scale(0.75) !important;
-              }
-              
-              /* Alternative fix: Add padding to the notched outline */
-              .MuiOutlinedInput-notchedOutline {
-                padding-top: 2px;
-              }
-              
-              /* Ensure proper spacing for the label background */
-              .MuiInputLabel-root.MuiInputLabel-shrink {
-                background-color: white;
-                padding: 0 4px;
-              }
-            `}</style>
-          )}
-        </Box>
-      </ErrorBoundary>
-    );
+  const handleNavigate = (url: string) => {
+    console.log('Navigation:', url);
+    // Handle navigation for playground
+    if (url.startsWith('/')) {
+      // Use React Router navigate for internal URLs
+      window.location.href = url;
+    } else {
+      // External URLs
+      window.open(url, '_blank');
+    }
   };
 
+  const primaryMenuItems = [
+    { url: '/', icon: 'home', label: 'Home' },
+    { url: '/apphelper-components', icon: 'widgets', label: 'AppHelper' },
+    { url: '/login-components', icon: 'login', label: 'Login' },
+    { url: '/donation-components', icon: 'attach_money', label: 'Donations' },
+    { url: '/markdown-components', icon: 'edit_note', label: 'Markdown' },
+    { url: '/apphelper-reporting', icon: 'analytics', label: 'Reporting' }
+  ];
+
+  // Secondary menu items change based on current section
+  const getSecondaryMenuItems = () => {
+    const path = window.location.pathname;
+    
+    if (path.startsWith('/apphelper') || path.startsWith('/messaging')) {
+      return [
+        { url: '/apphelper-components', label: 'Components' },
+        { url: '/apphelper-wrappers', label: 'Wrappers' },
+        { url: '/messaging-test', label: 'Messaging Test' },
+        { url: '/apphelper-headers', label: 'Headers' },
+        { url: '/apphelper-notes', label: 'Notes' },
+        { url: '/apphelper-helpers', label: 'Helpers' },
+        { url: '/apphelper-hooks', label: 'Hooks' }
+      ];
+    } else if (path.startsWith('/login')) {
+      return [
+        { url: '/login-components', label: 'Login Components' },
+        { url: '/auth', label: 'Test Login' }
+      ];
+    } else if (path.startsWith('/donation')) {
+      return [
+        { url: '/donation-components', label: 'Donation Components' },
+        { url: '/donations', label: 'Test Donations (Legacy)' }
+      ];
+    } else if (path.startsWith('/markdown')) {
+      return [
+        { url: '/markdown-components', label: 'Markdown Editor' },
+        { url: '/markdown', label: 'Test Editor (Legacy)' }
+      ];
+    } else {
+      // Default/Home secondary menu
+      return [
+        { url: '/modern-layout', label: 'Modern Layout Demo' },
+        { url: '/components', label: 'Legacy Components Test' },
+        { url: '/reporting', label: 'Legacy Reporting Test' }
+      ];
+    }
+  };
+  
+  const secondaryMenuItems = getSecondaryMenuItems();
+
   return (
-    <Container maxWidth="lg">
-      <Box sx={{ mt: 2, mb: 2 }}>
-        <Link to="/">← Back to Home</Link>
-        <Typography variant="h4" component="h1" gutterBottom sx={{ mt: 2 }}>
-          Login Components - Functional Examples
-        </Typography>
-        <ErrorBoundary>
-          <Box sx={{ mt: 3 }}>
-            <Stack spacing={4}>
-              <Alert severity="info">
-                This page demonstrates functional login and authentication components with mock authentication services.
-                Each component is interactive and shows real form behavior.
-              </Alert>
-
-              <Box>
-                <Typography variant="h6" gutterBottom>Demo Credentials</Typography>
-                <Alert severity="success" sx={{ mb: 2 }}>
-                  <strong>Test Login:</strong> Email: {mockEmail}, Password: {mockPassword}
-                  <br />
-                  These credentials are pre-filled in the login forms for easy testing.
-                </Alert>
-                <Stack direction="row" spacing={2}>
-                  <Button 
-                    variant="outlined" 
-                    onClick={() => { setMockEmail('admin@example.com'); setMockPassword('admin123'); }}
-                  >
-                    Use Admin Credentials
-                  </Button>
-                  <Button 
-                    variant="outlined" 
-                    onClick={() => { setMockEmail('demo@churchapps.org'); setMockPassword('password'); }}
-                  >
-                    Use Demo Credentials
-                  </Button>
-                </Stack>
-              </Box>
-
-              <Box>
-                <Typography variant="h6" gutterBottom>Component Selection</Typography>
-                <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 1 }}>
-                  {loginComponents.map((item) => (
-                    <Button
-                      key={item.name}
-                      variant={selectedComponent === item.name ? 'contained' : 'outlined'}
-                      onClick={() => {
-                        console.log('Clicking button:', item.name, 'current selected:', selectedComponent);
-                        setSelectedComponent(selectedComponent === item.name ? null : item.name);
-                      }}
-                      size="small"
-                    >
-                      {item.name}
-                    </Button>
-                  ))}
-                </Stack>
-              </Box>
-
-              {selectedComponent && (
-                <Box>
-                  {/* Don't show duplicate title for components that have their own headers */}
-                  {!['Register', 'LoginPage', 'Forgot', 'LoginSetPassword'].includes(selectedComponent) && (
-                    <Typography variant="h6" gutterBottom>
-                      {selectedComponent} Component
-                    </Typography>
-                  )}
-                  <Alert severity="info" sx={{ mb: 2 }}>
-                    {loginComponents.find(c => c.name === selectedComponent)?.description}
-                  </Alert>
-                  {renderComponent(loginComponents.find(c => c.name === selectedComponent))}
-                </Box>
-              )}
-
-              <Box>
-                <Typography variant="h6" gutterBottom>Component Information</Typography>
-                <Stack spacing={2}>
-                  {loginComponents.map((item) => (
-                    <Box key={item.name} sx={{ border: 1, borderColor: 'divider', borderRadius: 1, p: 2 }}>
-                      <Typography variant="subtitle1" gutterBottom>
-                        <strong>{item.name}</strong>
-                      </Typography>
-                      <Typography variant="body2" color="textSecondary">
-                        {item.description}
-                      </Typography>
-                      <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
-                        ✅ Component type: {typeof item.component}
-                        <br />
-                        ✅ Successfully imported from @churchapps/apphelper-login
-                      </Typography>
-                    </Box>
-                  ))}
-                </Stack>
-              </Box>
-
-              <Box>
-                <Typography variant="h6" gutterBottom>Authentication Mock Services</Typography>
-                <Alert severity="warning" sx={{ mb: 2 }}>
-                  <strong>Note:</strong> These components use mock authentication services.
-                  In production, they would connect to real authentication APIs.
-                </Alert>
-                <Stack spacing={2}>
-                  <Box sx={{ border: 1, borderColor: 'divider', borderRadius: 1, p: 2 }}>
-                    <Typography variant="subtitle2" gutterBottom>Mock Services Provided:</Typography>
-                    <Typography variant="body2">
-                      • loginUser(email, password) - Mock login authentication
-                      <br />
-                      • registerUser(userData) - Mock user registration
-                      <br />
-                      • forgotPassword(email) - Mock password reset
-                      <br />
-                      • setPassword(password) - Mock password setting
-                      <br />
-                      • searchChurches(query) - Mock church search
-                      <br />
-                      • selectChurch(churchId) - Mock church selection
-                    </Typography>
-                  </Box>
-                </Stack>
-              </Box>
-            </Stack>
-          </Box>
-        </ErrorBoundary>
-      </Box>
-    </Container>
+    <>
+      <SiteHeader
+        primaryMenuLabel="Packages"
+        primaryMenuItems={primaryMenuItems}
+        secondaryMenuLabel="Test Pages"
+        secondaryMenuItems={secondaryMenuItems}
+        context={effectiveContext}
+        appName="PLAYGROUND"
+        onNavigate={handleNavigate}
+      />
+      <PageHeader
+        icon={<HomeIcon />}
+        title="AppHelper Component Playground"
+        subtitle="Test and preview all exported components from @churchapps/apphelper"
+      />
+      
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/auth" element={<LoginPageComponent />} />
+        
+        {/* Package-based organization */}
+        <Route path="/apphelper-helpers" element={<AppHelperHelpersPage />} />
+        <Route path="/apphelper-components" element={<RequireAuth><AppHelperComponentsPage /></RequireAuth>} />
+        <Route path="/apphelper-wrappers" element={<RequireAuth><AppHelperWrappersPage /></RequireAuth>} />
+        {/* <Route path="/messaging-test" element={<RequireAuth><MessagingTestPage /></RequireAuth>} /> */}
+        <Route path="/apphelper-notes" element={<RequireAuth><AppHelperNotesPage /></RequireAuth>} />
+        <Route path="/apphelper-reporting" element={<AppHelperReportingPage />} />
+        <Route path="/apphelper-headers" element={<AppHelperHeadersPage />} />
+        <Route path="/apphelper-hooks" element={<AppHelperHooksPage />} />
+        <Route path="/login-components" element={<LoginComponentsPage />} />
+        <Route path="/donation-components" element={<RequireAuth><DonationComponentsPage /></RequireAuth>} />
+        <Route path="/markdown-components" element={<MarkdownComponentsPage />} />
+        
+        {/* Modern Layout demo combining SiteHeader + PageHeader */}
+        <Route path="/modern-layout" element={<ModernLayoutPage />} />
+        <Route path="/private-message-test" element={<PrivateMessageTestPage />} />
+        
+        {/* Legacy routes for backward compatibility */}
+        <Route path="/login" element={<LoginPageComponent />} />
+        <Route path="/components" element={<RequireAuth><ComponentsTestPage /></RequireAuth>} />
+        <Route path="/markdown" element={<MarkdownTestPage />} />
+        <Route path="/donations" element={<RequireAuth><DonationTestPage /></RequireAuth>} />
+        <Route path="/reporting" element={<ReportingTestPage />} />
+      </Routes>
+    </>
   );
 }
 
@@ -494,25 +403,7 @@ function App() {
         <CssBaseline />
         <UserProvider>
           <Router>
-            <AppBar position="static">
-              <Toolbar>
-                <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                  AppHelper Component Playground
-                </Typography>
-              </Toolbar>
-            </AppBar>
-            
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/auth" element={<LoginPageComponent />} />
-              <Route path="/login" element={<LoginTestPage />} />
-              <Route path="/components" element={<RequireAuth><ComponentsTestPage /></RequireAuth>} />
-              <Route path="/markdown" element={<MarkdownTestPage />} />
-              <Route path="/wrapper" element={<RequireAuth><WrapperTestPage /></RequireAuth>} />
-              <Route path="/donations" element={<RequireAuth><DonationTestPage /></RequireAuth>} />
-              <Route path="/reporting" element={<ReportingTestPage />} />
-              <Route path="/header" element={<HeaderTestPage />} />
-            </Routes>
+            <AppContent />
           </Router>
         </UserProvider>
       </ThemeProvider>

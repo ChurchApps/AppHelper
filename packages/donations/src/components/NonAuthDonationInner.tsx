@@ -5,9 +5,9 @@ import React, { useState, useRef } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { ErrorMessages, InputBox } from "@churchapps/apphelper";
 import { FundDonations } from ".";
-import { ApiHelper, DateHelper, CurrencyHelper, DonationHelper } from "@churchapps/helpers";
-import { Locale } from "../helpers";
-import { FundDonationInterface, FundInterface, PersonInterface, StripeDonationInterface, StripePaymentMethod, UserInterface, ChurchInterface } from "@churchapps/helpers";
+import { ApiHelper, DateHelper, CurrencyHelper } from "@churchapps/helpers";
+import { Locale, DonationHelper, StripePaymentMethod } from "../helpers";
+import { FundDonationInterface, FundInterface, PersonInterface, StripeDonationInterface, UserInterface, ChurchInterface } from "@churchapps/helpers";
 import {
  Grid, Alert, TextField, Button, FormControl, InputLabel, Select, MenuItem, FormGroup, FormControlLabel, Checkbox, Typography 
 } from "@mui/material";
@@ -50,7 +50,7 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
     const amount = getUrlParam("amount");
     setSearchParams({ fundId, amount });
 
-    ApiHelper.get("/funds/churchId/" + props.churchId, "GivingApi").then(data => {
+    ApiHelper.get("/funds/churchId/" + props.churchId, "GivingApi").then((data: any) => {
       setFunds(data);
       if (fundId && fundId !== "") {
         const selectedFund = data.find((f: FundInterface) => f.id === fundId);
@@ -61,17 +61,17 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
         setFundDonations([{ fundId: data[0].id }]);
     }
     });
-    ApiHelper.get("/churches/" + props.churchId, "MembershipApi").then(data => {
+    ApiHelper.get("/churches/" + props.churchId, "MembershipApi").then((data: any) => {
       setChurch(data);
     });
-    ApiHelper.get("/gateways/churchId/" + props.churchId, "GivingApi").then(data => {
+    ApiHelper.get("/gateways/churchId/" + props.churchId, "GivingApi").then((data: any) => {
       if (data.length !== 0) setGateway(data[0]);
     });
   };
 
   const handleCaptchaChange = (value: string) => {
     const captchaToken = captchaRef.current.getValue();
-    ApiHelper.postAnonymous("/donate/captcha-verify", { token: captchaToken }, "GivingApi").then((data) => { setCaptchaResponse(data.response); });
+    ApiHelper.postAnonymous("/donate/captcha-verify", { token: captchaToken }, "GivingApi").then((data: any) => { setCaptchaResponse(data.response); });
   };
 
   const handleCheckChange = (e: React.SyntheticEvent<Element, Event>, checked: boolean) => {
@@ -88,8 +88,8 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
     if (validate()) {
       setProcessing(true);
       ApiHelper.post("/users/loadOrCreate", { userEmail: email, firstName, lastName }, "MembershipApi")
-        .catch(ex => { setErrors([ex.toString()]); setProcessing(false); })
-        .then(async userData => {
+        .catch((ex: any) => { setErrors([ex.toString()]); setProcessing(false); })
+        .then(async (userData: any) => {
           const personData = { churchId: props.churchId, firstName, lastName, email };
           const person = await ApiHelper.post("/people/loadOrCreate", personData, "MembershipApi");
           saveCard(userData, person);
@@ -102,7 +102,7 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
     const stripePM = await stripe.createPaymentMethod({ type: "card", card: cardData });
     if (stripePM.error) { setErrors([stripePM.error.message]); setProcessing(false); } else {
       const pm = { id: stripePM.paymentMethod.id, personId: person.id, email: email, name: person.name.display, churchId: props.churchId };
-      await ApiHelper.post("/paymentmethods/addcard", pm, "GivingApi").then(result => {
+      await ApiHelper.post("/paymentmethods/addcard", pm, "GivingApi").then((result: any) => {
         if (result?.raw?.message) {
           setErrors([result.raw.message]);
           setProcessing(false);

@@ -15,22 +15,9 @@ export const UserProvider = ({ children }: Props) => {
   const [userChurches, setUserChurches] = React.useState<LoginUserChurchInterface[] | null>(null);
   const [loginError, setLoginError] = React.useState<string | null>(null);
 
-  // Configure ApiHelper with MembershipAPI
-  React.useEffect(() => {
-    // Set up the MembershipAPI URL for playground
-    ApiHelper.apiConfigs = [
-      { 
-        keyName: "MembershipApi", 
-        url: "https://membershipapi.staging.churchapps.org", 
-        jwt: "",
-        permissions: []
-      }
-    ];
-    
-    // Also set up the default API configuration
-    ApiHelper.setDefaultPermissions("");
-    console.log("API configuration set:", ApiHelper.apiConfigs);
-  }, []);
+  // Note: Environment configuration is handled by playground/src/helpers/EnvironmentHelper.ts
+  // which is called in main.tsx before the React app renders.
+  // We don't need to configure it again here.
 
   // Standard logout function
   const logout = () => {

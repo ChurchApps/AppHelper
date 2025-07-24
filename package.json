@@ -1,6 +1,6 @@
 {
   "name": "@churchapps/apphelper-workspace",
-  "version": "0.4.12",
+  "version": "0.4.18",
   "description": "Workspace for ChurchApps AppHelper packages",
   "private": true,
   "workspaces": [
@@ -16,9 +16,12 @@
     "build:donations": "npm run build --workspace=packages/donations",
     "build:markdown": "npm run build --workspace=packages/apphelper-markdown",
     "playground": "npm run dev --workspace=playground",
+		"playground:apphelper": "npm run build:apphelper && npm run dev --workspace=playground",
+    "playground:reload": "npm run build && npm run dev --workspace=playground",
     "test:login": "npm run build:apphelper && npm run build:login && npm run dev --workspace=playground",
     "publish:all": "npm run build && npm publish --workspace=packages/apphelper --access=public && npm publish --workspace=packages/login --access=public && npm publish --workspace=packages/donations --access=public && npm publish --workspace=packages/apphelper-markdown --access=public",
-		"publish:login": "npm run build:login && npm publish --workspace=packages/login --access=public"
+    "publish:login": "npm run build:login && npm publish --workspace=packages/login --access=public",
+		"publish:apphelper": "npm run build:apphelper && npm publish --workspace=packages/apphelper --access=public"
   },
   "devDependencies": {
     "copyfiles": "^2.4.1",
@@ -27,6 +30,7 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
+    "@churchapps/helpers": "^1.0.44",
     "playwright": "^1.54.1"
   }
 }

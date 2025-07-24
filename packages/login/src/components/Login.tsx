@@ -44,8 +44,8 @@ export const Login: React.FC<Props> = ({ mainContainerCssProps = {}, ...props })
   }
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
-      <Card sx={{ 
+    <div id="login-container" style={{ minHeight: '100vh', backgroundColor: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
+      <Card id="login-card" sx={{ 
         width: '100%', 
         maxWidth: { xs: '400px', sm: '500px' },
         backgroundColor: 'white', 
@@ -53,9 +53,10 @@ export const Login: React.FC<Props> = ({ mainContainerCssProps = {}, ...props })
         boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
         ...mainContainerCssProps 
       }}>
-        <CardContent sx={{ textAlign: 'center', padding: '32px' }}>
-          <div style={{ marginBottom: '32px' }}>
+        <CardContent id="login-content" sx={{ textAlign: 'center', padding: '32px' }}>
+          <div id="login-logo" style={{ marginBottom: '32px' }}>
             <img 
+              id="login-logo-image"
               src="/images/logo-login.png" 
               alt="Church Logo" 
               style={{ 
@@ -69,6 +70,7 @@ export const Login: React.FC<Props> = ({ mainContainerCssProps = {}, ...props })
             />
           </div>
           <Typography 
+            id="login-title"
             component="h1" 
             sx={{ 
               fontSize: '24px', 
@@ -88,13 +90,13 @@ export const Login: React.FC<Props> = ({ mainContainerCssProps = {}, ...props })
             Enter your email and password to access your church
           </Typography>
 
-          <form onSubmit={(e) => { e.preventDefault(); submitLogin(); }} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <form id="login-form" onSubmit={(e) => { e.preventDefault(); submitLogin(); }} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <label htmlFor="email" style={{ fontSize: '14px', fontWeight: 500, color: '#374151', textAlign: 'left' }}>
                 {Locale.label("login.email")}
               </label>
               <TextField
-                id="email"
+                id="login-email-field"
                 name="email"
                 type="email"
                 placeholder={Locale.label("login.email")}
@@ -134,7 +136,7 @@ export const Login: React.FC<Props> = ({ mainContainerCssProps = {}, ...props })
                 {Locale.label("login.password")}
               </label>
               <TextField
-                id="password"
+                id="login-password-field"
                 name="password"
                 type={showPassword ? "text" : "password"}
                 placeholder={Locale.label("login.password")}
@@ -148,6 +150,7 @@ export const Login: React.FC<Props> = ({ mainContainerCssProps = {}, ...props })
                   endAdornment: (
                     <InputAdornment position="end">
                       <IconButton
+                        id="password-visibility-toggle"
                         aria-label="toggle password visibility"
                         onClick={() => setShowPassword(!showPassword)}
                         edge="end"
@@ -184,6 +187,7 @@ export const Login: React.FC<Props> = ({ mainContainerCssProps = {}, ...props })
             </div>
 
             <Button
+              id="login-submit-button"
               type="submit"
               variant="contained"
               fullWidth
@@ -207,8 +211,9 @@ export const Login: React.FC<Props> = ({ mainContainerCssProps = {}, ...props })
               {props.isSubmitting ? Locale.label("common.pleaseWait") : Locale.label("login.signIn")}
             </Button>
 
-            <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div id="login-links" style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <button
+                id="forgot-password-link"
                 type="button"
                 onClick={(e) => { e.preventDefault(); props.setShowForgot(true); }}
                 style={{
@@ -227,6 +232,7 @@ export const Login: React.FC<Props> = ({ mainContainerCssProps = {}, ...props })
               <div style={{ fontSize: '14px', color: '#6b7280' }}>
                 Don't have an account?{' '}
                 <button
+                  id="register-link"
                   type="button"
                   onClick={handleShowRegister}
                   style={{

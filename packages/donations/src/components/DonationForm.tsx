@@ -8,12 +8,12 @@ import { FundDonations } from ".";
 import { DonationPreviewModal } from "../modals/DonationPreviewModal";
 import { ApiHelper, CurrencyHelper, DateHelper } from "@churchapps/helpers";
 import { Locale } from "../helpers";
-import { PersonInterface, StripePaymentMethod, StripeDonationInterface, FundDonationInterface, FundInterface, ChurchInterface } from "@churchapps/helpers";
+import { PersonInterface, StripeDonationInterface, FundDonationInterface, FundInterface, ChurchInterface } from "@churchapps/helpers";
 import {
  Grid, InputLabel, MenuItem, Select, TextField, FormControl, Button, FormControlLabel, Checkbox, FormGroup, Typography 
 } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material";
-import { DonationHelper } from "@churchapps/helpers";
+import { DonationHelper, StripePaymentMethod } from "../helpers";
 
 interface Props { person: PersonInterface, customerId: string, paymentMethods: StripePaymentMethod[], stripePromise: Promise<Stripe>, donationSuccess: (message: string) => void, church?: ChurchInterface, churchLogo?: string }
 
@@ -49,11 +49,11 @@ export const DonationForm: React.FC<Props> = (props) => {
   });
 
   const loadData = useCallback(() => {
-    ApiHelper.get("/funds", "GivingApi").then(data => {
+    ApiHelper.get("/funds", "GivingApi").then((data: any) => {
       setFunds(data);
       if (data.length) setFundDonations([{ fundId: data[0].id }]);
     });
-    ApiHelper.get("/gateways", "GivingApi").then((data) => {
+    ApiHelper.get("/gateways", "GivingApi").then((data: any) => {
       if (data.length !== 0) setGateway(data[0]);
     });
   }, []);
@@ -195,22 +195,22 @@ export const DonationForm: React.FC<Props> = (props) => {
 return (
     <>
       <DonationPreviewModal show={showDonationPreviewModal} onHide={() => setShowDonationPreviewModal(false)} handleDonate={makeDonation} donation={donation} donationType={donationType} payFee={payFee} paymentMethodName={paymentMethodName} funds={funds} />
-      <InputBox id="donationBox" aria-label="donation-box" headerIcon="volunteer_activism" headerText={Locale.label("donation.donationForm.donate")} ariaLabelSave="save-button" cancelFunction={donationType ? handleCancel : undefined} saveFunction={donationType ? handleSave : undefined} saveText={Locale.label("donation.donationForm.preview")}>
-        <Grid container spacing={3}>
+      <InputBox id="donation-form" aria-label="donation-box" headerIcon="volunteer_activism" headerText={Locale.label("donation.donationForm.donate")} ariaLabelSave="save-button" cancelFunction={donationType ? handleCancel : undefined} saveFunction={donationType ? handleSave : undefined} saveText={Locale.label("donation.donationForm.preview")}>
+        <Grid id="donation-type-selector" container spacing={3}>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Button aria-label="single-donation" size="small" fullWidth style={{ minHeight: "50px" }} variant={donationType === "once" ? "contained" : "outlined"} onClick={useCallback(() => handleDonationSelect("once"), [handleDonationSelect])}>{Locale.label("donation.donationForm.make")}</Button>
+            <Button id="single-donation-button" aria-label="single-donation" size="small" fullWidth style={{ minHeight: "50px" }} variant={donationType === "once" ? "contained" : "outlined"} onClick={useCallback(() => handleDonationSelect("once"), [handleDonationSelect])}>{Locale.label("donation.donationForm.make")}</Button>
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Button aria-label="recurring-donation" size="small" fullWidth style={{ minHeight: "50px" }} variant={donationType === "recurring" ? "contained" : "outlined"} onClick={useCallback(() => handleDonationSelect("recurring"), [handleDonationSelect])}>{Locale.label("donation.donationForm.makeRecurring")}</Button>
+            <Button id="recurring-donation-button" aria-label="recurring-donation" size="small" fullWidth style={{ minHeight: "50px" }} variant={donationType === "recurring" ? "contained" : "outlined"} onClick={useCallback(() => handleDonationSelect("recurring"), [handleDonationSelect])}>{Locale.label("donation.donationForm.makeRecurring")}</Button>
           </Grid>
         </Grid>
         {donationType
-          && <div style={{ marginTop: "20px" }}>
+          && <div id="donation-details" style={{ marginTop: "20px" }}>
             <Grid container spacing={3}>
               <Grid size={12}>
                 <FormControl fullWidth>
                   <InputLabel>{Locale.label("donation.donationForm.method")}</InputLabel>
-                  <Select label={Locale.label("donation.donationForm.method")} name="method" aria-label="method" value={donation.id} className="capitalize" onChange={handleChange}>
+                  <Select id="payment-method-select" label={Locale.label("donation.donationForm.method")} name="method" aria-label="method" value={donation.id} className="capitalize" onChange={handleChange}>
                     {props.paymentMethods.map((paymentMethod: any, i: number) => <MenuItem key={i} value={paymentMethod.id}>{paymentMethod.name} ****{paymentMethod.last4}</MenuItem>)}
                   </Select>
                 </FormControl>
@@ -219,12 +219,12 @@ return (
             {donationType === "recurring"
               && <Grid container spacing={3} style={{ marginTop:10 }}>
                 <Grid size={{ xs: 12, md: 6 }}>
-                  <TextField fullWidth name="date" type="date" aria-label="date" label={Locale.label("donation.donationForm.startDate")} value={DateHelper.formatHtml5Date(new Date(donation.billing_cycle_anchor))} onChange={handleChange} onKeyDown={handleKeyDown} />
+                  <TextField id="start-date-field" fullWidth name="date" type="date" aria-label="date" label={Locale.label("donation.donationForm.startDate")} value={DateHelper.formatHtml5Date(new Date(donation.billing_cycle_anchor))} onChange={handleChange} onKeyDown={handleKeyDown} />
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>
                   <FormControl fullWidth>
                     <InputLabel>{Locale.label("donation.donationForm.frequency")}</InputLabel>
-                    <Select label={Locale.label("donation.donationForm.frequency")} name="interval" aria-label="interval" value={interval} onChange={handleChange}>
+                    <Select id="frequency-select" label={Locale.label("donation.donationForm.frequency")} name="interval" aria-label="interval" value={interval} onChange={handleChange}>
                       <MenuItem value="one_week">{Locale.label("donation.donationForm.weekly")}</MenuItem>
                       <MenuItem value="two_week">{Locale.label("donation.donationForm.biWeekly")}</MenuItem>
                       <MenuItem value="one_month">{Locale.label("donation.donationForm.monthly")}</MenuItem>
@@ -235,7 +235,7 @@ return (
                 </Grid>
               </Grid>
             }
-            <div className="form-group">
+            <div id="fund-selection" className="form-group">
               {funds && fundDonations
                 && <>
                   <h4>{Locale.label("donation.donationForm.fund")}</h4>
@@ -252,7 +252,7 @@ return (
                   <p>{Locale.label("donation.donationForm.total")}: ${total}</p>
                 </>
               }
-              <TextField fullWidth label={Locale.label("donation.donationForm.notes")} multiline aria-label="note" name="notes" value={donation.notes || ""} onChange={handleChange} onKeyDown={handleKeyDown} />
+              <TextField id="donation-notes" fullWidth label={Locale.label("donation.donationForm.notes")} multiline aria-label="note" name="notes" value={donation.notes || ""} onChange={handleChange} onKeyDown={handleKeyDown} />
             </div>
             {errorMessage && <ErrorMessages errors={[errorMessage]}></ErrorMessages>}
           </div>

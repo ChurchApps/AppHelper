@@ -4,7 +4,8 @@ import React, { forwardRef, useImperativeHandle } from "react";
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { Box, Grid, TextField } from "@mui/material";
 import { QuestionInterface } from "@churchapps/helpers";
-import { ApiHelper, Locale, UserInterface, PersonInterface, StripePaymentMethod, StripeDonationInterface, ChurchInterface, FundInterface, ArrayHelper, UserHelper } from "../helpers";
+import { ApiHelper, Locale, UserInterface, PersonInterface, StripeDonationInterface, ChurchInterface, FundInterface, ArrayHelper, UserHelper } from "../helpers";
+import { StripePaymentMethod } from "@churchapps/helpers";
 
 interface Props {
 	churchId: string,
@@ -25,10 +26,10 @@ export const FormCardPayment = forwardRef((props: Props, ref) => {
 
   const getChurchData = () => {
     let fundId = props.question.choices.find(c => c.text === "FundId")?.value;
-    ApiHelper.get("/churches/" + props.churchId, "MembershipApi").then(data => {
+    ApiHelper.get("/churches/" + props.churchId, "MembershipApi").then((data: any) => {
       setChurch(data);
     });
-    ApiHelper.get("/funds/churchId/" + props.churchId, "GivingApi").then(data => {
+    ApiHelper.get("/funds/churchId/" + props.churchId, "GivingApi").then((data: any) => {
       const result = ArrayHelper.getOne(data, "id", fundId);
       setFund(result);
     })

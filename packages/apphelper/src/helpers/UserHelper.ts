@@ -1,4 +1,4 @@
-import { ApiHelper } from "./ApiHelper"
+import { ApiHelper } from "@churchapps/helpers"
 import { UserInterface, UserContextInterface, IApiPermission, PersonInterface, LoginUserChurchInterface } from "@churchapps/helpers";
 
 export class UserHelper {
@@ -10,6 +10,19 @@ export class UserHelper {
 
 	static selectChurch = async (context?: UserContextInterface, churchId?: string, keyName?: string) => {
 		let userChurch = null;
+
+		// Ensure userChurches is initialized
+		if (!UserHelper.userChurches || !Array.isArray(UserHelper.userChurches)) {
+			console.error('UserHelper.userChurches is not initialized or not an array:', UserHelper.userChurches);
+			// Try to get userChurches from context if available
+			if (context?.userChurches && Array.isArray(context.userChurches)) {
+				console.log('Using userChurches from context');
+				UserHelper.userChurches = context.userChurches;
+			} else {
+				console.error('Cannot select church: no valid userChurches available');
+				return;
+			}
+		}
 
 		if (churchId) {
 			UserHelper.userChurches.forEach(uc => {
@@ -25,7 +38,20 @@ export class UserHelper {
 			// TODO - remove context code from here and perform the logic in the component itself.
 			if (context) {
 				if (context.userChurch !== null) UserHelper.churchChanged = true;
+				console.log('UserHelper.selectChurch - Setting userChurch in context:', userChurch);
 				context.setUserChurch(UserHelper.currentUserChurch);
+				
+				// Also ensure user is still set in context
+				if (UserHelper.user && context.setUser) {
+					console.log('UserHelper.selectChurch - Ensuring user is set in context:', UserHelper.user);
+					context.setUser(UserHelper.user);
+				}
+				
+				// Update person if available
+				if (UserHelper.person && context.setPerson) {
+					console.log('UserHelper.selectChurch - Ensuring person is set in context:', UserHelper.person);
+					context.setPerson(UserHelper.person);
+				}
 			}
 		}
 	}
@@ -44,7 +70,7 @@ export class UserHelper {
 
 		let result = false;
 		if (permissions !== undefined) {
-			permissions.forEach(element => {
+			permissions.forEach((element: any) => {
 				if (element.contentType === contentType && element.action === action) result = true;
 			});
 		}

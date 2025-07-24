@@ -33,7 +33,7 @@ export const SupportDrawer = (props: Props) => {
 
   const loadData = () => {
     if (UserHelper?.currentUserChurch?.church?.id) {
-      ApiHelper.get("/settings/public/" + UserHelper.currentUserChurch.church.id, "MembershipApi").then((data) => {
+      ApiHelper.get("/settings/public/" + UserHelper.currentUserChurch.church.id, "MembershipApi").then((data: any) => {
         const contactRes = data?.supportContact;
         if (contactRes && contactRes !== "") setSupportContact(contactRes);
         

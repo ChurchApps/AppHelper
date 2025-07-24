@@ -106,21 +106,23 @@ function Editor({ value, onChange = () => {}, mode = "interactive", textAlign = 
     <>
       <LexicalComposer initialConfig={initialConfig}>
         <div
+          id="markdown-editor-container"
           className={mode === "preview" ? `editor-container preview ${textAlignClass}` : `editor-container ${textAlignClass}`}
           style={useMemo(() => Object.assign({ border: mode === "preview" ? "none" : "1px solid lightgray" }, style), [mode, style])}
         >
           {mode !== "preview" && (<ToolbarPlugin goFullScreen={useCallback(() => { setFullScreen(true); }, [])} />)}
-          <div className="editor-inner">
+          <div id="markdown-editor-inner" className="editor-inner">
             {!fullScreen && (
               <RichTextPlugin
                 contentEditable={
                   <ContentEditable
+                    id="markdown-editor-content"
                     className="editor-input"
                     style={{ minHeight: mode === "preview" ? "auto" : "150px" }}
                     data-element={JSON.stringify(props.element)}
                   />
                 }
-                placeholder={mode !== "preview" ? (<div className="editor-placeholder">{placeholder}</div>) : null}
+                placeholder={mode !== "preview" ? (<div id="markdown-editor-placeholder" className="editor-placeholder">{placeholder}</div>) : null}
                 ErrorBoundary={LexicalErrorBoundary}
               />
             )}
