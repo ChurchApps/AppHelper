@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef, Suspense, lazy } from "react";
 import { InputBox, SmallButton, Loading } from ".";
 import { Locale } from "../helpers";
+import "react-cropper/node_modules/cropperjs/dist/cropper.css";
 
 // Lazy load the Cropper component
 const Cropper = lazy(() => import("react-cropper").then(module => ({ default: module.default })));
@@ -34,14 +35,18 @@ export function ImageEditor(props: Props) {
     if (e.target) {
       files = e.target.files;
     }
+    if (!files || files.length === 0) return;
+    
     const reader = new FileReader();
     reader.onload = () => {
       const url = reader.result.toString();
       setPhotoSrc(url);
-      setCroppedImageDataUrl(url);
-      setTimeout(selectDefaultCropZone, 500);
+      setCroppedImageDataUrl("");
     };
     reader.readAsDataURL(files[0]);
+    
+    // Clear the input value to allow re-uploading the same file
+    e.target.value = "";
   };
 
   const selectDefaultCropZone = () => {
@@ -130,10 +135,20 @@ export function ImageEditor(props: Props) {
         <Cropper
           ref={cropperRef}
           src={photoSrc}
+          key={photoSrc}
           style={{ height: 240, width: "100%" }}
           aspectRatio={props.aspectRatio}
           guides={false}
           crop={handleCrop}
+          autoCropArea={1}
+          viewMode={1}
+          responsive={true}
+          restore={false}
+          checkOrientation={false}
+          background={false}
+          ready={() => {
+            setTimeout(selectDefaultCropZone, 100);
+          }}
         />
       </Suspense>
     </InputBox>

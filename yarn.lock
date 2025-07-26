@@ -174,7 +174,7 @@
     "@babel/helper-validator-identifier" "^7.27.1"
 
 "@churchapps/apphelper-donations@*", "@churchapps/apphelper-donations@file:E:\\LCS\\Packages\\AppHelper\\packages\\donations":
-  version "0.4.18"
+  version "0.4.21"
   resolved "file:packages/donations"
   dependencies:
     "@emotion/react" "^11.14.0"
@@ -191,7 +191,7 @@
     rrule "^2.8.1"
 
 "@churchapps/apphelper-login@*", "@churchapps/apphelper-login@file:E:\\LCS\\Packages\\AppHelper\\packages\\login":
-  version "0.4.18"
+  version "0.4.21"
   resolved "file:packages/login"
   dependencies:
     "@emotion/react" "^11.14.0"
@@ -206,7 +206,7 @@
     react-i18next "^15.6.0"
 
 "@churchapps/apphelper-markdown@*", "@churchapps/apphelper-markdown@file:E:\\LCS\\Packages\\AppHelper\\packages\\apphelper-markdown":
-  version "0.4.18"
+  version "0.4.21"
   resolved "file:packages/apphelper-markdown"
   dependencies:
     "@lexical/code" "^0.33.0"
@@ -224,7 +224,7 @@
     material-symbols "^0.32.0"
 
 "@churchapps/apphelper@*", "@churchapps/apphelper@^0.4.17", "@churchapps/apphelper@file:E:\\LCS\\Packages\\AppHelper\\packages\\apphelper":
-  version "0.4.20"
+  version "0.4.21"
   resolved "file:packages/apphelper"
   dependencies:
     "@churchapps/helpers" "^1.0.40"

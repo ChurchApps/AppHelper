@@ -114,7 +114,7 @@ function HomePage() {
                 </Typography>
                 <Stack spacing={1}>
                   <Link to="/apphelper-helpers">Helpers (Re-exported & Local)</Link>
-                  <Link to="/apphelper-components">Core Components 🔒</Link>
+                  <Link to="/apphelper-components">Core Components</Link>
                   <Link to="/modern-layout">Modern Layout (SiteHeader + PageHeader)</Link>
                   <Link to="/private-message-test">🔧 WebSocket & Private Message Testing</Link>
                   <Link to="/apphelper-wrappers">Wrapper Components 🔒</Link>
@@ -370,7 +370,7 @@ function AppContent() {
         
         {/* Package-based organization */}
         <Route path="/apphelper-helpers" element={<AppHelperHelpersPage />} />
-        <Route path="/apphelper-components" element={<RequireAuth><AppHelperComponentsPage /></RequireAuth>} />
+        <Route path="/apphelper-components" element={<AppHelperComponentsPage />} />
         <Route path="/apphelper-wrappers" element={<RequireAuth><AppHelperWrappersPage /></RequireAuth>} />
         {/* <Route path="/messaging-test" element={<RequireAuth><MessagingTestPage /></RequireAuth>} /> */}
         <Route path="/apphelper-notes" element={<RequireAuth><AppHelperNotesPage /></RequireAuth>} />

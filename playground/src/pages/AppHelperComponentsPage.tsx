@@ -96,6 +96,7 @@ const coreComponents = [
     description: 'Image editing and cropping component',
     usage: ['B1App: 5 files', 'ChumsApp: 6 files', 'LessonsApp: ❌'],
     props: { 
+      photoUrl: "",
       aspectRatio: 1,
       onUpdate: (dataUrl: string) => console.log('Image updated:', dataUrl)
     }
