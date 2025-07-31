@@ -224,7 +224,7 @@
     material-symbols "^0.32.0"
 
 "@churchapps/apphelper@*", "@churchapps/apphelper@^0.4.17", "@churchapps/apphelper@file:E:\\LCS\\Packages\\AppHelper\\packages\\apphelper":
-  version "0.4.21"
+  version "0.4.22"
   resolved "file:packages/apphelper"
   dependencies:
     "@churchapps/helpers" "^1.0.40"
@@ -253,10 +253,10 @@
     react-to-print "^3.1.1"
     slug "^11.0.0"
 
-"@churchapps/helpers@^1.0.40", "@churchapps/helpers@^1.0.42", "@churchapps/helpers@^1.0.44":
-  version "1.0.44"
-  resolved "https://registry.npmjs.org/@churchapps/helpers/-/helpers-1.0.44.tgz"
-  integrity sha512-YldsrRhf5I0s1fZi6gjC1jPFGAo3ZdnTHDHYsJdQ4C8su9waLn/qrz1YGhdnecgtfqjDVxT2ixUaW3+QjEQ5ng==
+"@churchapps/helpers@^1.0.40", "@churchapps/helpers@^1.0.42", "@churchapps/helpers@^1.0.45":
+  version "1.0.45"
+  resolved "https://registry.npmjs.org/@churchapps/helpers/-/helpers-1.0.45.tgz"
+  integrity sha512-7y5fjiUMqi4M4J/1K5rGY04/FVicaJkh9YMsUt//orrZ7kxmvWOn866BCMW2ybbh4mU+gDcjuTtiO3ARaaXreA==
   dependencies:
     date-fns "^4.1.0"
     dayjs "^1.11.13"

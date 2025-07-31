@@ -30,7 +30,7 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
-    "@churchapps/helpers": "^1.0.44",
+    "@churchapps/helpers": "^1.0.45",
     "playwright": "^1.54.1"
   }
 }
