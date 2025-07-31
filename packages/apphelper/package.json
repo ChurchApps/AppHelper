@@ -1,6 +1,6 @@
 {
   "name": "@churchapps/apphelper",
-  "version": "0.4.22",
+  "version": "0.4.23",
   "description": "Library of helper functions for React and NextJS ChurchApps",
   "type": "module",
   "main": "dist/index.js",
@@ -9,7 +9,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "clean": "rimraf dist",
     "copy-languages": "copyfiles -a public/** dist",
-    "copy-assets": "npm-run-all copy-languages",
+    "copy-css": "copyfiles -a public/css/** dist",
+    "copy-assets": "npm-run-all copy-languages copy-css",
     "tsc": "tsc",
     "build": "npm-run-all clean tsc copy-assets"
   },

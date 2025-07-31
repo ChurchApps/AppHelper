@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, Suspense, lazy } from "react";
 import { InputBox, SmallButton, Loading } from ".";
 import { Locale } from "../helpers";
-import "react-cropper/node_modules/cropperjs/dist/cropper.css";
+import "../../public/css/cropper.css";
 
 // Lazy load the Cropper component
 const Cropper = lazy(() => import("react-cropper").then(module => ({ default: module.default })));
