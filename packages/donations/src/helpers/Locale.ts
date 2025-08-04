@@ -31,11 +31,17 @@ export class Locale {
 	];
 	private static readonly extraCodes: ExtraLanguageCodes = { no: ["nb", "nn"] };
 
-	// English fallbacks for all login-related labels
+	// English fallbacks for all donation and login-related labels
 	private static readonly fallbacks: Record<string, string> = {
 		// Common
 		"common.pleaseWait": "Please wait...",
 		"common.search": "Search",
+
+		// Person
+		"person.firstName": "First Name",
+		"person.lastName": "Last Name",
+		"person.email": "Email",
+		"person.name": "Name",
 
 		// Login
 		"login.createAccount": "Create an Account",
@@ -89,7 +95,100 @@ export class Locale {
 		"selectChurch.validate.country": "Country cannot be blank.",
 		"selectChurch.validate.name": "Church name cannot be blank.",
 		"selectChurch.validate.state": "State/Province cannot be blank.",
-		"selectChurch.validate.zip": "Zip/Postal code cannot be blank."
+		"selectChurch.validate.zip": "Zip/Postal code cannot be blank.",
+
+		// Donation common
+		"donation.common.cancel": "Cancel",
+		"donation.common.error": "Error",
+
+		// Bank form
+		"donation.bankForm.accountNumber": "Account Number",
+		"donation.bankForm.added": "Bank account added. Verify your bank account to make a donation.",
+		"donation.bankForm.company": "Company",
+		"donation.bankForm.firstDeposit": "First Deposit",
+		"donation.bankForm.holderName": "Account holder name is required.",
+		"donation.bankForm.individual": "Individual",
+		"donation.bankForm.name": "Account Holder Name",
+		"donation.bankForm.needVerified": "Bank accounts will need to be verified before making any donations. Your account will receive two small deposits in approximately 1-3 business days. You will need to enter those deposit amounts to finish verifying your account by selecting the verify account link next to your bank account under the payment methods section.",
+		"donation.bankForm.routingNumber": "Routing Number",
+		"donation.bankForm.secondDeposit": "Second Deposit",
+		"donation.bankForm.twoDeposits": "Enter the two deposits you received in your account to finish verifying your bank account.",
+		"donation.bankForm.updated": "Bank account updated.",
+		"donation.bankForm.verified": "Bank account verified.",
+		"donation.bankForm.validate.accountNumber": "Routing and account number are required.",
+		"donation.bankForm.validate.holderName": "Account holder name is required.",
+
+		// Card form
+		"donation.cardForm.addNew": "Add New Card",
+		"donation.cardForm.added": "Card added successfully.",
+		"donation.cardForm.expirationMonth": "Expiration Month:",
+		"donation.cardForm.expirationYear": "Expiration Year:",
+		"donation.cardForm.updated": "Card updated successfully.",
+
+		// Donation form
+		"donation.donationForm.annually": "Annually",
+		"donation.donationForm.biWeekly": "Bi-Weekly",
+		"donation.donationForm.cancelled": "Recurring donation cancelled.",
+		"donation.donationForm.confirmDelete": "Are you sure you wish to delete this recurring donation?",
+		"donation.donationForm.cover": "I'll generously add {} to cover the transaction fees so you can keep 100% of my donation.",
+		"donation.donationForm.donate": "Donate",
+		"donation.donationForm.editRecurring": "Edit Recurring Donation",
+		"donation.donationForm.fees": "Transaction fees of {} are applied.",
+		"donation.donationForm.frequency": "Frequency",
+		"donation.donationForm.fund": "Fund",
+		"donation.donationForm.funds": "Funds",
+		"donation.donationForm.make": "Make a Donation",
+		"donation.donationForm.makeRecurring": "Make a Recurring Donation",
+		"donation.donationForm.method": "Method",
+		"donation.donationForm.monthly": "Monthly",
+		"donation.donationForm.notes": "Notes",
+		"donation.donationForm.preview": "Preview Donation",
+		"donation.donationForm.quarterly": "Quarterly",
+		"donation.donationForm.recurringUpdated": "Recurring donation updated.",
+		"donation.donationForm.startDate": "Start Date",
+		"donation.donationForm.thankYou": "Thank you for your donation!",
+		"donation.donationForm.tooLow": "Donation amount must be greater than $0.50",
+		"donation.donationForm.total": "Total Donation Amount",
+		"donation.donationForm.validate.amount": "Amount cannot be $0.",
+		"donation.donationForm.validate.email": "Please enter your email address.",
+		"donation.donationForm.validate.firstName": "Please enter your first name.",
+		"donation.donationForm.validate.lastName": "Please enter your last name.",
+		"donation.donationForm.validate.validEmail": "Please enter a valid email address.",
+		"donation.donationForm.weekly": "Weekly",
+
+		// Fund donations
+		"donation.fundDonations.addMore": "Add More",
+		"donation.fundDonations.amount": "Amount",
+		"donation.fundDonations.fund": "Fund",
+
+		// Payment methods
+		"donation.paymentMethods.addBank": "Add Bank Account",
+		"donation.paymentMethods.addCard": "Add Card",
+		"donation.paymentMethods.confirmDelete": "Are you sure you wish to delete this payment method?",
+		"donation.paymentMethods.deleted": "Payment method deleted.",
+		"donation.paymentMethods.noMethod": "No payment methods. Add a payment method to make a donation.",
+		"donation.paymentMethods.verify": "Verify Account",
+
+		// Donation preview
+		"donation.preview.date": "Donation Date",
+		"donation.preview.donate": "Donate",
+		"donation.preview.every": "Recurring Every",
+		"donation.preview.fee": "Transaction Fee",
+		"donation.preview.funds": "Funds",
+		"donation.preview.method": "Donation Method",
+		"donation.preview.notes": "Notes",
+		"donation.preview.startingOn": "Starting On",
+		"donation.preview.total": "Total",
+		"donation.preview.type": "Donation Type",
+		"donation.preview.weekly": "Notes",
+
+		// Recurring donations
+		"donation.recurring.amount": "Amount",
+		"donation.recurring.every": "Every",
+		"donation.recurring.interval": "Interval",
+		"donation.recurring.notFound": "Payment method not found.",
+		"donation.recurring.paymentMethod": "Payment Method",
+		"donation.recurring.startDate": "Start Date"
 	};
 
 	static init = async (backends: string[]): Promise<void> => {
