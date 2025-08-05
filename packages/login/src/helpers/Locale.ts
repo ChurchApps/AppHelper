@@ -31,65 +31,76 @@ export class Locale {
 	];
 	private static readonly extraCodes: ExtraLanguageCodes = { no: ["nb", "nn"] };
 
-	// English fallbacks for all login-related labels
-	private static readonly fallbacks: Record<string, string> = {
-		// Common
-		"common.pleaseWait": "Please wait...",
-		"common.search": "Search",
-
-		// Login
-		"login.createAccount": "Create an Account",
-		"login.email": "Email",
-		"login.expiredLink": "The current link is expired.",
-		"login.forgot": "Forgot Password",
-		"login.goLogin": "Go to Login",
-		"login.login": "Login",
-		"login.password": "Password",
-		"login.register": "Register",
-		"login.registerThankYou": "Thank you for registering! Please check your email to verify your account.",
-		"login.requestLink": "Request a new reset link",
-		"login.reset": "Reset",
-		"login.resetInstructions": "Enter your email address to request a password reset.",
-		"login.resetPassword": "Reset Password",
-		"login.resetSent": "Password reset email sent!",
-		"login.setPassword": "Set Password",
-		"login.signIn": "Sign In",
-		"login.signInTitle": "Please Sign In",
-		"login.verifyPassword": "Verify Password",
-		"login.welcomeName": "Welcome back, {}!",
-		"login.welcomeBack": "Welcome back",
-
-		// Login validation
-		"login.validate.email": "Please enter a valid email address.",
-		"login.validate.firstName": "Please enter your first name.",
-		"login.validate.invalid": "Invalid login. Please check your email or password.",
-		"login.validate.lastName": "Please enter your last name.",
-		"login.validate.password": "Please enter a password.",
-		"login.validate.passwordLength": "Password must be at least 8 characters long.",
-		"login.validate.passwordMatch": "Passwords do not match.",
-		"login.validate.selectingChurch": "Please select a church.",
-
-		// Church selection
-		"selectChurch.address1": "Address Line 1",
-		"selectChurch.address2": "Address Line 2",
-		"selectChurch.another": "Choose another church",
-		"selectChurch.city": "City",
-		"selectChurch.confirmRegister": "Are you sure you wish to register a new church?",
-		"selectChurch.country": "Country",
-		"selectChurch.name": "Church Name",
-		"selectChurch.noMatches": "No matches found.",
-		"selectChurch.register": "Register a New Church",
-		"selectChurch.selectChurch": "Select a Church",
-		"selectChurch.state": "State / Province",
-		"selectChurch.zip": "Zip / Postal Code",
-
-		// Church selection validation
-		"selectChurch.validate.address": "Address cannot be blank.",
-		"selectChurch.validate.city": "City cannot be blank.",
-		"selectChurch.validate.country": "Country cannot be blank.",
-		"selectChurch.validate.name": "Church name cannot be blank.",
-		"selectChurch.validate.state": "State/Province cannot be blank.",
-		"selectChurch.validate.zip": "Zip/Postal code cannot be blank."
+	// Hard-coded English fallbacks for when locale files are not available
+	private static readonly englishFallbacks: Record<string, any> = {
+		"common": {
+			"pleaseWait": "Please wait...",
+			"search": "Search",
+			"cancel": "Cancel",
+			"save": "Save",
+			"delete": "Delete",
+			"edit": "Edit",
+			"add": "Add",
+			"close": "Close",
+			"date": "Date",
+			"error": "Error",
+			"submit": "Submit",
+			"update": "Update"
+		},
+		"login": {
+			"createAccount": "Create an Account",
+			"email": "Email",
+			"expiredLink": "The current link is expired.",
+			"forgot": "Forgot Password",
+			"goLogin": "Go to Login",
+			"login": "Login",
+			"password": "Password",
+			"register": "Register",
+			"registerThankYou": "Thank you for registering! Please check your email to verify your account.",
+			"requestLink": "Request a new reset link",
+			"reset": "Reset",
+			"resetInstructions": "Enter your email address to request a password reset.",
+			"resetPassword": "Reset Password",
+			"resetSent": "Password reset email sent!",
+			"setPassword": "Set Password",
+			"signIn": "Sign In",
+			"signInTitle": "Please Sign In",
+			"verifyPassword": "Verify Password",
+			"welcomeName": "Welcome back, <b>{}</b>! Please wait while we load your data.",
+			"welcomeBack": "Welcome back",
+			"validate": {
+				"email": "Please enter a valid email address.",
+				"firstName": "Please enter your first name.",
+				"invalid": "Invalid login. Please check your email or password.",
+				"lastName": "Please enter your last name.",
+				"password": "Please enter a password.",
+				"passwordLength": "Password must be at least 8 characters long.",
+				"passwordMatch": "Passwords do not match.",
+				"selectingChurch": "Error in selecting church. Please verify and try again"
+			}
+		},
+		"selectChurch": {
+			"address1": "Address Line 1",
+			"address2": "Address Line 2",
+			"another": "Choose another church",
+			"city": "City",
+			"confirmRegister": "Are you sure you wish to register a new church?",
+			"country": "Country",
+			"name": "Church Name",
+			"noMatches": "No matches found.",
+			"register": "Register a New Church",
+			"selectChurch": "Select a Church",
+			"state": "State / Province",
+			"zip": "Zip / Postal Code",
+			"validate": {
+				"address": "Address cannot be blank.",
+				"city": "City cannot be blank.",
+				"country": "Country cannot be blank.",
+				"name": "Church name cannot be blank.",
+				"state": "State/Province cannot be blank.",
+				"zip": "Zip/Postal code cannot be blank."
+			}
+		}
 	};
 
 	static init = async (backends: string[]): Promise<void> => {
@@ -106,15 +117,9 @@ export class Locale {
 			langs = mappedLang === "en" || notSupported ? ["en"] : ["en", mappedLang];
 		}
 
-		// Initialize resources with fallbacks
-		resources["en"] = { translation: this.fallbacks };
-
 		// Load translations for each language
 		for (const lang of langs) {
-			if (!resources[lang]) {
-				resources[lang] = { translation: {} };
-			}
-			
+			resources[lang] = { translation: {} };
 			try {
 				for (const backend of backends) {
 					const url = backend.replace("{{lng}}", lang);
@@ -179,40 +184,51 @@ export class Locale {
 		return obj !== null && typeof obj === "object" && !Array.isArray(obj);
 	}
 
-	// New helper method that uses i18n with fallback
+	// Helper method to get value from nested object using dot notation
+	private static getNestedValue(obj: Record<string, any>, path: string): any {
+		return path.split('.').reduce((current, key) => {
+			return current && current[key] !== undefined ? current[key] : undefined;
+		}, obj);
+	}
+
+	// New helper method that uses i18n with hard-coded English fallback
 	static t(key: string, options?: Record<string, unknown>): string {
 		try {
 			// Check if i18n is initialized and has the key
 			if (i18n && i18n.isInitialized && i18n.exists(key)) {
 				const translation = i18n.t(key, options);
-				// If translation is not just the key (which indicates missing translation)
+				// If translation is not the same as the key, return it
 				if (translation !== key) {
 					return translation;
 				}
 			}
 		} catch (error) {
-			console.warn(`Error getting translation for key "${key}":`, error);
+			// If i18n fails, fall through to hard-coded fallback
+			console.warn(`i18n translation failed for key "${key}":`, error);
 		}
 
-		// Fall back to our local fallbacks
-		const fallback = this.fallbacks[key];
-		if (fallback) {
-			// Handle simple string replacement like {} placeholders
-			if (options && typeof options === 'object') {
-				let result = fallback;
-				Object.entries(options).forEach(([placeholder, value]) => {
-					if (typeof value === 'string' || typeof value === 'number') {
-						result = result.replace(`{${placeholder}}`, String(value));
-						result = result.replace('{}', String(value)); // Handle unnamed placeholders
+		// Fallback to hard-coded English translations
+		const fallbackValue = this.getNestedValue(this.englishFallbacks, key);
+		if (fallbackValue !== undefined) {
+			// Handle simple string interpolation for options
+			if (typeof fallbackValue === 'string' && options) {
+				let result = fallbackValue;
+				Object.keys(options).forEach(optionKey => {
+					const placeholder = `{{${optionKey}}}`;
+					if (result.includes(placeholder)) {
+						result = result.replace(new RegExp(placeholder, 'g'), String(options[optionKey]));
+					}
+					// Also handle {} placeholder for backward compatibility
+					if (result.includes('{}')) {
+						result = result.replace('{}', String(options[optionKey]));
 					}
 				});
 				return result;
 			}
-			return fallback;
+			return String(fallbackValue);
 		}
 
-		// Ultimate fallback - return the key itself with a warning
-		console.warn(`No translation found for key: ${key}`);
+		// If no fallback found, return the key itself
 		return key;
 	}
 
@@ -221,7 +237,7 @@ export class Locale {
 		return this.t(key);
 	}
 
-	// Helper method to check if translations are available
+	// Helper method to check if i18n is initialized
 	static isInitialized(): boolean {
 		return i18n && i18n.isInitialized;
 	}
