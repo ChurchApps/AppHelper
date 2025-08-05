@@ -1,0 +1,54 @@
+{
+  "name": "@churchapps/apphelper-forms",
+  "version": "0.4.26",
+  "description": "Form components for ChurchApps AppHelper - general forms without payment processing",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rimraf dist",
+    "tsc": "tsc",
+    "build": "npm-run-all clean tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LiveChurchSolutions/AppHelper.git"
+  },
+  "keywords": [
+    "ChurchApps",
+    "forms",
+    "components",
+    "react",
+    "material-ui"
+  ],
+  "author": "ChurchApps.org",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/LiveChurchSolutions/AppHelper/issues"
+  },
+  "homepage": "https://github.com/LiveChurchSolutions/AppHelper#readme",
+  "peerDependencies": {
+    "@churchapps/helpers": "^1.0.46",
+    "@churchapps/apphelper": "^0.4.26",
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
+  },
+  "dependencies": {
+    "@churchapps/apphelper-donations": "^0.4.26",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/material": "^7.2.0",
+    "axios": "^1.10.0",
+    "date-fns": "^4.1.0",
+    "i18next": "^25.3.1",
+    "react-i18next": "^15.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.10",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "npm-run-all2": "^8.0.4",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.8.3"
+  }
+}

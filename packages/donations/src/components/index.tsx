@@ -8,3 +8,4 @@ export { NonAuthDonationInner } from "./NonAuthDonationInner";
 export { PaymentMethods } from "./PaymentMethods";
 export { RecurringDonations } from "./RecurringDonations";
 export { RecurringDonationsEdit } from "./RecurringDonationsEdit";
+export { FormCardPayment } from "./FormCardPayment";
