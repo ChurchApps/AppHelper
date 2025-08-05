@@ -25,19 +25,21 @@ export const DonationForm: React.FC<Props> = (props) => {
   const [transactionFee, setTransactionFee] = React.useState<number>(0);
   const [payFee, setPayFee] = React.useState<number>(0);
   const [total, setTotal] = React.useState<number>(0);
-  const [paymentMethodName, setPaymentMethodName] = React.useState<string>(`${props?.paymentMethods[0]?.name} ****${props?.paymentMethods[0]?.last4}`);
+  const [paymentMethodName, setPaymentMethodName] = React.useState<string>(
+    props?.paymentMethods?.length > 0 ? `${props.paymentMethods[0].name} ****${props.paymentMethods[0].last4}` : ""
+  );
   const [donationType, setDonationType] = React.useState<string>();
   const [showDonationPreviewModal, setShowDonationPreviewModal] = React.useState<boolean>(false);
   const [interval, setInterval] = React.useState("one_month");
   const [gateway, setGateway] = React.useState(null);
   const [donation, setDonation] = React.useState<StripeDonationInterface>({
-    id: props?.paymentMethods[0]?.id,
-    type: props?.paymentMethods[0]?.type,
+    id: props?.paymentMethods?.length > 0 ? props.paymentMethods[0].id : "",
+    type: props?.paymentMethods?.length > 0 ? props.paymentMethods[0].type : "",
     customerId: props.customerId,
     person: {
       id: props.person?.id,
-      email: props.person?.contactInfo.email,
-      name: props.person?.name.display
+      email: props.person?.contactInfo?.email,
+      name: props.person?.name?.display
     },
     amount: 0,
     billing_cycle_anchor: + new Date(),
@@ -117,6 +119,9 @@ export const DonationForm: React.FC<Props> = (props) => {
     setDonationType(dt);
   }, [donationType]);
 
+  const handleSingleDonationClick = useCallback(() => handleDonationSelect("once"), [handleDonationSelect]);
+  const handleRecurringDonationClick = useCallback(() => handleDonationSelect("recurring"), [handleDonationSelect]);
+
   const makeDonation = useCallback(async (message: string) => {
     let results;
 
@@ -190,7 +195,7 @@ export const DonationForm: React.FC<Props> = (props) => {
    
   // React.useEffect(() => { gateway && gateway.payFees === true && handleAutoPayFee() }, [fundDonations]);
 
-  if (!funds.length || !props?.paymentMethods[0]?.id) return null;
+  if (!funds.length || !props?.paymentMethods?.length) return null;
   else {
 return (
     <>
@@ -198,10 +203,10 @@ return (
       <InputBox id="donation-form" aria-label="donation-box" headerIcon="volunteer_activism" headerText={Locale.label("donation.donationForm.donate")} ariaLabelSave="save-button" cancelFunction={donationType ? handleCancel : undefined} saveFunction={donationType ? handleSave : undefined} saveText={Locale.label("donation.donationForm.preview")}>
         <Grid id="donation-type-selector" container spacing={3}>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Button id="single-donation-button" aria-label="single-donation" size="small" fullWidth style={{ minHeight: "50px" }} variant={donationType === "once" ? "contained" : "outlined"} onClick={useCallback(() => handleDonationSelect("once"), [handleDonationSelect])}>{Locale.label("donation.donationForm.make")}</Button>
+            <Button id="single-donation-button" aria-label="single-donation" size="small" fullWidth style={{ minHeight: "50px" }} variant={donationType === "once" ? "contained" : "outlined"} onClick={handleSingleDonationClick}>{Locale.label("donation.donationForm.make")}</Button>
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Button id="recurring-donation-button" aria-label="recurring-donation" size="small" fullWidth style={{ minHeight: "50px" }} variant={donationType === "recurring" ? "contained" : "outlined"} onClick={useCallback(() => handleDonationSelect("recurring"), [handleDonationSelect])}>{Locale.label("donation.donationForm.makeRecurring")}</Button>
+            <Button id="recurring-donation-button" aria-label="recurring-donation" size="small" fullWidth style={{ minHeight: "50px" }} variant={donationType === "recurring" ? "contained" : "outlined"} onClick={handleRecurringDonationClick}>{Locale.label("donation.donationForm.makeRecurring")}</Button>
           </Grid>
         </Grid>
         {donationType

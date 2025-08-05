@@ -1,8 +1,7 @@
 {
-  "name": "@churchapps/apphelper-donations",
+  "name": "@churchapps/apphelper-forms",
   "version": "0.4.27",
-  "description": "Donation components for ChurchApps AppHelper",
-  "type": "module",
+  "description": "Form components for ChurchApps AppHelper - general forms without payment processing",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -17,9 +16,10 @@
   },
   "keywords": [
     "ChurchApps",
-    "donations",
-    "stripe",
-    "payments"
+    "forms",
+    "components",
+    "react",
+    "material-ui"
   ],
   "author": "ChurchApps.org",
   "license": "MIT",
@@ -31,22 +31,17 @@
     "@churchapps/helpers": "^1.0.46",
     "@churchapps/apphelper": "^0.4.27",
     "react": "^18.0.0 || ^19.0.0",
-    "react-dom": "^18.0.0 || ^19.0.0",
-    "react-router-dom": "^7.6.3"
+    "react-dom": "^18.0.0 || ^19.0.0"
   },
   "dependencies": {
+    "@churchapps/apphelper-donations": "^0.4.27",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@mui/material": "^7.2.0",
-    "@stripe/react-stripe-js": "^3.7.0",
-    "@stripe/stripe-js": "^7.4.0",
     "axios": "^1.10.0",
     "date-fns": "^4.1.0",
     "i18next": "^25.3.1",
-    "jwt-decode": "^4.0.0",
-    "react-cookie": "^8.0.1",
-    "react-i18next": "^15.6.0",
-    "rrule": "^2.8.1"
+    "react-i18next": "^15.6.0"
   },
   "devDependencies": {
     "@types/node": "^24.0.10",

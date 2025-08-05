@@ -26,6 +26,7 @@ import AppHelperHeadersPage from './pages/AppHelperHeadersPage';
 import AppHelperHooksPage from './pages/AppHelperHooksPage';
 import LoginComponentsPage from './pages/LoginComponentsPage';
 import DonationComponentsPage from './pages/DonationComponentsPage';
+import FormsComponentsPage from './pages/FormsComponentsPage';
 import MarkdownComponentsPage from './pages/MarkdownComponentsPage';
 import ModernLayoutPage from './pages/ModernLayoutPage';
 import PrivateMessageTestPage from './pages/PrivateMessageTestPage';
@@ -136,6 +137,20 @@ function HomePage() {
                 </Typography>
                 <Stack spacing={1}>
                   <Link to="/login-components">All Login Components</Link>
+                </Stack>
+              </CardContent>
+            </Card>
+          </Grid>
+          
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Card sx={{ height: '100%' }}>
+              <CardContent>
+                <Typography variant="h6" color="primary">@churchapps/apphelper-forms</Typography>
+                <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+                  Form components package with input handling, validation, and submission capabilities
+                </Typography>
+                <Stack spacing={1}>
+                  <Link to="/forms-components">All Form Components</Link>
                 </Stack>
               </CardContent>
             </Card>
@@ -301,6 +316,7 @@ function AppContent() {
     { url: '/', icon: 'home', label: 'Home' },
     { url: '/apphelper-components', icon: 'widgets', label: 'AppHelper' },
     { url: '/login-components', icon: 'login', label: 'Login' },
+    { url: '/forms-components', icon: 'assignment', label: 'Forms' },
     { url: '/donation-components', icon: 'attach_money', label: 'Donations' },
     { url: '/markdown-components', icon: 'edit_note', label: 'Markdown' },
     { url: '/apphelper-reporting', icon: 'analytics', label: 'Reporting' }
@@ -324,6 +340,10 @@ function AppContent() {
       return [
         { url: '/login-components', label: 'Login Components' },
         { url: '/auth', label: 'Test Login' }
+      ];
+    } else if (path.startsWith('/forms')) {
+      return [
+        { url: '/forms-components', label: 'Form Components' }
       ];
     } else if (path.startsWith('/donation')) {
       return [
@@ -379,6 +399,7 @@ function AppContent() {
         <Route path="/apphelper-hooks" element={<AppHelperHooksPage />} />
         <Route path="/login-components" element={<LoginComponentsPage />} />
         <Route path="/donation-components" element={<RequireAuth><DonationComponentsPage /></RequireAuth>} />
+        <Route path="/forms-components" element={<FormsComponentsPage />} />
         <Route path="/markdown-components" element={<MarkdownComponentsPage />} />
         
         {/* Modern Layout demo combining SiteHeader + PageHeader */}
