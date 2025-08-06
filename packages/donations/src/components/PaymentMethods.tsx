@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import type { Stripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import { CardForm, BankForm } from ".";
@@ -15,9 +15,9 @@ import {
 interface Props { person: PersonInterface, customerId: string, paymentMethods: StripePaymentMethod[], stripePromise: Promise<Stripe>, appName: string, dataUpdate: (message?: string) => void }
 
 export const PaymentMethods: React.FC<Props> = (props) => {
-  const [editPaymentMethod, setEditPaymentMethod] = React.useState<StripePaymentMethod>(new StripePaymentMethod());
-  const [mode, setMode] = React.useState("display");
-  const [verify, setVerify] = React.useState<boolean>(false);
+  const [editPaymentMethod, setEditPaymentMethod] = useState<StripePaymentMethod>(new StripePaymentMethod());
+  const [mode, setMode] = useState("display");
+  const [verify, setVerify] = useState<boolean>(false);
 
   const handleEdit = (pm?: StripePaymentMethod, verifyAccount?: boolean) => (e: React.MouseEvent) => {
     e.preventDefault();
@@ -37,7 +37,7 @@ export const PaymentMethods: React.FC<Props> = (props) => {
   };
 
   const MenuIcon = () => {
-    const [anchorEl, setAnchorEl] = React.useState(null);
+    const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
     const handleClick = (e: React.MouseEvent) => {
       setAnchorEl(e.currentTarget);

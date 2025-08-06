@@ -14,7 +14,6 @@ import {
 } from "@mui/material"
 import { Send as SendIcon, Delete as DeleteIcon } from "@mui/icons-material"
 import { ErrorMessages } from "../ErrorMessages"
-import { SmallButton } from "../SmallButton"
 
 type Props = {
   messageId?: string;

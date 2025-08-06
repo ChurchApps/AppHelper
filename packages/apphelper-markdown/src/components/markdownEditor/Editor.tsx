@@ -10,7 +10,6 @@ import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import { ListPlugin } from "@lexical/react/LexicalListPlugin";
-import { LexicalNode } from "lexical";
 import { MarkdownShortcutPlugin } from "@lexical/react/LexicalMarkdownShortcutPlugin";
 import { TRANSFORMERS, $convertToMarkdownString, $convertFromMarkdownString } from "@lexical/markdown";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";

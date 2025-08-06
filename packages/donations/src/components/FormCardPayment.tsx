@@ -1,10 +1,10 @@
 "use client";
 
-import React, { forwardRef, useImperativeHandle } from "react";
+import React, { forwardRef, useImperativeHandle, useState, useEffect } from "react";
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { Box, Grid, TextField } from "@mui/material";
 import { QuestionInterface } from "@churchapps/helpers";
-import { ApiHelper, UserInterface, PersonInterface, StripeDonationInterface, ChurchInterface, FundInterface, ArrayHelper, UserHelper } from "@churchapps/apphelper";
+import { ApiHelper, UserInterface, PersonInterface, StripeDonationInterface, ChurchInterface, FundInterface, ArrayHelper, UserHelper } from "@churchapps/helpers";
 import { Locale, StripePaymentMethod } from "../helpers";
 
 interface Props {
@@ -16,16 +16,15 @@ export const FormCardPayment = forwardRef((props: Props, ref) => {
   const formStyling = { style: { base: { fontSize: "18px" } } };
   const elements = useElements();
   const stripe = useStripe();
-  const [email, setEmail] = React.useState<string>((ApiHelper.isAuthenticated && UserHelper.user.email) ? UserHelper.user.email : "");
-  const [firstName, setFirstName] = React.useState<string>((ApiHelper.isAuthenticated && UserHelper.user.firstName) ? UserHelper.user.firstName : "");
-  const [lastName, setLastName] = React.useState<string>((ApiHelper.isAuthenticated && UserHelper.user.lastName) ? UserHelper.user.lastName : "");
-  const [church, setChurch] = React.useState<ChurchInterface>();
-  const [fund, setFund] = React.useState<FundInterface>()
-  let amt = Number(props.question.choices.find(c => c.text === "Amount")?.value);
-  let fundId = props.question.choices.find(c => c.text === "FundId")?.value;
+  const [email, setEmail] = useState<string>((ApiHelper.isAuthenticated && UserHelper.user.email) ? UserHelper.user.email : "");
+  const [firstName, setFirstName] = useState<string>((ApiHelper.isAuthenticated && UserHelper.user.firstName) ? UserHelper.user.firstName : "");
+  const [lastName, setLastName] = useState<string>((ApiHelper.isAuthenticated && UserHelper.user.lastName) ? UserHelper.user.lastName : "");
+  const [church, setChurch] = useState<ChurchInterface>();
+  const [fund, setFund] = useState<FundInterface>()
+  const amt = Number(props.question.choices.find(c => c.text === "Amount")?.value);
+  const fundId = props.question.choices.find(c => c.text === "FundId")?.value;
 
   const getChurchData = () => {
-    let fundId = props.question.choices.find(c => c.text === "FundId")?.value;
     ApiHelper.get("/churches/" + props.churchId, "MembershipApi").then((data: any) => {
       setChurch(data);
     });
@@ -143,7 +142,7 @@ export const FormCardPayment = forwardRef((props: Props, ref) => {
     questionId: props.question.id
   }));
 
-  React.useEffect(getChurchData, []);
+  useEffect(getChurchData, []);
 
   return <div style={{ backgroundColor: "#bdbdbd", padding: 35, borderRadius: 20 }}>
     <Grid container spacing={2}>

@@ -73,7 +73,7 @@ const replaceCustomLinkNode = (textNode : TextNode, match : any) => {
 
 export const CUSTOM_LINK_NODE_TRANSFORMER: TextMatchTransformer = {
   dependencies: [EmojiNode, CustomLinkNode],
-  export: (node, exportChildren, exportFormat) => {
+  export: (node, _exportChildren, exportFormat) => {
     if (!$isCustomLinkNode(node)) {
       return null;
     }

@@ -1,4 +1,4 @@
-import { ConnectionInterface, LoginUserChurchInterface, SocketActionHandlerInterface, SocketPayloadInterface, UserChurchInterface, ApiHelper, ArrayHelper, CommonEnvironmentHelper } from "@churchapps/helpers";
+import { ConnectionInterface, SocketActionHandlerInterface, SocketPayloadInterface, ApiHelper, ArrayHelper, CommonEnvironmentHelper } from "@churchapps/helpers";
 
 export class SocketHelper {
   static socket: WebSocket;

@@ -18,10 +18,9 @@ import {
   useTheme
 } from "@mui/material";
 import { Add as AddIcon, ChatBubbleOutline as ChatIcon } from "@mui/icons-material";
-import { SmallButton } from "../SmallButton";
 import { PersonAvatar } from "../PersonAvatar";
 import { PrivateMessageInterface, UserContextInterface } from "@churchapps/helpers";
-import { ArrayHelper, DateHelper, PersonHelper } from "../../helpers";
+import { ArrayHelper, DateHelper } from "../../helpers";
 import { PrivateMessageDetails } from "./PrivateMessageDetails";
 import { NewPrivateMessage } from "./NewPrivateMessage";
 

@@ -7,8 +7,6 @@ import {
   Typography, 
   Stack, 
   IconButton, 
-  Avatar,
-  Divider,
   useTheme 
 } from "@mui/material";
 import { ArrowBack as ArrowBackIcon } from "@mui/icons-material";

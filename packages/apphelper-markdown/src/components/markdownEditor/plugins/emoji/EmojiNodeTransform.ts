@@ -1,4 +1,4 @@
-import { EmojiNode, $isEmojiNode, $createEmojiNode, $toggleEmojiNode } from './EmojiNode';
+import { EmojiNode, $isEmojiNode, $createEmojiNode } from './EmojiNode';
 import  materialIcons from '../../IconNamesList';
 
 import type { TextMatchTransformer } from "@lexical/markdown";

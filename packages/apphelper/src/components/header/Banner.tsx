@@ -5,7 +5,6 @@ interface Props {
 }
 
 export const Banner = (props:Props) => {
-  const a="";
   return (<div id="banner">
     {props.children}
   </div>);

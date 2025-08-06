@@ -16,17 +16,14 @@ import {
   InputAdornment,
   Divider,
   Skeleton,
-  Avatar,
   useTheme
 } from "@mui/material";
 import { 
   ArrowBack as ArrowBackIcon, 
-  Search as SearchIcon,
-  PersonSearch as PersonSearchIcon,
-  Chat as ChatIcon
+  PersonSearch as PersonSearchIcon
 } from "@mui/icons-material";
 import React, { useEffect, useState } from "react";
-import { ApiHelper, Locale, PersonHelper } from "../../helpers";
+import { ApiHelper, Locale } from "../../helpers";
 import { ConversationInterface, PersonInterface, PrivateMessageInterface, UserContextInterface } from "@churchapps/helpers";
 import { AddNote } from "../notes/AddNote";
 import { PersonAvatar } from "../PersonAvatar";

@@ -3,7 +3,6 @@ import type { LexicalNode, TextFormatType } from "lexical";
 
 import {
   ELEMENT_TRANSFORMERS,
-  TEXT_FORMAT_TRANSFORMERS,
   TRANSFORMERS
 } from "@lexical/markdown";
 import {

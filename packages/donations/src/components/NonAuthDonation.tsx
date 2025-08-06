@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import type { Stripe } from "@stripe/stripe-js";
@@ -11,7 +11,7 @@ import type { PaperProps } from "@mui/material/Paper";
 interface Props { churchId: string, mainContainerCssProps?: PaperProps, showHeader?: boolean, recaptchaSiteKey: string, churchLogo?: string }
 
 export const NonAuthDonation: React.FC<Props> = ({ mainContainerCssProps, showHeader, ...props }) => {
-  const [stripePromise, setStripe] = React.useState<Promise<Stripe>>(null);
+  const [stripePromise, setStripe] = useState<Promise<Stripe>>(null);
 
   const init = () => {
     ApiHelper.get("/gateways/churchId/" + props.churchId, "GivingApi").then((data: any) => {
@@ -21,7 +21,7 @@ export const NonAuthDonation: React.FC<Props> = ({ mainContainerCssProps, showHe
     });
   };
 
-  React.useEffect(init, []); //eslint-disable-line
+  useEffect(init, []); //eslint-disable-line
 
   return (
     <>

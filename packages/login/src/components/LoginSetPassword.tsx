@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { IconButton, InputAdornment, TextField, Typography, Card, CardContent, Button } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { LoginResponseInterface, UserInterface } from "@churchapps/helpers";
@@ -21,7 +21,7 @@ export const LoginSetPassword: React.FC<Props> = props => {
   const [password, setPassword] = React.useState("");
   const [verifyPassword, setVerifyPassword] = React.useState("");
   const [user, setUser] = React.useState<UserInterface>(null);
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = React.useState(false);
   const [linkExpired, setLinkExpired] = React.useState(false);
 
   const validate = () => {

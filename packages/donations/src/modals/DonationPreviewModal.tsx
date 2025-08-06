@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { DateHelper, CurrencyHelper } from "@churchapps/helpers";
 import { Locale } from "../helpers";
 import { StripeDonationInterface } from "@churchapps/helpers";
@@ -21,7 +21,7 @@ interface Props {
 
 export const DonationPreviewModal: React.FC<Props> = (props) => {
   const donationType: any = { once: "One-time Donation", recurring: "Recurring Donation" };
-  const [isLoading, setLoading] = React.useState<boolean>(false);
+  const [isLoading, setLoading] = useState<boolean>(false);
 
   const handleClick = () => {
     setLoading(true);

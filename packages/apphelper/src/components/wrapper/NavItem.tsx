@@ -1,8 +1,7 @@
 "use client";
 
 import React from "react";
-import { Badge, Icon, IconButton, ListItemButton, ListItemIcon, ListItemText, styled, Tooltip } from "@mui/material";
-import { NavLink, useLocation } from "react-router-dom";
+import { Badge, Icon, IconButton, ListItemButton, ListItemIcon, ListItemText, Tooltip } from "@mui/material";
 
 interface Props {
 	badgeCount?: number;
@@ -18,12 +17,6 @@ interface Props {
 	deleteLabel?: string;
 	deleteFunction?: () => void;
 }
-
-const StyledNavLink = styled(NavLink)({
-	textDecoration: "none",
-	"&:hover": { textDecoration: "none" },
-	"& .MuiListItemIcon-root": { minWidth: 40 }
-});
 
 export const NavItem: React.FC<Props> = (props) => {
 

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Grid, TextField } from "@mui/material";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { InputBox, ErrorMessages } from "@churchapps/apphelper";
@@ -14,10 +14,10 @@ export const CardForm: React.FC<Props> = (props) => {
   const stripe = useStripe();
   const elements = useElements();
   const formStyling = { style: { base: { fontSize: "18px" } } };
-  const [showSave, setShowSave] = React.useState(true);
-  const [paymentMethod] = React.useState<PaymentMethodInterface>({ id: props.card.id, customerId: props.customerId, personId: props.person.id, email: props.person.contactInfo.email, name: props.person.name.display });
-  const [cardUpdate, setCardUpdate] = React.useState<StripeCardUpdateInterface>({ personId: props.person.id, paymentMethodId: props.card.id, cardData: { card: {} } } as StripeCardUpdateInterface);
-  const [errorMessage, setErrorMessage] = React.useState<string>(null);
+  const [showSave, setShowSave] = useState(true);
+  const [paymentMethod] = useState<PaymentMethodInterface>({ id: props.card.id, customerId: props.customerId, personId: props.person.id, email: props.person.contactInfo.email, name: props.person.name.display });
+  const [cardUpdate, setCardUpdate] = useState<StripeCardUpdateInterface>({ personId: props.person.id, paymentMethodId: props.card.id, cardData: { card: {} } } as StripeCardUpdateInterface);
+  const [errorMessage, setErrorMessage] = useState<string>(null);
   const handleCancel = () => { props.setMode("display"); };
   const handleSave = () => { setShowSave(false); props.card.id ? updateCard() : createCard(); };
   const saveDisabled = () => { };

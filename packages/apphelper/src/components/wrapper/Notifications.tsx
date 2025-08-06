@@ -27,7 +27,6 @@ import {
 } from "@mui/icons-material";
 import { NotificationInterface, UserContextInterface } from "@churchapps/helpers";
 import { DateHelper } from "../../helpers";
-import { Navigate } from "react-router-dom";
 
 interface Props {
   appName: string;

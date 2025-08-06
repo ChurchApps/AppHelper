@@ -1,7 +1,7 @@
 "use client";
 
  
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import type { Stripe } from "@stripe/stripe-js";
 import { InputBox, ErrorMessages } from "@churchapps/apphelper";
 import { FundDonations } from ".";
@@ -18,21 +18,21 @@ import { DonationHelper, StripePaymentMethod } from "../helpers";
 interface Props { person: PersonInterface, customerId: string, paymentMethods: StripePaymentMethod[], stripePromise: Promise<Stripe>, donationSuccess: (message: string) => void, church?: ChurchInterface, churchLogo?: string }
 
 export const DonationForm: React.FC<Props> = (props) => {
-  const [errorMessage, setErrorMessage] = React.useState<string>();
-  const [fundDonations, setFundDonations] = React.useState<FundDonationInterface[]>();
-  const [funds, setFunds] = React.useState<FundInterface[]>([]);
-  const [fundsTotal, setFundsTotal] = React.useState<number>(0);
-  const [transactionFee, setTransactionFee] = React.useState<number>(0);
-  const [payFee, setPayFee] = React.useState<number>(0);
-  const [total, setTotal] = React.useState<number>(0);
-  const [paymentMethodName, setPaymentMethodName] = React.useState<string>(
+  const [errorMessage, setErrorMessage] = useState<string>();
+  const [fundDonations, setFundDonations] = useState<FundDonationInterface[]>();
+  const [funds, setFunds] = useState<FundInterface[]>([]);
+  const [fundsTotal, setFundsTotal] = useState<number>(0);
+  const [transactionFee, setTransactionFee] = useState<number>(0);
+  const [payFee, setPayFee] = useState<number>(0);
+  const [total, setTotal] = useState<number>(0);
+  const [paymentMethodName, setPaymentMethodName] = useState<string>(
     props?.paymentMethods?.length > 0 ? `${props.paymentMethods[0].name} ****${props.paymentMethods[0].last4}` : ""
   );
-  const [donationType, setDonationType] = React.useState<string>();
-  const [showDonationPreviewModal, setShowDonationPreviewModal] = React.useState<boolean>(false);
-  const [interval, setInterval] = React.useState("one_month");
-  const [gateway, setGateway] = React.useState(null);
-  const [donation, setDonation] = React.useState<StripeDonationInterface>({
+  const [donationType, setDonationType] = useState<string>();
+  const [showDonationPreviewModal, setShowDonationPreviewModal] = useState<boolean>(false);
+  const [interval, setInterval] = useState("one_month");
+  const [gateway, setGateway] = useState(null);
+  const [donation, setDonation] = useState<StripeDonationInterface>({
     id: props?.paymentMethods?.length > 0 ? props.paymentMethods[0].id : "",
     type: props?.paymentMethods?.length > 0 ? props.paymentMethods[0].type : "",
     customerId: props.customerId,
@@ -76,14 +76,6 @@ export const DonationForm: React.FC<Props> = (props) => {
     setDonation(d);
   }, [donation, fundsTotal, transactionFee]);
 
-  const handleAutoPayFee = useCallback(() => {
-    const d = { ...donation } as StripeDonationInterface;
-    d.amount = fundsTotal + transactionFee;
-    const showFee = transactionFee;
-    setTotal(d.amount);
-    setPayFee(showFee);
-    setDonation(d);
-  }, [donation, fundsTotal, transactionFee]);
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement> | SelectChangeEvent<string>) => {
     setErrorMessage(null);
@@ -189,11 +181,10 @@ export const DonationForm: React.FC<Props> = (props) => {
     }
   }, [donation.type, props?.church?.id]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     loadData();
   }, [loadData, props.person?.id]);
    
-  // React.useEffect(() => { gateway && gateway.payFees === true && handleAutoPayFee() }, [fundDonations]);
 
   if (!funds.length || !props?.paymentMethods?.length) return null;
   else {

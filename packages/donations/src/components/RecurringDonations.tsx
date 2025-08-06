@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { DisplayBox } from "@churchapps/apphelper";
 import { ApiHelper, UserHelper, CurrencyHelper, DateHelper } from "@churchapps/helpers";
 import { Locale } from "../helpers";
@@ -11,9 +11,9 @@ import { Icon, Table, TableBody, TableCell, TableRow, TableHead } from "@mui/mat
 interface Props { customerId: string, paymentMethods: any[], appName: string, dataUpdate: (message?: string) => void, };
 
 export const RecurringDonations: React.FC<Props> = (props) => {
-  const [subscriptions, setSubscriptions] = React.useState<SubscriptionInterface[]>([]);
-  const [mode, setMode] = React.useState("display");
-  const [editSubscription, setEditSubscription] = React.useState<SubscriptionInterface>();
+  const [subscriptions, setSubscriptions] = useState<SubscriptionInterface[]>([]);
+  const [mode, setMode] = useState("display");
+  const [editSubscription, setEditSubscription] = useState<SubscriptionInterface>();
 
   const loadData = () => {
     if (props.customerId) {
@@ -107,7 +107,7 @@ export const RecurringDonations: React.FC<Props> = (props) => {
     </Table>
   );
 
-  React.useEffect(loadData, []); //eslint-disable-line
+  useEffect(loadData, []); //eslint-disable-line
 
   if (!subscriptions.length) return null;
   if (mode === "display") {

@@ -1,5 +1,5 @@
 import { EventInterface } from "@churchapps/helpers";
-import { RRule, datetime } from "rrule";
+import { RRule } from "rrule";
 import { ParsedOptions } from "rrule/dist/esm/types";
 
 export class EventHelper {

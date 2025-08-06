@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { FormControl, Grid, InputLabel, MenuItem, Select, TextField } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material";
 import { useStripe } from "@stripe/react-stripe-js";
@@ -13,12 +13,12 @@ interface Props { bank: StripePaymentMethod, showVerifyForm: boolean, customerId
 
 export const BankForm: React.FC<Props> = (props) => {
   const stripe = useStripe();
-  const [bankAccount, setBankAccount] = React.useState<StripeBankAccountInterface>({ account_holder_name: props.bank.account_holder_name, account_holder_type: props.bank.account_holder_type, country: "US", currency: "usd" } as StripeBankAccountInterface);
-  const [paymentMethod] = React.useState<PaymentMethodInterface>({ customerId: props.customerId, personId: props.person.id, email: props.person.contactInfo.email, name: props.person.name.display });
-  const [updateBankData] = React.useState<StripeBankAccountUpdateInterface>({ paymentMethodId: props.bank.id, customerId: props.customerId, personId: props.person.id, bankData: { account_holder_name: props.bank.account_holder_name, account_holder_type: props.bank.account_holder_type } } as StripeBankAccountUpdateInterface);
-  const [verifyBankData, setVerifyBankData] = React.useState<StripeBankAccountVerifyInterface>({ paymentMethodId: props.bank.id, customerId: props.customerId, amountData: { amounts: [] } });
-  const [showSave, setShowSave] = React.useState<boolean>(true);
-  const [errorMessage, setErrorMessage] = React.useState<string>(null);
+  const [bankAccount, setBankAccount] = useState<StripeBankAccountInterface>({ account_holder_name: props.bank.account_holder_name, account_holder_type: props.bank.account_holder_type, country: "US", currency: "usd" } as StripeBankAccountInterface);
+  const [paymentMethod] = useState<PaymentMethodInterface>({ customerId: props.customerId, personId: props.person.id, email: props.person.contactInfo.email, name: props.person.name.display });
+  const [updateBankData] = useState<StripeBankAccountUpdateInterface>({ paymentMethodId: props.bank.id, customerId: props.customerId, personId: props.person.id, bankData: { account_holder_name: props.bank.account_holder_name, account_holder_type: props.bank.account_holder_type } } as StripeBankAccountUpdateInterface);
+  const [verifyBankData, setVerifyBankData] = useState<StripeBankAccountVerifyInterface>({ paymentMethodId: props.bank.id, customerId: props.customerId, amountData: { amounts: [] } });
+  const [showSave, setShowSave] = useState<boolean>(true);
+  const [errorMessage, setErrorMessage] = useState<string>(null);
   const saveDisabled = () => { };
   const handleCancel = () => { props.setMode("display"); };
   const handleDelete = () => { props.deletePayment(); };

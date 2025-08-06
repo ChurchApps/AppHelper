@@ -1,7 +1,7 @@
 "use client";
 
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { ErrorMessages, InputBox } from "@churchapps/apphelper";
 import { FundDonations } from ".";
@@ -19,24 +19,24 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
   const stripe = useStripe();
   const elements = useElements();
   const formStyling = { style: { base: { fontSize: "18px" } } };
-  const [firstName, setFirstName] = React.useState("");
-  const [lastName, setLastName] = React.useState("");
-  const [email, setEmail] = React.useState("");
-  const [fundsTotal, setFundsTotal] = React.useState<number>(0);
-  const [transactionFee, setTransactionFee] = React.useState<number>(0);
-  const [total, setTotal] = React.useState<number>(0);
-  const [errors, setErrors] = React.useState([]);
-  const [fundDonations, setFundDonations] = React.useState<FundDonationInterface[]>([]);
-  const [funds, setFunds] = React.useState<FundInterface[]>([]);
-  const [donationComplete, setDonationComplete] = React.useState(false);
-  const [processing, setProcessing] = React.useState(false);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [fundsTotal, setFundsTotal] = useState<number>(0);
+  const [transactionFee, setTransactionFee] = useState<number>(0);
+  const [total, setTotal] = useState<number>(0);
+  const [errors, setErrors] = useState([]);
+  const [fundDonations, setFundDonations] = useState<FundDonationInterface[]>([]);
+  const [funds, setFunds] = useState<FundInterface[]>([]);
+  const [donationComplete, setDonationComplete] = useState(false);
+  const [processing, setProcessing] = useState(false);
   const [donationType, setDonationType] = useState<"once" | "recurring">("once");
   const [interval, setInterval] = useState("one_month");
   const [startDate, setStartDate] = useState(new Date().toDateString());
   const [captchaResponse, setCaptchaResponse] = useState("");
   const [church, setChurch] = useState<ChurchInterface>();
-  const [gateway, setGateway] = React.useState(null);
-  const [searchParams, setSearchParams] = React.useState<any>();
+  const [gateway, setGateway] = useState(null);
+  const [searchParams, setSearchParams] = useState<any>();
   const captchaRef = useRef(null);
   
   const getUrlParam = (param: string) => {
@@ -79,10 +79,6 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
     setTotal(totalPayAmount);
   };
 
-  // const handleAutoPayFee = () => {
-  //   let totalPayAmount = fundsTotal + transactionFee;
-  //   setTotal(totalPayAmount);
-  // }
 
   const handleSave = async () => {
     if (validate()) {
@@ -229,9 +225,8 @@ return (<>
 }
   };
 
-  React.useEffect(init, []); //eslint-disable-line
+  useEffect(init, []); //eslint-disable-line
 
-  // React.useEffect(() => { gateway && gateway.payFees === true && handleAutoPayFee() }, [fundDonations]);
 
   if (donationComplete) return <Alert severity="success">{Locale.label("donation.donationForm.thankYou")}</Alert>;
   else {

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { ApiHelper } from "@churchapps/helpers";
 import { Locale } from "../helpers";
 import { InputBox } from "@churchapps/apphelper";
@@ -12,8 +12,8 @@ import { DonationHelper, StripePaymentMethod } from "../helpers";
 interface Props { subscriptionUpdated: (message?: string) => void, customerId: string, paymentMethods: StripePaymentMethod[], editSubscription: SubscriptionInterface };
 
 export const RecurringDonationsEdit: React.FC<Props> = (props) => {
-  const [editSubscription, setEditSubscription] = React.useState<SubscriptionInterface>(props.editSubscription);
-  const [interval, setInterval] = React.useState("one_month");
+  const [editSubscription, setEditSubscription] = useState<SubscriptionInterface>(props.editSubscription);
+  const [interval, setInterval] = useState("one_month");
 
   const handleCancel = () => { props.subscriptionUpdated(); };
   const handleSave = () => {
@@ -82,7 +82,7 @@ export const RecurringDonationsEdit: React.FC<Props> = (props) => {
     </>
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (props.editSubscription) {
       const keyName = DonationHelper.getIntervalKeyName(props.editSubscription.plan.interval_count, props.editSubscription.plan.interval);
       setInterval(keyName);

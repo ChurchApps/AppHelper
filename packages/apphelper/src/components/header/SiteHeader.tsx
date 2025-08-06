@@ -1,13 +1,12 @@
 import React from "react";
 import { AppBar, Link, styled, Toolbar } from "@mui/material";
-import { UserHelper } from "../../helpers/UserHelper"
 import { UserMenu } from "../wrapper/UserMenu";
 import { PersonHelper } from "../../helpers/PersonHelper";
 import { PrimaryMenu } from "./PrimaryMenu";
 import { SecondaryMenu } from "./SecondaryMenu";
 import { SecondaryMenuAlt } from "./SecondaryMenuAlt";
 import { SupportDrawer } from "./SupportDrawer";
-import { UserContextInterface, CommonEnvironmentHelper } from "@churchapps/helpers";
+import { UserContextInterface } from "@churchapps/helpers";
 import { NotificationService } from "../../helpers/NotificationService";
 
 type Props = {

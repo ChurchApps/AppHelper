@@ -10,7 +10,7 @@ import { jwtDecode } from "jwt-decode"
 import { Register } from "./components/Register"
 import { SelectChurchModal } from "./components/SelectChurchModal"
 import { Forgot } from "./components/Forgot";
-import { Alert, Box, PaperProps, Typography } from "@mui/material";
+import { Alert, PaperProps, Typography } from "@mui/material";
 import { Login } from "./components/Login";
 import { LoginSetPassword } from "./components/LoginSetPassword";
 import ga4 from "react-ga4";
@@ -271,10 +271,6 @@ const LoginPageContent: React.FC<Props> = ({ showLogo = true, loginContainerCssP
 };
 
 export const LoginPage: React.FC<Props> = (props) => {
-	// Try to detect if CookiesProvider is available
-	const CookiesContext = React.createContext(null);
-	const context = React.useContext(CookiesContext);
-
 	// Always wrap with CookiesProvider to ensure context is available
 	return (
 		<CookiesProvider defaultSetOptions={{ path: '/' }}>

@@ -166,8 +166,7 @@ export const FormSubmissionEdit: React.FC<Props> = ({showHeader = true, noBackgr
       });
     } else {
       const formId = props.addFormId || props.unRestrictedFormId;
-      const api = props.addFormId ? "MembershipApi" : "MembershipApi";
-      ApiHelper.get("/forms/" + formId + "/details", api).then(setFormSubmissionData);
+      ApiHelper.get("/forms/" + formId + "/details", "MembershipApi").then(setFormSubmissionData);
     }
   }
 

@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { TextField, Box, PaperProps, InputAdornment, IconButton, Card, CardContent, Typography, Button } from "@mui/material";
+import React from "react";
+import { TextField, PaperProps, InputAdornment, IconButton, Card, CardContent, Typography, Button } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Locale } from "../helpers";
 
@@ -19,7 +19,7 @@ interface Props {
 export const Login: React.FC<Props> = ({ mainContainerCssProps = {}, ...props }) => {
   const [email, setEmail] = React.useState(props.defaultEmail || "");
   const [password, setPassword] = React.useState(props.defaultPassword || "");
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = React.useState(false);
 
   const validateEmail = (email: string) => (/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(.\w{2,3})+$/.test(email))
 

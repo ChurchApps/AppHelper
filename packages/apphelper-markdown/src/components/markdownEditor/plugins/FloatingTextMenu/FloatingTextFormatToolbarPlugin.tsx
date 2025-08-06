@@ -1,5 +1,5 @@
 import { $isCodeHighlightNode } from "@lexical/code";
-import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
+import { $isLinkNode } from "@lexical/link";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
 import { $convertToMarkdownString } from "@lexical/markdown";
@@ -42,13 +42,6 @@ function TextFormatFloatingToolbar({ editor, anchorElem, isLink, isBold, isItali
     saveChanges(editor);
   }
 
-  const insertLink = useCallback(() => {
-    if (!isLink) {
-      editor.dispatchCommand(TOGGLE_LINK_COMMAND, "https://");
-    } else {
-      editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
-    }
-  }, [editor, isLink]);
 
   function mouseMoveListener(e: any) {
     if (
@@ -238,7 +231,6 @@ function TextFormatFloatingToolbar({ editor, anchorElem, isLink, isBold, isItali
   );
 }
 
-let lastSavedText = ""; // Track last saved text
 let lastFormattingState = {}; // Track last formatting state
 
 //@ts-ignore
@@ -263,7 +255,6 @@ const saveChanges = (editor: any) => {
   editor.update(() => {
       const selection = $getSelection();
       if ($isRangeSelection(selection)) {
-        const text = selection.getTextContent().trim();
         const newFormattingState = getFormattingState(selection); // Get current formatting
         
         // Get the parent block node (ensuring it's not just a text node)
@@ -279,7 +270,6 @@ const saveChanges = (editor: any) => {
         
         //@ts-ignore
         if (JSON.stringify(newFormattingState) !== JSON.stringify(lastFormattingState) || blockType !== lastFormattingState.blockType) {
-          lastSavedText = text;
           lastFormattingState = { ...newFormattingState, blockType };
 
           const editorNode = editor.getRootElement();
