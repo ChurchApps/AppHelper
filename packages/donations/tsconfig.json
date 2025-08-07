@@ -16,7 +16,7 @@
     "declarationMap": true,
     "jsx": "react-jsx",
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
+    "forceConsistentCasingInFileNames": false,
     "resolveJsonModule": true,
     "isolatedModules": true
   },

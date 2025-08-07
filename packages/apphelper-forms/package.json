@@ -30,6 +30,7 @@
   "peerDependencies": {
     "@churchapps/helpers": "^1.0.46",
     "@churchapps/apphelper": "^0.4.27",
+    "@mui/material": "^7.3.1",
     "react": "^18.0.0 || ^19.0.0",
     "react-dom": "^18.0.0 || ^19.0.0"
   },
@@ -37,18 +38,17 @@
     "@churchapps/apphelper-donations": "^0.4.27",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
-    "@mui/material": "^7.2.0",
-    "axios": "^1.10.0",
+    "axios": "^1.11.0",
     "date-fns": "^4.1.0",
-    "i18next": "^25.3.1",
-    "react-i18next": "^15.6.0"
+    "i18next": "^25.3.2",
+    "react-i18next": "^15.6.1"
   },
   "devDependencies": {
-    "@types/node": "^24.0.10",
-    "@types/react": "^19.1.8",
-    "@types/react-dom": "^19.1.6",
+    "@types/node": "^24.2.0",
+    "@types/react": "^19.1.9",
+    "@types/react-dom": "^19.1.7",
     "npm-run-all2": "^8.0.4",
     "rimraf": "^6.0.1",
-    "typescript": "^5.8.3"
+    "typescript": "^5.9.2"
   }
 }
