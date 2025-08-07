@@ -5,10 +5,7 @@ export class SocketHelper {
   static socketId: string;
   static actionHandlers: SocketActionHandlerInterface[] = [];
   private static personIdChurchId: {personId:string, churchId:string} = {personId:"", churchId:""};
-  private static reconnectTimeout: number | null = null;
   private static isCleanedUp: boolean = false;
-  private static maxReconnectAttempts: number = 10;
-  private static reconnectAttempts: number = 0;
 
   static setPersonChurch = (pc: {personId:string, churchId:string}) => {
     if (pc?.personId && pc.personId && pc.churchId!==this.personIdChurchId.churchId && pc.personId!==this.personIdChurchId.personId) {
@@ -28,10 +25,7 @@ export class SocketHelper {
   }
 
   static init = async () => {
-    // Clean up existing connection first
     SocketHelper.cleanup();
-    
-    // Reset cleanup flag
     SocketHelper.isCleanedUp = false;
     
     if (SocketHelper.socket && SocketHelper.socket.readyState !== SocketHelper.socket.CLOSED) {
@@ -58,37 +52,13 @@ export class SocketHelper {
         };
         
         SocketHelper.socket.onopen = async (e) => {
-          SocketHelper.reconnectAttempts = 0; // Reset reconnect attempts on successful connection
           SocketHelper.socket.send("getId");  // Request socket ID
           setTimeout(() => { resolve(null); }, 500);
         };
         
         SocketHelper.socket.onclose = async (e) => {
-          // Clear any existing reconnect timeout
-          if (SocketHelper.reconnectTimeout) {
-            clearTimeout(SocketHelper.reconnectTimeout);
-            SocketHelper.reconnectTimeout = null;
-          }
-          
-          // Only attempt reconnection if not manually cleaned up and within retry limits
-          if (!SocketHelper.isCleanedUp && SocketHelper.reconnectAttempts < SocketHelper.maxReconnectAttempts) {
-            SocketHelper.reconnectAttempts++;
-            const backoffDelay = Math.min(1000 * Math.pow(2, SocketHelper.reconnectAttempts - 1), 30000);
-            
-            console.log(`🔄 WebSocket reconnecting... attempt ${SocketHelper.reconnectAttempts}/${SocketHelper.maxReconnectAttempts}`);
-            
-            SocketHelper.reconnectTimeout = setTimeout(() => {
-              if (!SocketHelper.isCleanedUp && SocketHelper.socket && SocketHelper.socket.readyState === SocketHelper.socket.CLOSED) {
-                SocketHelper.init().then(() => {
-                  SocketHelper.handleMessage({ action: "reconnect", data: null });
-                }).catch((error) => {
-                  console.error("❌ Reconnection failed:", error);
-                });
-              }
-            }, backoffDelay);
-          } else if (SocketHelper.reconnectAttempts >= SocketHelper.maxReconnectAttempts) {
-            console.error("❌ WebSocket max reconnection attempts reached");
-          }
+          console.log("🔌 WebSocket connection closed");
+          // No retry logic - just log the closure
         };
         
         SocketHelper.socket.onerror = (error) => {
@@ -150,12 +120,6 @@ export class SocketHelper {
   static cleanup = () => {
     SocketHelper.isCleanedUp = true;
     
-    // Clear reconnect timeout
-    if (SocketHelper.reconnectTimeout) {
-      clearTimeout(SocketHelper.reconnectTimeout);
-      SocketHelper.reconnectTimeout = null;
-    }
-    
     // Close socket connection
     if (SocketHelper.socket && SocketHelper.socket.readyState !== SocketHelper.socket.CLOSED) {
       try {
@@ -170,7 +134,6 @@ export class SocketHelper {
     SocketHelper.socketId = null;
     SocketHelper.actionHandlers = [];
     SocketHelper.personIdChurchId = {personId:"", churchId:""};
-    SocketHelper.reconnectAttempts = 0;
   }
 
   static disconnect = () => {
