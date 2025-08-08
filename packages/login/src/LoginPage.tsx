@@ -82,6 +82,17 @@ const LoginPageContent: React.FC<Props> = ({ showLogo = true, loginContainerCssP
 		props.context.setPerson(null);
 		// Show a logout success message
 		setErrors(["You have been successfully logged out."]);
+		
+		// Handle redirect after logout
+		const search = new URLSearchParams(location?.search);
+		const returnUrl = search.get("returnUrl") || props.returnUrl || "/";
+		
+		// Use handleRedirect if available, otherwise use window.location
+		if (props.handleRedirect) {
+			props.handleRedirect(returnUrl);
+		} else if (typeof window !== "undefined") {
+			window.location.href = returnUrl;
+		}
 	};
 
 	const init = () => {
