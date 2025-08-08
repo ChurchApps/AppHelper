@@ -67,10 +67,28 @@ const LoginPageContent: React.FC<Props> = ({ showLogo = true, loginContainerCssP
 		}
 	}, [props.callbackErrors])
 
+	const performLogout = () => {
+		// Clear all authentication cookies
+		setCookie("jwt", "", { path: "/", maxAge: 0 });
+		setCookie("name", "", { path: "/", maxAge: 0 });
+		setCookie("email", "", { path: "/", maxAge: 0 });
+		setCookie("lastChurchId", "", { path: "/", maxAge: 0 });
+		// Clear any JWT in the ApiHelper
+		ApiHelper.clearPermissions();
+		// Clear user context
+		props.context.setUser(null);
+		props.context.setUserChurches([]);
+		props.context.setUserChurch(null);
+		props.context.setPerson(null);
+		// Show a logout success message
+		setErrors(["You have been successfully logged out."]);
+	};
+
 	const init = () => {
 		const search = new URLSearchParams(location?.search);
 		const action = search.get("action");
-		if (action === "forgot") setShowForgot(true);
+		if (action === "logout") performLogout();
+		else if (action === "forgot") setShowForgot(true);
 		else if (action === "register") setShowRegister(true);
 		else {
 			if (!props.auth && props.jwt) {
