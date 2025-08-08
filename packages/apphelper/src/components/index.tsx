@@ -13,6 +13,8 @@ export { PersonAvatar } from "./PersonAvatar";
 export { QuestionEdit } from "./QuestionEdit";
 export { SmallButton } from "./SmallButton";
 export { SupportModal } from "./SupportModal";
+export { TabPanel } from "./TabPanel";
 export * from "./wrapper";
 export * from "./notes";
 export * from "./header";
+export * from "./gallery";
