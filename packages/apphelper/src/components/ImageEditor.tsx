@@ -141,7 +141,7 @@ export function ImageEditor(props: Props) {
           guides={false}
           crop={handleCrop}
           autoCropArea={1}
-          viewMode={1}
+          viewMode={0}
           responsive={true}
           restore={false}
           checkOrientation={false}

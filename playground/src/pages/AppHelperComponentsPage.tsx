@@ -96,7 +96,7 @@ const coreComponents = [
     description: 'Image editing and cropping component',
     usage: ['B1App: 5 files', 'ChumsApp: 6 files', 'LessonsApp: ❌'],
     props: { 
-      photoUrl: "",
+      photoUrl: '',
       aspectRatio: 1,
       onUpdate: (dataUrl: string) => console.log('Image updated:', dataUrl)
     }
@@ -152,6 +152,8 @@ export default function AppHelperComponentsPage() {
   const context = React.useContext(UserContext);
   const [selectedComponent, setSelectedComponent] = React.useState<string | null>(null);
   const [errors, setErrors] = React.useState<string[]>([]);
+  const [currentImageUrl, setCurrentImageUrl] = React.useState<string>('https://via.placeholder.com/300x300/4CAF50/ffffff?text=Click+to+Edit');
+  const [isEditingImage, setIsEditingImage] = React.useState<boolean>(false);
 
   const handleError = () => {
     setErrors(['Sample error message', 'Another error occurred', 'Validation failed']);
@@ -174,6 +176,50 @@ export default function AppHelperComponentsPage() {
         <Alert severity="info">
           SupportModal component would appear here with proper props configuration.
         </Alert>
+      );
+    }
+    
+    if (component.name === 'ImageEditor') {
+      if (isEditingImage) {
+        return (
+          <ImageEditor
+            photoUrl={currentImageUrl}
+            aspectRatio={1}
+            onUpdate={(dataUrl?: string) => {
+              if (dataUrl) {
+                setCurrentImageUrl(dataUrl);
+              }
+              setIsEditingImage(false);
+            }}
+            onCancel={() => setIsEditingImage(false)}
+          />
+        );
+      }
+      
+      return (
+        <Box sx={{ textAlign: 'center' }}>
+          <Typography variant="subtitle2" sx={{ mb: 2 }}>Click the image below to edit it:</Typography>
+          <Box
+            component="img"
+            src={currentImageUrl}
+            alt="Click to edit"
+            sx={{
+              width: 300,
+              height: 300,
+              objectFit: 'cover',
+              cursor: 'pointer',
+              borderRadius: 2,
+              boxShadow: 2,
+              transition: 'transform 0.2s',
+              '&:hover': {
+                transform: 'scale(1.05)',
+                boxShadow: 4
+              }
+            }}
+            onClick={() => setIsEditingImage(true)}
+          />
+          <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>Current image preview</Typography>
+        </Box>
       );
     }
 
