@@ -3,6 +3,7 @@ import { Container, Box, Typography, Alert, Stack, Button, Card, CardContent, Ch
 import { Link } from 'react-router-dom';
 import { ErrorBoundary } from '../ErrorBoundary';
 import UserContext from '../UserContext';
+import { EnvironmentHelper } from '../helpers/EnvironmentHelper';
 import {
 	ErrorMessages,
 	ExportLink,
@@ -194,6 +195,7 @@ export default function AppHelperComponentsPage() {
 		}
 
 		if (component.name === 'GalleryModal') {
+			console.log("APIs", context?.userChurch.apis);
 			return (
 				<Box sx={{ textAlign: 'center' }}>
 					<Button
@@ -215,7 +217,7 @@ export default function AppHelperComponentsPage() {
 								setShowGalleryModal(false);
 								alert('Image selected: ' + img);
 							}}
-							contentRoot="https://content.churchapps.org"
+							contentRoot={EnvironmentHelper.Common.ContentRoot}
 						/>
 					)}
 				</Box>
