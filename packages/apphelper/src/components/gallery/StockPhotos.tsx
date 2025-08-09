@@ -3,12 +3,12 @@ import { Button, Grid, TextField } from "@mui/material";
 import React, { useState } from "react";
 import { ApiHelper } from "../../helpers";
 import { Locale } from "../../helpers";
+import { CommonEnvironmentHelper } from "@churchapps/helpers";
 
 interface Props {
   aspectRatio: number,
   onSelect: (img: string) => void,
-  onStockSelect: (img: string) => void,
-  contentRoot?: string
+  onStockSelect: (img: string) => void
 }
 
 interface SearchResult { description: string, url: string, photographer: string, photographerUrl: string, large: string, thumbnail: string }
@@ -18,7 +18,7 @@ export const StockPhotos: React.FC<Props> = (props: Props) => {
   const [searchText, setSearchText] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResult[]>(null);
 
-  const contentRoot = props.contentRoot || "";
+  const contentRoot = CommonEnvironmentHelper.ContentRoot;
 
   const loadData = () => { ApiHelper.getAnonymous("/gallery/stock/" + props.aspectRatio.toString(), "ContentApi").then((data: any) => setImages(data.images)); }
 

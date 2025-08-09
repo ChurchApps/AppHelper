@@ -3,6 +3,7 @@
 import { FileHelper } from "../../helpers/FileHelper";
 import { ApiHelper } from "../../helpers";
 import { Locale } from "../../helpers";
+import { CommonEnvironmentHelper } from "@churchapps/helpers";
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, Grid, IconButton, InputLabel, MenuItem, Select, Tab, Tabs, Tooltip, Icon } from "@mui/material";
 import React, { useState } from "react";
 import { ImageEditor } from "../ImageEditor";
@@ -12,8 +13,7 @@ import { StockPhotos } from "./StockPhotos";
 interface Props {
   aspectRatio: number,
   onClose: () => void,
-  onSelect: (img: string) => void,
-  contentRoot?: string
+  onSelect: (img: string) => void
 }
 
 export const GalleryModal: React.FC<Props> = (props: Props) => {
@@ -22,7 +22,7 @@ export const GalleryModal: React.FC<Props> = (props: Props) => {
   const [aspectRatio, setAspectRatio] = React.useState(Math.round(props.aspectRatio * 100) / 100);
   const [editorPhotoUrl, setEditorPhotoUrl] = React.useState("");
 
-  const contentRoot = props.contentRoot || "";
+  const contentRoot = CommonEnvironmentHelper.ContentRoot;
 
   const handleTabChange = (el: any, newValue: any) => { setTabIndex(newValue); }
 
@@ -163,7 +163,7 @@ export const GalleryModal: React.FC<Props> = (props: Props) => {
           <ImageEditor onUpdate={handleImageUpdated} photoUrl={editorPhotoUrl} aspectRatio={aspectRatio} outputWidth={1280} outputHeight={768} hideDelete={true} />
         </TabPanel>
         <TabPanel value={tabIndex} index={2}>
-          <StockPhotos aspectRatio={aspectRatio} onSelect={props.onSelect} onStockSelect={handleStockSelect} contentRoot={contentRoot} />
+          <StockPhotos aspectRatio={aspectRatio} onSelect={props.onSelect} onStockSelect={handleStockSelect} />
         </TabPanel>
       </DialogContent>
       <DialogActions sx={{ paddingX: "16px", paddingBottom: "12px" }}>
