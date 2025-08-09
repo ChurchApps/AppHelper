@@ -5,10 +5,14 @@ import './index.css'
 import { EnvironmentHelper } from './helpers/EnvironmentHelper'
 
 // Initialize environment configuration
-EnvironmentHelper.init()
+const initApp = async () => {
+  await EnvironmentHelper.init();
+  
+  ReactDOM.createRoot(document.getElementById('root')!).render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>,
+  );
+};
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-)
+initApp();

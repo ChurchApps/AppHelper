@@ -6,6 +6,7 @@ declare global {
 		readonly env: {
 			readonly VITE_STAGE?: string;
 			readonly MODE: string;
+			readonly VITE_CONTENT_API?: string;
 			readonly VITE_MESSAGING_API?: string;
 			readonly VITE_MESSAGING_API_SOCKET?: string;
 			readonly VITE_MEMBERSHIP_API?: string;
@@ -14,35 +15,48 @@ declare global {
 }
 
 export class EnvironmentHelper {
+	static Common = CommonEnvironmentHelper;
 
-	static init = () => {
+	static init = async () => {
 		let stage = import.meta.env.VITE_STAGE;
 		if (stage === undefined) stage = import.meta.env.MODE;
-		//stage = "production"; // Force production for now
+		console.log(`Environment stage: ${stage}`);
 
-		CommonEnvironmentHelper.init(stage || "development");
+		switch (stage) {
+			case "production":
+			case "prod":
+				EnvironmentHelper.initProd();
+				break;
+			case "staging":
+				EnvironmentHelper.initStaging();
+				break;
+			default:
+				EnvironmentHelper.initDev();
+				break;
+		}
 
-		if (stage === "production") EnvironmentHelper.initProd();
-		else if (stage === "staging") EnvironmentHelper.initStaging();
-		else EnvironmentHelper.initDev();
-
+		EnvironmentHelper.Common.init(stage || "dev");
 		EnvironmentHelper.populateConfigs();
-		Locale.init([]);
+		await Locale.init([]);
 	}
 
 	static initDev = () => {
-		// Override with local development URLs if provided
+		// Use staging values as defaults, then override with local development URLs if provided
+		EnvironmentHelper.initStaging();
+
+		if (import.meta.env.VITE_CONTENT_API) EnvironmentHelper.Common.ContentApi = import.meta.env.VITE_CONTENT_API;
 		if (import.meta.env.VITE_MESSAGING_API) {
-			CommonEnvironmentHelper.MessagingApi = import.meta.env.VITE_MESSAGING_API;
-			CommonEnvironmentHelper.MessagingApiSocket = import.meta.env.VITE_MESSAGING_API_SOCKET || "ws://localhost:8087";
+			EnvironmentHelper.Common.MessagingApi = import.meta.env.VITE_MESSAGING_API;
+			EnvironmentHelper.Common.MessagingApiSocket = import.meta.env.VITE_MESSAGING_API_SOCKET || "ws://localhost:8087";
 		}
 		if (import.meta.env.VITE_MEMBERSHIP_API) {
-			CommonEnvironmentHelper.MembershipApi = import.meta.env.VITE_MEMBERSHIP_API;
+			EnvironmentHelper.Common.MembershipApi = import.meta.env.VITE_MEMBERSHIP_API;
 		}
 
 		console.log("🔧 Development environment configured:");
-		console.log("   MessagingApi:", CommonEnvironmentHelper.MessagingApi);
-		console.log("   MembershipApi:", CommonEnvironmentHelper.MembershipApi);
+		console.log("   ContentApi:", EnvironmentHelper.Common.ContentApi);
+		console.log("   MessagingApi:", EnvironmentHelper.Common.MessagingApi);
+		console.log("   MembershipApi:", EnvironmentHelper.Common.MembershipApi);
 	}
 
 	static initStaging = () => {
@@ -50,18 +64,19 @@ export class EnvironmentHelper {
 	}
 
 	static initProd = () => {
-		CommonEnvironmentHelper.GoogleAnalyticsTag = "G-P63T3JN4VE";
+		EnvironmentHelper.Common.GoogleAnalyticsTag = "G-P63T3JN4VE";
 	}
 
 	static populateConfigs = () => {
 		ApiHelper.apiConfigs = [
-			{ keyName: "AttendanceApi", url: CommonEnvironmentHelper.AttendanceApi, jwt: "", permissions: [] },
-			{ keyName: "GivingApi", url: CommonEnvironmentHelper.GivingApi, jwt: "", permissions: [] },
-			{ keyName: "MembershipApi", url: CommonEnvironmentHelper.MembershipApi, jwt: "", permissions: [] },
-			{ keyName: "MessagingApi", url: CommonEnvironmentHelper.MessagingApi, jwt: "", permissions: [] },
-			{ keyName: "ReportingApi", url: CommonEnvironmentHelper.ReportingApi, jwt: "", permissions: [] },
-			{ keyName: "DoingApi", url: CommonEnvironmentHelper.DoingApi, jwt: "", permissions: [] },
-			{ keyName: "ContentApi", url: CommonEnvironmentHelper.ContentApi, jwt: "", permissions: [] },
+			{ keyName: "AttendanceApi", url: EnvironmentHelper.Common.AttendanceApi, jwt: "", permissions: [] },
+			{ keyName: "GivingApi", url: EnvironmentHelper.Common.GivingApi, jwt: "", permissions: [] },
+			{ keyName: "MembershipApi", url: EnvironmentHelper.Common.MembershipApi, jwt: "", permissions: [] },
+			{ keyName: "MessagingApi", url: EnvironmentHelper.Common.MessagingApi, jwt: "", permissions: [] },
+			{ keyName: "ReportingApi", url: EnvironmentHelper.Common.ReportingApi, jwt: "", permissions: [] },
+			{ keyName: "DoingApi", url: EnvironmentHelper.Common.DoingApi, jwt: "", permissions: [] },
+			{ keyName: "ContentApi", url: EnvironmentHelper.Common.ContentApi, jwt: "", permissions: [] },
+			{ keyName: "AskApi", url: EnvironmentHelper.Common.AskApi, jwt: "", permissions: [] },
 		];
 
 		console.log("📡 API Configs populated:");

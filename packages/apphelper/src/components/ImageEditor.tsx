@@ -25,7 +25,10 @@ export function ImageEditor(props: Props) {
   const cropperRef = useRef<HTMLImageElement>(null);
   let timeout: number | null = null;
 
-  const handleSave = () => props.onUpdate(croppedImageDataUrl);
+  const handleSave = () => {
+    console.log('ImageEditor handleSave called, croppedImageDataUrl:', croppedImageDataUrl ? 'Data URL available' : 'No data URL');
+    props.onUpdate(croppedImageDataUrl);
+  };
 
   const handleDelete = () => props.onUpdate("");
 
@@ -40,6 +43,7 @@ export function ImageEditor(props: Props) {
     const reader = new FileReader();
     reader.onload = () => {
       const url = reader.result.toString();
+      console.log('ImageEditor file uploaded, setting photoSrc');
       setPhotoSrc(url);
       setCroppedImageDataUrl("");
     };
@@ -101,6 +105,7 @@ export function ImageEditor(props: Props) {
         }
 
         const url = cropper.getCroppedCanvas({ width, height }).toDataURL("image/png", 0.4);
+        console.log('ImageEditor handleCrop setting croppedImageDataUrl');
         setCroppedImageDataUrl(url);
       }
     }, 200);

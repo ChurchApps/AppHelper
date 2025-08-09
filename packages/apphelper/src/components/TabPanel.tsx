@@ -1,35 +1,27 @@
-"use client";
+import React from "react";
+import { Box } from "@mui/material";
 
-import { Box, styled } from "@mui/material";
-import React from "react"
-
-interface Props {
+interface TabPanelProps {
   children?: React.ReactNode;
   index: number;
   value: number;
 }
 
-export const TabPanel: React.FC<Props> = (props: Props) => {
-
-  const { children, value, index } = props;
-  const StyledMenuBox = styled(Box)(
-    ({ theme }) => ({
-      paddingTop: 10,
-      "& .MuiListItemButton-root": { paddingLeft: 30 },
-      "& .MuiListItemIcon-root": {
-        color: theme.palette.primary.main
-      },
-      "& .MuiListItemText-root": { color: theme.palette.text.primary },
-      "& .selected .MuiListItemText-root span": { fontWeight: "bold" }
-    })
-  );
+export function TabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props;
 
   return (
-    <div role="tabpanel" hidden={value !== index} id={`userMenuPanel-${index}`}>
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
       {value === index && (
-        <StyledMenuBox>
-          <Box>{children}</Box>
-        </StyledMenuBox>
+        <Box sx={{ p: 3 }}>
+          {children}
+        </Box>
       )}
     </div>
   );
