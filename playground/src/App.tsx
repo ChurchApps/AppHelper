@@ -30,6 +30,7 @@ import FormsComponentsPage from './pages/FormsComponentsPage';
 import MarkdownComponentsPage from './pages/MarkdownComponentsPage';
 import ModernLayoutPage from './pages/ModernLayoutPage';
 import PrivateMessageTestPage from './pages/PrivateMessageTestPage';
+import WebSocketTestPage from './pages/WebSocketTestPage';
 // import MessagingTestPage from './pages/MessagingTestPage';
 
 
@@ -326,10 +327,12 @@ function AppContent() {
   const getSecondaryMenuItems = () => {
     const path = window.location.pathname;
     
-    if (path.startsWith('/apphelper') || path.startsWith('/messaging')) {
+    if (path.startsWith('/apphelper') || path.startsWith('/messaging') || path.startsWith('/private-message')) {
       return [
         { url: '/apphelper-components', label: 'Components' },
         { url: '/apphelper-wrappers', label: 'Wrappers' },
+        { url: '/private-message-test', label: 'WebSocket Test' },
+        { url: '/websocket-test', label: 'Simple WebSocket Test' },
         { url: '/messaging-test', label: 'Messaging Test' },
         { url: '/apphelper-headers', label: 'Headers' },
         { url: '/apphelper-notes', label: 'Notes' },
@@ -359,11 +362,13 @@ function AppContent() {
       // Default/Home secondary menu
       return [
         { url: '/modern-layout', label: 'Modern Layout Demo' },
+        { url: '/websocket-test', label: 'Simple WebSocket Test' },
+        { url: '/private-message-test', label: 'WebSocket Test' },
         { url: '/components', label: 'Legacy Components Test' },
         { url: '/reporting', label: 'Legacy Reporting Test' }
       ];
     }
-  };
+  };;
   
   const secondaryMenuItems = getSecondaryMenuItems();
 
@@ -405,6 +410,7 @@ function AppContent() {
         {/* Modern Layout demo combining SiteHeader + PageHeader */}
         <Route path="/modern-layout" element={<ModernLayoutPage />} />
         <Route path="/private-message-test" element={<PrivateMessageTestPage />} />
+        <Route path="/websocket-test" element={<WebSocketTestPage />} />
         
         {/* Legacy routes for backward compatibility */}
         <Route path="/login" element={<LoginPageComponent />} />
