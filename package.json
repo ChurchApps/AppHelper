@@ -24,7 +24,8 @@
 		"publish:apphelper": "npm run build:apphelper && npm publish --workspace=packages/apphelper --access=public",
 		"publish:donations": "npm run build:donations && npm publish --workspace=packages/donations --access=public",
     "publish:forms": "npm run build:forms && npm publish --workspace=packages/apphelper-forms --access=public",
-		"publish:login": "npm run build:login && npm publish --workspace=packages/login --access=public"
+		"publish:login": "npm run build:login && npm publish --workspace=packages/login --access=public",
+		"publish:markdown": "npm run build:markdown && npm publish --workspace=packages/apphelper-markdown --access=public"
   },
   "devDependencies": {
     "copyfiles": "^2.4.1",
