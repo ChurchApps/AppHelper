@@ -6,7 +6,6 @@ import { LoginResponseInterface, UserContextInterface, ChurchInterface, UserInte
 import { ApiHelper, ArrayHelper, UserHelper, CommonEnvironmentHelper } from "@churchapps/helpers";
 import { AnalyticsHelper, Locale } from "./helpers";
 import { useCookies, CookiesProvider } from "react-cookie"
-import { jwtDecode } from "jwt-decode"
 import { Register } from "./components/Register"
 import { SelectChurchModal } from "./components/SelectChurchModal"
 import { Forgot } from "./components/Forgot";
@@ -124,18 +123,14 @@ const LoginPageContent: React.FC<Props> = ({ showLogo = true, loginContainerCssP
 		setCookie("email", resp.user.email, { path: "/" });
 		UserHelper.user = resp.user;
 
-		if (props.jwt) {
-			const decoded: any = jwtDecode(userJwtBackup)
-			selectedChurchId = decoded.churchId
-		}
+		// JWT church selection is handled by the server response, no client-side decoding needed
 
 		const search = new URLSearchParams(location?.search);
 		const churchIdInParams = search.get("churchId");
 
 		if (props.keyName) selectChurchByKeyName();
-		else if (selectedChurchId) selectChurchById();
 		else if (churchIdInParams) selectChurch(churchIdInParams);
-		else if (props.jwt && cookies.lastChurchId && ArrayHelper.getOne(resp.userChurches, "church.id", cookies.lastChurchId)) {
+		else if (cookies.lastChurchId && ArrayHelper.getOne(resp.userChurches, "church.id", cookies.lastChurchId)) {
 			selectedChurchId = cookies.lastChurchId;
 			selectChurchById();
 		}
@@ -255,7 +250,7 @@ const LoginPageContent: React.FC<Props> = ({ showLogo = true, loginContainerCssP
 		setErrors([])
 		setIsSubmitting(true);
 		try {
-			console.log("Logging in with data: ", data, "/users/login", ApiHelper.getConfig("MembeshipApi"));
+			console.log("Logging in with data: ", data, "/users/login", ApiHelper.getConfig("MembershipApi"));
 			const resp: LoginResponseInterface = await ApiHelper.postAnonymous("/users/login", data, "MembershipApi");
 			setIsSubmitting(false);
 			handleLoginSuccess(resp);

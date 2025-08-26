@@ -78,6 +78,10 @@ function LoginPageComponent() {
 
 	// Removed - now handled by LoginPage component
 
+	// Extract JWT from URL parameters
+	const urlParams = new URLSearchParams(window.location.search);
+	const jwtFromUrl = urlParams.get('jwt') || '';
+
 	// If user is already logged in, show logout option
 	if (context?.user) {
 		return (
@@ -143,7 +147,7 @@ function LoginPageComponent() {
 					<Box>
 						<AppHelperLoginPage
 							context={context}
-							jwt=""
+							jwt={jwtFromUrl}
 							auth=""
 							appName="AppHelper Playground"
 							appUrl={window.location.origin}
