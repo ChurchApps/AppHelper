@@ -1,6 +1,6 @@
 {
   "name": "@churchapps/apphelper-forms",
-  "version": "0.4.37",
+  "version": "0.4.41",
   "description": "Form components for ChurchApps AppHelper - general forms without payment processing",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -28,14 +28,14 @@
   },
   "homepage": "https://github.com/LiveChurchSolutions/AppHelper#readme",
   "peerDependencies": {
-    "@churchapps/helpers": "^1.1.1",
-    "@churchapps/apphelper": "^0.4.37",
+    "@churchapps/helpers": "^1.1.4",
+    "@churchapps/apphelper": "^0.4.41",
     "@mui/material": "^7.3.1",
     "react": "^18.0.0 || ^19.0.0",
     "react-dom": "^18.0.0 || ^19.0.0"
   },
   "dependencies": {
-    "@churchapps/apphelper-donations": "^0.4.37",
+    "@churchapps/apphelper-donations": "^0.4.41",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "axios": "^1.11.0",

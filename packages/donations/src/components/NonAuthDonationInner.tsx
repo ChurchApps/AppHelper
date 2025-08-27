@@ -37,6 +37,7 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
   const [church, setChurch] = useState<ChurchInterface>();
   const [gateway, setGateway] = useState(null);
   const [searchParams, setSearchParams] = useState<any>();
+  const [notes, setNotes] = useState("");
   const captchaRef = useRef(null);
   
   const getUrlParam = (param: string) => {
@@ -122,7 +123,8 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
         id: person?.id,
         email: person?.contactInfo?.email,
         name: person?.name?.display
-      }
+      },
+      notes: notes
     };
 
     if (donationType === "recurring") {
@@ -178,6 +180,7 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
       case "email": setEmail(val); break;
       case "startDate": setStartDate(val); break;
       case "interval": setInterval(val); break;
+      case "notes": setNotes(val); break;
     }
   };
 
@@ -276,6 +279,7 @@ return (
         </Grid>
       }
       {getFundList()}
+      <TextField fullWidth label={Locale.label("donation.donationForm.notes")} multiline aria-label="note" name="notes" value={notes} onChange={handleChange} style={{ marginTop: 10, marginBottom: 10 }} />
       <div>
         {fundsTotal > 0
           && <>
