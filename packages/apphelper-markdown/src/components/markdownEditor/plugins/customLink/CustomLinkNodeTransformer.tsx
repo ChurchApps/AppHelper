@@ -28,7 +28,7 @@ const replaceCustomLinkNode = (textNode : TextNode, match : any) => {
 
   const linkNode = $createCustomLinkNode(
     linkUrl,
-    match[4] ? (match[4].includes("_self") ? "_self" : "_blank") : "_blank",
+    match[4] ? (match[4].includes("_self") || match[4].includes("\\_self") ? "_self" : "_blank") : "_blank",
     match[4]
       ? match[4]
         .split(" ")
@@ -78,12 +78,20 @@ export const CUSTOM_LINK_NODE_TRANSFORMER: TextMatchTransformer = {
       return null;
     }
 
-    const linkContent = `[${node.getTextContent()}](${node.__url}){:target="${node.__target}" ${node
+    // Only include target attribute if it's not "_self" (which is the default)
+    const targetAttr = node.__target && node.__target !== "_self" ? `target="${node.__target}"` : "";
+    const classNames = node
       ?.__classNames
       ?.join(' ')
       .split(' ')
       .map((className: string) => "." + className.replaceAll('.', ''))
-      .join(" ")}}`;
+      .join(" ");
+    
+    // Build the attribute string, filtering out empty values
+    const attributes = [targetAttr, classNames].filter(attr => attr.trim() !== "").join(" ");
+    const linkContent = attributes 
+      ? `[${node.getTextContent()}](${node.__url}){:${attributes}}`
+      : `[${node.getTextContent()}](${node.__url})`;
 
     const firstChild = node.getFirstChild();
 
