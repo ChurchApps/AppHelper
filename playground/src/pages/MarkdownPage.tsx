@@ -84,98 +84,71 @@ const LazyMarkdownPreview = React.lazy(async () => {
   }
 });
 
-const LazyMarkdownPreviewLight = React.lazy(async () => {
-  try {
-    const module = await import('@churchapps/apphelper-markdown');
-    return { default: module.MarkdownPreviewLight };
-  } catch (error) {
-    console.error('Failed to load MarkdownPreviewLight:', error);
-    return { 
-      default: () => (
-        <Alert severity="error">
-          Failed to load MarkdownPreviewLight component. Lexical dependencies may be missing.
-        </Alert>
-      ) 
-    };
-  }
-});
-
 export function MarkdownTestPage() {
-  const [content, setContent] = React.useState(`# Welcome to the Markdown Editor
+  const [content, setContent] = React.useState(`# Underscore Test Cases
 
-## Features Demo
+## Test Links with Underscores in URLs
 
-This is a **bold** text and this is *italic* text. You can also use ~~strikethrough~~ text.
+### Image URLs with underscores:
+![Grace Logo](https://content.churchapps.org/Hchi650pfrH/files/grace_logo.png?dt=1756324896015)
 
-### Lists
+### Regular links with underscores:
+[File with underscore](https://example.com/test_file_name.pdf)
+[Another test link](https://api.example.com/v1/user_profile/get_data)
 
-**Unordered List:**
-- First item
-- Second item  
-- Third item with **bold** text
+## Test Links with Target Attributes
 
-**Ordered List:**
-1. First numbered item
-2. Second numbered item
-3. Third numbered item
+### Links that open in same window (target="_self"):
+[Same window link](https://example.com){:target="_self"}
+[Link with underscore and _self](https://example.com/test_file.pdf){:target="_self"}
 
-### Links and Code
+### Links that open in new window (target="_blank"):
+[New window link](https://example.com){:target="_blank"}
+[Link with underscore and _blank](https://example.com/test_file.pdf){:target="_blank"}
 
-Visit our [website](https://example.com) for more information.
+## Test Text with Underscores
 
-Here's some inline code: \`console.log('Hello, World!')\`
+This is text with literal_underscores_in_it that should not be escaped.
 
-**Code Block:**
-\`\`\`javascript
-const greeting = "Hello, World!";
-console.log(greeting);
+File names like my_document_v2.pdf and api_key_config.json should preserve underscores.
 
-function sayHello(name) {
-  return \`Hello, \${name}!\`;
-}
-\`\`\`
+## Test Underline Formatting
 
-### Blockquotes
+This text uses __double underscores__ for underline formatting.
 
-> This is a blockquote with some important information.
-> It can span multiple lines and include **formatting**.
+## Mixed Content Test
 
-### Tables
+Here's a complex example: [Download my_file_v2.pdf](https://cdn.example.com/files/my_file_v2.pdf){:target="_blank" .btn .btn-primary}
 
-| Feature | Status | Notes |
-|---------|---------|--------|
-| Rich Text | ✅ | Fully supported |
-| Markdown | ✅ | Real-time preview |
-| Tables | ✅ | Basic support |
-| Images | ⏳ | Coming soon |
-
----
-
-### Emojis
-
-You can use emojis in your content! 😊 👍 🎉
-
-### Additional Formatting
-
-**Bold text** and *italic text* can be combined as ***bold and italic***.
-
-Try editing this content in the editor above to see live updates!`);
+Another example with classes: [User_Profile_Page](https://app.example.com/user_profile){:target="_self" .nav-link}`);
 
   return (
-    <ComponentPage title="Markdown Components - Functional Examples">
+    <ComponentPage title="Markdown Editor - Underscore Escaping Test">
       <Stack spacing={4}>
-        <Alert severity="info">
-          This page demonstrates AppHelper markdown components with rich text editing capabilities.
+        <Alert severity="warning">
+          <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
+            Testing Underscore Escaping Issue
+          </Typography>
+          <Typography variant="body2" component="div">
+            This page is set up to test if underscores are being properly handled:
+            <ul style={{ marginTop: '8px', marginBottom: 0 }}>
+              <li>URLs like grace_logo.png should NOT become grace\_logo.png</li>
+              <li>Target attributes like target="_blank" should NOT become target="\_blank"</li>
+              <li>Edit content in the editor and check the "Generated Markdown Output" below</li>
+            </ul>
+          </Typography>
         </Alert>
 
         <MarkdownComponentWrapper>
           <Box>
-            <Typography variant="h6" gutterBottom>MarkdownEditor</Typography>
+            <Typography variant="h6" gutterBottom sx={{ color: 'primary.main' }}>
+              1. Edit Your Content Here
+            </Typography>
             <Alert severity="info" sx={{ mb: 2 }}>
-              Rich text editor with markdown support, toolbar, and plugins
+              Use the editor below to add links, images, and text with underscores
             </Alert>
             <React.Suspense fallback={<Typography>Loading MarkdownEditor...</Typography>}>
-              <Box sx={{ border: 1, borderColor: 'divider', borderRadius: 1, minHeight: 300 }}>
+              <Box sx={{ border: 2, borderColor: 'primary.main', borderRadius: 1, minHeight: 400 }}>
                 <LazyMarkdownEditor
                   value={content}
                   onChange={setContent}
@@ -185,10 +158,44 @@ Try editing this content in the editor above to see live updates!`);
             </React.Suspense>
           </Box>
 
+          <Box sx={{ backgroundColor: '#fff3cd', p: 2, borderRadius: 1, border: '2px solid #ffc107' }}>
+            <Typography variant="h6" gutterBottom sx={{ color: '#856404' }}>
+              2. Generated Markdown Output (THIS IS WHAT GETS SAVED)
+            </Typography>
+            <Alert severity="warning" sx={{ mb: 2 }}>
+              Check here for escaped underscores! Look for backslashes (\) before underscores (_)
+            </Alert>
+            <Box sx={{ 
+              border: 2, 
+              borderColor: '#ffc107', 
+              borderRadius: 1, 
+              p: 2, 
+              bgcolor: 'white',
+              fontFamily: 'monospace',
+              fontSize: '14px'
+            }}>
+              <pre style={{ 
+                margin: 0, 
+                whiteSpace: 'pre-wrap', 
+                fontFamily: 'monospace', 
+                fontSize: '14px',
+                maxHeight: '400px',
+                overflow: 'auto',
+                backgroundColor: '#f8f9fa',
+                padding: '12px',
+                borderRadius: '4px'
+              }}>
+                {content}
+              </pre>
+            </Box>
+          </Box>
+
           <Box>
-            <Typography variant="h6" gutterBottom>MarkdownPreview</Typography>
+            <Typography variant="h6" gutterBottom>
+              3. Visual Preview (How it will look)
+            </Typography>
             <Alert severity="info" sx={{ mb: 2 }}>
-              Full-featured markdown preview with styling
+              This shows how the markdown will be rendered visually
             </Alert>
             <React.Suspense fallback={<Typography>Loading MarkdownPreview...</Typography>}>
               <Box sx={{ border: 1, borderColor: 'divider', borderRadius: 1, p: 2, minHeight: 200, bgcolor: 'grey.50' }}>
@@ -196,38 +203,7 @@ Try editing this content in the editor above to see live updates!`);
               </Box>
             </React.Suspense>
           </Box>
-
-          <Box>
-            <Typography variant="h6" gutterBottom>MarkdownPreviewLight</Typography>
-            <Alert severity="info" sx={{ mb: 2 }}>
-              Lightweight markdown preview component
-            </Alert>
-            <React.Suspense fallback={<Typography>Loading MarkdownPreviewLight...</Typography>}>
-              <Box sx={{ border: 1, borderColor: 'divider', borderRadius: 1, p: 2, minHeight: 200, bgcolor: 'grey.100' }}>
-                <LazyMarkdownPreviewLight value={content} />
-              </Box>
-            </React.Suspense>
-          </Box>
         </MarkdownComponentWrapper>
-
-        <Box>
-          <Typography variant="h6" gutterBottom>Sample Markdown Content</Typography>
-          <Alert severity="info" sx={{ mb: 2 }}>
-            This shows what the markdown content looks like in raw form
-          </Alert>
-          <Box sx={{ border: 1, borderColor: 'divider', borderRadius: 1, p: 2, bgcolor: 'grey.100' }}>
-            <pre style={{ 
-              margin: 0, 
-              whiteSpace: 'pre-wrap', 
-              fontFamily: 'monospace', 
-              fontSize: '0.875rem',
-              maxHeight: '300px',
-              overflow: 'auto'
-            }}>
-              {content}
-            </pre>
-          </Box>
-        </Box>
 
         <Box>
           <Typography variant="h6" gutterBottom>Component Information</Typography>

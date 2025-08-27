@@ -89,10 +89,28 @@ export const CUSTOM_LINK_NODE_TRANSFORMER: TextMatchTransformer = {
     
     // Build the attribute string, filtering out empty values
     const attributes = [targetAttr, classNames].filter(attr => attr.trim() !== "").join(" ");
-    const linkContent = attributes 
-      ? `[${node.getTextContent()}](${node.__url}){:${attributes}}`
-      : `[${node.getTextContent()}](${node.__url})`;
-
+    
+    // For links with attributes, we need to handle the export differently to prevent underscore escaping
+    if (attributes) {
+      const linkText = node.getTextContent();
+      const firstChild = node.getFirstChild();
+      
+      // Format the text content with markdown formatting (bold, italic, etc.)
+      let formattedText = linkText;
+      if (node.getChildrenSize() === 1 && $isTextNode(firstChild)) {
+        // Get the formatted text without the link part
+        const tempContent = `PLACEHOLDER_TEXT`;
+        const formatted = exportFormat(firstChild, tempContent);
+        // Replace the placeholder with actual text
+        formattedText = formatted.replace('PLACEHOLDER_TEXT', linkText);
+      }
+      
+      // Return the link with attributes - these won't go through exportFormat to avoid escaping
+      return `[${formattedText}](${node.__url}){:${attributes}}`;
+    }
+    
+    // For simple links without attributes, use the standard format
+    const linkContent = `[${node.getTextContent()}](${node.__url})`;
     const firstChild = node.getFirstChild();
 
     if (node.getChildrenSize() === 1 && $isTextNode(firstChild)) {
