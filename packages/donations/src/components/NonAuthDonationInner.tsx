@@ -279,7 +279,7 @@ return (
         </Grid>
       }
       {getFundList()}
-      <TextField fullWidth label={Locale.label("donation.donationForm.notes")} multiline aria-label="note" name="notes" value={notes} onChange={handleChange} style={{ marginTop: 10, marginBottom: 10 }} />
+      <TextField fullWidth label="Memo (optional)" multiline aria-label="note" name="notes" value={notes} onChange={handleChange} style={{ marginTop: 10, marginBottom: 10 }} />
       <div>
         {fundsTotal > 0
           && <>

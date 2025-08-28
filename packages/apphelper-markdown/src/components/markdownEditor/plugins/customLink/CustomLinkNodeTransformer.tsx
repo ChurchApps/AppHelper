@@ -98,11 +98,14 @@ export const CUSTOM_LINK_NODE_TRANSFORMER: TextMatchTransformer = {
       // Format the text content with markdown formatting (bold, italic, etc.)
       let formattedText = linkText;
       if (node.getChildrenSize() === 1 && $isTextNode(firstChild)) {
-        // Get the formatted text without the link part
-        const tempContent = `PLACEHOLDER_TEXT`;
-        const formatted = exportFormat(firstChild, tempContent);
-        // Replace the placeholder with actual text
-        formattedText = formatted.replace('PLACEHOLDER_TEXT', linkText);
+        // Get the formatted text by using the actual link content
+        const linkContent = `[${linkText}](${node.__url})`;
+        const formatted = exportFormat(firstChild, linkContent);
+        // Extract just the text part from the formatted link markdown
+        const linkMatch = formatted.match(/^\[([^\]]+)\]/);
+        if (linkMatch) {
+          formattedText = linkMatch[1];
+        }
       }
       
       // Return the link with attributes - these won't go through exportFormat to avoid escaping

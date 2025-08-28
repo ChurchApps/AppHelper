@@ -248,7 +248,7 @@ return (
                   <p>{Locale.label("donation.donationForm.total")}: ${total}</p>
                 </>
               }
-              <TextField id="donation-notes" fullWidth label={Locale.label("donation.donationForm.notes")} multiline aria-label="note" name="notes" value={donation.notes || ""} onChange={handleChange} onKeyDown={handleKeyDown} />
+              <TextField id="donation-notes" fullWidth label="Memo (optional)" multiline aria-label="note" name="notes" value={donation.notes || ""} onChange={handleChange} onKeyDown={handleKeyDown} />
             </div>
             {errorMessage && <ErrorMessages errors={[errorMessage]}></ErrorMessages>}
           </div>
