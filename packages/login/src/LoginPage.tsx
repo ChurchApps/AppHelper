@@ -81,11 +81,11 @@ const LoginPageContent: React.FC<Props> = ({ showLogo = true, loginContainerCssP
 		props.context.setPerson(null);
 		// Show a logout success message
 		setErrors(["You have been successfully logged out."]);
-		
+
 		// Handle redirect after logout
 		const search = new URLSearchParams(location?.search);
 		const returnUrl = search.get("returnUrl") || props.returnUrl || "/";
-		
+
 		// Use handleRedirect if available, otherwise use window.location
 		if (props.handleRedirect) {
 			props.handleRedirect(returnUrl);
@@ -256,11 +256,11 @@ const LoginPageContent: React.FC<Props> = ({ showLogo = true, loginContainerCssP
 			handleLoginSuccess(resp);
 		} catch (e: any) {
 			setPendingAutoLogin(false);
+			setWelcomeBackName("");
 			if (!data.jwt) handleLoginErrors([e.toString()]);
-			else setWelcomeBackName("");
 			setIsSubmitting(false);
 		}
-	};
+	};;
 
 	const getWelcomeBack = () => { if (welcomeBackName !== "") return (<><Alert severity="info"><div dangerouslySetInnerHTML={{ __html: Locale.label("login.welcomeName")?.replace("{}", welcomeBackName) }} /></Alert><Loading /></>); }
 	const getCheckEmail = () => { if (new URLSearchParams(location?.search).get("checkEmail") === "1") return <Alert severity="info">{Locale.label("login.registerThankYou")}</Alert> }
