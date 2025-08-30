@@ -38,6 +38,7 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
   const [gateway, setGateway] = useState(null);
   const [searchParams, setSearchParams] = useState<any>();
   const [notes, setNotes] = useState("");
+  const [coverFees, setCoverFees] = useState(false);
   const captchaRef = useRef(null);
   
   const getUrlParam = (param: string) => {
@@ -76,6 +77,7 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
   };
 
   const handleCheckChange = (e: React.SyntheticEvent<Element, Event>, checked: boolean) => {
+    setCoverFees(checked);
     const totalPayAmount = checked ? fundsTotal + transactionFee : fundsTotal;
     setTotal(totalPayAmount);
   };
@@ -83,6 +85,12 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 
   const handleSave = async () => {
     if (validate()) {
+      // Validate captcha first
+      if (!captchaResponse || captchaResponse === "robot") {
+        setErrors(["Please complete the reCAPTCHA verification"]);
+        return;
+      }
+      
       setProcessing(true);
       ApiHelper.post("/users/loadOrCreate", { userEmail: email, firstName, lastName }, "MembershipApi")
         .catch((ex: any) => { setErrors([ex.toString()]); setProcessing(false); })
@@ -194,13 +202,15 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
       selectedFunds.push({ id: fundDonation.fundId, amount: fundDonation.amount || 0, name: fund.name });
     }
     setFundsTotal(totalAmount);
-    setTotal(totalAmount);
 
     const fee = await getTransactionFee(totalAmount);
     setTransactionFee(fee);
 
     if (gateway && gateway.payFees === true) {
       setTotal(totalAmount + fee);
+    } else {
+      // If the checkbox is checked, include the fee in the total
+      setTotal(coverFees ? totalAmount + fee : totalAmount);
     }
   };
 
@@ -234,7 +244,7 @@ return (<>
   if (donationComplete) return <Alert severity="success">{Locale.label("donation.donationForm.thankYou")}</Alert>;
   else {
 return (
-    <InputBox headerIcon={showHeader ? "volunteer_activism" : ""} headerText={showHeader ? "Donate" : ""} saveFunction={handleSave} saveText="Donate" isSubmitting={processing || !captchaResponse || captchaResponse === "robot"} mainContainerCssProps={mainContainerCssProps}>
+    <InputBox headerIcon={showHeader ? "volunteer_activism" : ""} headerText={showHeader ? "Donate" : ""} saveFunction={handleSave} saveText="Donate" isSubmitting={processing} mainContainerCssProps={mainContainerCssProps}>
       <ErrorMessages errors={errors} />
       <Grid container spacing={3}>
         <Grid size={{ xs: 12, md: 6 }}>
@@ -287,7 +297,7 @@ return (
               ? <Typography fontSize={14} fontStyle="italic">*{Locale.label("donation.donationForm.fees").replace("{}", CurrencyHelper.formatCurrency(transactionFee))}</Typography>
               : (
                 <FormGroup>
-                  <FormControlLabel control={<Checkbox />} name="transaction-fee" label={Locale.label("donation.donationForm.cover").replace("{}", CurrencyHelper.formatCurrency(transactionFee))} onChange={handleCheckChange} />
+                  <FormControlLabel control={<Checkbox checked={coverFees} />} name="transaction-fee" label={Locale.label("donation.donationForm.cover").replace("{}", CurrencyHelper.formatCurrency(transactionFee))} onChange={handleCheckChange} />
                 </FormGroup>
               )}
             <p>Total Donation Amount: ${total}</p>
