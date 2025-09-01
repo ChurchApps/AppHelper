@@ -153,6 +153,7 @@ function LoginPageComponent() {
 							appUrl={window.location.origin}
 							returnUrl="/"
 							showLogo={false}
+							showFooter={true}
 							loginContainerCssProps={{
 								style: {
 									backgroundColor: 'transparent',

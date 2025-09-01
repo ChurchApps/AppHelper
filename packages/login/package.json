@@ -1,6 +1,6 @@
 {
   "name": "@churchapps/apphelper-login",
-  "version": "0.4.41",
+  "version": "0.4.42",
   "description": "Login components for ChurchApps AppHelper",
   "type": "module",
   "main": "dist/index.js",

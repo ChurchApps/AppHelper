@@ -27,6 +27,7 @@ interface Props {
 	churchRegisteredCallback?: (church: ChurchInterface) => Promise<void>;
 	callbackErrors?: string[];
 	showLogo?: boolean;
+	showFooter?: boolean;
 	loginContainerCssProps?: PaperProps;
 	defaultEmail?: string;
 	defaultPassword?: string;
@@ -276,7 +277,7 @@ const LoginPageContent: React.FC<Props> = ({ showLogo = true, loginContainerCssP
 		);
 		else if (showForgot) return (<Forgot registerCallback={handleRegisterCallback} loginCallback={handleLoginCallback} />);
 		else if (props.auth) return (<LoginSetPassword setErrors={setErrors} setShowForgot={setShowForgot} isSubmitting={isSubmitting} auth={props.auth} login={login} appName={props.appName} appUrl={cleanAppUrl()} />)
-		else return <Login setShowRegister={setShowRegister} setShowForgot={setShowForgot} setErrors={setErrors} isSubmitting={isSubmitting} login={login} mainContainerCssProps={loginContainerCssProps} defaultEmail={props.defaultEmail} defaultPassword={props.defaultPassword} />;
+		else return <Login setShowRegister={setShowRegister} setShowForgot={setShowForgot} setErrors={setErrors} isSubmitting={isSubmitting} login={login} mainContainerCssProps={loginContainerCssProps} defaultEmail={props.defaultEmail} defaultPassword={props.defaultPassword} showFooter={props.showFooter} />;
 	}
 
 	React.useEffect(init, []); //eslint-disable-line
