@@ -8,8 +8,9 @@
   "scripts": {
     "clean": "rimraf dist",
     "tsc": "tsc",
-    "copy-assets": "npm-run-all copy-css copy-icons copy-emojis",
+    "copy-assets": "npm-run-all copy-css copy-html-css copy-icons copy-emojis",
     "copy-css": "copyfiles -f src/components/markdownEditor/editor.css dist/components/markdownEditor",
+    "copy-html-css": "copyfiles -f src/components/htmlEditor/editor.css dist/components/htmlEditor",
     "copy-icons": "copyfiles -f src/components/markdownEditor/images/icons/* dist/components/markdownEditor/images/icons",
     "copy-emojis": "copyfiles -f src/components/markdownEditor/images/emoji/* dist/components/markdownEditor/images/emoji",
     "build": "npm-run-all clean tsc copy-assets"
@@ -39,6 +40,7 @@
   },
   "dependencies": {
     "@lexical/code": "^0.33.1",
+    "@lexical/html": "^0.33.1",
     "@lexical/link": "^0.33.1",
     "@lexical/list": "^0.33.1",
     "@lexical/markdown": "^0.33.1",

@@ -28,6 +28,7 @@ import LoginComponentsPage from './pages/LoginComponentsPage';
 import DonationComponentsPage from './pages/DonationComponentsPage';
 import FormsComponentsPage from './pages/FormsComponentsPage';
 import MarkdownComponentsPage from './pages/MarkdownComponentsPage';
+import { HtmlComponentsPage } from './pages/HtmlComponentsPage';
 import ModernLayoutPage from './pages/ModernLayoutPage';
 import PrivateMessageTestPage from './pages/PrivateMessageTestPage';
 import WebSocketTestPage from './pages/WebSocketTestPage';
@@ -176,10 +177,11 @@ function HomePage() {
               <CardContent>
                 <Typography variant="h6" color="primary">@churchapps/apphelper-markdown</Typography>
                 <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
-                  Lexical rich text package with 4 components: Editor, preview variants, modal wrapper
+                  Lexical rich text package with 6 components: Markdown editors with previews, HTML editor with modal
                 </Typography>
                 <Stack spacing={1}>
-                  <Link to="/markdown-components">All Markdown Components</Link>
+                  <Link to="/markdown-components">Markdown Components</Link>
+                  <Link to="/html-components">HTML Components (NEW)</Link>
                 </Stack>
               </CardContent>
             </Card>
@@ -353,9 +355,10 @@ function AppContent() {
         { url: '/donation-components', label: 'Donation Components' },
         { url: '/donations', label: 'Test Donations (Legacy)' }
       ];
-    } else if (path.startsWith('/markdown')) {
+    } else if (path.startsWith('/markdown') || path.startsWith('/html')) {
       return [
         { url: '/markdown-components', label: 'Markdown Editor' },
+        { url: '/html-components', label: 'HTML Editor' },
         { url: '/markdown', label: 'Test Editor (Legacy)' }
       ];
     } else {
@@ -406,6 +409,7 @@ function AppContent() {
         <Route path="/donation-components" element={<RequireAuth><DonationComponentsPage /></RequireAuth>} />
         <Route path="/forms-components" element={<FormsComponentsPage />} />
         <Route path="/markdown-components" element={<MarkdownComponentsPage />} />
+        <Route path="/html-components" element={<HtmlComponentsPage />} />
         
         {/* Modern Layout demo combining SiteHeader + PageHeader */}
         <Route path="/modern-layout" element={<ModernLayoutPage />} />
