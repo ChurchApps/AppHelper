@@ -77,16 +77,19 @@ import {
   FormatSize,
   Superscript,
   Subscript,
-  FormatClear
+  FormatClear,
+  CodeOff
 } from '@mui/icons-material';
 
 interface Props {
   setIsLinkEditMode: (value: boolean) => void;
+  isSourceMode?: boolean;
+  setIsSourceMode?: (value: boolean) => void;
 }
 
 const FONT_SIZES = ['12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px', '36px', '48px'];
 
-export default function HtmlToolbarPlugin({ setIsLinkEditMode }: Props) {
+export default function HtmlToolbarPlugin({ setIsLinkEditMode, isSourceMode = false, setIsSourceMode }: Props) {
   const [editor] = useLexicalComposerContext();
   const [blockType, setBlockType] = useState('paragraph');
   const [isBold, setIsBold] = useState(false);
@@ -535,6 +538,20 @@ export default function HtmlToolbarPlugin({ setIsLinkEditMode }: Props) {
         <HorizontalRule />
       </IconButton>
       {/* Table button removed */}
+      
+      {setIsSourceMode && (
+        <>
+          <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
+          <IconButton
+            onClick={() => setIsSourceMode(!isSourceMode)}
+            className={isSourceMode ? 'active' : ''}
+            size="small"
+            title={isSourceMode ? "Visual Editor" : "HTML Source"}
+          >
+            {isSourceMode ? <Code /> : <CodeOff />}
+          </IconButton>
+        </>
+      )}
     </div>
   );
 }

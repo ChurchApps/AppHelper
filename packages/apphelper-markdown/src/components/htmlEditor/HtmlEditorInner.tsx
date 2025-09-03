@@ -29,6 +29,7 @@ import AutoLinkPlugin from './plugins/AutoLinkPlugin';
 import ListMaxIndentLevelPlugin from './plugins/ListMaxIndentLevelPlugin';
 import ReadOnlyPlugin from './plugins/ReadOnlyPlugin';
 import ControlledEditorPlugin from './plugins/ControlledEditorPlugin';
+import HtmlSourcePlugin from './plugins/HtmlSourcePlugin';
 import theme from './theme';
 import './editor.css';
 
@@ -43,6 +44,7 @@ interface Props {
 export default function HtmlEditorInner({ value, onChange, style, placeholder = 'Start typing...', readOnly = false }: Props) {
   const [floatingAnchorElem, setFloatingAnchorElem] = useState<HTMLDivElement | null>(null);
   const [isLinkEditMode, setIsLinkEditMode] = useState(false);
+  const [isSourceMode, setIsSourceMode] = useState(false);
 
   const onRef = (_floatingAnchorElem: HTMLDivElement) => {
     if (_floatingAnchorElem !== null) {
@@ -82,17 +84,21 @@ export default function HtmlEditorInner({ value, onChange, style, placeholder = 
   return (
     <LexicalComposer initialConfig={initialConfig}>
       <div className="editor-container" style={style}>
-        <HtmlToolbarPlugin setIsLinkEditMode={setIsLinkEditMode} />
-        <div className="editor-inner">
+        <HtmlToolbarPlugin 
+          setIsLinkEditMode={setIsLinkEditMode} 
+          isSourceMode={isSourceMode}
+          setIsSourceMode={setIsSourceMode}
+        />
+        <div className="editor-inner" style={{ position: 'relative', minHeight: '150px' }}>
           <RichTextPlugin
             contentEditable={
-              <div className="editor-scroller">
+              <div className="editor-scroller" style={{ display: isSourceMode ? 'none' : 'block' }}>
                 <div className="editor" ref={onRef}>
                   <ContentEditable className="editor-input" />
                 </div>
               </div>
             }
-            placeholder={<div className="editor-placeholder">{placeholder}</div>}
+            placeholder={<div className="editor-placeholder" style={{ display: isSourceMode ? 'none' : 'block' }}>{placeholder}</div>}
             ErrorBoundary={LexicalErrorBoundary}
           />
           <OnChangePlugin onChange={handleChange} />
@@ -108,7 +114,8 @@ export default function HtmlEditorInner({ value, onChange, style, placeholder = 
           <ListMaxIndentLevelPlugin maxDepth={7} />
           {readOnly && <ReadOnlyPlugin readOnly={readOnly} />}
           <ControlledEditorPlugin value={value} />
-          {floatingAnchorElem && (
+          <HtmlSourcePlugin isSourceMode={isSourceMode} />
+          {floatingAnchorElem && !isSourceMode && (
             <>
               <FloatingTextFormatToolbarPlugin anchorElem={floatingAnchorElem} />
               <FloatingLinkEditorPlugin
