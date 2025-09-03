@@ -3,6 +3,7 @@ import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext
 import { $generateHtmlFromNodes, $generateNodesFromDOM } from '@lexical/html';
 import { $getRoot, $insertNodes } from 'lexical';
 import { TextField, Box } from '@mui/material';
+import { cleanHtml } from '../utils/cleanHtml';
 
 interface Props {
   isSourceMode: boolean;
@@ -17,8 +18,9 @@ export default function HtmlSourcePlugin({ isSourceMode }: Props) {
   useEffect(() => {
     if (isSourceMode && !prevIsSourceMode) {
       editor.getEditorState().read(() => {
-        const html = $generateHtmlFromNodes(editor);
-        setHtmlSource(html);
+        const rawHtml = $generateHtmlFromNodes(editor);
+        const cleanedHtml = cleanHtml(rawHtml);
+        setHtmlSource(cleanedHtml);
       });
     }
     setPrevIsSourceMode(isSourceMode);
@@ -44,8 +46,9 @@ export default function HtmlSourcePlugin({ isSourceMode }: Props) {
     if (!isSourceMode) {
       return editor.registerUpdateListener(({ editorState }) => {
         editorState.read(() => {
-          const html = $generateHtmlFromNodes(editor);
-          setHtmlSource(html);
+          const rawHtml = $generateHtmlFromNodes(editor);
+          const cleanedHtml = cleanHtml(rawHtml);
+          setHtmlSource(cleanedHtml);
         });
       });
     }

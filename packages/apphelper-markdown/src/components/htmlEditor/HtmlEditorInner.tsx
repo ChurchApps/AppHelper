@@ -32,6 +32,7 @@ import ControlledEditorPlugin from './plugins/ControlledEditorPlugin';
 import HtmlSourcePlugin from './plugins/HtmlSourcePlugin';
 import theme from './theme';
 import './editor.css';
+import { cleanHtml } from './utils/cleanHtml';
 
 interface Props {
   value: string;
@@ -75,8 +76,9 @@ export default function HtmlEditorInner({ value, onChange, style, placeholder = 
   const handleChange = (editorState: any) => {
     if (onChange) {
       editorState.read(() => {
-        const html = $generateHtmlFromNodes(editorState);
-        onChange(html);
+        const rawHtml = $generateHtmlFromNodes(editorState);
+        const cleanedHtml = cleanHtml(rawHtml);
+        onChange(cleanedHtml);
       });
     }
   };
