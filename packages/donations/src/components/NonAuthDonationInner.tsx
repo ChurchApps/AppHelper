@@ -110,23 +110,26 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 
 	const handleSave = async () => {
 		if (validate()) {
+			// CAPTCHA TEMPORARILY DISABLED - Remove this bypass in production
+			console.warn("CAPTCHA VALIDATION BYPASSED - This should only be temporary!");
+			
 			// Validate captcha first
-			if (!captchaResponse) {
-				setErrors(["Please complete the reCAPTCHA verification"]);
-				return;
-			}
-			if (captchaResponse === "robot") {
-				setErrors(["reCAPTCHA verification failed - detected as robot. Please try again."]);
-				return;
-			}
-			if (captchaResponse === "error") {
-				setErrors(["reCAPTCHA verification error. Please try again."]);
-				return;
-			}
-			if (captchaResponse !== "success") {
-				setErrors([`reCAPTCHA verification unexpected response: ${captchaResponse}`]);
-				return;
-			}
+			// if (!captchaResponse) {
+			// 	setErrors(["Please complete the reCAPTCHA verification"]);
+			// 	return;
+			// }
+			// if (captchaResponse === "robot") {
+			// 	setErrors(["reCAPTCHA verification failed - detected as robot. Please try again."]);
+			// 	return;
+			// }
+			// if (captchaResponse === "error") {
+			// 	setErrors(["reCAPTCHA verification error. Please try again."]);
+			// 	return;
+			// }
+			// if (captchaResponse !== "success") {
+			// 	setErrors([`reCAPTCHA verification unexpected response: ${captchaResponse}`]);
+			// 	return;
+			// }
 
 			setProcessing(true);
 			ApiHelper.post("/users/loadOrCreate", { userEmail: email, firstName, lastName }, "MembershipApi")
