@@ -23,14 +23,16 @@ export const RecurringDonations: React.FC<Props> = (props) => {
           s.funds = subFunds;
           subs.push(s);
         }));
-        return requests && Promise.all(requests).then(() => {
-          setSubscriptions(subs);
-        });
+        if (requests) {
+          return Promise.all(requests).then(() => {
+            setSubscriptions(subs);
+          });
+        }
       });
     }
   };
 
-  const handleUpdate = (message: string) => {
+  const handleUpdate = (message?: string) => {
     loadData();
     setMode("display");
     if (message) props.dataUpdate(message);
@@ -45,22 +47,22 @@ export const RecurringDonations: React.FC<Props> = (props) => {
   const getPaymentMethod = (sub: SubscriptionInterface) => {
     const pm = props.paymentMethods.find((pm: any) => pm.id === (sub.default_payment_method || sub.default_source));
     if (!pm) return <span style={{ color: "red" }}>{Locale.label("donation.recurring.notFound")}</span>;
-    return `${pm.name} ****${pm.last4}`;
+    return `${pm.name} ****${pm.last4 || ''}`;
   };
 
   const getInterval = (subscription: SubscriptionInterface) => {
-    const interval = subscription.plan.interval_count + " " + subscription.plan.interval;
-    return subscription.plan.interval_count > 1 ? interval + "s" : interval;
+    const interval = (subscription.plan?.interval_count || 1) + " " + (subscription.plan?.interval || "month");
+    return (subscription.plan?.interval_count || 1) > 1 ? interval + "s" : interval;
   };
 
   const getFunds = (subscription: SubscriptionInterface) => {
     const result: React.ReactElement[] = [];
-    subscription.funds.forEach((fund: any) => {
+    subscription.funds?.forEach((fund: any) => {
       result.push(<div key={subscription.id + fund.id}>
           {fund.name} <span style={{ float: "right" }}>{CurrencyHelper.formatCurrency(fund.amount)}</span>
         </div>);
     });
-    const total = (subscription.plan.amount / 100);
+    const total = ((subscription.plan?.amount || 0) / 100);
     result.push(<div key={subscription.id + "-total"} style={{ borderTop: "solid #dee2e6 1px" }}>
         Total <span style={{ float: "right" }}>{CurrencyHelper.formatCurrency(total)}</span>
       </div>);
@@ -90,7 +92,7 @@ export const RecurringDonations: React.FC<Props> = (props) => {
 
     subscriptions.forEach((sub: any) => {
       rows.push(<TableRow key={sub.id}>
-          <TableCell>{DateHelper.prettyDate(new Date(sub.billing_cycle_anchor * 1000))}</TableCell>
+          <TableCell>{DateHelper.prettyDate(new Date((sub.billing_cycle_anchor || 0) * 1000))}</TableCell>
           <TableCell>{getFunds(sub)}</TableCell>
           <TableCell>{Locale.label("donation.recurring.every")} {getInterval(sub)}</TableCell>
           <TableCell className="capitalize">{getPaymentMethod(sub)}</TableCell>
@@ -122,4 +124,5 @@ export const RecurringDonations: React.FC<Props> = (props) => {
       <RecurringDonationsEdit customerId={props.customerId} paymentMethods={props.paymentMethods} editSubscription={editSubscription} subscriptionUpdated={handleUpdate} />
     );
   }
+  return null;
 };

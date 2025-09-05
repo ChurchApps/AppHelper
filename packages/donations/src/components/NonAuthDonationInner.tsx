@@ -25,7 +25,7 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 	const [fundsTotal, setFundsTotal] = useState<number>(0);
 	const [transactionFee, setTransactionFee] = useState<number>(0);
 	const [total, setTotal] = useState<number>(0);
-	const [errors, setErrors] = useState([]);
+	const [errors, setErrors] = useState<string[]>([]);
 	const [fundDonations, setFundDonations] = useState<FundDonationInterface[]>([]);
 	const [funds, setFunds] = useState<FundInterface[]>([]);
 	const [donationComplete, setDonationComplete] = useState(false);
@@ -33,13 +33,13 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 	const [donationType, setDonationType] = useState<"once" | "recurring">("once");
 	const [interval, setInterval] = useState("one_month");
 	const [startDate, setStartDate] = useState(new Date().toDateString());
-	const [captchaResponse, setCaptchaResponse] = useState("");
+	const [_captchaResponse, setCaptchaResponse] = useState("");
 	const [church, setChurch] = useState<ChurchInterface>();
-	const [gateway, setGateway] = useState(null);
-	const [searchParams, setSearchParams] = useState<any>();
+	const [gateway, setGateway] = useState<any>(null);
+	const [searchParams, setSearchParams] = useState<any>(null);
 	const [notes, setNotes] = useState("");
 	const [coverFees, setCoverFees] = useState(false);
-	const captchaRef = useRef(null);
+	const captchaRef = useRef<ReCAPTCHA>(null);
 
 	const getUrlParam = (param: string) => {
 		if (typeof window === "undefined") return null;
@@ -101,7 +101,7 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 		}
 	};
 
-	const handleCheckChange = (e: React.SyntheticEvent<Element, Event>, checked: boolean) => {
+	const handleCheckChange = (_e: React.SyntheticEvent<Element, Event>, checked: boolean) => {
 		setCoverFees(checked);
 		const totalPayAmount = checked ? fundsTotal + transactionFee : fundsTotal;
 		setTotal(totalPayAmount);
@@ -114,20 +114,20 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 			console.warn("CAPTCHA VALIDATION BYPASSED - This should only be temporary!");
 			
 			// Validate captcha first
-			// if (!captchaResponse) {
+			// if (!_captchaResponse) {
 			// 	setErrors(["Please complete the reCAPTCHA verification"]);
 			// 	return;
 			// }
-			// if (captchaResponse === "robot") {
+			// if (_captchaResponse === "robot") {
 			// 	setErrors(["reCAPTCHA verification failed - detected as robot. Please try again."]);
 			// 	return;
 			// }
-			// if (captchaResponse === "error") {
+			// if (_captchaResponse === "error") {
 			// 	setErrors(["reCAPTCHA verification error. Please try again."]);
 			// 	return;
 			// }
-			// if (captchaResponse !== "success") {
-			// 	setErrors([`reCAPTCHA verification unexpected response: ${captchaResponse}`]);
+			// if (_captchaResponse !== "success") {
+			// 	setErrors([`reCAPTCHA verification unexpected response: ${_captchaResponse}`]);
 			// 	return;
 			// }
 
@@ -142,11 +142,16 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 		}
 	};
 
-	const saveCard = async (user: UserInterface, person: PersonInterface) => {
-		const cardData = elements.getElement(CardElement);
+	const saveCard = async (_user: UserInterface, person: PersonInterface) => {
+		const cardData = elements?.getElement(CardElement);
+		if (!stripe || !cardData) {
+			setErrors(["Payment processing unavailable"]);
+			setProcessing(false);
+			return;
+		}
 		const stripePM = await stripe.createPaymentMethod({ type: "card", card: cardData });
-		if (stripePM.error) { setErrors([stripePM.error.message]); setProcessing(false); } else {
-			const pm = { id: stripePM.paymentMethod.id, personId: person.id, email: email, name: person.name.display, churchId: props.churchId };
+		if (stripePM.error) { setErrors([stripePM.error.message || "Payment method error"]); setProcessing(false); } else {
+			const pm = { id: stripePM.paymentMethod!.id, personId: person.id, email: email, name: person?.name?.display || "", churchId: props.churchId };
 			await ApiHelper.post("/paymentmethods/addcard", pm, "GivingApi").then((result: any) => {
 				if (result?.raw?.message) {
 					setErrors([result.raw.message]);
@@ -168,28 +173,29 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 			churchId: props.churchId,
 			funds: [],
 			person: {
-				id: person?.id,
-				email: person?.contactInfo?.email,
-				name: person?.name?.display
+				id: person?.id || "",
+				email: person?.contactInfo?.email || "",
+				name: person?.name?.display || ""
 			},
 			notes: notes
 		};
 
 		if (donationType === "recurring") {
-			donation.billing_cycle_anchor = + new Date(startDate);
+			donation.billing_cycle_anchor = startDate ? + new Date(startDate) : + new Date();
 			donation.interval = DonationHelper.getInterval(interval);
 		}
 
 		for (const fundDonation of fundDonations) {
-			const fund = funds.find((fund: FundInterface) => fund.id === fundDonation.fundId);
-			donation.funds.push({ id: fundDonation.fundId, amount: fundDonation.amount || 0, name: fund.name });
+			if (donation.funds) {
+				donation.funds.push({ id: fundDonation.fundId || "", amount: fundDonation.amount || 0 });
+			}
 		}
 
 		const churchObj = {
-			name: church.name,
-			subDomain: church.subDomain,
-			churchURL: typeof window !== "undefined" && window.location.origin,
-			logo: props?.churchLogo
+			name: church?.name || "",
+			subDomain: church?.subDomain || "",
+			churchURL: typeof window !== "undefined" ? window.location.origin : "",
+			logo: props?.churchLogo || ""
 		};
 
 		let results;
@@ -207,7 +213,7 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 	};
 
 	const validate = () => {
-		const result = [];
+		const result: string[] = [];
 		if (!firstName) result.push(Locale.label("donation.donationForm.validate.firstName"));
 		if (!lastName) result.push(Locale.label("donation.donationForm.validate.lastName"));
 		if (!email) result.push(Locale.label("donation.donationForm.validate.email"));
@@ -235,18 +241,18 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 	const handleFundDonationsChange = async (fd: FundDonationInterface[]) => {
 		setFundDonations(fd);
 		let totalAmount = 0;
-		const selectedFunds: any = [];
+		const selectedFunds: any[] = [];
 		for (const fundDonation of fd) {
 			totalAmount += fundDonation.amount || 0;
 			const fund = funds.find((fund: FundInterface) => fund.id === fundDonation.fundId);
-			selectedFunds.push({ id: fundDonation.fundId, amount: fundDonation.amount || 0, name: fund.name });
+			selectedFunds.push({ id: fundDonation.fundId, amount: fundDonation.amount || 0, name: fund?.name || "" });
 		}
 		setFundsTotal(totalAmount);
 
 		const fee = await getTransactionFee(totalAmount);
 		setTransactionFee(fee);
 
-		if (gateway && gateway.payFees === true) {
+		if (gateway?.payFees === true) {
 			setTotal(totalAmount + fee);
 		} else {
 			// If the checkbox is checked, include the fee in the total
@@ -336,7 +342,7 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 							</FormControl>
 						</Grid>
 						<Grid size={{ xs: 12, md: 6 }}>
-							<TextField fullWidth name="startDate" type="date" aria-label="startDate" label={Locale.label("donation.donationForm.startDate")} value={DateHelper.formatHtml5Date(new Date(startDate))} onChange={handleChange} />
+							<TextField fullWidth name="startDate" type="date" aria-label="startDate" label={Locale.label("donation.donationForm.startDate")} value={DateHelper.formatHtml5Date(startDate ? new Date(startDate) : new Date())} onChange={handleChange} />
 						</Grid>
 					</Grid>
 				}
@@ -345,7 +351,7 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 				<div>
 					{fundsTotal > 0
 						&& <>
-							{(gateway && gateway.payFees === true)
+							{(gateway?.payFees === true)
 								? <Typography fontSize={14} fontStyle="italic">*{Locale.label("donation.donationForm.fees").replace("{}", CurrencyHelper.formatCurrency(transactionFee))}</Typography>
 								: (
 									<FormGroup>

@@ -5,7 +5,7 @@ import { ApiHelper } from "@churchapps/helpers";
 import { Locale } from "../helpers";
 import { InputBox } from "@churchapps/apphelper";
 import { SubscriptionInterface } from "@churchapps/helpers";
-import { FormControl, Grid, InputLabel, MenuItem, Select, TextField } from "@mui/material";
+import { FormControl, Grid, InputLabel, MenuItem, Select } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material";
 import { DonationHelper, StripePaymentMethod } from "../helpers";
 
@@ -21,8 +21,10 @@ export const RecurringDonationsEdit: React.FC<Props> = (props) => {
     const pmFound = props.paymentMethods.find((pm: StripePaymentMethod) => pm.id === sub.id);
     if (!pmFound) {
       const pm = props.paymentMethods[0];
-      sub.default_payment_method = pm.type === "card" ? pm.id : null;
-      sub.default_source = pm.type === "bank" ? pm.id : null;
+      if (pm) {
+        sub.default_payment_method = pm.type === "card" ? (pm.id || "") : "";
+        sub.default_source = pm.type === "bank" ? (pm.id || "") : "";
+      }
     }
     ApiHelper.post("/subscriptions", [sub], "GivingApi").then(() => props.subscriptionUpdated(Locale.label("donation.donationForm.recurringUpdated")));
   };
@@ -42,14 +44,18 @@ export const RecurringDonationsEdit: React.FC<Props> = (props) => {
     switch (e.target.name) {
       case "method":
         const pm = props.paymentMethods.find((pm: StripePaymentMethod) => pm.id === value);
-        sub.default_payment_method = pm.type === "card" ? value : null;
-        sub.default_source = pm.type === "bank" ? value : null;
+        if (pm) {
+          sub.default_payment_method = pm.type === "card" ? (value || "") : "";
+          sub.default_source = pm.type === "bank" ? (value || "") : "";
+        }
         break;
       case "interval":
         setInterval(value);
         const inter = DonationHelper.getInterval(value);
-        sub.plan.interval_count = inter.interval_count;
-        sub.plan.interval = inter.interval;
+        if (sub.plan) {
+          sub.plan.interval_count = inter.interval_count;
+          sub.plan.interval = inter.interval;
+        }
         break;
     }
     setEditSubscription(sub);
@@ -61,7 +67,7 @@ export const RecurringDonationsEdit: React.FC<Props> = (props) => {
         <Grid size={{ xs: 12, md: 6 }}>
           <FormControl fullWidth>
             <InputLabel>{Locale.label("donation.donationForm.method")}</InputLabel>
-            <Select label={Locale.label("donation.donationForm.method")} name="method" aria-label="method" value={editSubscription.default_payment_method || editSubscription.default_source} className="capitalize" onChange={handleChange}>
+            <Select label={Locale.label("donation.donationForm.method")} name="method" aria-label="method" value={editSubscription.default_payment_method || editSubscription.default_source || ""} className="capitalize" onChange={handleChange}>
               {props.paymentMethods.map((paymentMethod: any, i: number) => <MenuItem key={i} value={paymentMethod.id}>{paymentMethod.name} ****{paymentMethod.last4}</MenuItem>)}
             </Select>
           </FormControl>
@@ -84,7 +90,7 @@ export const RecurringDonationsEdit: React.FC<Props> = (props) => {
 
   useEffect(() => {
     if (props.editSubscription) {
-      const keyName = DonationHelper.getIntervalKeyName(props.editSubscription.plan.interval_count, props.editSubscription.plan.interval);
+      const keyName = DonationHelper.getIntervalKeyName(props.editSubscription.plan?.interval_count || 1, props.editSubscription.plan?.interval || "month");
       setInterval(keyName);
     }
   }, [props.editSubscription]);

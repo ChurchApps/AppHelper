@@ -26,6 +26,7 @@ import AppHelperHeadersPage from './pages/AppHelperHeadersPage';
 import AppHelperHooksPage from './pages/AppHelperHooksPage';
 import LoginComponentsPage from './pages/LoginComponentsPage';
 import DonationComponentsPage from './pages/DonationComponentsPage';
+import PayPalDonationPage from './pages/PayPalDonationPage';
 import FormsComponentsPage from './pages/FormsComponentsPage';
 import MarkdownComponentsPage from './pages/MarkdownComponentsPage';
 import { HtmlComponentsPage } from './pages/HtmlComponentsPage';
@@ -163,10 +164,11 @@ function HomePage() {
               <CardContent>
                 <Typography variant="h6" color="primary">@churchapps/apphelper-donations</Typography>
                 <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
-                  Stripe donation package with 13 components: Payment forms, recurring donations, fund management 🔒
+                  Multi-gateway donation package with Stripe + PayPal support: Payment forms, recurring donations, fund management 🔒
                 </Typography>
                 <Stack spacing={1}>
                   <Link to="/donation-components">All Donation Components 🔒</Link>
+                  <Link to="/paypal-donations">🆕 PayPal Multi-Gateway Demo</Link>
                 </Stack>
               </CardContent>
             </Card>
@@ -350,9 +352,10 @@ function AppContent() {
       return [
         { url: '/forms-components', label: 'Form Components' }
       ];
-    } else if (path.startsWith('/donation')) {
+    } else if (path.startsWith('/donation') || path.startsWith('/paypal')) {
       return [
         { url: '/donation-components', label: 'Donation Components' },
+        { url: '/paypal-donations', label: 'PayPal Multi-Gateway Test' },
         { url: '/donations', label: 'Test Donations (Legacy)' }
       ];
     } else if (path.startsWith('/markdown') || path.startsWith('/html')) {
@@ -407,6 +410,7 @@ function AppContent() {
         <Route path="/apphelper-hooks" element={<AppHelperHooksPage />} />
         <Route path="/login-components" element={<LoginComponentsPage />} />
         <Route path="/donation-components" element={<RequireAuth><DonationComponentsPage /></RequireAuth>} />
+        <Route path="/paypal-donations" element={<PayPalDonationPage />} />
         <Route path="/forms-components" element={<FormsComponentsPage />} />
         <Route path="/markdown-components" element={<MarkdownComponentsPage />} />
         <Route path="/html-components" element={<HtmlComponentsPage />} />

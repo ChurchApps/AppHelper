@@ -16,11 +16,11 @@ export const CardForm: React.FC<Props> = (props) => {
   const formStyling = { style: { base: { fontSize: "18px" } } };
   const [showSave, setShowSave] = useState(true);
   const [paymentMethod] = useState<PaymentMethodInterface>({ id: props.card.id, customerId: props.customerId, personId: props.person.id, email: props.person.contactInfo.email, name: props.person.name.display });
-  const [cardUpdate, setCardUpdate] = useState<StripeCardUpdateInterface>({ personId: props.person.id, paymentMethodId: props.card.id, cardData: { card: {} } } as StripeCardUpdateInterface);
-  const [errorMessage, setErrorMessage] = useState<string>(null);
+  const [cardUpdate, setCardUpdate] = useState<StripeCardUpdateInterface>({ personId: props.person.id, paymentMethodId: props.card.id, cardData: { card: { exp_year: "", exp_month: "" } } } as StripeCardUpdateInterface);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const handleCancel = () => { props.setMode("display"); };
   const handleSave = () => { setShowSave(false); props.card.id ? updateCard() : createCard(); };
-  const saveDisabled = () => { };
+  const saveDisabled = () => { /* Function for disabled save state */ };
   const handleDelete = () => { props.deletePayment(); };
 
   const handleKeyPress = (e: React.KeyboardEvent<any>) => {
@@ -30,7 +30,7 @@ export const CardForm: React.FC<Props> = (props) => {
 
   useEffect(() => {
     setCardUpdate({ ...cardUpdate, cardData: { card: { exp_year: props.card?.exp_year?.toString().slice(2) || "", exp_month: props.card?.exp_month || "" } } });
-  }, []) //eslint-disable-line
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const card = { ...cardUpdate };
@@ -41,18 +41,32 @@ export const CardForm: React.FC<Props> = (props) => {
   };
 
   const createCard = async () => {
-    const cardData = elements.getElement(CardElement);
-    const stripePM = await stripe.createPaymentMethod({
-      type: "card",
-      card: cardData
-    });
-    if (stripePM.error) {
-      setErrorMessage(stripePM.error.message);
+    if (!stripe || !elements) {
+      setErrorMessage("Stripe is not available");
       setShowSave(true);
-    } else {
-      const pm = { ...paymentMethod };
-      pm.id = stripePM.paymentMethod.id;
-      await ApiHelper.post("/paymentmethods/addcard", pm, "GivingApi").then((result: any) => {
+      return;
+    }
+    
+    const cardData = elements.getElement(CardElement);
+    if (!cardData) {
+      setErrorMessage("Card element not found");
+      setShowSave(true);
+      return;
+    }
+    
+    try {
+      const stripePM = await stripe.createPaymentMethod({
+        type: "card",
+        card: cardData
+      });
+      
+      if (stripePM.error) {
+        setErrorMessage(stripePM.error.message || "Card creation failed");
+        setShowSave(true);
+      } else if (stripePM.paymentMethod?.id) {
+        const pm = { ...paymentMethod };
+        pm.id = stripePM.paymentMethod.id;
+        const result = await ApiHelper.post("/paymentmethods/addcard", pm, "GivingApi");
         if (result?.raw?.message) {
           setErrorMessage(result.raw.message);
           setShowSave(true);
@@ -60,14 +74,23 @@ export const CardForm: React.FC<Props> = (props) => {
           props.updateList(Locale.label("donation.cardForm.added"));
           props.setMode("display");
         }
-      });
+      } else {
+        setErrorMessage("Failed to create payment method");
+        setShowSave(true);
+      }
+    } catch (error) {
+      setErrorMessage("Error creating card");
+      console.error(error);
+      setShowSave(true);
     }
   };
 
   const updateCard = async () => {
-    if (!cardUpdate.cardData.card.exp_month || !cardUpdate.cardData.card.exp_year) setErrorMessage("Expiration month and year cannot be blank.");
-    else {
-      await ApiHelper.post("/paymentmethods/updatecard", cardUpdate, "GivingApi").then((result: any) => {
+    if (!cardUpdate.cardData.card.exp_month || !cardUpdate.cardData.card.exp_year) {
+      setErrorMessage("Expiration month and year cannot be blank.");
+    } else {
+      try {
+        const result = await ApiHelper.post("/paymentmethods/updatecard", cardUpdate, "GivingApi");
         if (result?.raw?.message) {
           setErrorMessage(result.raw.message);
           setShowSave(true);
@@ -75,12 +98,16 @@ export const CardForm: React.FC<Props> = (props) => {
           props.updateList(Locale.label("donation.cardForm.updated"));
           props.setMode("display");
         }
-      });
+      } catch (error) {
+        setErrorMessage("Error updating card");
+        console.error(error);
+        setShowSave(true);
+      }
     }
   };
 
   const getHeaderText = () => props.card.id
-    ? `${props.card.name.toUpperCase()} ****${props.card.last4}`
+    ? `${props.card.name?.toUpperCase() || 'CARD'} ****${props.card.last4 || ''}`
     : Locale.label("donation.cardForm.addNew");
 
   return (
@@ -91,10 +118,10 @@ export const CardForm: React.FC<Props> = (props) => {
           ? <CardElement options={formStyling} />
           : <Grid container spacing={3}>
             <Grid size={{ xs: 12, md: 6 }}>
-              <TextField fullWidth aria-label="card-exp-month" label={Locale.label("donation.cardForm.expirationMonth")} name="exp_month" value={cardUpdate.cardData.card.exp_month} placeholder="MM" inputProps={{ maxLength: 2 }} onChange={handleChange} onKeyPress={handleKeyPress} />
+              <TextField fullWidth aria-label="card-exp-month" label={Locale.label("donation.cardForm.expirationMonth")} name="exp_month" value={cardUpdate.cardData.card.exp_month || ""} placeholder="MM" inputProps={{ maxLength: 2 }} onChange={handleChange} onKeyPress={handleKeyPress} />
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
-              <TextField fullWidth aria-label="card-exp-year" label={Locale.label("donation.cardForm.expirationYear")} name="exp_year" value={cardUpdate.cardData.card.exp_year} placeholder="YY" inputProps={{ maxLength: 2 }} onChange={handleChange} onKeyPress={handleKeyPress} />
+              <TextField fullWidth aria-label="card-exp-year" label={Locale.label("donation.cardForm.expirationYear")} name="exp_year" value={cardUpdate.cardData.card.exp_year || ""} placeholder="YY" inputProps={{ maxLength: 2 }} onChange={handleChange} onKeyPress={handleKeyPress} />
             </Grid>
           </Grid>
         }

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { $getRoot } from 'lexical';
 import { $generateHtmlFromNodes } from '@lexical/html';
 import { InitialConfigType, LexicalComposer } from '@lexical/react/LexicalComposer';
+import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { ContentEditable } from '@lexical/react/LexicalContentEditable';
 import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
 import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
@@ -42,6 +43,26 @@ interface Props {
   readOnly?: boolean;
 }
 
+// Plugin to handle HTML generation on editor changes
+function HtmlOnChangePlugin({ onChange }: { onChange?: (html: string) => void }) {
+  const [editor] = useLexicalComposerContext();
+  
+  useEffect(() => {
+    if (!onChange) return;
+    
+    return editor.registerUpdateListener(({ editorState }) => {
+      editor.update(() => {
+        const rawHtml = $generateHtmlFromNodes(editor);
+        const cleanedHtml = cleanHtml(rawHtml);
+        console.log('HtmlOnChangePlugin: Generated HTML:', cleanedHtml.substring(0, 100) + '...');
+        onChange(cleanedHtml);
+      });
+    });
+  }, [editor, onChange]);
+
+  return null;
+}
+
 export default function HtmlEditorInner({ value, onChange, style, placeholder = 'Start typing...', readOnly = false }: Props) {
   const [floatingAnchorElem, setFloatingAnchorElem] = useState<HTMLDivElement | null>(null);
   const [isLinkEditMode, setIsLinkEditMode] = useState(false);
@@ -70,18 +91,10 @@ export default function HtmlEditorInner({ value, onChange, style, placeholder = 
       HorizontalRuleNode,
       LinkNode,
       AutoLinkNode
-    ]
+    ],
+    editorState: undefined
   };
 
-  const handleChange = (editorState: any) => {
-    if (onChange) {
-      editorState.read(() => {
-        const rawHtml = $generateHtmlFromNodes(editorState);
-        const cleanedHtml = cleanHtml(rawHtml);
-        onChange(cleanedHtml);
-      });
-    }
-  };
 
   return (
     <LexicalComposer initialConfig={initialConfig}>
@@ -103,7 +116,7 @@ export default function HtmlEditorInner({ value, onChange, style, placeholder = 
             placeholder={<div className="editor-placeholder" style={{ display: isSourceMode ? 'none' : 'block' }}>{placeholder}</div>}
             ErrorBoundary={LexicalErrorBoundary}
           />
-          <OnChangePlugin onChange={handleChange} />
+          <HtmlOnChangePlugin onChange={onChange} />
           <HistoryPlugin />
           <AutoFocusPlugin />
           <ListPlugin />

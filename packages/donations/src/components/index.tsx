@@ -1,6 +1,7 @@
 export { BankForm } from "./BankForm";
 export { CardForm } from "./CardForm";
 export { DonationForm } from "./DonationForm";
+export { MultiGatewayDonationForm } from "./MultiGatewayDonationForm";
 export { FundDonation } from "./FundDonation";
 export { FundDonations } from "./FundDonations";
 export { NonAuthDonation } from "./NonAuthDonation";

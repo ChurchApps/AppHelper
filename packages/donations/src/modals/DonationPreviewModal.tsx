@@ -31,8 +31,8 @@ export const DonationPreviewModal: React.FC<Props> = (props) => {
   };
 
   const formatInterval = () => {
-    const count = props.donation.interval.interval_count;
-    const interval = props.donation.interval.interval;
+    const count = props.donation.interval?.interval_count || 1;
+    const interval = props.donation.interval?.interval || "month";
     const result = `${count} ${interval}`;
     return count > 1 ? result + "s" : result;
   };
@@ -48,22 +48,22 @@ export const DonationPreviewModal: React.FC<Props> = (props) => {
       <DialogContent id="donation-preview-content">
         <Table>
           <TableBody>
-            <TableRow><TableCell>{Locale.label("person.name")}:</TableCell><TableCell>{props.donation.person.name}</TableCell></TableRow>
+            <TableRow><TableCell>{Locale.label("person.name")}:</TableCell><TableCell>{props.donation.person?.name || ""}</TableCell></TableRow>
             <TableRow><TableCell>{Locale.label("donation.preview.method")}:</TableCell><TableCell className="capitalize">{props.paymentMethodName}</TableCell></TableRow>
             <TableRow><TableCell>{Locale.label("donation.preview.type")}:</TableCell><TableCell>{donationType[props.donationType]}</TableCell></TableRow>
             {props.donationType === "once"
-              && <TableRow><TableCell>{Locale.label("donation.preview.date")}:</TableCell><TableCell>{DateHelper.formatHtml5Date(new Date(props.donation.billing_cycle_anchor))}</TableCell></TableRow>
+              && <TableRow><TableCell>{Locale.label("donation.preview.date")}:</TableCell><TableCell>{props.donation.billing_cycle_anchor ? DateHelper.formatHtml5Date(new Date(props.donation.billing_cycle_anchor)) : ""}</TableCell></TableRow>
             }
-            <TableRow><TableCell>{Locale.label("donation.preview.weekly")}:</TableCell><TableCell>{props.donation.notes}</TableCell></TableRow>
+            <TableRow><TableCell>{Locale.label("donation.preview.weekly")}:</TableCell><TableCell>{props.donation.notes || ""}</TableCell></TableRow>
             {props.donationType === "recurring"
               && <>
-                <TableRow><TableCell>{Locale.label("donation.preview.startingOn")}:</TableCell><TableCell>{DateHelper.formatHtml5Date(new Date(props.donation.billing_cycle_anchor))}</TableCell></TableRow>
+                <TableRow><TableCell>{Locale.label("donation.preview.startingOn")}:</TableCell><TableCell>{props.donation.billing_cycle_anchor ? DateHelper.formatHtml5Date(new Date(props.donation.billing_cycle_anchor)) : ""}</TableCell></TableRow>
                 <TableRow><TableCell>{Locale.label("donation.preview.every")}:</TableCell><TableCell className="capitalize">{formatInterval()}</TableCell></TableRow>
               </>
             }
-            <TableRow><TableCell>{Locale.label("donation.preview.funds")}:</TableCell><TableCell>{props.donation.funds.map((fund: any, i: number) => <p key={i}>{CurrencyHelper.formatCurrency(fund.amount)} - {fund.name}</p>)}</TableCell></TableRow>
+            <TableRow><TableCell>{Locale.label("donation.preview.funds")}:</TableCell><TableCell>{props.donation.funds?.map((fund: any, i: number) => <p key={i}>{CurrencyHelper.formatCurrency(fund.amount)} - {fund.name}</p>)}</TableCell></TableRow>
             {props.payFee > 0 && <TableRow><TableCell>{Locale.label("donation.preview.fee")}:</TableCell><TableCell>{CurrencyHelper.formatCurrency(props.payFee)}</TableCell></TableRow>}
-            <TableRow><TableCell>{Locale.label("donation.preview.total")}:</TableCell><TableCell><h4>{CurrencyHelper.formatCurrency(props.donation.amount)}</h4></TableCell></TableRow>
+            <TableRow><TableCell>{Locale.label("donation.preview.total")}:</TableCell><TableCell><h4>{CurrencyHelper.formatCurrency(props.donation.amount || 0)}</h4></TableCell></TableRow>
           </TableBody>
         </Table>
       </DialogContent>

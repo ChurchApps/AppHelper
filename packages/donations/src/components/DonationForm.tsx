@@ -18,7 +18,7 @@ import { DonationHelper, StripePaymentMethod } from "../helpers";
 interface Props { person: PersonInterface, customerId: string, paymentMethods: StripePaymentMethod[], stripePromise: Promise<Stripe>, donationSuccess: (message: string) => void, church?: ChurchInterface, churchLogo?: string }
 
 export const DonationForm: React.FC<Props> = (props) => {
-  const [errorMessage, setErrorMessage] = useState<string>();
+  const [errorMessage, setErrorMessage] = useState<string | undefined>();
   const [fundDonations, setFundDonations] = useState<FundDonationInterface[]>();
   const [funds, setFunds] = useState<FundInterface[]>([]);
   const [fundsTotal, setFundsTotal] = useState<number>(0);
@@ -28,18 +28,18 @@ export const DonationForm: React.FC<Props> = (props) => {
   const [paymentMethodName, setPaymentMethodName] = useState<string>(
     props?.paymentMethods?.length > 0 ? `${props.paymentMethods[0].name} ****${props.paymentMethods[0].last4}` : ""
   );
-  const [donationType, setDonationType] = useState<string>();
+  const [donationType, setDonationType] = useState<string | undefined>();
   const [showDonationPreviewModal, setShowDonationPreviewModal] = useState<boolean>(false);
   const [interval, setInterval] = useState("one_month");
-  const [gateway, setGateway] = useState(null);
+  const [gateway, setGateway] = useState<any>(null);
   const [donation, setDonation] = useState<StripeDonationInterface>({
     id: props?.paymentMethods?.length > 0 ? props.paymentMethods[0].id : "",
     type: props?.paymentMethods?.length > 0 ? props.paymentMethods[0].type : "",
     customerId: props.customerId,
     person: {
-      id: props.person?.id,
-      email: props.person?.contactInfo?.email,
-      name: props.person?.name?.display
+      id: props.person?.id || "",
+      email: props.person?.contactInfo?.email || "",
+      name: props.person?.name?.display || ""
     },
     amount: 0,
     billing_cycle_anchor: + new Date(),
@@ -61,13 +61,13 @@ export const DonationForm: React.FC<Props> = (props) => {
   }, []);
 
   const handleSave = useCallback(() => {
-    if (donation.amount < .5) setErrorMessage(Locale.label("donation.donationForm.tooLow"));
+    if ((donation.amount ?? 0) < .5) setErrorMessage(Locale.label("donation.donationForm.tooLow"));
     else setShowDonationPreviewModal(true);
   }, [donation.amount]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<any>) => { if (e.key === "Enter") { e.preventDefault(); handleSave(); } }, [handleSave]);
 
-  const handleCheckChange = useCallback((e: React.SyntheticEvent<Element, Event>, checked: boolean) => {
+  const handleCheckChange = useCallback((_e: React.SyntheticEvent<Element, Event>, checked: boolean) => {
     const d = { ...donation } as StripeDonationInterface;
     d.amount = checked ? fundsTotal + transactionFee : fundsTotal;
     const showFee = checked ? transactionFee : 0;
@@ -78,18 +78,20 @@ export const DonationForm: React.FC<Props> = (props) => {
 
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement> | SelectChangeEvent<string>) => {
-    setErrorMessage(null);
+    setErrorMessage(undefined);
     const d = { ...donation } as StripeDonationInterface;
     const value = e.target.value;
     switch (e.target.name) {
       case "method":
         d.id = value;
         const pm = props.paymentMethods.find(pm => pm.id === value);
-        d.type = pm.type;
-        setPaymentMethodName(`${pm.name} ****${pm.last4}`);
+        if (pm) {
+          d.type = pm.type;
+          setPaymentMethodName(`${pm.name} ****${pm.last4}`);
+        }
         break;
       case "type": setDonationType(value); break;
-      case "date": d.billing_cycle_anchor = + new Date(value); break;
+      case "date": d.billing_cycle_anchor = value ? + new Date(value) : + new Date(); break;
       case "interval":
         setInterval(value);
         d.interval = DonationHelper.getInterval(value);
@@ -105,9 +107,9 @@ export const DonationForm: React.FC<Props> = (props) => {
     setDonation(d);
   }, [donation, props.paymentMethods, fundsTotal, transactionFee]);
 
-  const handleCancel = useCallback(() => { setDonationType(null); }, []);
+  const handleCancel = useCallback(() => { setDonationType(undefined); }, []);
   const handleDonationSelect = useCallback((type: string) => {
-    const dt = donationType === type ? null : type;
+    const dt = donationType === type ? undefined : type;
     setDonationType(dt);
   }, [donationType]);
 
@@ -118,10 +120,10 @@ export const DonationForm: React.FC<Props> = (props) => {
     let results;
 
     const churchObj = {
-      name: props?.church?.name,
-      subDomain: props?.church?.subDomain,
-      churchURL: typeof window !== "undefined" && window.location.origin,
-      logo: props?.churchLogo
+      name: props?.church?.name || "",
+      subDomain: props?.church?.subDomain || "",
+      churchURL: typeof window !== "undefined" ? window.location.origin : "",
+      logo: props?.churchLogo || ""
     };
 
     if (donationType === "once") results = await ApiHelper.post("/donate/charge/", { ...donation, church: churchObj }, "GivingApi");
@@ -129,7 +131,7 @@ export const DonationForm: React.FC<Props> = (props) => {
 
     if (results?.status === "succeeded" || results?.status === "pending" || results?.status === "active") {
       setShowDonationPreviewModal(false);
-      setDonationType(null);
+      setDonationType(undefined);
       props.donationSuccess(message);
     }
     if (results?.raw?.message) {
@@ -139,14 +141,16 @@ export const DonationForm: React.FC<Props> = (props) => {
   }, [donation, donationType, props.church?.name, props.church?.subDomain, props.churchLogo, props.donationSuccess]);
 
   const handleFundDonationsChange = useCallback(async (fd: FundDonationInterface[]) => {
-    setErrorMessage(null);
+    setErrorMessage(undefined);
     setFundDonations(fd);
     let totalAmount = 0;
     const selectedFunds: any = [];
     for (const fundDonation of fd) {
       totalAmount += fundDonation.amount || 0;
       const fund = funds.find((fund: FundInterface) => fund.id === fundDonation.fundId);
-      selectedFunds.push({ id: fundDonation.fundId, amount: fundDonation.amount || 0, name: fund.name });
+      if (fund) {
+        selectedFunds.push({ id: fundDonation.fundId, amount: fundDonation.amount || 0, name: fund.name });
+      }
     }
     const d = { ...donation };
     d.amount = totalAmount;
@@ -160,7 +164,7 @@ export const DonationForm: React.FC<Props> = (props) => {
       d.amount = totalAmount + fee;
       setPayFee(fee);
     }
-    setTotal(d.amount);
+    setTotal(d.amount ?? 0);
     setDonation(d);
   }, [donation, funds, gateway]);
 
@@ -170,7 +174,7 @@ export const DonationForm: React.FC<Props> = (props) => {
       if (donation.type === "card") dt = "creditCard";
       if (donation.type === "bank") dt = "ach";
       try {
-        const response = await ApiHelper.post("/donate/fee?churchId=" + props?.church?.id, { type: dt, amount }, "GivingApi");
+        const response = await ApiHelper.post("/donate/fee?churchId=" + (props?.church?.id || ""), { type: dt, amount }, "GivingApi");
         return response.calculatedFee;
       } catch (error) {
         console.log("Error calculating transaction fee: ", error);
@@ -187,10 +191,10 @@ export const DonationForm: React.FC<Props> = (props) => {
    
 
   if (!funds.length || !props?.paymentMethods?.length) return null;
-  else {
-return (
+  
+  return (
     <>
-      <DonationPreviewModal show={showDonationPreviewModal} onHide={() => setShowDonationPreviewModal(false)} handleDonate={makeDonation} donation={donation} donationType={donationType} payFee={payFee} paymentMethodName={paymentMethodName} funds={funds} />
+      <DonationPreviewModal show={showDonationPreviewModal} onHide={() => setShowDonationPreviewModal(false)} handleDonate={makeDonation} donation={donation} donationType={donationType || ""} payFee={payFee} paymentMethodName={paymentMethodName} funds={funds} />
       <InputBox id="donation-form" aria-label="donation-box" headerIcon="volunteer_activism" headerText={Locale.label("donation.donationForm.donate")} ariaLabelSave="save-button" cancelFunction={donationType ? handleCancel : undefined} saveFunction={donationType ? handleSave : undefined} saveText={Locale.label("donation.donationForm.preview")}>
         <Grid id="donation-type-selector" container spacing={3}>
           <Grid size={{ xs: 12, md: 6 }}>
@@ -200,10 +204,10 @@ return (
             <Button id="recurring-donation-button" aria-label="recurring-donation" size="small" fullWidth style={{ minHeight: "50px" }} variant={donationType === "recurring" ? "contained" : "outlined"} onClick={handleRecurringDonationClick}>{Locale.label("donation.donationForm.makeRecurring")}</Button>
           </Grid>
         </Grid>
-        {donationType
-          && <div id="donation-details" style={{ marginTop: "20px" }}>
+        {donationType && (
+          <div id="donation-details" style={{ marginTop: "20px" }}>
             <Grid container spacing={3}>
-              <Grid size={12}>
+              <Grid size={{ xs: 12 }}>
                 <FormControl fullWidth>
                   <InputLabel>{Locale.label("donation.donationForm.method")}</InputLabel>
                   <Select id="payment-method-select" label={Locale.label("donation.donationForm.method")} name="method" aria-label="method" value={donation.id} className="capitalize" onChange={handleChange}>
@@ -212,10 +216,10 @@ return (
                 </FormControl>
               </Grid>
             </Grid>
-            {donationType === "recurring"
-              && <Grid container spacing={3} style={{ marginTop:10 }}>
+            {donationType === "recurring" && (
+              <Grid container spacing={3} style={{ marginTop:10 }}>
                 <Grid size={{ xs: 12, md: 6 }}>
-                  <TextField id="start-date-field" fullWidth name="date" type="date" aria-label="date" label={Locale.label("donation.donationForm.startDate")} value={DateHelper.formatHtml5Date(new Date(donation.billing_cycle_anchor))} onChange={handleChange} onKeyDown={handleKeyDown} />
+                  <TextField id="start-date-field" fullWidth name="date" type="date" aria-label="date" label={Locale.label("donation.donationForm.startDate")} value={DateHelper.formatHtml5Date(new Date(donation.billing_cycle_anchor || Date.now()))} onChange={handleChange} onKeyDown={handleKeyDown} />
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>
                   <FormControl fullWidth>
@@ -230,16 +234,16 @@ return (
                   </FormControl>
                 </Grid>
               </Grid>
-            }
+            )}
             <div id="fund-selection" className="form-group">
-              {funds && fundDonations
-                && <>
+              {funds && fundDonations && (
+                <>
                   <h4>{Locale.label("donation.donationForm.fund")}</h4>
                   <FundDonations fundDonations={fundDonations} funds={funds} updatedFunction={handleFundDonationsChange} />
                 </>
-              }
-              {fundsTotal > 0
-                && <>
+              )}
+              {fundsTotal > 0 && (
+                <>
                   {(gateway && gateway.payFees === true) ? <Typography fontSize={14} fontStyle="italic">*{Locale.label("donation.donationForm.fees").replace("{}", CurrencyHelper.formatCurrency(transactionFee))}</Typography> : (
                     <FormGroup>
                       <FormControlLabel control={<Checkbox />} name="transaction-fee" label={Locale.label("donation.donationForm.cover").replace("{}", CurrencyHelper.formatCurrency(transactionFee))} onChange={handleCheckChange} />
@@ -247,14 +251,13 @@ return (
                   )}
                   <p>{Locale.label("donation.donationForm.total")}: ${total}</p>
                 </>
-              }
+              )}
               <TextField id="donation-notes" fullWidth label="Memo (optional)" multiline aria-label="note" name="notes" value={donation.notes || ""} onChange={handleChange} onKeyDown={handleKeyDown} />
             </div>
             {errorMessage && <ErrorMessages errors={[errorMessage]}></ErrorMessages>}
           </div>
-        }
+        )}
       </InputBox>
     </>
   );
-}
 };

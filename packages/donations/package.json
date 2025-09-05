@@ -1,6 +1,6 @@
 {
   "name": "@churchapps/apphelper-donations",
-  "version": "0.4.45",
+  "version": "0.4.46",
   "description": "Donation components for ChurchApps AppHelper",
   "type": "module",
   "main": "dist/index.js",
@@ -28,7 +28,7 @@
   },
   "homepage": "https://github.com/LiveChurchSolutions/AppHelper#readme",
   "peerDependencies": {
-    "@churchapps/apphelper": "^0.4.44",
+    "@churchapps/apphelper": "^0.4.46",
     "@churchapps/helpers": "^1.1.4",
     "@mui/material": "^7.3.1",
     "react": "^18.0.0 || ^19.0.0",

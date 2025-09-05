@@ -12,7 +12,7 @@ import {
  Icon, Table, TableBody, TableCell, TableRow, IconButton, Menu, MenuItem 
 } from "@mui/material";
 
-interface Props { person: PersonInterface, customerId: string, paymentMethods: StripePaymentMethod[], stripePromise: Promise<Stripe>, appName: string, dataUpdate: (message?: string) => void }
+interface Props { person: PersonInterface, customerId: string, paymentMethods: StripePaymentMethod[], stripePromise: Promise<Stripe | null> | null, appName: string, dataUpdate: (message?: string) => void }
 
 export const PaymentMethods: React.FC<Props> = (props) => {
   const [editPaymentMethod, setEditPaymentMethod] = useState<StripePaymentMethod>(new StripePaymentMethod());
@@ -21,8 +21,8 @@ export const PaymentMethods: React.FC<Props> = (props) => {
 
   const handleEdit = (pm?: StripePaymentMethod, verifyAccount?: boolean) => (e: React.MouseEvent) => {
     e.preventDefault();
-    setEditPaymentMethod(pm);
-    setVerify(verifyAccount);
+    setEditPaymentMethod(pm || new StripePaymentMethod());
+    setVerify(verifyAccount || false);
     setMode("edit");
   };
 
@@ -37,9 +37,9 @@ export const PaymentMethods: React.FC<Props> = (props) => {
   };
 
   const MenuIcon = () => {
-    const [anchorEl, setAnchorEl] = useState(null);
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
-    const handleClick = (e: React.MouseEvent) => {
+    const handleClick = (e: React.MouseEvent<HTMLElement>) => {
       setAnchorEl(e.currentTarget);
     };
     const handleClose = () => {

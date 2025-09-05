@@ -11,7 +11,7 @@ import type { PaperProps } from "@mui/material/Paper";
 interface Props { churchId: string, mainContainerCssProps?: PaperProps, showHeader?: boolean, recaptchaSiteKey: string, churchLogo?: string }
 
 export const NonAuthDonation: React.FC<Props> = ({ mainContainerCssProps, showHeader, ...props }) => {
-  const [stripePromise, setStripe] = useState<Promise<Stripe>>(null);
+  const [stripePromise, setStripe] = useState<Promise<Stripe | null> | null>(null);
 
   const init = () => {
     ApiHelper.get("/gateways/churchId/" + props.churchId, "GivingApi").then((data: any) => {

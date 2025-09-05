@@ -15,11 +15,11 @@ export const BankForm: React.FC<Props> = (props) => {
   const stripe = useStripe();
   const [bankAccount, setBankAccount] = useState<StripeBankAccountInterface>({ account_holder_name: props.bank.account_holder_name, account_holder_type: props.bank.account_holder_type, country: "US", currency: "usd" } as StripeBankAccountInterface);
   const [paymentMethod] = useState<PaymentMethodInterface>({ customerId: props.customerId, personId: props.person.id, email: props.person.contactInfo.email, name: props.person.name.display });
-  const [updateBankData] = useState<StripeBankAccountUpdateInterface>({ paymentMethodId: props.bank.id, customerId: props.customerId, personId: props.person.id, bankData: { account_holder_name: props.bank.account_holder_name, account_holder_type: props.bank.account_holder_type } } as StripeBankAccountUpdateInterface);
+  const [updateBankData] = useState<StripeBankAccountUpdateInterface>({ paymentMethodId: props.bank.id, customerId: props.customerId, personId: props.person.id, bankData: { account_holder_name: props.bank.account_holder_name || "", account_holder_type: props.bank.account_holder_type || "individual" } } as StripeBankAccountUpdateInterface);
   const [verifyBankData, setVerifyBankData] = useState<StripeBankAccountVerifyInterface>({ paymentMethodId: props.bank.id, customerId: props.customerId, amountData: { amounts: [] } });
   const [showSave, setShowSave] = useState<boolean>(true);
-  const [errorMessage, setErrorMessage] = useState<string>(null);
-  const saveDisabled = () => { };
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const saveDisabled = () => { /* Function for disabled save state */ };
   const handleCancel = () => { props.setMode("display"); };
   const handleDelete = () => { props.deletePayment(); };
   const handleSave = () => {
@@ -29,59 +29,86 @@ export const BankForm: React.FC<Props> = (props) => {
   };
 
   const createBank = async () => {
-    if (!bankAccount.routing_number || !bankAccount.account_number) setErrorMessage(Locale.label("donation.bankForm.validate.accountNumber"));
-    else {
-      await stripe.createToken("bank_account", bankAccount).then(response => {
-        if (response?.error?.message) setErrorMessage(response.error.message);
-        else {
+    if (!stripe) {
+      setErrorMessage("Stripe is not available");
+      setShowSave(true);
+      return;
+    }
+    
+    if (!bankAccount.routing_number || !bankAccount.account_number) {
+      setErrorMessage(Locale.label("donation.bankForm.validate.accountNumber"));
+    } else {
+      try {
+        const response = await stripe.createToken("bank_account", bankAccount);
+        if (response?.error?.message) {
+          setErrorMessage(response.error.message);
+        } else if (response?.token?.id) {
           const pm = { ...paymentMethod };
           pm.id = response.token.id;
-          ApiHelper.post("/paymentmethods/addbankaccount", pm, "GivingApi").then((result: any) => {
-            if (result?.raw?.message) setErrorMessage(result.raw.message);
-            else {
-              props.updateList(Locale.label("donation.bankForm.added"));
-              props.setMode("display");
-            }
-          });
+          const result = await ApiHelper.post("/paymentmethods/addbankaccount", pm, "GivingApi");
+          if (result?.raw?.message) {
+            setErrorMessage(result.raw.message);
+          } else {
+            props.updateList(Locale.label("donation.bankForm.added"));
+            props.setMode("display");
+          }
+        } else {
+          setErrorMessage("Failed to create token");
         }
-      });
+      } catch (error) {
+        setErrorMessage("Error creating bank token");
+        console.error(error);
+      }
     }
     setShowSave(true);
   };
 
-  const updateBank = () => {
-    if (bankAccount.account_holder_name === "") setErrorMessage(Locale.label("donation.bankForm.validate.holderName"));
-    else {
-      const bank = { ...updateBankData };
-      bank.bankData.account_holder_name = bankAccount.account_holder_name;
-      bank.bankData.account_holder_type = bankAccount.account_holder_type;
-      ApiHelper.post("/paymentmethods/updatebank", bank, "GivingApi").then((response: any) => {
-        if (response?.raw?.message) setErrorMessage(response.raw.message);
-        else {
+  const updateBank = async () => {
+    if (!bankAccount.account_holder_name || bankAccount.account_holder_name === "") {
+      setErrorMessage(Locale.label("donation.bankForm.validate.holderName"));
+    } else {
+      try {
+        const bank = { ...updateBankData };
+        bank.bankData.account_holder_name = bankAccount.account_holder_name;
+        bank.bankData.account_holder_type = bankAccount.account_holder_type;
+        const response = await ApiHelper.post("/paymentmethods/updatebank", bank, "GivingApi");
+        if (response?.raw?.message) {
+          setErrorMessage(response.raw.message);
+        } else {
           props.updateList(Locale.label("donation.bankForm.updated"));
           props.setMode("display");
         }
-      });
+      } catch (error) {
+        setErrorMessage("Error updating bank account");
+        console.error(error);
+      }
     }
     setShowSave(true);
   };
 
-  const verifyBank = () => {
+  const verifyBank = async () => {
     const amounts = verifyBankData?.amountData?.amounts;
     if (amounts && amounts.length === 2 && amounts[0] !== "" && amounts[1] !== "") {
-      ApiHelper.post("/paymentmethods/verifyBank", verifyBankData, "GivingApi").then((response: any) => {
-        if (response?.raw?.message) setErrorMessage(response.raw.message);
-        else {
+      try {
+        const response = await ApiHelper.post("/paymentmethods/verifyBank", verifyBankData, "GivingApi");
+        if (response?.raw?.message) {
+          setErrorMessage(response.raw.message);
+        } else {
           props.updateList(Locale.label("donation.bankForm.verified"));
           props.setMode("display");
         }
-      });
-    } else setErrorMessage("Both deposit amounts are required.");
+      } catch (error) {
+        setErrorMessage("Error verifying bank account");
+        console.error(error);
+      }
+    } else {
+      setErrorMessage("Both deposit amounts are required.");
+    }
     setShowSave(true);
   };
 
   const getHeaderText = () => props.bank.id
-    ? `${props.bank.name.toUpperCase()} ****${props.bank.last4}`
+    ? `${props.bank.name?.toUpperCase() || 'BANK'} ****${props.bank.last4 || ''}`
     : "Add New Bank Account";
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string>) => {
@@ -107,7 +134,7 @@ export const BankForm: React.FC<Props> = (props) => {
     if (props.showVerifyForm) {
       return (<>
         <p>{Locale.label("donation.bankForm.twoDeposits")}</p>
-        <Grid container columnSpacing={2}>
+        <Grid container spacing={2}>
           <Grid size={{ xs: 12, md: 6 }}>
             <TextField fullWidth aria-label="amount1" label={Locale.label("donation.bankForm.firstDeposit")} name="amount1" placeholder="00" inputProps={{ maxLength: 2 }} onChange={handleVerify} onKeyPress={handleKeyPress} />
           </Grid>
@@ -120,7 +147,7 @@ export const BankForm: React.FC<Props> = (props) => {
     } else {
       let accountDetails = <></>;
       if (!props.bank.id) {
-accountDetails = (
+        accountDetails = (
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 6 }} style={{ marginBottom: "20px" }}>
             <TextField fullWidth label={Locale.label("donation.bankForm.routingNumber")} type="number" name="routing_number" aria-label="routing-number" placeholder="Routing Number" className="form-control" onChange={handleChange} />
@@ -134,12 +161,12 @@ accountDetails = (
       return (<>
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 6 }} style={{ marginBottom: "20px" }}>
-            <TextField fullWidth label="Account Holder Name" name="account_holder_name" required aria-label="account-holder-name" placeholder="Account Holder Name" value={bankAccount.account_holder_name} className="form-control" onChange={handleChange} />
+            <TextField fullWidth label="Account Holder Name" name="account_holder_name" required aria-label="account-holder-name" placeholder="Account Holder Name" value={bankAccount.account_holder_name || ""} className="form-control" onChange={handleChange} />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }} style={{ marginBottom: "20px" }}>
             <FormControl fullWidth>
               <InputLabel>{Locale.label("donation.bankForm.name")}</InputLabel>
-              <Select label={Locale.label("donation.bankForm.name")} name="account_holder_type" aria-label="account-holder-type" value={bankAccount.account_holder_type} onChange={handleChange}>
+              <Select label={Locale.label("donation.bankForm.name")} name="account_holder_type" aria-label="account-holder-type" value={bankAccount.account_holder_type || ""} onChange={handleChange}>
                 <MenuItem value="individual">{Locale.label("donation.bankForm.individual")}</MenuItem>
                 <MenuItem value="company">{Locale.label("donation.bankForm.company")}</MenuItem>
               </Select>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { forwardRef, useImperativeHandle, useState, useEffect } from "react";
+import { forwardRef, useImperativeHandle, useState, useEffect } from "react";
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { Box, Grid, TextField } from "@mui/material";
 import { QuestionInterface } from "@churchapps/helpers";
@@ -16,13 +16,13 @@ export const FormCardPayment = forwardRef((props: Props, ref) => {
   const formStyling = { style: { base: { fontSize: "18px" } } };
   const elements = useElements();
   const stripe = useStripe();
-  const [email, setEmail] = useState<string>((ApiHelper.isAuthenticated && UserHelper.user.email) ? UserHelper.user.email : "");
-  const [firstName, setFirstName] = useState<string>((ApiHelper.isAuthenticated && UserHelper.user.firstName) ? UserHelper.user.firstName : "");
-  const [lastName, setLastName] = useState<string>((ApiHelper.isAuthenticated && UserHelper.user.lastName) ? UserHelper.user.lastName : "");
+  const [email, setEmail] = useState<string>((ApiHelper.isAuthenticated && UserHelper.user?.email) ? UserHelper.user.email : "");
+  const [firstName, setFirstName] = useState<string>((ApiHelper.isAuthenticated && UserHelper.user?.firstName) ? UserHelper.user.firstName : "");
+  const [lastName, setLastName] = useState<string>((ApiHelper.isAuthenticated && UserHelper.user?.lastName) ? UserHelper.user.lastName : "");
   const [church, setChurch] = useState<ChurchInterface>();
-  const [fund, setFund] = useState<FundInterface>()
-  const amt = Number(props.question.choices.find(c => c.text === "Amount")?.value);
-  const fundId = props.question.choices.find(c => c.text === "FundId")?.value;
+  const [fund, setFund] = useState<FundInterface | undefined>(undefined);
+  const amt = Number(props.question.choices?.find(c => c.text === "Amount")?.value || 0);
+  const fundId = props.question.choices?.find(c => c.text === "FundId")?.value || "";
 
   const getChurchData = () => {
     ApiHelper.get("/churches/" + props.churchId, "MembershipApi").then((data: any) => {
@@ -48,7 +48,7 @@ export const FormCardPayment = forwardRef((props: Props, ref) => {
 
       const cardSavedRes = await saveCard(userData, person);
       if (!cardSavedRes.success) {
-        return { paymentSuccessful: false, name: "", errors: cardSavedRes.errors }
+        return { paymentSuccessful: false, name: "", errors: cardSavedRes.errors || [] }
       }
 
       return { paymentSuccessful: true, name: person?.name?.display || "", errors: [] as string[] }
@@ -58,14 +58,17 @@ export const FormCardPayment = forwardRef((props: Props, ref) => {
     }
   }
 
-  const saveCard = async (user: UserInterface, person: PersonInterface) => {
-    const cardData = elements.getElement(CardElement);
+  const saveCard = async (_user: UserInterface, person: PersonInterface) => {
+    const cardData = elements?.getElement(CardElement);
     try {
+      if (!stripe || !cardData) {
+        return { success: false, errors: ["Payment processing unavailable"] };
+      }
       const stripePM = await stripe.createPaymentMethod({ type: "card", card: cardData });
       if (stripePM.error) {
-        return { success: false, errors: [stripePM.error.message] };
+        return { success: false, errors: [stripePM.error.message || "Payment method error"] };
       } else {
-        const pm = { id: stripePM.paymentMethod.id, personId: person.id, email: email, name: person.name.display, churchId: props.churchId };
+        const pm = { id: stripePM.paymentMethod?.id || "", personId: person.id, email: email, name: person?.name?.display || "", churchId: props.churchId };
         try {
           const result = await ApiHelper.post("/paymentmethods/addcard", pm, "GivingApi");
           if (result?.raw?.message) {
@@ -73,8 +76,8 @@ export const FormCardPayment = forwardRef((props: Props, ref) => {
           } else {
             const p: { paymentMethod: StripePaymentMethod, customerId: string } = result
             const savedPaymentRes = await savePayment(p.paymentMethod, p.customerId, person);
-            if (!savedPaymentRes.success) {
-              return { success: false, errors: savedPaymentRes.errors }
+            if (!savedPaymentRes?.success) {
+              return { success: false, errors: savedPaymentRes?.errors || [] }
             }
             return { success: true, errors: [] }
           }
@@ -95,17 +98,17 @@ export const FormCardPayment = forwardRef((props: Props, ref) => {
       customerId: customerId,
       type: paymentMethod.type,
       churchId: props.churchId,
-      funds: [{ id: fundId, amount: amt, name: fund.name }],
+      funds: [{ id: fundId, amount: amt, name: fund?.name || "" }],
       person: {
-        id: person.id,
-        email: person?.contactInfo?.email,
-        name: person?.name?.display,
+        id: person?.id || "",
+        email: person?.contactInfo?.email || "",
+        name: person?.name?.display || "",
       }
     }
 
     const churchObj = {
-      name: church.name,
-      subDomain: church.subDomain,
+      name: church?.name || "",
+      subDomain: church?.subDomain || "",
       churchURL: typeof window !== "undefined" && window.location.origin,
       logo: ""
     }
@@ -147,13 +150,13 @@ export const FormCardPayment = forwardRef((props: Props, ref) => {
   return <div style={{ backgroundColor: "#bdbdbd", padding: 35, borderRadius: 20 }}>
     <Grid container spacing={2}>
       <Grid size={12}>
-        <TextField fullWidth required size="small" margin="none" style={{backgroundColor: "white", borderRadius: "4px"}} InputLabelProps={{ sx: { fontWeight: "bold" } }} label={Locale.label("person.email")} value={email} onChange={(e) => setEmail(e.target.value)} disabled={ApiHelper.isAuthenticated && UserHelper.user.email !== ""} />
+        <TextField fullWidth required size="small" margin="none" style={{backgroundColor: "white", borderRadius: "4px"}} InputLabelProps={{ sx: { fontWeight: "bold" } }} label={Locale.label("person.email")} value={email} onChange={(e) => setEmail(e.target.value)} disabled={ApiHelper.isAuthenticated && (UserHelper.user?.email || "") !== ""} />
       </Grid>
       <Grid size={{ xs: 12, sm: 6 }}>
-        <TextField fullWidth required size="small" margin="none" style={{backgroundColor: "white", borderRadius: "4px"}} InputLabelProps={{ sx: { fontWeight: "bold" } }} label={Locale.label("person.firstName")} value={firstName} onChange={(e) => setFirstName(e.target.value)} disabled={ApiHelper.isAuthenticated && UserHelper.user.firstName !== ""} />
+        <TextField fullWidth required size="small" margin="none" style={{backgroundColor: "white", borderRadius: "4px"}} InputLabelProps={{ sx: { fontWeight: "bold" } }} label={Locale.label("person.firstName")} value={firstName} onChange={(e) => setFirstName(e.target.value)} disabled={ApiHelper.isAuthenticated && (UserHelper.user?.firstName || "") !== ""} />
       </Grid>
       <Grid size={{ xs: 12, sm: 6 }}>
-        <TextField fullWidth required size="small" margin="none" style={{backgroundColor: "white", borderRadius: "4px"}} InputLabelProps={{ sx: { fontWeight: "bold" } }} label={Locale.label("person.lastName")} value={lastName} onChange={(e) => setLastName(e.target.value)} disabled={ApiHelper.isAuthenticated && UserHelper.user.lastName !== ""} />
+        <TextField fullWidth required size="small" margin="none" style={{backgroundColor: "white", borderRadius: "4px"}} InputLabelProps={{ sx: { fontWeight: "bold" } }} label={Locale.label("person.lastName")} value={lastName} onChange={(e) => setLastName(e.target.value)} disabled={ApiHelper.isAuthenticated && (UserHelper.user?.lastName || "") !== ""} />
       </Grid>
       <Grid size={12}>
         <Box sx={{ backgroundColor: "white", padding: 1.5, borderRadius: 1, color: "gray", fontWeight: "bold", fontSize: 18 }}>$ {amt}</Box>
