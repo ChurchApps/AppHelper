@@ -1,6 +1,6 @@
 {
   "name": "@churchapps/apphelper",
-  "version": "0.4.46",
+  "version": "0.4.47",
   "description": "Library of helper functions for React and NextJS ChurchApps",
   "type": "module",
   "main": "dist/index.js",
@@ -33,7 +33,7 @@
     "react-router-dom": "^7.6.3"
   },
   "dependencies": {
-    "@churchapps/helpers": "^1.1.5",
+    "@churchapps/helpers": "^1.1.6",
     "@emotion/cache": "^11.14.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
