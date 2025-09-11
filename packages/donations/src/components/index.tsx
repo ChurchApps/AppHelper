@@ -10,3 +10,7 @@ export { PaymentMethods } from "./PaymentMethods";
 export { RecurringDonations } from "./RecurringDonations";
 export { RecurringDonationsEdit } from "./RecurringDonationsEdit";
 export { FormCardPayment } from "./FormCardPayment";
+export { PayPalCardForm } from "./PayPalCardForm";
+export type { PayPalCardData } from "./PayPalCardForm";
+export { PayPalNonAuthDonation } from "./PayPalNonAuthDonation";
+export { PayPalNonAuthDonationInner } from "./PayPalNonAuthDonationInner";

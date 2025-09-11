@@ -37,7 +37,7 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
     props?.paymentMethods?.length > 0 ? `${props.paymentMethods[0].name} ${props.paymentMethods[0].last4 ? `****${props.paymentMethods[0].last4}` : props.paymentMethods[0].email || ''}` : ""
   );
   const [selectedGateway, setSelectedGateway] = useState<string>(
-    props?.paymentGateways?.find(g => g.enabled)?.provider || "stripe"
+    DonationHelper.normalizeProvider(props?.paymentGateways?.find(g => g.enabled !== false)?.provider || "stripe")
   );
   const [donationType, setDonationType] = useState<string | undefined>();
   const [showDonationPreviewModal, setShowDonationPreviewModal] = useState<boolean>(false);
@@ -46,7 +46,7 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
   const [donation, setDonation] = useState<MultiGatewayDonationInterface>({
     id: props?.paymentMethods?.length > 0 ? props.paymentMethods[0].id : "",
     type: props?.paymentMethods?.length > 0 ? (props.paymentMethods[0].type as "card" | "bank" | "paypal") : "card",
-    provider: props?.paymentMethods?.length > 0 ? props.paymentMethods[0].provider : "stripe",
+    provider: props?.paymentMethods?.length > 0 ? DonationHelper.normalizeProvider(props.paymentMethods[0].provider) as "stripe" | "paypal" : "stripe",
     customerId: props.customerId,
     person: {
       id: props.person?.id || "",
@@ -97,7 +97,7 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
         setSelectedGateway(value);
         d.provider = value as "stripe" | "paypal";
         // Reset payment method when changing gateways
-        const availableMethods = props.paymentMethods.filter(pm => pm.provider === value);
+        const availableMethods = props.paymentMethods.filter(pm => DonationHelper.normalizeProvider(pm.provider) === value);
         if (availableMethods.length > 0) {
           d.id = availableMethods[0].id;
           d.type = availableMethods[0].type as "card" | "bank" | "paypal";
@@ -109,7 +109,7 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
         const pm = props.paymentMethods.find(pm => pm.id === value);
         if (pm) {
           d.type = pm.type as "card" | "bank" | "paypal";
-          d.provider = pm.provider;
+          d.provider = DonationHelper.normalizeProvider(pm.provider) as "stripe" | "paypal";
           setPaymentMethodName(`${pm.name} ${pm.last4 ? `****${pm.last4}` : pm.email || ''}`);
         }
         break;
@@ -217,8 +217,8 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
     loadData();
   }, [loadData, props.person?.id]);
 
-  const availablePaymentMethods = props.paymentMethods.filter(pm => pm.provider === selectedGateway);
-  const availableGateways = props.paymentGateways.filter(g => g.enabled);
+  const availablePaymentMethods = props.paymentMethods.filter(pm => DonationHelper.normalizeProvider(pm.provider) === selectedGateway);
+  const availableGateways = props.paymentGateways.filter(g => g.enabled !== false);
 
   if (!funds.length || !availablePaymentMethods.length) return null;
   else {
@@ -295,8 +295,8 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
                         onChange={handleChange}
                       >
                         {availableGateways.map((gw, i) => (
-                          <MenuItem key={i} value={gw.provider}>
-                            {gw.provider === "stripe" ? "Stripe" : "PayPal"}
+                          <MenuItem key={i} value={DonationHelper.normalizeProvider(gw.provider)}>
+                            {DonationHelper.isProvider(gw.provider, "stripe") ? "Stripe" : "PayPal"}
                           </MenuItem>
                         ))}
                       </Select>

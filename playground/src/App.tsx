@@ -25,8 +25,6 @@ import AppHelperReportingPage from './pages/AppHelperReportingPage';
 import AppHelperHeadersPage from './pages/AppHelperHeadersPage';
 import AppHelperHooksPage from './pages/AppHelperHooksPage';
 import LoginComponentsPage from './pages/LoginComponentsPage';
-import DonationComponentsPage from './pages/DonationComponentsPage';
-import PayPalDonationPage from './pages/PayPalDonationPage';
 import FormsComponentsPage from './pages/FormsComponentsPage';
 import MarkdownComponentsPage from './pages/MarkdownComponentsPage';
 import { HtmlComponentsPage } from './pages/HtmlComponentsPage';
@@ -167,8 +165,7 @@ function HomePage() {
                   Multi-gateway donation package with Stripe + PayPal support: Payment forms, recurring donations, fund management 🔒
                 </Typography>
                 <Stack spacing={1}>
-                  <Link to="/donation-components">All Donation Components 🔒</Link>
-                  <Link to="/paypal-donations">🆕 PayPal Multi-Gateway Demo</Link>
+                  <Link to="/donations">All Donation Components</Link>
                 </Stack>
               </CardContent>
             </Card>
@@ -322,7 +319,7 @@ function AppContent() {
     { url: '/apphelper-components', icon: 'widgets', label: 'AppHelper' },
     { url: '/login-components', icon: 'login', label: 'Login' },
     { url: '/forms-components', icon: 'assignment', label: 'Forms' },
-    { url: '/donation-components', icon: 'attach_money', label: 'Donations' },
+    { url: '/donations', icon: 'attach_money', label: 'Donations' },
     { url: '/markdown-components', icon: 'edit_note', label: 'Markdown' },
     { url: '/apphelper-reporting', icon: 'analytics', label: 'Reporting' }
   ];
@@ -352,11 +349,9 @@ function AppContent() {
       return [
         { url: '/forms-components', label: 'Form Components' }
       ];
-    } else if (path.startsWith('/donation') || path.startsWith('/paypal')) {
+    } else if (path.startsWith('/donation')) {
       return [
-        { url: '/donation-components', label: 'Donation Components' },
-        { url: '/paypal-donations', label: 'PayPal Multi-Gateway Test' },
-        { url: '/donations', label: 'Test Donations (Legacy)' }
+        { url: '/donations', label: 'Multi-Gateway Donations' },
       ];
     } else if (path.startsWith('/markdown') || path.startsWith('/html')) {
       return [
@@ -409,8 +404,7 @@ function AppContent() {
         <Route path="/apphelper-headers" element={<AppHelperHeadersPage />} />
         <Route path="/apphelper-hooks" element={<AppHelperHooksPage />} />
         <Route path="/login-components" element={<LoginComponentsPage />} />
-        <Route path="/donation-components" element={<RequireAuth><DonationComponentsPage /></RequireAuth>} />
-        <Route path="/paypal-donations" element={<PayPalDonationPage />} />
+        <Route path="/donations" element={<DonationTestPage />} />
         <Route path="/forms-components" element={<FormsComponentsPage />} />
         <Route path="/markdown-components" element={<MarkdownComponentsPage />} />
         <Route path="/html-components" element={<HtmlComponentsPage />} />
@@ -424,7 +418,7 @@ function AppContent() {
         <Route path="/login" element={<LoginPageComponent />} />
         <Route path="/components" element={<RequireAuth><ComponentsTestPage /></RequireAuth>} />
         <Route path="/markdown" element={<MarkdownTestPage />} />
-        <Route path="/donations" element={<RequireAuth><DonationTestPage /></RequireAuth>} />
+        <Route path="/legacy-donations" element={<RequireAuth><DonationTestPage /></RequireAuth>} />
         <Route path="/reporting" element={<ReportingTestPage />} />
       </Routes>
     </>

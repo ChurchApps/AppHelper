@@ -23,4 +23,26 @@ export class DonationHelper {
     return firstPart + "_" + intervalType;
   }
 
+  /**
+   * Normalizes provider names to lowercase for consistent comparison
+   * Handles various capitalizations like "Stripe", "PayPal", "Paypal", etc.
+   */
+  static normalizeProvider(provider: string): string {
+    return provider?.toLowerCase() || "";
+  }
+
+  /**
+   * Checks if a provider matches the expected provider name (case-insensitive)
+   */
+  static isProvider(provider: string, expectedProvider: "stripe" | "paypal"): boolean {
+    return this.normalizeProvider(provider) === expectedProvider;
+  }
+
+  /**
+   * Finds a gateway with the specified provider (case-insensitive)
+   */
+  static findGatewayByProvider(gateways: any[], provider: "stripe" | "paypal"): any {
+    return gateways.find(g => this.isProvider(g.provider, provider));
+  }
+
 }
