@@ -9,7 +9,7 @@ export interface PaymentMethod {
 
 export interface PaymentGateway {
   id: string;
-  provider: "stripe" | "paypal";
+  provider: "stripe" | "paypal" | "Stripe" | "Paypal" | "PayPal";
   publicKey: string;
-  enabled: boolean;
+  enabled?: boolean;
 }
