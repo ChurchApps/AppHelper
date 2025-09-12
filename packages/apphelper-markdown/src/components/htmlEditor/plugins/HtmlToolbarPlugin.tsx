@@ -2,10 +2,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { 
   $getSelection, 
   $isRangeSelection, 
-  FORMAT_TEXT_COMMAND, 
-  FORMAT_ELEMENT_COMMAND,
-  UNDO_COMMAND,
-  REDO_COMMAND,
   COMMAND_PRIORITY_LOW,
   SELECTION_CHANGE_COMMAND,
   $createParagraphNode,
@@ -44,44 +40,15 @@ import { $setBlocksType, $patchStyleText } from '@lexical/selection';
 import { $getNearestNodeOfType } from '@lexical/utils';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { mergeRegister } from '@lexical/utils';
-import { 
-  IconButton, 
-  Select, 
-  MenuItem, 
-  Divider,
-  Popover,
-  Box,
-  Input,
-  ButtonGroup,
-  Tooltip
-} from '@mui/material';
-import {
-  FormatBold,
-  FormatItalic,
-  FormatUnderlined,
-  StrikethroughS,
-  Code,
-  Link,
-  FormatListBulleted,
-  FormatListNumbered,
-  // CheckBox, // Checklist support removed
-  FormatQuote,
-  // TableChart, // Table support removed
-  HorizontalRule,
-  Undo,
-  Redo,
-  FormatColorText,
-  FormatColorFill,
-  FormatAlignLeft,
-  FormatAlignCenter,
-  FormatAlignRight,
-  FormatAlignJustify,
-  FormatSize,
-  Superscript,
-  Subscript,
-  FormatClear,
-  CodeOff
-} from '@mui/icons-material';
+import { Divider, Box } from '@mui/material';
+import { CodeOff } from '@mui/icons-material';
+import { HistoryControls } from './toolbarParts/HistoryControls';
+import { BlockAndFontControls } from './toolbarParts/BlockAndFontControls';
+import { TextFormattingControls } from './toolbarParts/TextFormattingControls';
+import { ColorsAndLinkControls } from './toolbarParts/ColorsAndLinkControls';
+import { AlignmentControls } from './toolbarParts/AlignmentControls';
+import { ListsAndElementsControls } from './toolbarParts/ListsAndElementsControls';
+import { SourceToggleControl } from './toolbarParts/SourceToggleControl';
 
 interface Props {
   setIsLinkEditMode: (value: boolean) => void;
@@ -105,9 +72,6 @@ export default function HtmlToolbarPlugin({ setIsLinkEditMode, isSourceMode = fa
   const [fontSize, setFontSize] = useState('16px');
   const [textColor, setTextColor] = useState('#000000');
   const [bgColor, setBgColor] = useState('#ffffff');
-  const [textColorAnchor, setTextColorAnchor] = useState<null | HTMLElement>(null);
-  const [bgColorAnchor, setBgColorAnchor] = useState<null | HTMLElement>(null);
-  const [fontSizeAnchor, setFontSizeAnchor] = useState<null | HTMLElement>(null);
 
   const updateToolbar = useCallback(() => {
     const selection = $getSelection();
@@ -219,7 +183,7 @@ export default function HtmlToolbarPlugin({ setIsLinkEditMode, isSourceMode = fa
       }
     });
     setTextColor(color);
-    setTextColorAnchor(null);
+    // Do not auto-close; allow users to keep the picker open while typing RGB/HEX
   };
 
   const applyBgColor = (color: string) => {
@@ -232,7 +196,73 @@ export default function HtmlToolbarPlugin({ setIsLinkEditMode, isSourceMode = fa
       }
     });
     setBgColor(color);
-    setBgColorAnchor(null);
+    // Do not auto-close; allow users to keep the picker open while typing RGB/HEX
+  };
+
+  const openNativeColorPicker = (
+    initialColor: string,
+    onColor: (val: string) => void,
+    anchorEl?: HTMLElement
+  ) => {
+    const input = document.createElement('input');
+    input.type = 'color';
+    input.value = initialColor || '#000000';
+    input.tabIndex = -1;
+    input.style.position = 'fixed';
+    // Place the input near the clicked control so the native picker anchors nearby
+    if (anchorEl) {
+      const rect = anchorEl.getBoundingClientRect();
+      input.style.left = `${Math.round(rect.left)}px`;
+      input.style.top = `${Math.round(rect.bottom)}px`;
+    } else {
+      // Fallback: place near top-left but within viewport
+      input.style.left = '12px';
+      input.style.top = '12px';
+    }
+    // Keep it tiny but focusable/interactive so browsers anchor correctly
+    input.style.width = '24px';
+    input.style.height = '24px';
+    input.style.opacity = '0.01';
+    input.style.zIndex = '2147483647';
+    input.style.background = 'transparent';
+    input.style.border = '0';
+    input.style.padding = '0';
+    input.style.margin = '0';
+    input.style.pointerEvents = 'auto';
+    document.body.appendChild(input);
+
+    const handleInput = (e: Event) => {
+      const target = e.target as HTMLInputElement;
+      if (target && target.value) onColor(target.value);
+    };
+    const cleanup = () => {
+      input.removeEventListener('input', handleInput);
+      input.removeEventListener('change', handleInput);
+      if (input.parentNode) input.parentNode.removeChild(input);
+    };
+    input.addEventListener('input', handleInput);
+    input.addEventListener('change', () => {
+      // Finalize selection; input event already applied live updates
+      cleanup();
+    });
+    input.addEventListener('blur', () => {
+      // Close without change
+      cleanup();
+    });
+
+    // Open the native color picker, prefer showPicker when available
+    try {
+      input.focus();
+      // @ts-ignore - showPicker not in all TS lib defs yet
+      if (typeof input.showPicker === 'function') {
+        // @ts-ignore
+        input.showPicker();
+      } else {
+        input.click();
+      }
+    } catch {
+      input.click();
+    }
   };
 
   const applyFontSize = (size: string) => {
@@ -249,7 +279,6 @@ export default function HtmlToolbarPlugin({ setIsLinkEditMode, isSourceMode = fa
       }
     });
     setFontSize(size);
-    setFontSizeAnchor(null);
   };
 
   const clearFormatting = () => {
@@ -268,328 +297,56 @@ export default function HtmlToolbarPlugin({ setIsLinkEditMode, isSourceMode = fa
 
   return (
     <div className="toolbar" style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', alignItems: 'center' }}>
-      {/* History Group */}
-      <ButtonGroup size="small" variant="outlined">
-        <Tooltip title="Undo">
-          <IconButton
-            onClick={() => editor.dispatchCommand(UNDO_COMMAND, undefined)}
-            size="small"
-          >
-            <Undo />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Redo">
-          <IconButton
-            onClick={() => editor.dispatchCommand(REDO_COMMAND, undefined)}
-            size="small"
-          >
-            <Redo />
-          </IconButton>
-        </Tooltip>
-      </ButtonGroup>
+      <HistoryControls editor={editor} />
       
       <Divider orientation="vertical" flexItem sx={{ mx: 0.5 }} />
       
-      {/* Block Type & Font Size Group */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-        <Select
-          value={blockType}
-          size="small"
-          sx={{ minWidth: 100 }}
-          onChange={(e) => {
-            const value = e.target.value;
-            if (value === 'h1' || value === 'h2' || value === 'h3' || value === 'h4' || value === 'h5' || value === 'h6') {
-              formatHeading(value as HeadingTagType);
-            } else if (value === 'paragraph') {
-              formatParagraph();
-            } else if (value === 'code') {
-              formatCode();
-            }
-          }}
-        >
-          <MenuItem value="paragraph">Normal</MenuItem>
-          <MenuItem value="h1">Heading 1</MenuItem>
-          <MenuItem value="h2">Heading 2</MenuItem>
-          <MenuItem value="h3">Heading 3</MenuItem>
-          <MenuItem value="h4">Heading 4</MenuItem>
-          <MenuItem value="h5">Heading 5</MenuItem>
-          <MenuItem value="h6">Heading 6</MenuItem>
-          <MenuItem value="code">Code Block</MenuItem>
-        </Select>
-
-        <Tooltip title="Font Size">
-          <IconButton
-            onClick={(e) => setFontSizeAnchor(e.currentTarget)}
-            size="small"
-          >
-            <FormatSize />
-          </IconButton>
-        </Tooltip>
-      </Box>
-      
-      <Popover
-        open={Boolean(fontSizeAnchor)}
-        anchorEl={fontSizeAnchor}
-        onClose={() => setFontSizeAnchor(null)}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-      >
-        <Box sx={{ p: 1 }}>
-          {FONT_SIZES.map(size => (
-            <MenuItem key={size} onClick={() => applyFontSize(size)}>
-              {size}
-            </MenuItem>
-          ))}
-        </Box>
-      </Popover>
+      <BlockAndFontControls
+        blockType={blockType}
+        onFormatHeading={(tag) => formatHeading(tag as HeadingTagType)}
+        onFormatParagraph={formatParagraph}
+        onFormatCode={formatCode}
+        onApplyFontSize={applyFontSize}
+      />
 
       <Divider orientation="vertical" flexItem sx={{ mx: 0.5 }} />
 
-      {/* Basic Text Formatting Group */}
-      <ButtonGroup size="small" variant="outlined">
-        <Tooltip title="Bold">
-          <IconButton
-            onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'bold')}
-            className={isBold ? 'active' : ''}
-            size="small"
-          >
-            <FormatBold />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Italic">
-          <IconButton
-            onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'italic')}
-            className={isItalic ? 'active' : ''}
-            size="small"
-          >
-            <FormatItalic />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Underline">
-          <IconButton
-            onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'underline')}
-            className={isUnderline ? 'active' : ''}
-            size="small"
-          >
-            <FormatUnderlined />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Strikethrough">
-          <IconButton
-            onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'strikethrough')}
-            className={isStrikethrough ? 'active' : ''}
-            size="small"
-          >
-            <StrikethroughS />
-          </IconButton>
-        </Tooltip>
-      </ButtonGroup>
-
-      {/* Extended Text Formatting Group */}
-      <ButtonGroup size="small" variant="outlined">
-        <Tooltip title="Superscript">
-          <IconButton
-            onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'superscript')}
-            className={isSuperscript ? 'active' : ''}
-            size="small"
-          >
-            <Superscript />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Subscript">
-          <IconButton
-            onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'subscript')}
-            className={isSubscript ? 'active' : ''}
-            size="small"
-          >
-            <Subscript />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Code">
-          <IconButton
-            onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'code')}
-            className={isCode ? 'active' : ''}
-            size="small"
-          >
-            <Code />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Clear Formatting">
-          <IconButton
-            onClick={clearFormatting}
-            size="small"
-          >
-            <FormatClear />
-          </IconButton>
-        </Tooltip>
-      </ButtonGroup>
+      <TextFormattingControls
+        editor={editor}
+        isBold={isBold}
+        isItalic={isItalic}
+        isUnderline={isUnderline}
+        isStrikethrough={isStrikethrough}
+        isSuperscript={isSuperscript}
+        isSubscript={isSubscript}
+        isCode={isCode}
+        onClearFormatting={clearFormatting}
+      />
 
       <Divider orientation="vertical" flexItem sx={{ mx: 0.5 }} />
 
-      {/* Colors Group */}
-      <ButtonGroup size="small" variant="outlined">
-        <Tooltip title="Text Color">
-          <IconButton
-            onClick={(e) => setTextColorAnchor(e.currentTarget)}
-            size="small"
-          >
-            <FormatColorText />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Background Color">
-          <IconButton
-            onClick={(e) => setBgColorAnchor(e.currentTarget)}
-            size="small"
-          >
-            <FormatColorFill />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Insert Link">
-          <IconButton
-            onClick={insertLink}
-            className={isLink ? 'active' : ''}
-            size="small"
-          >
-            <Link />
-          </IconButton>
-        </Tooltip>
-      </ButtonGroup>
-
-      <Popover
-        open={Boolean(textColorAnchor)}
-        anchorEl={textColorAnchor}
-        onClose={() => setTextColorAnchor(null)}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-      >
-        <Box sx={{ p: 2 }}>
-          <Input
-            type="color"
-            value={textColor}
-            onChange={(e) => applyTextColor(e.target.value)}
-            sx={{ width: 60, height: 40 }}
-          />
-        </Box>
-      </Popover>
-
-      <Popover
-        open={Boolean(bgColorAnchor)}
-        anchorEl={bgColorAnchor}
-        onClose={() => setBgColorAnchor(null)}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-      >
-        <Box sx={{ p: 2 }}>
-          <Input
-            type="color"
-            value={bgColor}
-            onChange={(e) => applyBgColor(e.target.value)}
-            sx={{ width: 60, height: 40 }}
-          />
-        </Box>
-      </Popover>
+      <ColorsAndLinkControls
+        textColor={textColor}
+        bgColor={bgColor}
+        isLink={isLink}
+        onOpenPicker={openNativeColorPicker}
+        onApplyTextColor={applyTextColor}
+        onApplyBgColor={applyBgColor}
+        onInsertLink={insertLink}
+      />
 
       <Divider orientation="vertical" flexItem sx={{ mx: 0.5 }} />
 
-      {/* Alignment Group */}
-      <ButtonGroup size="small" variant="outlined">
-        <Tooltip title="Align Left">
-          <IconButton
-            onClick={() => editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'left')}
-            size="small"
-          >
-            <FormatAlignLeft />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Align Center">
-          <IconButton
-            onClick={() => editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'center')}
-            size="small"
-          >
-            <FormatAlignCenter />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Align Right">
-          <IconButton
-            onClick={() => editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'right')}
-            size="small"
-          >
-            <FormatAlignRight />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Justify">
-          <IconButton
-            onClick={() => editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'justify')}
-            size="small"
-          >
-            <FormatAlignJustify />
-          </IconButton>
-        </Tooltip>
-      </ButtonGroup>
+      <AlignmentControls editor={editor} />
 
       <Divider orientation="vertical" flexItem sx={{ mx: 0.5 }} />
 
-      {/* Lists & Elements Group */}
-      <ButtonGroup size="small" variant="outlined">
-        <Tooltip title="Bullet List">
-          <IconButton
-            onClick={() => editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined)}
-            size="small"
-          >
-            <FormatListBulleted />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Numbered List">
-          <IconButton
-            onClick={() => editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined)}
-            size="small"
-          >
-            <FormatListNumbered />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Quote">
-          <IconButton
-            onClick={() => {
-              editor.update(() => {
-                const selection = $getSelection();
-                if ($isRangeSelection(selection)) {
-                  $setBlocksType(selection, () => $createQuoteNode());
-                }
-              });
-            }}
-            size="small"
-          >
-            <FormatQuote />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Horizontal Rule">
-          <IconButton
-            onClick={() => editor.dispatchCommand(INSERT_HORIZONTAL_RULE_COMMAND, undefined)}
-            size="small"
-          >
-            <HorizontalRule />
-          </IconButton>
-        </Tooltip>
-      </ButtonGroup>
+      <ListsAndElementsControls editor={editor} />
       
       {setIsSourceMode && (
         <>
           <Divider orientation="vertical" flexItem sx={{ mx: 0.5 }} />
-          <Tooltip title={isSourceMode ? "Visual Editor" : "HTML Source"}>
-            <IconButton
-              onClick={() => setIsSourceMode(!isSourceMode)}
-              className={isSourceMode ? 'active' : ''}
-              size="small"
-            >
-              {isSourceMode ? <Code /> : <CodeOff />}
-            </IconButton>
-          </Tooltip>
+          <SourceToggleControl isSourceMode={isSourceMode} setIsSourceMode={setIsSourceMode} />
         </>
       )}
     </div>
