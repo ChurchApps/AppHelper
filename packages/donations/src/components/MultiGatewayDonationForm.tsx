@@ -164,13 +164,21 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
         const payload = await hostedRef.current?.submit();
         const orderId = (payload as any)?.orderId || (payload as any)?.id || "";
         if (orderId) {
-          try {
-            results = await ApiHelper.post("/donate/paypal/capture-order", { orderId, donation: { ...donation, provider: "paypal" }, church: churchObj }, "GivingApi");
-          } catch (_e) {
-            const legacyPayload: any = { ...donation, provider: "paypal", paypalOrderId: orderId };
-            if (donationType === "once") results = await ApiHelper.post("/donate/paypal/charge/", { ...legacyPayload, church: churchObj }, "GivingApi");
-            if (donationType === "recurring") results = await ApiHelper.post("/donate/paypal/subscribe/", { ...legacyPayload, church: churchObj }, "GivingApi");
-          }
+          // Capture and persist via unified /donate/charge endpoint for PayPal
+          const compactFunds = (donation.funds || []).map((f: any) => ({ id: f.id, amount: f.amount }));
+          results = await ApiHelper.post(
+            "/donate/charge/",
+            {
+              provider: "paypal",
+              id: orderId,
+              churchId: props?.church?.id || "",
+              amount: total,
+              funds: compactFunds,
+              person: donation.person,
+              notes: donation?.notes || ""
+            },
+            "GivingApi"
+          );
         }
       } catch (e) {
         console.warn("Hosted Fields submit failed, falling back to standard flow.", e);

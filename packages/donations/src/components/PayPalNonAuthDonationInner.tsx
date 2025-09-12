@@ -39,7 +39,8 @@ export const PayPalNonAuthDonationInner: React.FC<Props> = ({ mainContainerCssPr
   const [interval, setInterval] = useState("one_month");
   const [startDate, setStartDate] = useState(new Date().toDateString());
   const [_captchaResponse, setCaptchaResponse] = useState("");
-  const [church, setChurch] = useState<ChurchInterface>();
+  // Keep church for potential future metadata usage
+  const [_church, _setChurch] = useState<ChurchInterface>();
   const [gateway, setGateway] = useState<any>(null);
   const [searchParams, setSearchParams] = useState<any>(null);
   const [notes, setNotes] = useState("");
@@ -71,8 +72,8 @@ export const PayPalNonAuthDonationInner: React.FC<Props> = ({ mainContainerCssPr
         setFundDonations([{ fundId: data[0].id }]);
       }
     });
-    ApiHelper.get("/churches/" + props.churchId, "MembershipApi").then((data: any) => {
-      setChurch(data);
+    ApiHelper.get("/churches/" + props.churchId, "MembershipApi").then((_data: any) => {
+      _setChurch(_data);
     });
     ApiHelper.get("/gateways/churchId/" + props.churchId, "GivingApi").then((data: any) => {
       const paypalGateway = DonationHelper.findGatewayByProvider(data, "paypal");
@@ -174,29 +175,25 @@ export const PayPalNonAuthDonationInner: React.FC<Props> = ({ mainContainerCssPr
       }
     }
 
-    const churchObj = {
-      name: church?.name || "",
-      subDomain: church?.subDomain || "",
-      churchURL: typeof window !== "undefined" ? window.location.origin : "",
-      logo: props?.churchLogo || ""
-    };
+    // Church object is no longer required for unified PayPal capture.
 
-    let results;
-    if (hostedOrderId) {
-      // Prefer a dedicated capture endpoint if available; fall back to existing
-      try {
-        results = await ApiHelper.post("/donate/paypal/capture-order", { orderId: hostedOrderId, donation, church: churchObj }, "GivingApi");
-      } catch (e) {
-        // Fallback to legacy endpoint with embedded order ID
-        if (donationType === "once") results = await ApiHelper.post("/donate/paypal/charge/", { ...donation, church: churchObj }, "GivingApi");
-        if (donationType === "recurring") results = await ApiHelper.post("/donate/paypal/subscribe/", { ...donation, church: churchObj }, "GivingApi");
-      }
-    } else {
-      if (donationType === "once") results = await ApiHelper.post("/donate/paypal/charge/", { ...donation, church: churchObj }, "GivingApi");
-      if (donationType === "recurring") results = await ApiHelper.post("/donate/paypal/subscribe/", { ...donation, church: churchObj }, "GivingApi");
-    }
+    // Capture via existing /donate/charge endpoint (PayPal)
+    const compactFunds = (donation.funds || []).map(f => ({ id: f.id, amount: f.amount }));
+    const results = await ApiHelper.post(
+      "/donate/charge/",
+      {
+        provider: "paypal",
+        id: hostedOrderId,
+        churchId: props.churchId,
+        amount: total,
+        funds: compactFunds,
+        person: donation.person,
+        notes
+      },
+      "GivingApi"
+    );
 
-    if (results?.status === "CREATED" || results?.status === "APPROVED" || results?.status === "COMPLETED") {
+    if (results?.status === "COMPLETED" || results?.status === "APPROVED" || results?.status === "CREATED") {
       setDonationComplete(true);
     }
     if (results?.message || results?.error) {

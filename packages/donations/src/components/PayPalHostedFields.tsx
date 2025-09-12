@@ -34,7 +34,7 @@ function loadPayPalSdk(clientId: string, clientToken?: string): Promise<any> {
     }
 
     const script = document.createElement('script');
-    script.src = `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(clientId)}&components=hosted-fields&intent=capture`;
+    script.src = `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(clientId)}&components=hosted-fields&intent=capture&commit=true`;
     script.async = true;
     script.dataset.apphelperPaypalSdk = "true";
     if (clientToken) (script as any).dataset.clientToken = clientToken;
