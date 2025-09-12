@@ -144,7 +144,7 @@ export default function DonationPage() {
               </Alert>
               
               <NonAuthDonation
-                churchId="AOjIt0W-SeY"
+                churchId="JNZUfFMKiWI"
                 recaptchaSiteKey={(import.meta as any).env.VITE_RECAPTCHA_SITE_KEY || ''}
                 churchLogo="https://via.placeholder.com/100x100/0066cc/ffffff?text=Church"
                 showHeader={true}

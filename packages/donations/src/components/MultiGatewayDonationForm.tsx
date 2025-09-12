@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useCallback, useState, useEffect } from "react";
+import React, { useCallback, useState, useEffect, useMemo, useRef } from "react";
 import type { Stripe } from "@stripe/stripe-js";
 import { InputBox, ErrorMessages } from "@churchapps/apphelper";
 import { FundDonations } from ".";
+import { PayPalHostedFields, PayPalHostedFieldsHandle } from "./PayPalHostedFields";
 import { DonationPreviewModal } from "../modals/DonationPreviewModal";
 import { ApiHelper, CurrencyHelper, DateHelper } from "@churchapps/helpers";
 import { Locale, DonationHelper } from "../helpers";
@@ -43,6 +44,11 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
   const [showDonationPreviewModal, setShowDonationPreviewModal] = useState<boolean>(false);
   const [interval, setInterval] = useState("one_month");
   const [gateway, setGateway] = useState<any>(null);
+  const paypalClientId = useMemo(() => {
+    const gw = props.paymentGateways.find(g => DonationHelper.isProvider(g.provider, "paypal"));
+    return gw?.publicKey || "";
+  }, [props.paymentGateways]);
+  const hostedRef = useRef<PayPalHostedFieldsHandle>(null);
   const [donation, setDonation] = useState<MultiGatewayDonationInterface>({
     id: props?.paymentMethods?.length > 0 ? props.paymentMethods[0].id : "",
     type: props?.paymentMethods?.length > 0 ? (props.paymentMethods[0].type as "card" | "bank" | "paypal") : "card",
@@ -102,6 +108,9 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
           d.id = availableMethods[0].id;
           d.type = availableMethods[0].type as "card" | "bank" | "paypal";
           setPaymentMethodName(`${availableMethods[0].name} ${availableMethods[0].last4 ? `****${availableMethods[0].last4}` : availableMethods[0].email || ''}`);
+        } else {
+          d.id = "";
+          if (value === "paypal") d.type = "paypal";
         }
         break;
       case "method":
@@ -149,8 +158,30 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
       logo: props?.churchLogo || ""
     };
 
-    if (donationType === "once") results = await ApiHelper.post("/donate/charge/", { ...donation, church: churchObj }, "GivingApi");
-    if (donationType === "recurring") results = await ApiHelper.post("/donate/subscribe/", { ...donation, church: churchObj }, "GivingApi");
+    // If using PayPal without a saved method, try Hosted Fields
+    if (selectedGateway === "paypal" && (!donation.id || donation.id === "") && paypalClientId) {
+      try {
+        const payload = await hostedRef.current?.submit();
+        const orderId = (payload as any)?.orderId || (payload as any)?.id || "";
+        if (orderId) {
+          try {
+            results = await ApiHelper.post("/donate/paypal/capture-order", { orderId, donation: { ...donation, provider: "paypal" }, church: churchObj }, "GivingApi");
+          } catch (_e) {
+            const legacyPayload: any = { ...donation, provider: "paypal", paypalOrderId: orderId };
+            if (donationType === "once") results = await ApiHelper.post("/donate/paypal/charge/", { ...legacyPayload, church: churchObj }, "GivingApi");
+            if (donationType === "recurring") results = await ApiHelper.post("/donate/paypal/subscribe/", { ...legacyPayload, church: churchObj }, "GivingApi");
+          }
+        }
+      } catch (e) {
+        console.warn("Hosted Fields submit failed, falling back to standard flow.", e);
+      }
+    }
+
+    // Standard flow (Stripe or saved payment method)
+    if (!results) {
+      if (donationType === "once") results = await ApiHelper.post("/donate/charge/", { ...donation, church: churchObj }, "GivingApi");
+      if (donationType === "recurring") results = await ApiHelper.post("/donate/subscribe/", { ...donation, church: churchObj }, "GivingApi");
+    }
 
     if (results?.status === "succeeded" || results?.status === "pending" || results?.status === "active" || results?.status === "CREATED") {
       setShowDonationPreviewModal(false);
@@ -220,7 +251,7 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
   const availablePaymentMethods = props.paymentMethods.filter(pm => DonationHelper.normalizeProvider(pm.provider) === selectedGateway);
   const availableGateways = props.paymentGateways.filter(g => g.enabled !== false);
 
-  if (!funds.length || !availablePaymentMethods.length) return null;
+  if (!funds.length) return null;
   else {
     return (
       <>
@@ -303,26 +334,73 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
                     </FormControl>
                   </Grid>
                 )}
-                <Grid size={{ xs: 12 }}>
-                  <FormControl fullWidth>
-                    <InputLabel>{Locale.label("donation.donationForm.method")}</InputLabel>
-                    <Select 
-                      id="payment-method-select" 
-                      label={Locale.label("donation.donationForm.method")} 
-                      name="method" 
-                      aria-label="method" 
-                      value={donation.id} 
-                      className="capitalize" 
-                      onChange={handleChange}
-                    >
-                      {availablePaymentMethods.map((paymentMethod: PaymentMethod, i: number) => (
-                        <MenuItem key={i} value={paymentMethod.id}>
-                          {paymentMethod.name} {paymentMethod.last4 ? `****${paymentMethod.last4}` : paymentMethod.email || ''}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid>
+                {selectedGateway !== "paypal" || availablePaymentMethods.length > 0 ? (
+                  <Grid size={{ xs: 12 }}>
+                    <FormControl fullWidth>
+                      <InputLabel>{Locale.label("donation.donationForm.method")}</InputLabel>
+                      <Select 
+                        id="payment-method-select" 
+                        label={Locale.label("donation.donationForm.method")} 
+                        name="method" 
+                        aria-label="method" 
+                        value={donation.id} 
+                        className="capitalize" 
+                        onChange={handleChange}
+                      >
+                        {availablePaymentMethods.map((paymentMethod: PaymentMethod, i: number) => (
+                          <MenuItem key={i} value={paymentMethod.id}>
+                            {paymentMethod.name} {paymentMethod.last4 ? `****${paymentMethod.last4}` : paymentMethod.email || ''}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                ) : (
+                  <Grid size={{ xs: 12 }}>
+                    <Typography variant="subtitle1" sx={{ mb: 1 }}>Enter card details (PayPal Hosted Fields)</Typography>
+                    <PayPalHostedFields
+                      ref={hostedRef}
+                      clientId={paypalClientId}
+                      getClientToken={async () => {
+                        const churchId = props?.church?.id || "";
+                        const endpoints = [
+                          "/donate/paypal/client-token",
+                          "/donate/paypal/clientToken",
+                          "/donate/paypal/generate-client-token"
+                        ];
+                        for (const ep of endpoints) {
+                          try {
+                            const resp = await ApiHelper.post(ep, { churchId }, "GivingApi");
+                            const token = resp?.clientToken || resp?.token || resp?.result || resp;
+                            if (typeof token === "string" && token.length > 0) return token;
+                          } catch { /* try next */ }
+                        }
+                        return "";
+                      }}
+                      createOrder={async () => {
+                        try {
+                          const fundsPayload = (donation?.funds || [])
+                            .filter((f: any) => (f.amount || 0) > 0 && f.id)
+                            .map((f: any) => ({ id: f.id, amount: f.amount || 0 }));
+                          const response = await ApiHelper.post(
+                            "/donate/paypal/create-order",
+                            {
+                              churchId: props?.church?.id || "",
+                              amount: total,
+                              currency: "USD",
+                              funds: fundsPayload,
+                              notes: donation?.notes || ""
+                            },
+                            "GivingApi"
+                          );
+                          return response?.id || response?.orderId || "";
+                        } catch (_e) {
+                          return "";
+                        }
+                      }}
+                    />
+                  </Grid>
+                )}
               </Grid>
               {donationType === "recurring" && (
                 <Grid container spacing={3} style={{ marginTop: 10 }}>

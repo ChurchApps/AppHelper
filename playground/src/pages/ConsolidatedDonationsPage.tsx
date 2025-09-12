@@ -28,11 +28,11 @@ function ComponentPage({ children, title }: { children: React.ReactNode, title: 
   );
 }
 
-// Non-authenticated donation setup with Ironwood church
+// Non-authenticated donation setup with Cypress church
 const ironwoodChurch: ChurchInterface = {
-  id: "AOjIt0W-SeY",
-  name: "Ironwood Church",
-  subDomain: "ironwood"
+  id: "JNZUfFMKiWI",
+  name: "Cypress Church",
+  subDomain: "cypress"
 };
 
 // Mock data for authenticated donation components
@@ -286,7 +286,7 @@ export default function ConsolidatedDonationsPage() {
       <Alert severity="info">
         <strong>Non-Authenticated Donation</strong>
         <br />
-        You are not currently logged in. Here is the donation form for Ironwood Church using church ID "AOjIt0W-SeY".
+        You are not currently logged in. Here is the donation form for the test church using church ID "JNZUfFMKiWI".
       </Alert>
 
       <Box>
@@ -304,9 +304,9 @@ export default function ConsolidatedDonationsPage() {
             
             <Elements stripe={stripePromise}>
               <NonAuthDonation
-                churchId="AOjIt0W-SeY"
+                churchId="JNZUfFMKiWI"
                 recaptchaSiteKey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
-                churchLogo="https://via.placeholder.com/200x100/0066cc/ffffff?text=Ironwood+Church"
+                churchLogo="https://via.placeholder.com/200x100/0066cc/ffffff?text=Cypress+Church"
                 showHeader={true}
               />
             </Elements>
@@ -340,7 +340,7 @@ export default function ConsolidatedDonationsPage() {
               paymentGateways={mockGateways}
               donationSuccess={handleDonationSuccess}
               church={ironwoodChurch}
-              churchLogo="https://via.placeholder.com/200x100/0066cc/ffffff?text=Ironwood+Church"
+              churchLogo="https://via.placeholder.com/200x100/0066cc/ffffff?text=Cypress+Church"
             />
           </CardContent>
         </Card>

@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { ErrorMessages, InputBox } from "@churchapps/apphelper";
 import { FundDonations } from ".";
-import { PayPalCardForm, PayPalCardData } from "./PayPalCardForm";
+// PayPal Hosted Fields for secure card entry
+import { PayPalHostedFields, PayPalHostedFieldsHandle } from "./PayPalHostedFields";
 import { ApiHelper, DateHelper, CurrencyHelper } from "@churchapps/helpers";
 import { Locale, DonationHelper, PayPalDonationInterface } from "../helpers";
 import { FundDonationInterface, FundInterface, PersonInterface, UserInterface, ChurchInterface } from "@churchapps/helpers";
@@ -43,7 +44,9 @@ export const PayPalNonAuthDonationInner: React.FC<Props> = ({ mainContainerCssPr
   const [searchParams, setSearchParams] = useState<any>(null);
   const [notes, setNotes] = useState("");
   const [coverFees, setCoverFees] = useState(false);
-  const [cardData, setCardData] = useState<PayPalCardData | null>(null);
+  const hostedFieldsRef = useRef<PayPalHostedFieldsHandle>(null);
+  const [hostedValid, setHostedValid] = useState<boolean>(false);
+  const [useHostedFields, setUseHostedFields] = useState<boolean>(true);
   const captchaRef = useRef<ReCAPTCHA>(null);
 
   const getUrlParam = (param: string) => {
@@ -108,10 +111,6 @@ export const PayPalNonAuthDonationInner: React.FC<Props> = ({ mainContainerCssPr
     setTotal(totalPayAmount);
   };
 
-  const handleCardDataChange = useCallback((data: PayPalCardData) => {
-    setCardData(data);
-  }, []);
-
   const handleSave = async () => {
     if (validate()) {
       // CAPTCHA TEMPORARILY DISABLED - Remove this bypass in production
@@ -129,8 +128,19 @@ export const PayPalNonAuthDonationInner: React.FC<Props> = ({ mainContainerCssPr
   };
 
   const savePayPalDonation = async (_user: UserInterface, person: PersonInterface) => {
-    if (!cardData || !cardData.isValid) {
-      setErrors(["Please provide valid card information"]);
+    // Try Hosted Fields first if client ID provided
+    let hostedOrderId: string | undefined;
+    if (props.paypalClientId && useHostedFields) {
+      try {
+        const payload = await hostedFieldsRef.current?.submit();
+        hostedOrderId = payload?.orderId || payload?.id;
+      } catch (e) {
+        console.warn("PayPal Hosted Fields submit failed or not ready. Falling back to manual card.", e);
+      }
+    }
+
+    if (!hostedOrderId) {
+      setErrors(["PayPal card fields are unavailable. Ensure HTTPS and that PayPal Hosted Fields are enabled."]);
       setProcessing(false);
       return;
     }
@@ -149,14 +159,9 @@ export const PayPalNonAuthDonationInner: React.FC<Props> = ({ mainContainerCssPr
         name: person?.name?.display || ""
       },
       notes: notes,
-      cardData: {
-        cardNumber: cardData.cardNumber,
-        expiryMonth: cardData.expiryMonth,
-        expiryYear: cardData.expiryYear,
-        cvv: cardData.cvv,
-        holderName: cardData.holderName
-      }
     };
+    // Attach hosted order id when available for backend capture
+    if (hostedOrderId) (donation as any).paypalOrderId = hostedOrderId;
 
     if (donationType === "recurring") {
       donation.billing_cycle_anchor = startDate ? + new Date(startDate) : + new Date();
@@ -177,8 +182,19 @@ export const PayPalNonAuthDonationInner: React.FC<Props> = ({ mainContainerCssPr
     };
 
     let results;
-    if (donationType === "once") results = await ApiHelper.post("/donate/paypal/charge/", { ...donation, church: churchObj }, "GivingApi");
-    if (donationType === "recurring") results = await ApiHelper.post("/donate/paypal/subscribe/", { ...donation, church: churchObj }, "GivingApi");
+    if (hostedOrderId) {
+      // Prefer a dedicated capture endpoint if available; fall back to existing
+      try {
+        results = await ApiHelper.post("/donate/paypal/capture-order", { orderId: hostedOrderId, donation, church: churchObj }, "GivingApi");
+      } catch (e) {
+        // Fallback to legacy endpoint with embedded order ID
+        if (donationType === "once") results = await ApiHelper.post("/donate/paypal/charge/", { ...donation, church: churchObj }, "GivingApi");
+        if (donationType === "recurring") results = await ApiHelper.post("/donate/paypal/subscribe/", { ...donation, church: churchObj }, "GivingApi");
+      }
+    } else {
+      if (donationType === "once") results = await ApiHelper.post("/donate/paypal/charge/", { ...donation, church: churchObj }, "GivingApi");
+      if (donationType === "recurring") results = await ApiHelper.post("/donate/paypal/subscribe/", { ...donation, church: churchObj }, "GivingApi");
+    }
 
     if (results?.status === "CREATED" || results?.status === "APPROVED" || results?.status === "COMPLETED") {
       setDonationComplete(true);
@@ -196,7 +212,9 @@ export const PayPalNonAuthDonationInner: React.FC<Props> = ({ mainContainerCssPr
     if (!lastName) result.push(Locale.label("donation.donationForm.validate.lastName"));
     if (!email) result.push(Locale.label("donation.donationForm.validate.email"));
     if (fundsTotal === 0) result.push(Locale.label("donation.donationForm.validate.amount"));
-    if (!cardData || !cardData.isValid) result.push("Please provide valid card information");
+    if (props.paypalClientId && useHostedFields) {
+      if (!hostedValid) result.push("Please provide valid card information");
+    } else result.push("PayPal Hosted Fields not available");
     
     if (result.length === 0) {
       if (!email.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w+)+$/)) result.push(Locale.label("donation.donationForm.validate.validEmail"));  //eslint-disable-line
@@ -303,7 +321,56 @@ export const PayPalNonAuthDonationInner: React.FC<Props> = ({ mainContainerCssPr
             />
           </Grid>
         </Grid>
-        <PayPalCardForm onCardDataChange={handleCardDataChange} />
+        {/* Use PayPal Hosted Fields only (no fallback form) */}
+        {props.paypalClientId && useHostedFields ? (
+          <PayPalHostedFields
+            ref={hostedFieldsRef}
+            clientId={props.paypalClientId}
+            getClientToken={async () => {
+              // Attempt common client-token endpoints
+              const endpoints = [
+                "/donate/paypal/client-token",
+                "/donate/paypal/clientToken",
+                "/donate/paypal/generate-client-token"
+              ];
+              for (const ep of endpoints) {
+                try {
+                  const resp = await ApiHelper.post(ep, { churchId: props.churchId }, "GivingApi");
+                  const token = resp?.clientToken || resp?.token || resp?.result || resp;
+                  if (typeof token === "string" && token.length > 0) return token;
+                } catch { /* try next */ }
+              }
+              return "";
+            }}
+            onValidityChange={setHostedValid}
+            onIneligible={() => setUseHostedFields(false)}
+            createOrder={async () => {
+              // Create order on backend if supported; fallback to simple legacy flow
+              try {
+                const fundsPayload = (fundDonations || [])
+                  .filter(fd => (fd.amount || 0) > 0 && fd.fundId)
+                  .map(fd => ({ id: fd.fundId!, amount: fd.amount || 0 }));
+                const response = await ApiHelper.post(
+                  "/donate/paypal/create-order",
+                  {
+                    churchId: props.churchId,
+                    amount: total,
+                    currency: "USD",
+                    funds: fundsPayload,
+                    notes
+                  },
+                  "GivingApi"
+                );
+                return response?.id || response?.orderId || "";
+              } catch (e) {
+                console.warn("Create PayPal order failed; Hosted Fields may not be enabled on backend.", e);
+                return "";
+              }
+            }}
+          />
+        ) : (
+          <Alert severity="error" sx={{ mb: 1 }}>PayPal card fields are unavailable. This requires HTTPS and an enabled PayPal merchant.</Alert>
+        )}
         {donationType === "recurring"
           && <Grid container spacing={3} style={{ marginTop: 0 }}>
             <Grid size={{ xs: 12, md: 6 }}>
