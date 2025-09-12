@@ -34,6 +34,8 @@ import HtmlSourcePlugin from './plugins/HtmlSourcePlugin';
 import theme from './theme';
 import './editor.css';
 import { cleanHtml } from './utils/cleanHtml';
+import CustomLinkNodePlugin from './plugins/customLink/CustomLinkNodePlugin';
+import { CustomLinkNode } from './plugins/customLink/CustomLinkNode';
 
 interface Props {
   value: string;
@@ -90,7 +92,14 @@ export default function HtmlEditorInner({ value, onChange, style, placeholder = 
       // TableNode, TableCellNode, TableRowNode, // Table nodes removed
       HorizontalRuleNode,
       LinkNode,
-      AutoLinkNode
+      AutoLinkNode,
+      CustomLinkNode,
+      {
+        replace: LinkNode,
+        with: (node: LinkNode) => (
+          new CustomLinkNode(node.getURL(), node.getTarget(), [])
+        )
+      },
     ],
     editorState: undefined
   };
@@ -130,6 +139,7 @@ export default function HtmlEditorInner({ value, onChange, style, placeholder = 
           {readOnly && <ReadOnlyPlugin readOnly={readOnly} />}
           <ControlledEditorPlugin value={value} />
           <HtmlSourcePlugin isSourceMode={isSourceMode} />
+          <CustomLinkNodePlugin />
           {floatingAnchorElem && !isSourceMode && (
             <>
               <FloatingTextFormatToolbarPlugin anchorElem={floatingAnchorElem} />

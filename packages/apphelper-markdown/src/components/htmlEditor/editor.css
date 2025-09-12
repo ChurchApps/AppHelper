@@ -113,6 +113,45 @@
   text-decoration: none;
 }
 
+/* Ensure button-styled links reflect app button styles inside the editor */
+.editor-inner a.btn {
+  text-decoration: none !important;
+}
+/* If theme adds editor-link class, don't override button text color */
+.editor-inner a.btn.editor-link,
+.editor-inner a.editor-link.btn {
+  color: inherit !important;
+}
+
+/* Minimal in-editor button look (for previewing only) */
+.editor-inner a.btn {
+  display: inline-block;
+  padding: 8px 14px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  font-weight: 500;
+}
+.editor-inner a.btn-block { display: block; width: 100%; text-align: center; }
+.editor-inner a.btn-small { font-size: 12px; padding: 6px 12px; }
+.editor-inner a.btn-medium { font-size: 14px; padding: 8px 14px; }
+.editor-inner a.btn-large { font-size: 16px; padding: 10px 16px; }
+.editor-inner a.btn-xl { font-size: 18px; padding: 12px 20px; }
+.editor-inner a.btn-2x { font-size: 20px; padding: 12px 22px; }
+.editor-inner a.btn-3x { font-size: 22px; padding: 14px 24px; }
+.editor-inner a.btn-4x { font-size: 24px; padding: 16px 26px; }
+
+/* Provide a basic primary style so buttons read as buttons in-editor */
+.editor-inner a.btn-primary {
+  background-color: #1976d2;
+  color: #fff !important;
+}
+.editor-inner a.btn-primary { /* allow external CSS to set actual colors; avoid forcing defaults */ }
+.editor-inner a.btn-secondary { }
+.editor-inner a.btn-success { }
+.editor-inner a.btn-danger { }
+.editor-inner a.btn-warning { }
+.editor-inner a.btn-info { }
+
 .tree-view-output {
   display: block;
   background: #222;
