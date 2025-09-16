@@ -34,6 +34,6 @@
     "typescript": "^5.9.2"
   },
   "dependencies": {
-    "@churchapps/helpers": "^1.1.6"
+    "@churchapps/helpers": "^1.1.7"
   }
 }
