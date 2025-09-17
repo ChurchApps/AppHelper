@@ -1,6 +1,6 @@
 {
   "name": "@churchapps/apphelper-login",
-  "version": "0.4.47",
+  "version": "0.4.50",
   "description": "Login components for ChurchApps AppHelper",
   "type": "module",
   "main": "dist/index.js",
@@ -28,7 +28,7 @@
   "homepage": "https://github.com/LiveChurchSolutions/AppHelper#readme",
   "peerDependencies": {
     "@churchapps/helpers": "^1.1.6",
-    "@churchapps/apphelper": "^0.4.47",
+    "@churchapps/apphelper": "^0.4.50",
     "react": "^18.0.0 || ^19.0.0",
     "react-dom": "^18.0.0 || ^19.0.0",
     "react-router-dom": "^7.6.3"
