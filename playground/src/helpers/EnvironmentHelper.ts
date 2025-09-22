@@ -23,6 +23,8 @@ export class EnvironmentHelper {
 		if (stage === undefined) stage = import.meta.env.MODE;
 		console.log(`Environment stage: ${stage}`);
 
+		EnvironmentHelper.Common.init(stage || "dev");
+
 		switch (stage) {
 			case "production":
 			case "prod":
@@ -36,7 +38,6 @@ export class EnvironmentHelper {
 				break;
 		}
 
-		EnvironmentHelper.Common.init(stage || "dev");
 		EnvironmentHelper.populateConfigs();
 		await Locale.init([]);
 	}
