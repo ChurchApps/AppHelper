@@ -240,7 +240,7 @@
   version "0.4.50"
   resolved "file:packages/apphelper"
   dependencies:
-    "@churchapps/helpers" "^1.2.2"
+    "@churchapps/helpers" "^1.2.3"
     "@emotion/cache" "^11.14.0"
     "@emotion/react" "^11.14.0"
     "@emotion/styled" "^11.14.1"
@@ -266,10 +266,10 @@
     react-to-print "^3.1.1"
     slug "^11.0.0"
 
-"@churchapps/helpers@^1.2.2":
-  version "1.2.2"
-  resolved "https://registry.npmjs.org/@churchapps/helpers/-/helpers-1.2.2.tgz"
-  integrity sha512-A7ncdgC6qmxms2ZuQOZwppXblW9JO4R8h/l/pKTSICvY5jEvqsD2MFGJ4suTP+OV/7TzDYGIlmdaFuaA8OEEQQ==
+"@churchapps/helpers@^1.2.3":
+  version "1.2.3"
+  resolved "https://registry.npmjs.org/@churchapps/helpers/-/helpers-1.2.3.tgz"
+  integrity sha512-riB5HmyJEqBLgakWOgGOAN6GnM71fS90tzYj03nH8ILUY5A0G6I2Ly0ZYpOjDJTKwDXFSIaTqUfURIfHEkVSsw==
   dependencies:
     dayjs "^1.11.18"
     rrule "^2.8.1"
@@ -1050,7 +1050,7 @@ ansi-styles@^6.1.0, ansi-styles@^6.2.1:
     "@churchapps/apphelper-forms" "*"
     "@churchapps/apphelper-login" "*"
     "@churchapps/apphelper-markdown" "*"
-    "@churchapps/helpers" "^1.2.2"
+    "@churchapps/helpers" "^1.2.3"
     "@emotion/react" "^11.14.0"
     "@emotion/styled" "^11.14.1"
     "@lexical/code" "^0.33.1"
