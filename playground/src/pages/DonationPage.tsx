@@ -49,15 +49,13 @@ export default function DonationPage() {
         // Try to get a customer for this person
         let cust: any = null;
         try {
-          cust = await ApiHelper.get(`/customers/person/${context.person.id}`, 'GivingApi');
-        } catch (e) {
-          // Fallback patterns if API shape differs
-          try {
-            const list = await ApiHelper.get(`/customers?personId=${context.person.id}`, 'GivingApi');
-            cust = Array.isArray(list) ? list[0] : list;
-          } catch {
-            // ignore, handled below
+          // API doesn't have a direct customer/person endpoint, so we'll get customer ID from payment methods
+          const pms = await ApiHelper.get(`/paymentmethods/personid/${context.person.id}`, 'GivingApi');
+          if (pms && pms.length > 0) {
+            cust = { id: pms[0].customerId };
           }
+        } catch (e) {
+          // ignore, handled below
         }
 
         const cid = cust?.id || cust?.customerId || '';
@@ -67,7 +65,7 @@ export default function DonationPage() {
         let stripePMs: StripePaymentMethod[] = [];
         let allPMs: PaymentMethod[] = [];
         try {
-          const pms = await ApiHelper.get(`/paymentmethods/customer/${cid}`, 'GivingApi');
+          const pms = await ApiHelper.get(`/paymentmethods/personid/${context.person.id}`, 'GivingApi');
           if (Array.isArray(pms)) {
             for (const p of pms) {
               if ((p.provider || '').toLowerCase() === 'stripe') {
@@ -98,7 +96,7 @@ export default function DonationPage() {
 
         // Donation history (best-effort)
         try {
-          const hist = await ApiHelper.get(`/donations/person/${context.person.id}`, 'GivingApi');
+          const hist = await ApiHelper.get(`/donations?personId=${context.person.id}`, 'GivingApi');
           if (Array.isArray(hist)) setHistory(hist);
         } catch (e: any) {
           setHistoryError('Donation history unavailable');
@@ -201,7 +199,7 @@ export default function DonationPage() {
                       dataUpdate={(_message?: string) => {
                         // Reload methods after add/edit/delete
                         if (context?.person?.id) {
-                          ApiHelper.get(`/paymentmethods/customer/${customerId}`, 'GivingApi')
+                          ApiHelper.get(`/paymentmethods/personid/${context.person.id}`, 'GivingApi')
                             .then((pms: any[]) => {
                               const stripePMs = (pms || [])
                                 .filter(p => (p.provider || '').toLowerCase() === 'stripe')
