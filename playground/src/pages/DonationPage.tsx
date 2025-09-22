@@ -136,6 +136,7 @@ export default function DonationPage() {
         <ErrorBoundary>
           {!context?.user ? (
             // Non-authenticated donation form as specified in PRD
+            // JNZUfFMKiWI AOjIt0W-SeYAOjIt0W-SeY
             <Box sx={{ mt: 3 }}>
               <Alert severity="info" sx={{ mb: 3 }}>
                 <Typography variant="h6" gutterBottom>Guest Donation</Typography>
@@ -144,7 +145,7 @@ export default function DonationPage() {
               </Alert>
               
               <NonAuthDonation
-                churchId="JNZUfFMKiWI"
+                churchId="AOjIt0W-SeY"
                 recaptchaSiteKey={(import.meta as any).env.VITE_RECAPTCHA_SITE_KEY || ''}
                 churchLogo="https://via.placeholder.com/100x100/0066cc/ffffff?text=Church"
                 showHeader={true}

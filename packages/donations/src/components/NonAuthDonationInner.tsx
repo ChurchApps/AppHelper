@@ -1,6 +1,6 @@
 "use client";
 
-import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
+import { CardElement, CardNumberElement, CardExpiryElement, CardCvcElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import React, { useState, useRef, useEffect } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { ErrorMessages, InputBox } from "@churchapps/apphelper";
@@ -145,7 +145,13 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 	};
 
 	const saveCard = async (_user: UserInterface, person: PersonInterface) => {
-		const cardData = elements?.getElement(CardElement);
+		if (gateway?.provider?.toLowerCase() !== "stripe") {
+			setErrors(["Stripe payment processing not available for this gateway"]);
+			setProcessing(false);
+			return;
+		}
+
+		const cardData = elements?.getElement(CardNumberElement);
 		if (!stripe || !cardData) {
 			setErrors(["Payment processing unavailable"]);
 			setProcessing(false);
@@ -156,7 +162,7 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 			const pm = { id: stripePM.paymentMethod!.id, personId: person.id, email: email, name: person?.name?.display || "", churchId: props.churchId };
 			await ApiHelper.post(
 				"/paymentmethods/addcard",
-				{ ...pm, provider: "stripe", gatewayId: gateway?.id },
+				{ ...pm, provider: gateway?.provider || "stripe", gatewayId: gateway?.id },
 				"GivingApi"
 			).then((result: any) => {
 				if (result?.raw?.message) {
@@ -272,7 +278,7 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 			try {
 				const response = await ApiHelper.post(
 					"/donate/fee?churchId=" + props.churchId,
-					{ amount, provider: "stripe", gatewayId: gateway?.id },
+					{ amount, provider: gateway?.provider || "stripe", gatewayId: gateway?.id },
 					"GivingApi"
 				);
 				return response.calculatedFee;
@@ -335,9 +341,25 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 						/>
 					</Grid>
 				</Grid>
-				<div style={{ padding: 10, border: "1px solid #CCC", borderRadius: 5, marginTop: 10 }}>
-					<CardElement options={formStyling} />
-				</div>
+				{gateway?.provider?.toLowerCase() === "stripe" && (
+					<Grid container spacing={3} style={{ marginTop: 10 }}>
+						<Grid size={12}>
+							<div style={{ padding: 10, border: "1px solid #CCC", borderRadius: 5 }}>
+								<CardNumberElement options={formStyling} />
+							</div>
+						</Grid>
+						<Grid size={{ xs: 12, md: 6 }}>
+							<div style={{ padding: 10, border: "1px solid #CCC", borderRadius: 5 }}>
+								<CardExpiryElement options={formStyling} />
+							</div>
+						</Grid>
+						<Grid size={{ xs: 12, md: 6 }}>
+							<div style={{ padding: 10, border: "1px solid #CCC", borderRadius: 5 }}>
+								<CardCvcElement options={formStyling} />
+							</div>
+						</Grid>
+					</Grid>
+				)}
 				{donationType === "recurring"
 					&& <Grid container spacing={3} style={{ marginTop: 0 }}>
 						<Grid size={{ xs: 12, md: 6 }}>
