@@ -26,23 +26,21 @@ export const NonAuthDonation: React.FC<Props> = ({ mainContainerCssProps, showHe
   const [loading, setLoading] = useState(true);
 
   const init = () => {
-    ApiHelper.get("/gateways/churchId/" + props.churchId, "GivingApi").then((data: any) => {
-      // Gateways returned by the API are considered enabled unless explicitly disabled
-      const enabledGateways = data.filter((gateway: any) => gateway.enabled !== false);
+    ApiHelper.post("/donate/gateways", { churchId: props.churchId }, "GivingApi").then((response: any) => {
+      const gateways = Array.isArray(response?.gateways) ? response.gateways : [];
+      const enabledGateways = gateways.filter((gateway: any) => gateway && gateway.enabled !== false);
       setAvailableGateways(enabledGateways);
-      
+
       if (enabledGateways.length > 0) {
-        // Set default gateway to the first enabled one, preferring Stripe
         const defaultGateway = DonationHelper.findGatewayByProvider(enabledGateways, "stripe") || enabledGateways[0];
-        setSelectedGateway(DonationHelper.normalizeProvider(defaultGateway.provider));
-        
-        // If Stripe is available, load Stripe
+        setSelectedGateway(DonationHelper.normalizeProvider(defaultGateway?.provider));
+
         const stripeGateway = DonationHelper.findGatewayByProvider(enabledGateways, "stripe");
         if (stripeGateway?.publicKey) {
           setStripe(loadStripe(stripeGateway.publicKey));
         }
       }
-      
+
       setLoading(false);
     });
   };
@@ -126,4 +124,3 @@ export const NonAuthDonation: React.FC<Props> = ({ mainContainerCssProps, showHe
     </Box>
   );
 };
-

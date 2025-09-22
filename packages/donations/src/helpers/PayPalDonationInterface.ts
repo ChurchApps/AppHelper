@@ -3,6 +3,7 @@ export interface PayPalDonationInterface {
   customerId: string;
   type: "paypal";
   provider: "paypal";
+  gatewayId?: string;
   churchId?: string;
   person: {
     id: string;

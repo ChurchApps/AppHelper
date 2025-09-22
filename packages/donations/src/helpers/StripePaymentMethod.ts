@@ -10,6 +10,7 @@ export class StripePaymentMethod {
   status?: string;
   account_holder_name?: string;
   account_holder_type?: string;
+  gatewayId?: string;
 
   constructor(obj?: any) {
     this.id = obj?.id || null;
@@ -23,5 +24,6 @@ export class StripePaymentMethod {
     this.status = obj?.status || null;
     this.account_holder_name = obj?.account_holder_name || "";
     this.account_holder_type = obj?.account_holder_type || "individual";
+    this.gatewayId = obj?.gatewayId || obj?.gateway_id || obj?.gateway?.id || undefined;
   }
 }

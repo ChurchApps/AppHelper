@@ -40,10 +40,15 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
   const [selectedGateway, setSelectedGateway] = useState<string>(
     DonationHelper.normalizeProvider(props?.paymentGateways?.find(g => g.enabled !== false)?.provider || "stripe")
   );
+  const selectedGatewayObj = useMemo(() => {
+    return (
+      props.paymentGateways.find((g) => DonationHelper.normalizeProvider(g.provider) === selectedGateway) || null
+    );
+  }, [props.paymentGateways, selectedGateway]);
   const [donationType, setDonationType] = useState<string | undefined>();
   const [showDonationPreviewModal, setShowDonationPreviewModal] = useState<boolean>(false);
   const [interval, setInterval] = useState("one_month");
-  const [gateway, setGateway] = useState<any>(null);
+  const [gateway, setGateway] = useState<PaymentGateway | null>(selectedGatewayObj);
   const paypalClientId = useMemo(() => {
     const gw = props.paymentGateways.find(g => DonationHelper.isProvider(g.provider, "paypal"));
     return gw?.publicKey || "";
@@ -52,7 +57,9 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
   const [donation, setDonation] = useState<MultiGatewayDonationInterface>({
     id: props?.paymentMethods?.length > 0 ? props.paymentMethods[0].id : "",
     type: props?.paymentMethods?.length > 0 ? (props.paymentMethods[0].type as "card" | "bank" | "paypal") : "card",
-    provider: props?.paymentMethods?.length > 0 ? DonationHelper.normalizeProvider(props.paymentMethods[0].provider) as "stripe" | "paypal" : "stripe",
+    provider: props?.paymentMethods?.length > 0
+      ? DonationHelper.normalizeProvider(props.paymentMethods[0].provider) as "stripe" | "paypal"
+      : (selectedGateway as "stripe" | "paypal"),
     customerId: props.customerId,
     person: {
       id: props.person?.id || "",
@@ -65,7 +72,8 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
       interval_count: 1,
       interval: "month"
     },
-    funds: []
+    funds: [],
+    gatewayId: props?.paymentMethods?.length > 0 ? props.paymentMethods[0].gatewayId : selectedGatewayObj?.id
   });
 
   const loadData = useCallback(() => {
@@ -73,10 +81,12 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
       setFunds(data);
       if (data.length) setFundDonations([{ fundId: data[0].id }]);
     });
-    ApiHelper.get("/gateways", "GivingApi").then((data: any) => {
-      if (data.length !== 0) setGateway(data[0]);
+    ApiHelper.post("/donate/gateways", {}, "GivingApi").then((response: any) => {
+      const gateways = Array.isArray(response?.gateways) ? response.gateways : [];
+      const primaryGateway = gateways.find((g: any) => DonationHelper.normalizeProvider(g.provider) === selectedGateway);
+      if (primaryGateway) setGateway(primaryGateway);
     });
-  }, []);
+  }, [selectedGateway]);
 
   const handleSave = useCallback(() => {
     if (donation.amount < .5) setErrorMessage(Locale.label("donation.donationForm.tooLow"));
@@ -102,6 +112,8 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
       case "gateway":
         setSelectedGateway(value);
         d.provider = value as "stripe" | "paypal";
+        const matchedGateway = props.paymentGateways.find(g => DonationHelper.normalizeProvider(g.provider) === value);
+        d.gatewayId = matchedGateway?.id;
         // Reset payment method when changing gateways
         const availableMethods = props.paymentMethods.filter(pm => DonationHelper.normalizeProvider(pm.provider) === value);
         if (availableMethods.length > 0) {
@@ -119,6 +131,7 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
         if (pm) {
           d.type = pm.type as "card" | "bank" | "paypal";
           d.provider = DonationHelper.normalizeProvider(pm.provider) as "stripe" | "paypal";
+          d.gatewayId = pm.gatewayId || gateway?.id || selectedGatewayObj?.id;
           setPaymentMethodName(`${pm.name} ${pm.last4 ? `****${pm.last4}` : pm.email || ''}`);
         }
         break;
@@ -137,7 +150,7 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
         setPayFee(showFee);
     }
     setDonation(d);
-  }, [donation, props.paymentMethods, fundsTotal, transactionFee]);
+  }, [donation, props.paymentMethods, fundsTotal, transactionFee, gateway?.id, props.paymentGateways, selectedGatewayObj?.id]);
 
   const handleCancel = useCallback(() => { setDonationType(undefined); }, []);
   const handleDonationSelect = useCallback((type: string) => {
@@ -167,9 +180,10 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
           // Capture and persist via unified /donate/charge endpoint for PayPal
           const compactFunds = (donation.funds || []).map((f: any) => ({ id: f.id, amount: f.amount }));
           results = await ApiHelper.post(
-            "/donate/charge/",
+            "/donate/charge",
             {
               provider: "paypal",
+              gatewayId: selectedGatewayObj?.id,
               id: orderId,
               churchId: props?.church?.id || "",
               amount: total,
@@ -187,8 +201,14 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
 
     // Standard flow (Stripe or saved payment method)
     if (!results) {
-      if (donationType === "once") results = await ApiHelper.post("/donate/charge/", { ...donation, church: churchObj }, "GivingApi");
-      if (donationType === "recurring") results = await ApiHelper.post("/donate/subscribe/", { ...donation, church: churchObj }, "GivingApi");
+      const payload = {
+        ...donation,
+        provider: donation.provider || (selectedGateway as "stripe" | "paypal"),
+        gatewayId: donation.gatewayId || gateway?.id || selectedGatewayObj?.id,
+        church: churchObj
+      };
+      if (donationType === "once") results = await ApiHelper.post("/donate/charge", payload, "GivingApi");
+      if (donationType === "recurring") results = await ApiHelper.post("/donate/subscribe", payload, "GivingApi");
     }
 
     if (results?.status === "succeeded" || results?.status === "pending" || results?.status === "active" || results?.status === "CREATED") {
@@ -200,7 +220,7 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
       setShowDonationPreviewModal(false);
       setErrorMessage(Locale.label("donation.common.error") + ": " + (results?.raw?.message || results?.message));
     }
-  }, [donation, donationType, props.church?.name, props.church?.subDomain, props.churchLogo, props.donationSuccess]);
+  }, [donation, donationType, gateway?.id, paypalClientId, props.church?.name, props.church?.subDomain, props.churchLogo, props.donationSuccess, selectedGateway, selectedGatewayObj?.id, total]);
 
   const handleFundDonationsChange = useCallback(async (fd: FundDonationInterface[]) => {
     setErrorMessage(undefined);
@@ -219,7 +239,7 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
     d.funds = selectedFunds;
     setFundsTotal(totalAmount);
     
-    const fee = await getTransactionFee(totalAmount);
+    const fee = await getTransactionFee(totalAmount, d.gatewayId || gateway?.id || selectedGatewayObj?.id, d.provider || (selectedGateway as "stripe" | "paypal"));
     setTransactionFee(fee);
     
     if (gateway && gateway.payFees === true) {
@@ -228,20 +248,16 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
     }
     setTotal(d.amount);
     setDonation(d);
-  }, [donation, funds, gateway]);
+  }, [donation, funds, gateway, selectedGatewayObj?.id, selectedGateway]);
 
-  const getTransactionFee = useCallback(async (amount: number) => {
+  const getTransactionFee = useCallback(async (amount: number, activeGatewayId?: string, provider: "stripe" | "paypal" = "stripe") => {
     if (amount > 0) {
-      let requestData: any = { amount };
-      
-      if (selectedGateway === "paypal") {
-        requestData.provider = "paypal";
-      } else {
-        requestData.type = donation.type === "card" ? "creditCard" : "ach";
-      }
-      
       try {
-        const response = await ApiHelper.post("/donate/fee?churchId=" + (props?.church?.id || ""), requestData, "GivingApi");
+        const response = await ApiHelper.post(
+          "/donate/fee?churchId=" + (props?.church?.id || ""),
+          { amount, provider, gatewayId: activeGatewayId },
+          "GivingApi"
+        );
         return response.calculatedFee;
       } catch (error) {
         console.log("Error calculating transaction fee: ", error);
@@ -250,11 +266,26 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
     } else {
       return 0;
     }
-  }, [donation.type, props?.church?.id, selectedGateway]);
+  }, [props?.church?.id]);
 
   useEffect(() => {
     loadData();
   }, [loadData, props.person?.id]);
+
+  useEffect(() => {
+    if (selectedGatewayObj && (gateway?.id !== selectedGatewayObj.id)) {
+      setGateway(selectedGatewayObj);
+    }
+  }, [selectedGatewayObj, gateway?.id]);
+
+  useEffect(() => {
+    setDonation((prev) => {
+      const nextProvider = prev.provider || (selectedGateway as "stripe" | "paypal");
+      const nextGatewayId = selectedGatewayObj?.id || prev.gatewayId;
+      if (nextProvider === prev.provider && nextGatewayId === prev.gatewayId) return prev;
+      return { ...prev, provider: nextProvider, gatewayId: nextGatewayId };
+    });
+  }, [selectedGateway, selectedGatewayObj?.id]);
 
   const availablePaymentMethods = props.paymentMethods.filter(pm => DonationHelper.normalizeProvider(pm.provider) === selectedGateway);
   const availableGateways = props.paymentGateways.filter(g => g.enabled !== false);
@@ -370,20 +401,21 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
                       ref={hostedRef}
                       clientId={paypalClientId}
                       getClientToken={async () => {
-                        const churchId = props?.church?.id || "";
-                        const endpoints = [
-                          "/donate/paypal/client-token",
-                          "/donate/paypal/clientToken",
-                          "/donate/paypal/generate-client-token"
-                        ];
-                        for (const ep of endpoints) {
-                          try {
-                            const resp = await ApiHelper.post(ep, { churchId }, "GivingApi");
-                            const token = resp?.clientToken || resp?.token || resp?.result || resp;
-                            if (typeof token === "string" && token.length > 0) return token;
-                          } catch { /* try next */ }
+                        try {
+                          const resp = await ApiHelper.post(
+                            "/donate/client-token",
+                            {
+                              churchId: props?.church?.id || "",
+                              provider: "paypal",
+                              gatewayId: selectedGatewayObj?.id || gateway?.id
+                            },
+                            "GivingApi"
+                          );
+                          const token = resp?.clientToken || resp?.token || resp?.result || resp;
+                          return typeof token === "string" && token.length > 0 ? token : "";
+                        } catch {
+                          return "";
                         }
-                        return "";
                       }}
                       createOrder={async () => {
                         try {
@@ -391,9 +423,11 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
                             .filter((f: any) => (f.amount || 0) > 0 && f.id)
                             .map((f: any) => ({ id: f.id, amount: f.amount || 0 }));
                           const response = await ApiHelper.post(
-                            "/donate/paypal/create-order",
+                            "/donate/create-order",
                             {
                               churchId: props?.church?.id || "",
+                              provider: "paypal",
+                              gatewayId: selectedGatewayObj?.id || gateway?.id,
                               amount: total,
                               currency: "USD",
                               funds: fundsPayload,

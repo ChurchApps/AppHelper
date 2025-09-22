@@ -5,11 +5,14 @@ export interface PaymentMethod {
   name: string;
   last4?: string;
   email?: string;
+  gatewayId?: string;
 }
 
 export interface PaymentGateway {
   id: string;
   provider: "stripe" | "paypal" | "Stripe" | "Paypal" | "PayPal";
-  publicKey: string;
+  publicKey?: string;
+  productId?: string;
+  payFees?: boolean;
   enabled?: boolean;
 }

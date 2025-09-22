@@ -5,18 +5,40 @@ import { Grid, TextField } from "@mui/material";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { InputBox, ErrorMessages } from "@churchapps/apphelper";
 import { ApiHelper } from "@churchapps/helpers";
-import { Locale, StripePaymentMethod } from "../helpers";
+import { Locale, StripePaymentMethod, PaymentGateway } from "../helpers";
 import { PersonInterface, PaymentMethodInterface, StripeCardUpdateInterface } from "@churchapps/helpers";
 
-interface Props { card: StripePaymentMethod, customerId: string, person: PersonInterface, setMode: any, deletePayment: any, updateList: (message: string) => void }
+interface Props {
+  card: StripePaymentMethod;
+  customerId: string;
+  person: PersonInterface;
+  setMode: any;
+  deletePayment: any;
+  updateList: (message: string) => void;
+  gateway?: PaymentGateway;
+}
 
 export const CardForm: React.FC<Props> = (props) => {
   const stripe = useStripe();
   const elements = useElements();
   const formStyling = { style: { base: { fontSize: "18px" } } };
   const [showSave, setShowSave] = useState(true);
-  const [paymentMethod] = useState<PaymentMethodInterface>({ id: props.card.id, customerId: props.customerId, personId: props.person.id, email: props.person.contactInfo.email, name: props.person.name.display });
-  const [cardUpdate, setCardUpdate] = useState<StripeCardUpdateInterface>({ personId: props.person.id, paymentMethodId: props.card.id, cardData: { card: { exp_year: "", exp_month: "" } } } as StripeCardUpdateInterface);
+  const [paymentMethod] = useState<PaymentMethodInterface>({
+    id: props.card.id,
+    customerId: props.customerId,
+    personId: props.person.id,
+    email: props.person.contactInfo.email,
+    name: props.person.name.display,
+    provider: props.card.provider || "stripe",
+    gatewayId: props.card.gatewayId || props.gateway?.id
+  });
+  const [cardUpdate, setCardUpdate] = useState<StripeCardUpdateInterface>({
+    personId: props.person.id,
+    paymentMethodId: props.card.id,
+    cardData: { card: { exp_year: "", exp_month: "" } },
+    provider: props.card.provider || "stripe",
+    gatewayId: props.card.gatewayId || props.gateway?.id
+  } as StripeCardUpdateInterface);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const handleCancel = () => { props.setMode("display"); };
   const handleSave = () => { setShowSave(false); props.card.id ? updateCard() : createCard(); };
@@ -29,7 +51,12 @@ export const CardForm: React.FC<Props> = (props) => {
   };
 
   useEffect(() => {
-    setCardUpdate({ ...cardUpdate, cardData: { card: { exp_year: props.card?.exp_year?.toString().slice(2) || "", exp_month: props.card?.exp_month || "" } } });
+    setCardUpdate({
+      ...cardUpdate,
+      cardData: { card: { exp_year: props.card?.exp_year?.toString().slice(2) || "", exp_month: props.card?.exp_month || "" } },
+      gatewayId: props.card.gatewayId || props.gateway?.id,
+      provider: props.card.provider || "stripe"
+    });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,8 +91,12 @@ export const CardForm: React.FC<Props> = (props) => {
         setErrorMessage(stripePM.error.message || "Card creation failed");
         setShowSave(true);
       } else if (stripePM.paymentMethod?.id) {
-        const pm = { ...paymentMethod };
-        pm.id = stripePM.paymentMethod.id;
+        const pm: PaymentMethodInterface = {
+          ...paymentMethod,
+          id: stripePM.paymentMethod.id,
+          provider: paymentMethod.provider || "stripe",
+          gatewayId: paymentMethod.gatewayId || props.gateway?.id
+        };
         const result = await ApiHelper.post("/paymentmethods/addcard", pm, "GivingApi");
         if (result?.raw?.message) {
           setErrorMessage(result.raw.message);
@@ -90,7 +121,11 @@ export const CardForm: React.FC<Props> = (props) => {
       setErrorMessage("Expiration month and year cannot be blank.");
     } else {
       try {
-        const result = await ApiHelper.post("/paymentmethods/updatecard", cardUpdate, "GivingApi");
+        const result = await ApiHelper.post(
+          "/paymentmethods/updatecard",
+          { ...cardUpdate, gatewayId: cardUpdate.gatewayId || props.gateway?.id, provider: cardUpdate.provider || "stripe" },
+          "GivingApi"
+        );
         if (result?.raw?.message) {
           setErrorMessage(result.raw.message);
           setShowSave(true);

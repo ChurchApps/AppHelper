@@ -6,17 +6,46 @@ import type { SelectChangeEvent } from "@mui/material";
 import { useStripe } from "@stripe/react-stripe-js";
 import { InputBox, ErrorMessages } from "@churchapps/apphelper";
 import { ApiHelper } from "@churchapps/helpers";
-import { Locale, StripePaymentMethod } from "../helpers";
+import { Locale, StripePaymentMethod, PaymentGateway } from "../helpers";
 import { PersonInterface, PaymentMethodInterface, StripeBankAccountInterface, StripeBankAccountUpdateInterface, StripeBankAccountVerifyInterface } from "@churchapps/helpers";
 
-interface Props { bank: StripePaymentMethod, showVerifyForm: boolean, customerId: string, person: PersonInterface, setMode: any, deletePayment: any, updateList: (message?: string) => void }
+interface Props {
+  bank: StripePaymentMethod;
+  showVerifyForm: boolean;
+  customerId: string;
+  person: PersonInterface;
+  setMode: any;
+  deletePayment: any;
+  updateList: (message?: string) => void;
+  gateway?: PaymentGateway;
+}
 
 export const BankForm: React.FC<Props> = (props) => {
   const stripe = useStripe();
   const [bankAccount, setBankAccount] = useState<StripeBankAccountInterface>({ account_holder_name: props.bank.account_holder_name, account_holder_type: props.bank.account_holder_type, country: "US", currency: "usd" } as StripeBankAccountInterface);
-  const [paymentMethod] = useState<PaymentMethodInterface>({ customerId: props.customerId, personId: props.person.id, email: props.person.contactInfo.email, name: props.person.name.display });
-  const [updateBankData] = useState<StripeBankAccountUpdateInterface>({ paymentMethodId: props.bank.id, customerId: props.customerId, personId: props.person.id, bankData: { account_holder_name: props.bank.account_holder_name || "", account_holder_type: props.bank.account_holder_type || "individual" } } as StripeBankAccountUpdateInterface);
-  const [verifyBankData, setVerifyBankData] = useState<StripeBankAccountVerifyInterface>({ paymentMethodId: props.bank.id, customerId: props.customerId, amountData: { amounts: [] } });
+  const [paymentMethod] = useState<PaymentMethodInterface>({
+    customerId: props.customerId,
+    personId: props.person.id,
+    email: props.person.contactInfo.email,
+    name: props.person.name.display,
+    provider: props.bank.provider || "stripe",
+    gatewayId: props.bank.gatewayId || props.gateway?.id
+  });
+  const [updateBankData] = useState<StripeBankAccountUpdateInterface>({
+    paymentMethodId: props.bank.id,
+    customerId: props.customerId,
+    personId: props.person.id,
+    bankData: { account_holder_name: props.bank.account_holder_name || "", account_holder_type: props.bank.account_holder_type || "individual" },
+    provider: props.bank.provider || "stripe",
+    gatewayId: props.bank.gatewayId || props.gateway?.id
+  } as StripeBankAccountUpdateInterface);
+  const [verifyBankData, setVerifyBankData] = useState<StripeBankAccountVerifyInterface>({
+    paymentMethodId: props.bank.id,
+    customerId: props.customerId,
+    amountData: { amounts: [] },
+    provider: props.bank.provider || "stripe",
+    gatewayId: props.bank.gatewayId || props.gateway?.id
+  });
   const [showSave, setShowSave] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const saveDisabled = () => { /* Function for disabled save state */ };
@@ -43,8 +72,12 @@ export const BankForm: React.FC<Props> = (props) => {
         if (response?.error?.message) {
           setErrorMessage(response.error.message);
         } else if (response?.token?.id) {
-          const pm = { ...paymentMethod };
-          pm.id = response.token.id;
+          const pm: PaymentMethodInterface = {
+            ...paymentMethod,
+            id: response.token.id,
+            provider: paymentMethod.provider || "stripe",
+            gatewayId: paymentMethod.gatewayId || props.gateway?.id
+          };
           const result = await ApiHelper.post("/paymentmethods/addbankaccount", pm, "GivingApi");
           if (result?.raw?.message) {
             setErrorMessage(result.raw.message);
@@ -71,7 +104,11 @@ export const BankForm: React.FC<Props> = (props) => {
         const bank = { ...updateBankData };
         bank.bankData.account_holder_name = bankAccount.account_holder_name;
         bank.bankData.account_holder_type = bankAccount.account_holder_type;
-        const response = await ApiHelper.post("/paymentmethods/updatebank", bank, "GivingApi");
+        const response = await ApiHelper.post(
+          "/paymentmethods/updatebank",
+          { ...bank, gatewayId: bank.gatewayId || props.gateway?.id, provider: bank.provider || "stripe" },
+          "GivingApi"
+        );
         if (response?.raw?.message) {
           setErrorMessage(response.raw.message);
         } else {
@@ -90,7 +127,11 @@ export const BankForm: React.FC<Props> = (props) => {
     const amounts = verifyBankData?.amountData?.amounts;
     if (amounts && amounts.length === 2 && amounts[0] !== "" && amounts[1] !== "") {
       try {
-        const response = await ApiHelper.post("/paymentmethods/verifyBank", verifyBankData, "GivingApi");
+        const response = await ApiHelper.post(
+          "/paymentmethods/verifyBank",
+          { ...verifyBankData, gatewayId: verifyBankData.gatewayId || props.gateway?.id, provider: verifyBankData.provider || "stripe" },
+          "GivingApi"
+        );
         if (response?.raw?.message) {
           setErrorMessage(response.raw.message);
         } else {
