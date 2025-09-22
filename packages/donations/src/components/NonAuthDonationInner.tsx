@@ -1,6 +1,6 @@
 "use client";
 
-import { CardElement, CardNumberElement, CardExpiryElement, CardCvcElement, useElements, useStripe } from "@stripe/react-stripe-js";
+import { CardNumberElement, CardExpiryElement, CardCvcElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import React, { useState, useRef, useEffect } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { ErrorMessages, InputBox } from "@churchapps/apphelper";
@@ -211,16 +211,26 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 		};
 
 		let results;
-		const donationPayload = { ...donation, church: churchObj };
+		const donationPayload = {
+			...donation,
+			church: churchObj,
+			provider: gateway?.provider || "stripe",
+			gatewayId: gateway?.id
+		};
 		if (donationType === "once") results = await ApiHelper.post("/donate/charge", donationPayload, "GivingApi");
 		if (donationType === "recurring") results = await ApiHelper.post("/donate/subscribe", donationPayload, "GivingApi");
 
 		if (results?.status === "succeeded" || results?.status === "pending" || results?.status === "active") {
 			setDonationComplete(true);
-		}
-		if (results?.raw?.message) {
-			setErrors([results?.raw?.message]);
-			setProcessing(false);
+		} else {
+			// Handle any error case
+			if (results?.raw?.message) {
+				setErrors([results?.raw?.message]);
+			} else if (results?.error) {
+				setErrors([results.error]);
+			} else {
+				setErrors(["An unexpected error occurred. Please try again."]);
+			}
 		}
 		setProcessing(false);
 	};

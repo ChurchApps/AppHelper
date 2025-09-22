@@ -143,10 +143,16 @@ export const DonationForm: React.FC<Props> = (props) => {
       setShowDonationPreviewModal(false);
       setDonationType(undefined);
       props.donationSuccess(message);
-    }
-    if (results?.raw?.message) {
+    } else {
+      // Handle any error case
       setShowDonationPreviewModal(false);
-      setErrorMessage(Locale.label("donation.common.error") + ": " + results?.raw?.message);
+      if (results?.raw?.message) {
+        setErrorMessage(Locale.label("donation.common.error") + ": " + results?.raw?.message);
+      } else if (results?.error) {
+        setErrorMessage(Locale.label("donation.common.error") + ": " + results.error);
+      } else {
+        setErrorMessage(Locale.label("donation.common.error") + ": An unexpected error occurred. Please try again.");
+      }
     }
   }, [donation, donationType, gateway?.id, props.church?.name, props.church?.subDomain, props.churchLogo, props.donationSuccess]);
 
