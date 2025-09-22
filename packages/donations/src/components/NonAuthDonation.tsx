@@ -26,7 +26,7 @@ export const NonAuthDonation: React.FC<Props> = ({ mainContainerCssProps, showHe
   const [loading, setLoading] = useState(true);
 
   const init = () => {
-    ApiHelper.post("/donate/gateways", { churchId: props.churchId }, "GivingApi").then((response: any) => {
+    ApiHelper.get(`/donate/gateways/${props.churchId}`, "GivingApi").then((response: any) => {
       const gateways = Array.isArray(response?.gateways) ? response.gateways : [];
       const enabledGateways = gateways.filter((gateway: any) => gateway && gateway.enabled !== false);
       setAvailableGateways(enabledGateways);

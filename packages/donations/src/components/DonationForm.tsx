@@ -57,7 +57,7 @@ export const DonationForm: React.FC<Props> = (props) => {
       setFunds(data);
       if (data.length) setFundDonations([{ fundId: data[0].id }]);
     });
-    ApiHelper.post("/donate/gateways", {}, "GivingApi").then((response: any) => {
+    ApiHelper.get(`/donate/gateways/${props?.church?.id || ""}`, "GivingApi").then((response: any) => {
       const gateways = Array.isArray(response?.gateways) ? response.gateways : [];
       const stripeGateway = gateways.find((g: any) => DonationHelper.isProvider(g.provider, "stripe"));
       if (stripeGateway) setGateway(stripeGateway);

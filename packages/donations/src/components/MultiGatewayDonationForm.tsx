@@ -81,7 +81,7 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
       setFunds(data);
       if (data.length) setFundDonations([{ fundId: data[0].id }]);
     });
-    ApiHelper.post("/donate/gateways", {}, "GivingApi").then((response: any) => {
+    ApiHelper.get(`/donate/gateways/${props?.church?.id || ""}`, "GivingApi").then((response: any) => {
       const gateways = Array.isArray(response?.gateways) ? response.gateways : [];
       const primaryGateway = gateways.find((g: any) => DonationHelper.normalizeProvider(g.provider) === selectedGateway);
       if (primaryGateway) setGateway(primaryGateway);

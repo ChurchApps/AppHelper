@@ -66,7 +66,7 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 		ApiHelper.get("/churches/" + props.churchId, "MembershipApi").then((data: any) => {
 			setChurch(data);
 		});
-		ApiHelper.post("/donate/gateways", { churchId: props.churchId }, "GivingApi").then((response: any) => {
+		ApiHelper.get(`/donate/gateways/${props.churchId}`, "GivingApi").then((response: any) => {
 			const gateways = Array.isArray(response?.gateways) ? response.gateways : [];
 			const stripeGateway = DonationHelper.findGatewayByProvider(gateways, "stripe");
 			if (stripeGateway) setGateway(stripeGateway);

@@ -75,7 +75,7 @@ export const PayPalNonAuthDonationInner: React.FC<Props> = ({ mainContainerCssPr
     ApiHelper.get("/churches/" + props.churchId, "MembershipApi").then((_data: any) => {
       _setChurch(_data);
     });
-    ApiHelper.post("/donate/gateways", { churchId: props.churchId }, "GivingApi").then((response: any) => {
+    ApiHelper.get(`/donate/gateways/${props.churchId}`, "GivingApi").then((response: any) => {
       const gateways = Array.isArray(response?.gateways) ? response.gateways : [];
       const paypalGateway = DonationHelper.findGatewayByProvider(gateways, "paypal");
       if (paypalGateway) setGateway(paypalGateway);

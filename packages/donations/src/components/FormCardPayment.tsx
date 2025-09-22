@@ -33,7 +33,7 @@ export const FormCardPayment = forwardRef((props: Props, ref) => {
       const result = ArrayHelper.getOne(data, "id", fundId);
       setFund(result);
     });
-    ApiHelper.post("/donate/gateways", { churchId: props.churchId }, "GivingApi").then((response: any) => {
+    ApiHelper.get(`/donate/gateways/${props.churchId}`, "GivingApi").then((response: any) => {
       const gateways = Array.isArray(response?.gateways) ? response.gateways : [];
       const stripeGateway = gateways.find((g: any) => g.provider?.toLowerCase() === "stripe");
       if (stripeGateway) setGateway(stripeGateway);

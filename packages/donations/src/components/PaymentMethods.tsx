@@ -21,7 +21,7 @@ export const PaymentMethods: React.FC<Props> = (props) => {
   const [gateway, setGateway] = useState<PaymentGateway | undefined>(undefined);
 
   useEffect(() => {
-    ApiHelper.post("/donate/gateways", {}, "GivingApi").then((response: any) => {
+    ApiHelper.get(`/donate/gateways/${UserHelper.currentUserChurch?.church?.id || ""}`, "GivingApi").then((response: any) => {
       const gateways = Array.isArray(response?.gateways) ? response.gateways : [];
       const stripeGateway = gateways.find((g: any) => g.provider?.toLowerCase() === "stripe");
       if (stripeGateway) setGateway(stripeGateway);
