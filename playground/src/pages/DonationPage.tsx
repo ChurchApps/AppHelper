@@ -1,6 +1,7 @@
 import React from 'react';
 import { Container, Box, Typography, Alert, Stack, Divider } from '@mui/material';
 import { Link } from 'react-router-dom';
+import type { Stripe } from '@stripe/stripe-js';
 import { ErrorBoundary } from '../ErrorBoundary';
 import UserContext from '../UserContext';
 import { 
@@ -15,11 +16,140 @@ import { ApiHelper } from '@churchapps/helpers';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 
+// Helper function to normalize raw payment method data from API
+const normalizePaymentMethods = (rawData: any): { stripePMs: StripePaymentMethod[], allPMs: PaymentMethod[], customerId?: string } => {
+  const stripePMs: StripePaymentMethod[] = [];
+  const allPMs: PaymentMethod[] = [];
+  let customerId: string | undefined;
+
+  if (!rawData) return { stripePMs, allPMs };
+
+  // Handle case where API returns raw Stripe customer data
+  if (rawData.object === 'customer' || rawData.id?.startsWith('cus_')) {
+    // Single customer object with payment methods
+    customerId = rawData.id;
+
+    // Handle cards
+    if (rawData.sources?.data || rawData.cards?.data) {
+      const cards = rawData.sources?.data || rawData.cards?.data || [];
+      for (const card of cards) {
+        if (card.object === 'card') {
+          const normalizedCard = {
+            id: card.id,
+            type: 'card',
+            provider: 'stripe',
+            name: `${card.brand || 'Card'}`,
+            last4: card.last4,
+            customerId: rawData.id,
+            status: card.status || 'active'
+          };
+          stripePMs.push(new StripePaymentMethod(normalizedCard));
+          allPMs.push(normalizedCard);
+        }
+      }
+    }
+
+    // Handle bank accounts
+    if (rawData.sources?.data) {
+      const banks = rawData.sources.data.filter((s: any) => s.object === 'bank_account');
+      for (const bank of banks) {
+        const normalizedBank = {
+          id: bank.id,
+          type: 'bank',
+          provider: 'stripe',
+          name: 'Bank Account',
+          last4: bank.last4,
+          customerId: rawData.id,
+          status: bank.status || 'new'
+        };
+        stripePMs.push(new StripePaymentMethod(normalizedBank));
+        allPMs.push(normalizedBank);
+      }
+    }
+  }
+  // Handle case where API returns array of payment methods
+  else if (Array.isArray(rawData)) {
+    for (const item of rawData) {
+      // If it's already normalized, use as-is
+      if (item.provider && item.type) {
+        stripePMs.push(new StripePaymentMethod(item));
+        allPMs.push(item);
+        if (item.customerId && !customerId) customerId = item.customerId;
+      }
+      // If it's raw Stripe payment method
+      else if (item.object === 'payment_method') {
+        const normalizedPM = {
+          id: item.id,
+          type: item.type === 'us_bank_account' ? 'bank' : 'card',
+          provider: 'stripe',
+          name: item.type === 'us_bank_account' ? 'Bank Account' : (item.card?.brand || 'Card'),
+          last4: item.type === 'us_bank_account' ? item.us_bank_account?.last4 : item.card?.last4,
+          customerId: item.customer,
+          status: 'active'
+        };
+        stripePMs.push(new StripePaymentMethod(normalizedPM));
+        allPMs.push(normalizedPM);
+        if (item.customer && !customerId) customerId = item.customer;
+      }
+      // If it's raw Stripe source (legacy)
+      else if (item.object === 'card' || item.object === 'bank_account') {
+        const normalizedSource = {
+          id: item.id,
+          type: item.object === 'bank_account' ? 'bank' : 'card',
+          provider: 'stripe',
+          name: item.object === 'bank_account' ? 'Bank Account' : (item.brand || 'Card'),
+          last4: item.last4,
+          customerId: item.customer,
+          status: item.status || 'active'
+        };
+        stripePMs.push(new StripePaymentMethod(normalizedSource));
+        allPMs.push(normalizedSource);
+        if (item.customer && !customerId) customerId = item.customer;
+      }
+      // Handle customer data with nested payment methods
+      else if (item.cards?.data || item.banks?.data) {
+        if (item.cards?.data) {
+          for (const card of item.cards.data) {
+            const normalizedCard = {
+              id: card.id,
+              type: 'card',
+              provider: 'stripe',
+              name: card.card?.brand || card.brand || 'Card',
+              last4: card.card?.last4 || card.last4,
+              customerId: card.customer || item.id,
+              status: card.status || 'active'
+            };
+            stripePMs.push(new StripePaymentMethod(normalizedCard));
+            allPMs.push(normalizedCard);
+          }
+        }
+        if (item.banks?.data) {
+          for (const bank of item.banks.data) {
+            const normalizedBank = {
+              id: bank.id,
+              type: 'bank',
+              provider: 'stripe',
+              name: 'Bank Account',
+              last4: bank.last4,
+              customerId: bank.customer || item.id,
+              status: bank.status || 'new'
+            };
+            stripePMs.push(new StripePaymentMethod(normalizedBank));
+            allPMs.push(normalizedBank);
+          }
+        }
+      }
+    }
+  }
+
+  return { stripePMs, allPMs, customerId };
+};
+
 export default function DonationPage() {
   const context = React.useContext(UserContext);
 
-  // Stripe for authenticated components (if used)
-  const stripePromise = React.useMemo(() => loadStripe((import.meta as any).env.VITE_STRIPE_PUBLIC_KEY || '') as Promise<any>, []);
+  // Stripe for authenticated components (will be initialized after getting gateway info)
+  const [stripePromise, setStripePromise] = React.useState<Promise<Stripe | null> | null>(null);
 
   // Live data state for authenticated donation features
   const [customerId, setCustomerId] = React.useState<string>('');
@@ -46,53 +176,29 @@ export default function DonationPage() {
         }));
         setPaymentGateways(pg);
 
-        // Try to get a customer for this person
-        let cust: any = null;
-        try {
-          // API doesn't have a direct customer/person endpoint, so we'll get customer ID from payment methods
-          const pms = await ApiHelper.get(`/paymentmethods/personid/${context.person.id}`, 'GivingApi');
-          if (pms && pms.length > 0) {
-            cust = { id: pms[0].customerId };
-          }
-        } catch (e) {
-          // ignore, handled below
+        // Initialize Stripe with the public key from gateway
+        const stripeGateway = pg.find(g => g.provider?.toLowerCase() === 'stripe');
+        if (stripeGateway?.publicKey) {
+          setStripePromise(loadStripe(stripeGateway.publicKey));
         }
 
-        const cid = cust?.id || cust?.customerId || '';
-        if (cid) setCustomerId(cid);
-
-        // Load payment methods (Stripe + PayPal summary) for the customer
-        let stripePMs: StripePaymentMethod[] = [];
-        let allPMs: PaymentMethod[] = [];
+        // Load payment methods and normalize the response
         try {
-          const pms = await ApiHelper.get(`/paymentmethods/personid/${context.person.id}`, 'GivingApi');
-          if (Array.isArray(pms)) {
-            for (const p of pms) {
-              if ((p.provider || '').toLowerCase() === 'stripe') {
-                stripePMs.push(new StripePaymentMethod(p));
-                allPMs.push({
-                  id: p.id,
-                  type: (p.type || 'card'),
-                  provider: 'stripe',
-                  name: p.name || p.card?.brand || 'Card',
-                  last4: p.last4 || p.card?.last4,
-                });
-              } else if ((p.provider || '').toLowerCase() === 'paypal') {
-                allPMs.push({
-                  id: p.id,
-                  type: 'paypal',
-                  provider: 'paypal',
-                  name: p.name || 'PayPal',
-                  email: p.email,
-                });
-              }
-            }
+          const rawPms = await ApiHelper.get(`/paymentmethods/personid/${context.person.id}`, 'GivingApi');
+          const { stripePMs, allPMs, customerId: extractedCustomerId } = normalizePaymentMethods(rawPms);
+
+          setStripePaymentMethods(stripePMs);
+          setPaymentMethodsAll(allPMs);
+
+          // Set customer ID if we extracted one from the payment methods
+          if (extractedCustomerId) {
+            setCustomerId(extractedCustomerId);
           }
         } catch (e) {
           // As a fallback, leave methods empty; components will allow adding
+          setStripePaymentMethods([]);
+          setPaymentMethodsAll([]);
         }
-        setStripePaymentMethods(stripePMs);
-        setPaymentMethodsAll(allPMs);
 
         // Donation history (best-effort)
         try {
@@ -169,7 +275,7 @@ export default function DonationPage() {
                       customerId={customerId}
                       paymentMethods={paymentMethodsAll}
                       paymentGateways={paymentGateways}
-                      stripePromise={stripePromise}
+                      stripePromise={stripePromise as Promise<Stripe> | undefined}
                       donationSuccess={(message: string) => alert(`Success: ${message}`)}
                       church={context?.userChurch?.church}
                       churchLogo={undefined}
@@ -200,11 +306,13 @@ export default function DonationPage() {
                         // Reload methods after add/edit/delete
                         if (context?.person?.id) {
                           ApiHelper.get(`/paymentmethods/personid/${context.person.id}`, 'GivingApi')
-                            .then((pms: any[]) => {
-                              const stripePMs = (pms || [])
-                                .filter(p => (p.provider || '').toLowerCase() === 'stripe')
-                                .map(p => new StripePaymentMethod(p));
+                            .then((rawPms) => {
+                              const { stripePMs, allPMs, customerId: extractedCustomerId } = normalizePaymentMethods(rawPms);
                               setStripePaymentMethods(stripePMs);
+                              setPaymentMethodsAll(allPMs);
+                              if (extractedCustomerId && !customerId) {
+                                setCustomerId(extractedCustomerId);
+                              }
                             })
                             .catch(() => {/* ignore */});
                         }
@@ -223,11 +331,11 @@ export default function DonationPage() {
                   View and manage your recurring donation subscriptions.
                 </Alert>
                 <Elements stripe={stripePromise}>
-                  {loadingAuthData || !customerId ? (
+                  {loadingAuthData ? (
                     <Alert severity="info">Loading subscriptions…</Alert>
                   ) : (
                     <RecurringDonations
-                      customerId={customerId}
+                      customerId={customerId || ''}
                       paymentMethods={stripePaymentMethods}
                       appName="AppHelper Playground"
                       dataUpdate={(_message?: string) => {/* no-op */}}

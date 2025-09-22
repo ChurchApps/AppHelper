@@ -70,11 +70,11 @@ export const RecurringDonations: React.FC<Props> = (props) => {
   };
 
   const getEditOptions = (sub: SubscriptionInterface) => {
-    if ((!UserHelper.checkAccess(Permissions.givingApi.settings.edit) && props.appName !== "B1App") || props?.paymentMethods?.length === 0) return null;
-    return <button 
+    if (!UserHelper.checkAccess(Permissions.givingApi.settings.edit) || props?.paymentMethods?.length === 0) return null;
+    return <button
       type="button"
-      aria-label="edit-button" 
-      onClick={handleEdit(sub)} 
+      aria-label="edit-button"
+      onClick={handleEdit(sub)}
       style={{ background: "none", border: "none", cursor: "pointer", color: "#3b82f6" }}
     >
       <Icon>edit</Icon>
@@ -111,11 +111,10 @@ export const RecurringDonations: React.FC<Props> = (props) => {
 
   useEffect(loadData, []); //eslint-disable-line
 
-  if (!subscriptions.length) return null;
   if (mode === "display") {
     return (
       <DisplayBox data-testid="recurring-donations" headerIcon="restart_alt" headerText="Recurring Donations">
-        {getSubscriptionsTable()}
+        {subscriptions.length > 0 ? getSubscriptionsTable() : <div>{Locale.label("donation.recurring.noSubscriptions") || "No recurring donations found."}</div>}
       </DisplayBox>
     );
   }

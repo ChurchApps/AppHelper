@@ -87,16 +87,20 @@ export const PaymentMethods: React.FC<Props> = (props) => {
   };
 
   const getNewContent = () => {
-    if (!UserHelper.checkAccess(Permissions.givingApi.settings.edit) && props.appName !== "B1App") return null;
+    // Allow adding payment methods if user has admin permissions OR it's their own account
+    if (!UserHelper.checkAccess(Permissions.givingApi.settings.edit) &&
+        props.person?.id !== UserHelper.currentUserChurch?.person?.id) return null;
     return <MenuIcon />;
   };
 
   const getEditOptions = (pm: StripePaymentMethod) => {
-    if (!UserHelper.checkAccess(Permissions.givingApi.settings.edit) && props.appName !== "B1App") return null;
-    return <button 
+    // Allow editing payment methods if user has admin permissions OR it's their own account
+    if (!UserHelper.checkAccess(Permissions.givingApi.settings.edit) &&
+        props.person?.id !== UserHelper.currentUserChurch?.person?.id) return null;
+    return <button
       type="button"
-      aria-label="edit-button" 
-      onClick={handleEdit(pm)} 
+      aria-label="edit-button"
+      onClick={handleEdit(pm)}
       style={{ background: "none", border: "none", cursor: "pointer", color: "#3b82f6" }}
     >
       <Icon>edit</Icon>
