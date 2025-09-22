@@ -35,16 +35,12 @@ export const BankForm: React.FC<Props> = (props) => {
     paymentMethodId: props.bank.id,
     customerId: props.customerId,
     personId: props.person.id,
-    bankData: { account_holder_name: props.bank.account_holder_name || "", account_holder_type: props.bank.account_holder_type || "individual" },
-    provider: props.bank.provider || "stripe",
-    gatewayId: props.bank.gatewayId || props.gateway?.id
+    bankData: { account_holder_name: props.bank.account_holder_name || "", account_holder_type: props.bank.account_holder_type || "individual" }
   } as StripeBankAccountUpdateInterface);
   const [verifyBankData, setVerifyBankData] = useState<StripeBankAccountVerifyInterface>({
     paymentMethodId: props.bank.id,
     customerId: props.customerId,
-    amountData: { amounts: [] },
-    provider: props.bank.provider || "stripe",
-    gatewayId: props.bank.gatewayId || props.gateway?.id
+    amountData: { amounts: [] }
   });
   const [showSave, setShowSave] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -106,7 +102,7 @@ export const BankForm: React.FC<Props> = (props) => {
         bank.bankData.account_holder_type = bankAccount.account_holder_type;
         const response = await ApiHelper.post(
           "/paymentmethods/updatebank",
-          { ...bank, gatewayId: bank.gatewayId || props.gateway?.id, provider: bank.provider || "stripe" },
+          { ...bank, gatewayId: props.bank.gatewayId || props.gateway?.id, provider: props.bank.provider || "stripe" },
           "GivingApi"
         );
         if (response?.raw?.message) {
@@ -129,7 +125,7 @@ export const BankForm: React.FC<Props> = (props) => {
       try {
         const response = await ApiHelper.post(
           "/paymentmethods/verifyBank",
-          { ...verifyBankData, gatewayId: verifyBankData.gatewayId || props.gateway?.id, provider: verifyBankData.provider || "stripe" },
+          { ...verifyBankData, gatewayId: props.bank.gatewayId || props.gateway?.id, provider: props.bank.provider || "stripe" },
           "GivingApi"
         );
         if (response?.raw?.message) {

@@ -1,22 +1,22 @@
-// Re-export from @churchapps/helpers
-export { 
-  ApiHelper, 
+// Re-export helpers from @churchapps/helpers
+export {
+  ApiHelper,
   AppearanceHelper as BaseAppearanceHelper,
-  ArrayHelper, 
-  CommonEnvironmentHelper, 
-  CurrencyHelper, 
-  DateHelper, 
-  ErrorHelper, 
-  EventHelper, 
-  FileHelper, 
-  PersonHelper, 
-  UserHelper, 
+  ArrayHelper,
+  CommonEnvironmentHelper,
+  CurrencyHelper,
+  DateHelper,
+  ErrorHelper,
+  EventHelper,
+  FileHelper,
+  PersonHelper,
+  UserHelper,
   UniqueIdHelper,
   Permissions
 } from "@churchapps/helpers";
 
 // Re-export interfaces from @churchapps/helpers
-export type { 
+export type {
   ErrorLogInterface,
   UserContextInterface,
   PermissionInterface,
@@ -35,7 +35,15 @@ export type {
   ConnectionInterface,
   SocketActionHandlerInterface,
   SocketPayloadInterface,
-  UserChurchInterface
+  UserChurchInterface,
+  QuestionInterface,
+  AnswerInterface,
+  FormSubmissionInterface,
+  MessageInterface,
+  ConversationInterface,
+  PrivateMessageInterface,
+  IApiPermission,
+  NotificationInterface
 } from "@churchapps/helpers";
 
 // Export local helpers

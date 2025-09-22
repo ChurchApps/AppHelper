@@ -47,9 +47,7 @@ export const DonationForm: React.FC<Props> = (props) => {
       interval_count: 1,
       interval: "month"
     },
-    funds: [],
-    provider: props?.paymentMethods?.length > 0 ? props.paymentMethods[0].provider || "stripe" : "stripe",
-    gatewayId: props?.paymentMethods?.length > 0 ? props.paymentMethods[0].gatewayId : undefined
+    funds: []
   });
 
   const loadData = useCallback(() => {
@@ -91,8 +89,6 @@ export const DonationForm: React.FC<Props> = (props) => {
         const pm = props.paymentMethods.find(pm => pm.id === value);
         if (pm) {
           d.type = pm.type;
-          d.provider = pm.provider || "stripe";
-          d.gatewayId = pm.gatewayId || gateway?.id;
           setPaymentMethodName(`${pm.name} ****${pm.last4}`);
         }
         break;
@@ -132,10 +128,11 @@ export const DonationForm: React.FC<Props> = (props) => {
       logo: props?.churchLogo || ""
     };
 
+    const selectedPaymentMethod = props.paymentMethods.find(pm => pm.id === donation.id);
     const payload = {
       ...donation,
-      provider: donation.provider || "stripe",
-      gatewayId: donation.gatewayId || gateway?.id,
+      provider: selectedPaymentMethod?.provider || "stripe",
+      gatewayId: selectedPaymentMethod?.gatewayId || gateway?.id,
       church: churchObj
     };
 
@@ -169,8 +166,9 @@ export const DonationForm: React.FC<Props> = (props) => {
     d.amount = totalAmount;
     d.funds = selectedFunds;
     setFundsTotal(totalAmount);
-    
-    const fee = await getTransactionFee(totalAmount, (d.gatewayId || gateway?.id) as string | undefined, d.provider || "stripe");
+
+    const selectedPm = props.paymentMethods.find(pm => pm.id === d.id);
+    const fee = await getTransactionFee(totalAmount, (selectedPm?.gatewayId || gateway?.id) as string | undefined, selectedPm?.provider || "stripe");
     setTransactionFee(fee);
     
     if (gateway && gateway.payFees === true) {
@@ -205,7 +203,8 @@ export const DonationForm: React.FC<Props> = (props) => {
 
   useEffect(() => {
     if (gateway?.id) {
-      setDonation((prev) => ({ ...prev, gatewayId: gateway.id, provider: prev.provider || "stripe" }));
+      // Gateway is stored at the component level, not in the donation object
+      setGateway(gateway);
     }
   }, [gateway?.id]);
    

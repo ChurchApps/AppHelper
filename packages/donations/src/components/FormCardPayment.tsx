@@ -116,10 +116,8 @@ export const FormCardPayment = forwardRef((props: Props, ref) => {
       person: {
         id: person?.id || "",
         email: person?.contactInfo?.email || "",
-        name: person?.name?.display || "",
-      },
-      provider: "stripe",
-      gatewayId: gateway?.id || paymentMethod.gatewayId
+        name: person?.name?.display || ""
+      }
     }
 
     const churchObj = {

@@ -10,6 +10,7 @@ declare global {
 			readonly VITE_MESSAGING_API?: string;
 			readonly VITE_MESSAGING_API_SOCKET?: string;
 			readonly VITE_MEMBERSHIP_API?: string;
+			readonly VITE_GIVING_API?: string;
 		}
 	}
 }
@@ -52,11 +53,15 @@ export class EnvironmentHelper {
 		if (import.meta.env.VITE_MEMBERSHIP_API) {
 			EnvironmentHelper.Common.MembershipApi = import.meta.env.VITE_MEMBERSHIP_API;
 		}
+		if (import.meta.env.VITE_GIVING_API) {
+			EnvironmentHelper.Common.GivingApi = import.meta.env.VITE_GIVING_API;
+		}
 
 		console.log("🔧 Development environment configured:");
 		console.log("   ContentApi:", EnvironmentHelper.Common.ContentApi);
 		console.log("   MessagingApi:", EnvironmentHelper.Common.MessagingApi);
 		console.log("   MembershipApi:", EnvironmentHelper.Common.MembershipApi);
+		console.log("   GivingApi:", EnvironmentHelper.Common.GivingApi);
 	}
 
 	static initStaging = () => {

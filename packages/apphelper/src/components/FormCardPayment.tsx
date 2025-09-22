@@ -3,11 +3,7 @@
 import React, { forwardRef, useImperativeHandle } from "react";
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { Box, Grid, TextField } from "@mui/material";
-// import { QuestionInterface } from "@churchapps/helpers";
-interface QuestionInterface {
-  choices?: Array<{ text?: string; value?: string }>;
-}
-import { ApiHelper, Locale, UserInterface, PersonInterface, StripeDonationInterface, ChurchInterface, FundInterface, ArrayHelper, UserHelper } from "../helpers";
+import { ApiHelper, Locale, UserInterface, PersonInterface, StripeDonationInterface, ChurchInterface, FundInterface, ArrayHelper, UserHelper, QuestionInterface } from "../helpers";
 import { StripePaymentMethod } from "@churchapps/helpers";
 
 interface Props {

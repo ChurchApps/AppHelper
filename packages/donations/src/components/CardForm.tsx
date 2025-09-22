@@ -35,9 +35,7 @@ export const CardForm: React.FC<Props> = (props) => {
   const [cardUpdate, setCardUpdate] = useState<StripeCardUpdateInterface>({
     personId: props.person.id,
     paymentMethodId: props.card.id,
-    cardData: { card: { exp_year: "", exp_month: "" } },
-    provider: props.card.provider || "stripe",
-    gatewayId: props.card.gatewayId || props.gateway?.id
+    cardData: { card: { exp_year: "", exp_month: "" } }
   } as StripeCardUpdateInterface);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const handleCancel = () => { props.setMode("display"); };
@@ -53,9 +51,7 @@ export const CardForm: React.FC<Props> = (props) => {
   useEffect(() => {
     setCardUpdate({
       ...cardUpdate,
-      cardData: { card: { exp_year: props.card?.exp_year?.toString().slice(2) || "", exp_month: props.card?.exp_month || "" } },
-      gatewayId: props.card.gatewayId || props.gateway?.id,
-      provider: props.card.provider || "stripe"
+      cardData: { card: { exp_year: props.card?.exp_year?.toString().slice(2) || "", exp_month: props.card?.exp_month || "" } }
     });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -123,7 +119,7 @@ export const CardForm: React.FC<Props> = (props) => {
       try {
         const result = await ApiHelper.post(
           "/paymentmethods/updatecard",
-          { ...cardUpdate, gatewayId: cardUpdate.gatewayId || props.gateway?.id, provider: cardUpdate.provider || "stripe" },
+          { ...cardUpdate, gatewayId: props.card.gatewayId || props.gateway?.id, provider: props.card.provider || "stripe" },
           "GivingApi"
         );
         if (result?.raw?.message) {

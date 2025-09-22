@@ -183,9 +183,7 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 				email: person?.contactInfo?.email || "",
 				name: person?.name?.display || ""
 			},
-			notes: notes,
-			provider: "stripe",
-			gatewayId: gateway?.id
+			notes: notes
 		};
 
 		if (donationType === "recurring") {
