@@ -28,7 +28,7 @@ export const DonationForm: React.FC<Props> = (props) => {
   const [paymentMethodName, setPaymentMethodName] = useState<string>(
     props?.paymentMethods?.length > 0 ? `${props.paymentMethods[0].name} ****${props.paymentMethods[0].last4}` : ""
   );
-  const [donationType, setDonationType] = useState<string | undefined>();
+  const [donationType, setDonationType] = useState<string | undefined>("once");
   const [showDonationPreviewModal, setShowDonationPreviewModal] = useState<boolean>(false);
   const [interval, setInterval] = useState("one_month");
   const [gateway, setGateway] = useState<PaymentGateway | null>(null);

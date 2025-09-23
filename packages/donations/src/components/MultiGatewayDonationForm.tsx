@@ -57,7 +57,7 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
       props.paymentGateways.find((g) => DonationHelper.normalizeProvider(g.provider) === selectedGateway) || null
     );
   }, [props.paymentGateways, selectedGateway]);
-  const [donationType, setDonationType] = useState<string | undefined>();
+  const [donationType, setDonationType] = useState<string | undefined>("once");
   const [showDonationPreviewModal, setShowDonationPreviewModal] = useState<boolean>(false);
   const [interval, setInterval] = useState("one_month");
   const [gateway, setGateway] = useState<PaymentGateway | null>(selectedGatewayObj);
@@ -66,7 +66,7 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
     return gw?.publicKey || "";
   }, [props.paymentGateways]);
   const hostedRef = useRef<PayPalHostedFieldsHandle>(null);
-  const feeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const feeTimeoutRef = useRef<number | null>(null);
   const [donation, setDonation] = useState<MultiGatewayDonationInterface>({
     id: props?.paymentMethods?.length > 0 ? props.paymentMethods[0].id : "",
     type: props?.paymentMethods?.length > 0 ? (props.paymentMethods[0].type as "card" | "bank" | "paypal") : "card",
@@ -250,6 +250,24 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
     }
   }, [donation, donationType, gateway?.id, paypalClientId, props.church?.name, props.church?.subDomain, props.churchLogo, props.donationSuccess, selectedGateway, selectedGatewayObj?.id, total]);
 
+  const getTransactionFee = useCallback(async (amount: number, activeGatewayId?: string, provider: "stripe" | "paypal" = "stripe") => {
+    if (amount > 0) {
+      try {
+        const response = await ApiHelper.post(
+          "/donate/fee?churchId=" + (props?.church?.id || ""),
+          { amount, provider, gatewayId: activeGatewayId },
+          "GivingApi"
+        );
+        return response.calculatedFee;
+      } catch (error) {
+        console.log("Error calculating transaction fee: ", error);
+        return 0;
+      }
+    } else {
+      return 0;
+    }
+  }, [props?.church?.id]);
+
   const handleFundDonationsChange = useCallback((fd: FundDonationInterface[]) => {
     setErrorMessage(undefined);
     setFundDonations(fd);
@@ -269,7 +287,7 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
 
     // Clear existing timeout
     if (feeTimeoutRef.current) {
-      clearTimeout(feeTimeoutRef.current);
+      window.clearTimeout(feeTimeoutRef.current);
     }
 
     // Set initial totals without fee for immediate UI update
@@ -277,7 +295,7 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
     setDonation(d);
 
     // Debounce fee calculation to prevent excessive API calls
-    feeTimeoutRef.current = setTimeout(async () => {
+    feeTimeoutRef.current = window.setTimeout(async () => {
       const fee = await getTransactionFee(totalAmount, d.gatewayId || gateway?.id || selectedGatewayObj?.id, d.provider || (selectedGateway as "stripe" | "paypal"));
       setTransactionFee(fee);
 
@@ -289,24 +307,6 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
       }
     }, 500);
   }, [donation, funds, gateway, selectedGatewayObj?.id, selectedGateway, getTransactionFee]);
-
-  const getTransactionFee = useCallback(async (amount: number, activeGatewayId?: string, provider: "stripe" | "paypal" = "stripe") => {
-    if (amount > 0) {
-      try {
-        const response = await ApiHelper.post(
-          "/donate/fee?churchId=" + (props?.church?.id || ""),
-          { amount, provider, gatewayId: activeGatewayId },
-          "GivingApi"
-        );
-        return response.calculatedFee;
-      } catch (error) {
-        console.log("Error calculating transaction fee: ", error);
-        return 0;
-      }
-    } else {
-      return 0;
-    }
-  }, [props?.church?.id]);
 
   useEffect(() => {
     loadFunds();
@@ -337,7 +337,7 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
   useEffect(() => {
     return () => {
       if (feeTimeoutRef.current) {
-        clearTimeout(feeTimeoutRef.current);
+        window.clearTimeout(feeTimeoutRef.current);
       }
     };
   }, []);
