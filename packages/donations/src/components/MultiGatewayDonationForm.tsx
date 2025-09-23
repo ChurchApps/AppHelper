@@ -11,7 +11,18 @@ import { Locale, DonationHelper } from "../helpers";
 import type { PaymentMethod, PaymentGateway, MultiGatewayDonationInterface } from "../helpers";
 import { PersonInterface, FundDonationInterface, FundInterface, ChurchInterface } from "@churchapps/helpers";
 import {
-  Grid, InputLabel, MenuItem, Select, TextField, FormControl, Button, FormControlLabel, Checkbox, FormGroup, Typography 
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  FormControl,
+  Button,
+  FormControlLabel,
+  Checkbox,
+  FormGroup,
+  Typography,
+  Alert
 } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material";
 
@@ -30,6 +41,7 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
   const [fundDonations, setFundDonations] = useState<FundDonationInterface[]>();
   const [funds, setFunds] = useState<FundInterface[]>([]);
+  const [fundsLoaded, setFundsLoaded] = useState<boolean>(false);
   const [fundsTotal, setFundsTotal] = useState<number>(0);
   const [transactionFee, setTransactionFee] = useState<number>(0);
   const [payFee, setPayFee] = useState<number>(0);
@@ -54,6 +66,7 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
     return gw?.publicKey || "";
   }, [props.paymentGateways]);
   const hostedRef = useRef<PayPalHostedFieldsHandle>(null);
+  const feeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [donation, setDonation] = useState<MultiGatewayDonationInterface>({
     id: props?.paymentMethods?.length > 0 ? props.paymentMethods[0].id : "",
     type: props?.paymentMethods?.length > 0 ? (props.paymentMethods[0].type as "card" | "bank" | "paypal") : "card",
@@ -76,17 +89,32 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
     gatewayId: props?.paymentMethods?.length > 0 ? props.paymentMethods[0].gatewayId : selectedGatewayObj?.id
   });
 
-  const loadData = useCallback(() => {
-    ApiHelper.get("/funds", "GivingApi").then((data: any) => {
-      setFunds(data);
-      if (data.length) setFundDonations([{ fundId: data[0].id }]);
-    });
-    ApiHelper.get(`/donate/gateways/${props?.church?.id || ""}`, "GivingApi").then((response: any) => {
+  const loadFunds = useCallback(async () => {
+    setFundsLoaded(false);
+    try {
+      const data = await ApiHelper.get("/funds", "GivingApi");
+      const fundList = Array.isArray(data) ? data : [];
+      setFunds(fundList);
+      if (fundList.length) setFundDonations([{ fundId: fundList[0].id }]);
+      else setFundDonations([]);
+    } catch (_error) {
+      setFunds([]);
+      setFundDonations([]);
+    } finally {
+      setFundsLoaded(true);
+    }
+  }, []);
+
+  const loadGateway = useCallback(async () => {
+    try {
+      const response = await ApiHelper.get(`/donate/gateways/${props?.church?.id || ""}`, "GivingApi");
       const gateways = Array.isArray(response?.gateways) ? response.gateways : [];
       const primaryGateway = gateways.find((g: any) => DonationHelper.normalizeProvider(g.provider) === selectedGateway);
       if (primaryGateway) setGateway(primaryGateway);
-    });
-  }, [selectedGateway]);
+    } catch (_error) {
+      // ignore gateway load errors; component will handle gracefully
+    }
+  }, [props?.church?.id, selectedGateway]);
 
   const handleSave = useCallback(() => {
     if (donation.amount < .5) setErrorMessage(Locale.label("donation.donationForm.tooLow"));
@@ -222,7 +250,7 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
     }
   }, [donation, donationType, gateway?.id, paypalClientId, props.church?.name, props.church?.subDomain, props.churchLogo, props.donationSuccess, selectedGateway, selectedGatewayObj?.id, total]);
 
-  const handleFundDonationsChange = useCallback(async (fd: FundDonationInterface[]) => {
+  const handleFundDonationsChange = useCallback((fd: FundDonationInterface[]) => {
     setErrorMessage(undefined);
     setFundDonations(fd);
     let totalAmount = 0;
@@ -238,17 +266,29 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
     d.amount = totalAmount;
     d.funds = selectedFunds;
     setFundsTotal(totalAmount);
-    
-    const fee = await getTransactionFee(totalAmount, d.gatewayId || gateway?.id || selectedGatewayObj?.id, d.provider || (selectedGateway as "stripe" | "paypal"));
-    setTransactionFee(fee);
-    
-    if (gateway && gateway.payFees === true) {
-      d.amount = totalAmount + fee;
-      setPayFee(fee);
+
+    // Clear existing timeout
+    if (feeTimeoutRef.current) {
+      clearTimeout(feeTimeoutRef.current);
     }
-    setTotal(d.amount);
+
+    // Set initial totals without fee for immediate UI update
+    setTotal(totalAmount);
     setDonation(d);
-  }, [donation, funds, gateway, selectedGatewayObj?.id, selectedGateway]);
+
+    // Debounce fee calculation to prevent excessive API calls
+    feeTimeoutRef.current = setTimeout(async () => {
+      const fee = await getTransactionFee(totalAmount, d.gatewayId || gateway?.id || selectedGatewayObj?.id, d.provider || (selectedGateway as "stripe" | "paypal"));
+      setTransactionFee(fee);
+
+      if (gateway && gateway.payFees === true) {
+        const updatedAmount = totalAmount + fee;
+        setTotal(updatedAmount);
+        setPayFee(fee);
+        setDonation(prev => ({ ...prev, amount: updatedAmount }));
+      }
+    }, 500);
+  }, [donation, funds, gateway, selectedGatewayObj?.id, selectedGateway, getTransactionFee]);
 
   const getTransactionFee = useCallback(async (amount: number, activeGatewayId?: string, provider: "stripe" | "paypal" = "stripe") => {
     if (amount > 0) {
@@ -269,8 +309,14 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
   }, [props?.church?.id]);
 
   useEffect(() => {
-    loadData();
-  }, [loadData, props.person?.id]);
+    loadFunds();
+  }, [loadFunds]);
+
+  useEffect(() => {
+    if (props?.church?.id) {
+      loadGateway();
+    }
+  }, [loadGateway]);
 
   useEffect(() => {
     if (selectedGatewayObj && (gateway?.id !== selectedGatewayObj.id)) {
@@ -287,10 +333,29 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
     });
   }, [selectedGateway, selectedGatewayObj?.id]);
 
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (feeTimeoutRef.current) {
+        clearTimeout(feeTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const availablePaymentMethods = props.paymentMethods.filter(pm => DonationHelper.normalizeProvider(pm.provider) === selectedGateway);
   const availableGateways = props.paymentGateways.filter(g => g.enabled !== false);
 
-  if (!funds.length) return null;
+  if (!fundsLoaded) {
+    return <Alert severity="info">Loading donation settings…</Alert>;
+  }
+
+  if (!funds.length) {
+    return (
+      <Alert severity="warning">
+        No donation funds have been configured for this church. Please contact your administrator.
+      </Alert>
+    );
+  }
   else {
     return (
       <>
