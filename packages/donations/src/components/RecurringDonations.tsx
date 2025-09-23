@@ -2,9 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import { DisplayBox } from "@churchapps/apphelper";
-import { ApiHelper, UserHelper, CurrencyHelper, DateHelper } from "@churchapps/helpers";
+import { ApiHelper, CurrencyHelper, DateHelper } from "@churchapps/helpers";
 import { Locale } from "../helpers";
-import { Permissions, SubscriptionInterface } from "@churchapps/helpers";
+import { SubscriptionInterface } from "@churchapps/helpers";
 import { RecurringDonationsEdit } from ".";
 import { Icon, Table, TableBody, TableCell, TableRow, TableHead } from "@mui/material";
 
@@ -86,7 +86,8 @@ export const RecurringDonations: React.FC<Props> = (props) => {
   };
 
   const getEditOptions = (sub: SubscriptionInterface) => {
-    if (!UserHelper.checkAccess(Permissions.givingApi.settings.edit) || props?.paymentMethods?.length === 0) return null;
+    // Users should be able to edit their own recurring donations if they have payment methods available
+    if (props?.paymentMethods?.length === 0) return null;
     return <button
       type="button"
       aria-label="edit-button"
