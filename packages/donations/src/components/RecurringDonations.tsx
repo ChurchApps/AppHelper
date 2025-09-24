@@ -2,9 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import { DisplayBox } from "@churchapps/apphelper";
-import { ApiHelper, UserHelper, CurrencyHelper, DateHelper } from "@churchapps/helpers";
+import { ApiHelper, CurrencyHelper, DateHelper } from "@churchapps/helpers";
 import { Locale } from "../helpers";
-import { Permissions, SubscriptionInterface } from "@churchapps/helpers";
+import { SubscriptionInterface } from "@churchapps/helpers";
 import { RecurringDonationsEdit } from ".";
 import { Icon, Table, TableBody, TableCell, TableRow, TableHead } from "@mui/material";
 
@@ -18,16 +18,32 @@ export const RecurringDonations: React.FC<Props> = (props) => {
   const loadData = () => {
     if (props.customerId) {
       ApiHelper.get("/customers/" + props.customerId + "/subscriptions", "GivingApi").then((subResult: any) => {
-        const subs: SubscriptionInterface[] = [];
-        const requests = subResult.data?.map((s: any) => ApiHelper.get("/subscriptionfunds?subscriptionId=" + s.id, "GivingApi").then((subFunds: any) => {
-          s.funds = subFunds;
-          subs.push(s);
-        }));
-        if (requests) {
-          return Promise.all(requests).then(() => {
-            setSubscriptions(subs);
-          });
+        const subscriptionData = subResult.data || [];
+        if (subscriptionData.length === 0) {
+          setSubscriptions([]);
+          return;
         }
+
+        const subs: SubscriptionInterface[] = [];
+        const requests = subscriptionData.map((s: any) =>
+          ApiHelper.get("/subscriptionfunds?subscriptionId=" + s.id, "GivingApi").then((subFunds: any) => {
+            s.funds = subFunds;
+            subs.push(s);
+          }).catch(() => {
+            // If subscription funds fails, include subscription without funds
+            s.funds = [];
+            subs.push(s);
+          })
+        );
+
+        Promise.all(requests).then(() => {
+          setSubscriptions(subs);
+        }).catch(() => {
+          // If any request fails, still show what we have
+          setSubscriptions(subs);
+        });
+      }).catch(() => {
+        setSubscriptions([]);
       });
     }
   };
@@ -70,11 +86,12 @@ export const RecurringDonations: React.FC<Props> = (props) => {
   };
 
   const getEditOptions = (sub: SubscriptionInterface) => {
-    if ((!UserHelper.checkAccess(Permissions.givingApi.settings.edit) && props.appName !== "B1App") || props?.paymentMethods?.length === 0) return null;
-    return <button 
+    // Users should be able to edit their own recurring donations if they have payment methods available
+    if (props?.paymentMethods?.length === 0) return null;
+    return <button
       type="button"
-      aria-label="edit-button" 
-      onClick={handleEdit(sub)} 
+      aria-label="edit-button"
+      onClick={handleEdit(sub)}
       style={{ background: "none", border: "none", cursor: "pointer", color: "#3b82f6" }}
     >
       <Icon>edit</Icon>
@@ -111,11 +128,10 @@ export const RecurringDonations: React.FC<Props> = (props) => {
 
   useEffect(loadData, []); //eslint-disable-line
 
-  if (!subscriptions.length) return null;
   if (mode === "display") {
     return (
       <DisplayBox data-testid="recurring-donations" headerIcon="restart_alt" headerText="Recurring Donations">
-        {getSubscriptionsTable()}
+        {subscriptions.length > 0 ? getSubscriptionsTable() : <div>{Locale.label("donation.recurring.noSubscriptions") || "No recurring donations found."}</div>}
       </DisplayBox>
     );
   }

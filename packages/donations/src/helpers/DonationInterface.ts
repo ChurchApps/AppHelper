@@ -5,6 +5,7 @@ export interface MultiGatewayDonationInterface {
   type: "card" | "bank" | "paypal";
   provider: "stripe" | "paypal";
   customerId?: string;
+  gatewayId?: string;
   person?: {
     id?: string;
     email?: string;

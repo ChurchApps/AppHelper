@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import type { Stripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import { CardForm, BankForm } from ".";
 import { DisplayBox, Loading } from "@churchapps/apphelper";
 import { ApiHelper, UserHelper } from "@churchapps/helpers";
-import { Locale, StripePaymentMethod } from "../helpers";
+import { Locale, StripePaymentMethod, PaymentGateway } from "../helpers";
 import { PersonInterface, Permissions } from "@churchapps/helpers";
 import {
  Icon, Table, TableBody, TableCell, TableRow, IconButton, Menu, MenuItem 
@@ -18,6 +18,17 @@ export const PaymentMethods: React.FC<Props> = (props) => {
   const [editPaymentMethod, setEditPaymentMethod] = useState<StripePaymentMethod>(new StripePaymentMethod());
   const [mode, setMode] = useState("display");
   const [verify, setVerify] = useState<boolean>(false);
+  const [gateway, setGateway] = useState<PaymentGateway | undefined>(undefined);
+
+  useEffect(() => {
+    ApiHelper.get(`/donate/gateways/${UserHelper.currentUserChurch?.church?.id || ""}`, "GivingApi").then((response: any) => {
+      const gateways = Array.isArray(response?.gateways) ? response.gateways : [];
+      const stripeGateway = gateways.find((g: any) => g.provider?.toLowerCase() === "stripe");
+      if (stripeGateway) setGateway(stripeGateway);
+    }).catch(() => {
+      setGateway(undefined);
+    });
+  }, []);
 
   const handleEdit = (pm?: StripePaymentMethod, verifyAccount?: boolean) => (e: React.MouseEvent) => {
     e.preventDefault();
@@ -76,16 +87,20 @@ export const PaymentMethods: React.FC<Props> = (props) => {
   };
 
   const getNewContent = () => {
-    if (!UserHelper.checkAccess(Permissions.givingApi.settings.edit) && props.appName !== "B1App") return null;
+    // Allow adding payment methods if user has admin permissions OR it's their own account
+    if (!UserHelper.checkAccess(Permissions.givingApi.settings.edit) &&
+        props.person?.id !== UserHelper.currentUserChurch?.person?.id) return null;
     return <MenuIcon />;
   };
 
   const getEditOptions = (pm: StripePaymentMethod) => {
-    if (!UserHelper.checkAccess(Permissions.givingApi.settings.edit) && props.appName !== "B1App") return null;
-    return <button 
+    // Allow editing payment methods if user has admin permissions OR it's their own account
+    if (!UserHelper.checkAccess(Permissions.givingApi.settings.edit) &&
+        props.person?.id !== UserHelper.currentUserChurch?.person?.id) return null;
+    return <button
       type="button"
-      aria-label="edit-button" 
-      onClick={handleEdit(pm)} 
+      aria-label="edit-button"
+      onClick={handleEdit(pm)}
       style={{ background: "none", border: "none", cursor: "pointer", color: "#3b82f6" }}
     >
       <Icon>edit</Icon>
@@ -129,8 +144,33 @@ export const PaymentMethods: React.FC<Props> = (props) => {
 
   const EditForm = () => (
     <Elements stripe={props.stripePromise}>
-      {editPaymentMethod.type === "card" && <CardForm card={editPaymentMethod} customerId={props.customerId} person={props.person} setMode={setMode} deletePayment={handleDelete} updateList={(message) => { props.dataUpdate(message); }} />}
-      {editPaymentMethod.type === "bank" && <BankForm bank={editPaymentMethod} showVerifyForm={verify} customerId={props.customerId} person={props.person} setMode={setMode} deletePayment={handleDelete} updateList={(message) => { props.dataUpdate(message); }} />}
+      {editPaymentMethod.type === "card" && (
+        <CardForm
+          card={editPaymentMethod}
+          customerId={props.customerId}
+          person={props.person}
+          setMode={setMode}
+          deletePayment={handleDelete}
+          updateList={(message) => {
+            props.dataUpdate(message);
+          }}
+          gateway={gateway}
+        />
+      )}
+      {editPaymentMethod.type === "bank" && (
+        <BankForm
+          bank={editPaymentMethod}
+          showVerifyForm={verify}
+          customerId={props.customerId}
+          person={props.person}
+          setMode={setMode}
+          deletePayment={handleDelete}
+          updateList={(message) => {
+            props.dataUpdate(message);
+          }}
+          gateway={gateway}
+        />
+      )}
     </Elements>
   );
 

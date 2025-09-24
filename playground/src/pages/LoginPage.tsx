@@ -2,7 +2,7 @@ import React from 'react';
 import { Container, Box, Typography, Button, Alert } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import { LoginPage as AppHelperLoginPage } from '@churchapps/apphelper-login';
-import { ApiHelper } from '@churchapps/apphelper';
+import { ApiHelper, UserHelper } from '@churchapps/apphelper';
 import UserContext from '../UserContext';
 
 function LoginPageComponent() {
@@ -174,6 +174,8 @@ function LoginPageComponent() {
 								if (user && context?.setUser) {
 									console.log('Setting user:', user);
 									context.setUser(user);
+									// Set UserHelper.user for permission checks
+									UserHelper.user = user;
 								}
 
 								// Create a proper person object from the user data
@@ -196,9 +198,11 @@ function LoginPageComponent() {
 
 									// Set the JWT in ApiHelper for authenticated requests
 									if (userChurch.jwt) {
-										ApiHelper.setDefaultPermissions(userChurch.jwt);
+										// Set up UserHelper properly to enable permissions
+										UserHelper.currentUserChurch = userChurch;
+										UserHelper.setupApiHelper(userChurch);
 										ApiHelper.isAuthenticated = true;
-										console.log('Set ApiHelper authenticated with JWT');
+										console.log('Set ApiHelper authenticated with JWT and UserHelper permissions');
 									}
 								}
 
@@ -207,7 +211,7 @@ function LoginPageComponent() {
 									console.log('userChurches type:', typeof userChurches);
 									console.log('userChurches is array?', Array.isArray(userChurches));
 									console.log('userChurches[0]:', userChurches[0]);
-									
+
 									// Check if userChurches is actually a single church object
 									if (!Array.isArray(userChurches) && (userChurches as any).id && (userChurches as any).name) {
 										console.error('ERROR: userChurches is a single church object, not an array!');
@@ -215,9 +219,13 @@ function LoginPageComponent() {
 										if (userChurch) {
 											console.log('Using userChurch to create single-item array');
 											context.setUserChurches([userChurch]);
+											// Set UserHelper.userChurches for permission checks
+											UserHelper.userChurches = [userChurch];
 										}
 									} else {
 										context.setUserChurches(userChurches);
+										// Set UserHelper.userChurches for permission checks
+										UserHelper.userChurches = userChurches;
 									}
 								}
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
+import { CardNumberElement, CardExpiryElement, CardCvcElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import React, { useState, useRef, useEffect } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { ErrorMessages, InputBox } from "@churchapps/apphelper";
@@ -66,8 +66,10 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 		ApiHelper.get("/churches/" + props.churchId, "MembershipApi").then((data: any) => {
 			setChurch(data);
 		});
-		ApiHelper.get("/gateways/churchId/" + props.churchId, "GivingApi").then((data: any) => {
-			if (data.length !== 0) setGateway(data[0]);
+		ApiHelper.get(`/donate/gateways/${props.churchId}`, "GivingApi").then((response: any) => {
+			const gateways = Array.isArray(response?.gateways) ? response.gateways : [];
+			const stripeGateway = DonationHelper.findGatewayByProvider(gateways, "stripe");
+			if (stripeGateway) setGateway(stripeGateway);
 		});
 	};
 
@@ -143,7 +145,13 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 	};
 
 	const saveCard = async (_user: UserInterface, person: PersonInterface) => {
-		const cardData = elements?.getElement(CardElement);
+		if (gateway?.provider?.toLowerCase() !== "stripe") {
+			setErrors(["Stripe payment processing not available for this gateway"]);
+			setProcessing(false);
+			return;
+		}
+
+		const cardData = elements?.getElement(CardNumberElement);
 		if (!stripe || !cardData) {
 			setErrors(["Payment processing unavailable"]);
 			setProcessing(false);
@@ -152,7 +160,11 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 		const stripePM = await stripe.createPaymentMethod({ type: "card", card: cardData });
 		if (stripePM.error) { setErrors([stripePM.error.message || "Payment method error"]); setProcessing(false); } else {
 			const pm = { id: stripePM.paymentMethod!.id, personId: person.id, email: email, name: person?.name?.display || "", churchId: props.churchId };
-			await ApiHelper.post("/paymentmethods/addcard", pm, "GivingApi").then((result: any) => {
+			await ApiHelper.post(
+				"/paymentmethods/addcard",
+				{ ...pm, provider: gateway?.provider || "stripe", gatewayId: gateway?.id },
+				"GivingApi"
+			).then((result: any) => {
 				if (result?.raw?.message) {
 					setErrors([result.raw.message]);
 					setProcessing(false);
@@ -199,15 +211,26 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 		};
 
 		let results;
-		if (donationType === "once") results = await ApiHelper.post("/donate/charge/", { ...donation, church: churchObj }, "GivingApi");
-		if (donationType === "recurring") results = await ApiHelper.post("/donate/subscribe/", { ...donation, church: churchObj }, "GivingApi");
+		const donationPayload = {
+			...donation,
+			church: churchObj,
+			provider: gateway?.provider || "stripe",
+			gatewayId: gateway?.id
+		};
+		if (donationType === "once") results = await ApiHelper.post("/donate/charge", donationPayload, "GivingApi");
+		if (donationType === "recurring") results = await ApiHelper.post("/donate/subscribe", donationPayload, "GivingApi");
 
 		if (results?.status === "succeeded" || results?.status === "pending" || results?.status === "active") {
 			setDonationComplete(true);
-		}
-		if (results?.raw?.message) {
-			setErrors([results?.raw?.message]);
-			setProcessing(false);
+		} else {
+			// Handle any error case
+			if (results?.raw?.message) {
+				setErrors([results?.raw?.message]);
+			} else if (results?.error) {
+				setErrors([results.error]);
+			} else {
+				setErrors(["An unexpected error occurred. Please try again."]);
+			}
 		}
 		setProcessing(false);
 	};
@@ -263,7 +286,11 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 	const getTransactionFee = async (amount: number) => {
 		if (amount > 0) {
 			try {
-				const response = await ApiHelper.post("/donate/fee?churchId=" + props.churchId, { type: "creditCard", amount }, "GivingApi");
+				const response = await ApiHelper.post(
+					"/donate/fee?churchId=" + props.churchId,
+					{ amount, provider: gateway?.provider || "stripe", gatewayId: gateway?.id },
+					"GivingApi"
+				);
 				return response.calculatedFee;
 			} catch (error) {
 				console.log("Error calculating transaction fee: ", error);
@@ -324,9 +351,25 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 						/>
 					</Grid>
 				</Grid>
-				<div style={{ padding: 10, border: "1px solid #CCC", borderRadius: 5, marginTop: 10 }}>
-					<CardElement options={formStyling} />
-				</div>
+				{gateway?.provider?.toLowerCase() === "stripe" && (
+					<Grid container spacing={3} style={{ marginTop: 10 }}>
+						<Grid size={12}>
+							<div style={{ padding: 10, border: "1px solid #CCC", borderRadius: 5 }}>
+								<CardNumberElement options={formStyling} />
+							</div>
+						</Grid>
+						<Grid size={{ xs: 12, md: 6 }}>
+							<div style={{ padding: 10, border: "1px solid #CCC", borderRadius: 5 }}>
+								<CardExpiryElement options={formStyling} />
+							</div>
+						</Grid>
+						<Grid size={{ xs: 12, md: 6 }}>
+							<div style={{ padding: 10, border: "1px solid #CCC", borderRadius: 5 }}>
+								<CardCvcElement options={formStyling} />
+							</div>
+						</Grid>
+					</Grid>
+				)}
 				{donationType === "recurring"
 					&& <Grid container spacing={3} style={{ marginTop: 0 }}>
 						<Grid size={{ xs: 12, md: 6 }}>

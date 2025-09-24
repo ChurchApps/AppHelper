@@ -1,6 +1,6 @@
 {
   "name": "@churchapps/apphelper-workspace",
-  "version": "0.4.50",
+  "version": "0.5.0",
   "description": "Workspace for ChurchApps AppHelper packages",
   "private": true,
   "workspaces": [
@@ -12,8 +12,8 @@
     "clean": "npm run clean --workspaces",
     "test": "npm run test --workspaces",
     "build:apphelper": "npm run build --workspace=packages/apphelper",
-		"build:donations": "npm run build --workspace=packages/donations",
-		"build:forms": "npm run build --workspace=packages/apphelper-forms",
+    "build:donations": "npm run build --workspace=packages/donations",
+    "build:forms": "npm run build --workspace=packages/apphelper-forms",
     "build:login": "npm run build --workspace=packages/login",
     "build:markdown": "npm run build --workspace=packages/apphelper-markdown",
     "playground": "npm run dev --workspace=playground",
@@ -21,11 +21,11 @@
     "playground:reload": "npm run build && npm run dev --workspace=playground",
     "test:login": "npm run build:apphelper && npm run build:login && npm run dev --workspace=playground",
     "publish:all": "npm run build && npm publish --workspace=packages/apphelper --access=public && npm publish --workspace=packages/login --access=public && npm publish --workspace=packages/donations --access=public && npm publish --workspace=packages/apphelper-markdown --access=public && npm publish --workspace=packages/apphelper-forms --access=public",
-		"publish:apphelper": "npm run build:apphelper && npm publish --workspace=packages/apphelper --access=public",
-		"publish:donations": "npm run build:donations && npm publish --workspace=packages/donations --access=public",
+    "publish:apphelper": "npm run build:apphelper && npm publish --workspace=packages/apphelper --access=public",
+    "publish:donations": "npm run build:donations && npm publish --workspace=packages/donations --access=public",
     "publish:forms": "npm run build:forms && npm publish --workspace=packages/apphelper-forms --access=public",
-		"publish:login": "npm run build:login && npm publish --workspace=packages/login --access=public",
-		"publish:markdown": "npm run build:markdown && npm publish --workspace=packages/apphelper-markdown --access=public"
+    "publish:login": "npm run build:login && npm publish --workspace=packages/login --access=public",
+    "publish:markdown": "npm run build:markdown && npm publish --workspace=packages/apphelper-markdown --access=public"
   },
   "devDependencies": {
     "copyfiles": "^2.4.1",
@@ -34,6 +34,6 @@
     "typescript": "^5.9.2"
   },
   "dependencies": {
-    "@churchapps/helpers": "^1.1.8"
+    "@churchapps/helpers": "^1.2.3"
   }
 }

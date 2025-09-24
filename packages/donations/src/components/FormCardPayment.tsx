@@ -5,7 +5,7 @@ import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { Box, Grid, TextField } from "@mui/material";
 import { QuestionInterface } from "@churchapps/helpers";
 import { ApiHelper, UserInterface, PersonInterface, StripeDonationInterface, ChurchInterface, FundInterface, ArrayHelper, UserHelper } from "@churchapps/helpers";
-import { Locale, StripePaymentMethod } from "../helpers";
+import { Locale, StripePaymentMethod, PaymentGateway } from "../helpers";
 
 interface Props {
 	churchId: string,
@@ -21,6 +21,7 @@ export const FormCardPayment = forwardRef((props: Props, ref) => {
   const [lastName, setLastName] = useState<string>((ApiHelper.isAuthenticated && UserHelper.user?.lastName) ? UserHelper.user.lastName : "");
   const [church, setChurch] = useState<ChurchInterface>();
   const [fund, setFund] = useState<FundInterface | undefined>(undefined);
+  const [gateway, setGateway] = useState<PaymentGateway | null>(null);
   const amt = Number(props.question.choices?.find(c => c.text === "Amount")?.value || 0);
   const fundId = props.question.choices?.find(c => c.text === "FundId")?.value || "";
 
@@ -31,7 +32,12 @@ export const FormCardPayment = forwardRef((props: Props, ref) => {
     ApiHelper.get("/funds/churchId/" + props.churchId, "GivingApi").then((data: any) => {
       const result = ArrayHelper.getOne(data, "id", fundId);
       setFund(result);
-    })
+    });
+    ApiHelper.get(`/donate/gateways/${props.churchId}`, "GivingApi").then((response: any) => {
+      const gateways = Array.isArray(response?.gateways) ? response.gateways : [];
+      const stripeGateway = gateways.find((g: any) => g.provider?.toLowerCase() === "stripe");
+      if (stripeGateway) setGateway(stripeGateway);
+    });
   }
 
   const handlePayment = async () => {
@@ -68,7 +74,15 @@ export const FormCardPayment = forwardRef((props: Props, ref) => {
       if (stripePM.error) {
         return { success: false, errors: [stripePM.error.message || "Payment method error"] };
       } else {
-        const pm = { id: stripePM.paymentMethod?.id || "", personId: person.id, email: email, name: person?.name?.display || "", churchId: props.churchId };
+        const pm = {
+          id: stripePM.paymentMethod?.id || "",
+          personId: person.id,
+          email: email,
+          name: person?.name?.display || "",
+          churchId: props.churchId,
+          provider: "stripe",
+          gatewayId: gateway?.id
+        };
         try {
           const result = await ApiHelper.post("/paymentmethods/addcard", pm, "GivingApi");
           if (result?.raw?.message) {
@@ -102,7 +116,7 @@ export const FormCardPayment = forwardRef((props: Props, ref) => {
       person: {
         id: person?.id || "",
         email: person?.contactInfo?.email || "",
-        name: person?.name?.display || "",
+        name: person?.name?.display || ""
       }
     }
 
@@ -114,7 +128,7 @@ export const FormCardPayment = forwardRef((props: Props, ref) => {
     }
 
     try {
-      const result = await ApiHelper.post("/donate/charge/", { ...payment, church: churchObj }, "GivingApi");
+      const result = await ApiHelper.post("/donate/charge", { ...payment, church: churchObj }, "GivingApi");
       if (result?.status === "succeeded" || result?.status === "pending") {
         return { success: true, errors: [] }
       }

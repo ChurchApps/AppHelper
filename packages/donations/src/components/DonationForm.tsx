@@ -13,7 +13,7 @@ import {
  Grid, InputLabel, MenuItem, Select, TextField, FormControl, Button, FormControlLabel, Checkbox, FormGroup, Typography 
 } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material";
-import { DonationHelper, StripePaymentMethod } from "../helpers";
+import { DonationHelper, StripePaymentMethod, PaymentGateway } from "../helpers";
 
 interface Props { person: PersonInterface, customerId: string, paymentMethods: StripePaymentMethod[], stripePromise: Promise<Stripe>, donationSuccess: (message: string) => void, church?: ChurchInterface, churchLogo?: string }
 
@@ -28,10 +28,10 @@ export const DonationForm: React.FC<Props> = (props) => {
   const [paymentMethodName, setPaymentMethodName] = useState<string>(
     props?.paymentMethods?.length > 0 ? `${props.paymentMethods[0].name} ****${props.paymentMethods[0].last4}` : ""
   );
-  const [donationType, setDonationType] = useState<string | undefined>();
+  const [donationType, setDonationType] = useState<string | undefined>("once");
   const [showDonationPreviewModal, setShowDonationPreviewModal] = useState<boolean>(false);
   const [interval, setInterval] = useState("one_month");
-  const [gateway, setGateway] = useState<any>(null);
+  const [gateway, setGateway] = useState<PaymentGateway | null>(null);
   const [donation, setDonation] = useState<StripeDonationInterface>({
     id: props?.paymentMethods?.length > 0 ? props.paymentMethods[0].id : "",
     type: props?.paymentMethods?.length > 0 ? props.paymentMethods[0].type : "",
@@ -55,8 +55,10 @@ export const DonationForm: React.FC<Props> = (props) => {
       setFunds(data);
       if (data.length) setFundDonations([{ fundId: data[0].id }]);
     });
-    ApiHelper.get("/gateways", "GivingApi").then((data: any) => {
-      if (data.length !== 0) setGateway(data[0]);
+    ApiHelper.get(`/donate/gateways/${props?.church?.id || ""}`, "GivingApi").then((response: any) => {
+      const gateways = Array.isArray(response?.gateways) ? response.gateways : [];
+      const stripeGateway = gateways.find((g: any) => DonationHelper.isProvider(g.provider, "stripe"));
+      if (stripeGateway) setGateway(stripeGateway);
     });
   }, []);
 
@@ -105,7 +107,7 @@ export const DonationForm: React.FC<Props> = (props) => {
         setPayFee(showFee);
     }
     setDonation(d);
-  }, [donation, props.paymentMethods, fundsTotal, transactionFee]);
+  }, [donation, props.paymentMethods, fundsTotal, transactionFee, gateway?.id]);
 
   const handleCancel = useCallback(() => { setDonationType(undefined); }, []);
   const handleDonationSelect = useCallback((type: string) => {
@@ -126,19 +128,33 @@ export const DonationForm: React.FC<Props> = (props) => {
       logo: props?.churchLogo || ""
     };
 
-    if (donationType === "once") results = await ApiHelper.post("/donate/charge/", { ...donation, church: churchObj }, "GivingApi");
-    if (donationType === "recurring") results = await ApiHelper.post("/donate/subscribe/", { ...donation, church: churchObj }, "GivingApi");
+    const selectedPaymentMethod = props.paymentMethods.find(pm => pm.id === donation.id);
+    const payload = {
+      ...donation,
+      provider: selectedPaymentMethod?.provider || "stripe",
+      gatewayId: selectedPaymentMethod?.gatewayId || gateway?.id,
+      church: churchObj
+    };
+
+    if (donationType === "once") results = await ApiHelper.post("/donate/charge", payload, "GivingApi");
+    if (donationType === "recurring") results = await ApiHelper.post("/donate/subscribe", payload, "GivingApi");
 
     if (results?.status === "succeeded" || results?.status === "pending" || results?.status === "active") {
       setShowDonationPreviewModal(false);
       setDonationType(undefined);
       props.donationSuccess(message);
-    }
-    if (results?.raw?.message) {
+    } else {
+      // Handle any error case
       setShowDonationPreviewModal(false);
-      setErrorMessage(Locale.label("donation.common.error") + ": " + results?.raw?.message);
+      if (results?.raw?.message) {
+        setErrorMessage(Locale.label("donation.common.error") + ": " + results?.raw?.message);
+      } else if (results?.error) {
+        setErrorMessage(Locale.label("donation.common.error") + ": " + results.error);
+      } else {
+        setErrorMessage(Locale.label("donation.common.error") + ": An unexpected error occurred. Please try again.");
+      }
     }
-  }, [donation, donationType, props.church?.name, props.church?.subDomain, props.churchLogo, props.donationSuccess]);
+  }, [donation, donationType, gateway?.id, props.church?.name, props.church?.subDomain, props.churchLogo, props.donationSuccess]);
 
   const handleFundDonationsChange = useCallback(async (fd: FundDonationInterface[]) => {
     setErrorMessage(undefined);
@@ -156,8 +172,9 @@ export const DonationForm: React.FC<Props> = (props) => {
     d.amount = totalAmount;
     d.funds = selectedFunds;
     setFundsTotal(totalAmount);
-    
-    const fee = await getTransactionFee(totalAmount);
+
+    const selectedPm = props.paymentMethods.find(pm => pm.id === d.id);
+    const fee = await getTransactionFee(totalAmount, (selectedPm?.gatewayId || gateway?.id) as string | undefined, selectedPm?.provider || "stripe");
     setTransactionFee(fee);
     
     if (gateway && gateway.payFees === true) {
@@ -168,13 +185,14 @@ export const DonationForm: React.FC<Props> = (props) => {
     setDonation(d);
   }, [donation, funds, gateway]);
 
-  const getTransactionFee = useCallback(async (amount: number) => {
+  const getTransactionFee = useCallback(async (amount: number, activeGatewayId?: string, provider: "stripe" | "paypal" = "stripe") => {
     if (amount > 0) {
-      let dt: string = "";
-      if (donation.type === "card") dt = "creditCard";
-      if (donation.type === "bank") dt = "ach";
       try {
-        const response = await ApiHelper.post("/donate/fee?churchId=" + (props?.church?.id || ""), { type: dt, amount }, "GivingApi");
+        const response = await ApiHelper.post(
+          "/donate/fee?churchId=" + (props?.church?.id || ""),
+          { amount, provider, gatewayId: activeGatewayId },
+          "GivingApi"
+        );
         return response.calculatedFee;
       } catch (error) {
         console.log("Error calculating transaction fee: ", error);
@@ -183,11 +201,18 @@ export const DonationForm: React.FC<Props> = (props) => {
     } else {
       return 0;
     }
-  }, [donation.type, props?.church?.id]);
+  }, [props?.church?.id]);
 
   useEffect(() => {
     loadData();
   }, [loadData, props.person?.id]);
+
+  useEffect(() => {
+    if (gateway?.id) {
+      // Gateway is stored at the component level, not in the donation object
+      setGateway(gateway);
+    }
+  }, [gateway?.id]);
    
 
   if (!funds.length || !props?.paymentMethods?.length) return null;

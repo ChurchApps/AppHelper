@@ -1,6 +1,7 @@
 import React from 'react';
 import { Container, Box, Typography, Alert, Stack, Divider } from '@mui/material';
 import { Link } from 'react-router-dom';
+import type { Stripe } from '@stripe/stripe-js';
 import { ErrorBoundary } from '../ErrorBoundary';
 import UserContext from '../UserContext';
 import { 
@@ -18,8 +19,8 @@ import { loadStripe } from '@stripe/stripe-js';
 export default function DonationPage() {
   const context = React.useContext(UserContext);
 
-  // Stripe for authenticated components (if used)
-  const stripePromise = React.useMemo(() => loadStripe((import.meta as any).env.VITE_STRIPE_PUBLIC_KEY || '') as Promise<any>, []);
+  // Stripe for authenticated components (will be initialized after getting gateway info)
+  const [stripePromise, setStripePromise] = React.useState<Promise<Stripe | null> | null>(null);
 
   // Live data state for authenticated donation features
   const [customerId, setCustomerId] = React.useState<string>('');
@@ -46,59 +47,43 @@ export default function DonationPage() {
         }));
         setPaymentGateways(pg);
 
-        // Try to get a customer for this person
-        let cust: any = null;
-        try {
-          cust = await ApiHelper.get(`/customers/person/${context.person.id}`, 'GivingApi');
-        } catch (e) {
-          // Fallback patterns if API shape differs
-          try {
-            const list = await ApiHelper.get(`/customers?personId=${context.person.id}`, 'GivingApi');
-            cust = Array.isArray(list) ? list[0] : list;
-          } catch {
-            // ignore, handled below
-          }
+        // Initialize Stripe with the public key from gateway
+        const stripeGateway = pg.find(g => g.provider?.toLowerCase() === 'stripe');
+        if (stripeGateway?.publicKey) {
+          setStripePromise(loadStripe(stripeGateway.publicKey));
         }
 
-        const cid = cust?.id || cust?.customerId || '';
-        if (cid) setCustomerId(cid);
-
-        // Load payment methods (Stripe + PayPal summary) for the customer
-        let stripePMs: StripePaymentMethod[] = [];
-        let allPMs: PaymentMethod[] = [];
+        // Load payment methods - API now returns normalized format
         try {
-          const pms = await ApiHelper.get(`/paymentmethods/customer/${cid}`, 'GivingApi');
+          const pms = await ApiHelper.get(`/paymentmethods/personid/${context.person.id}`, 'GivingApi');
+          const stripePMs: StripePaymentMethod[] = [];
+          const allPMs: PaymentMethod[] = [];
+
           if (Array.isArray(pms)) {
-            for (const p of pms) {
-              if ((p.provider || '').toLowerCase() === 'stripe') {
-                stripePMs.push(new StripePaymentMethod(p));
-                allPMs.push({
-                  id: p.id,
-                  type: (p.type || 'card'),
-                  provider: 'stripe',
-                  name: p.name || p.card?.brand || 'Card',
-                  last4: p.last4 || p.card?.last4,
-                });
-              } else if ((p.provider || '').toLowerCase() === 'paypal') {
-                allPMs.push({
-                  id: p.id,
-                  type: 'paypal',
-                  provider: 'paypal',
-                  name: p.name || 'PayPal',
-                  email: p.email,
-                });
+            for (const pm of pms) {
+              if (pm.provider === 'stripe') {
+                stripePMs.push(new StripePaymentMethod(pm));
+              }
+              allPMs.push(pm);
+
+              // Extract customer ID from first payment method if we don't have one
+              if (pm.customerId && !customerId) {
+                setCustomerId(pm.customerId);
               }
             }
           }
+
+          setStripePaymentMethods(stripePMs);
+          setPaymentMethodsAll(allPMs);
         } catch (e) {
           // As a fallback, leave methods empty; components will allow adding
+          setStripePaymentMethods([]);
+          setPaymentMethodsAll([]);
         }
-        setStripePaymentMethods(stripePMs);
-        setPaymentMethodsAll(allPMs);
 
         // Donation history (best-effort)
         try {
-          const hist = await ApiHelper.get(`/donations/person/${context.person.id}`, 'GivingApi');
+          const hist = await ApiHelper.get(`/donations?personId=${context.person.id}`, 'GivingApi');
           if (Array.isArray(hist)) setHistory(hist);
         } catch (e: any) {
           setHistoryError('Donation history unavailable');
@@ -136,6 +121,7 @@ export default function DonationPage() {
         <ErrorBoundary>
           {!context?.user ? (
             // Non-authenticated donation form as specified in PRD
+            // JNZUfFMKiWI AOjIt0W-SeYAOjIt0W-SeY
             <Box sx={{ mt: 3 }}>
               <Alert severity="info" sx={{ mb: 3 }}>
                 <Typography variant="h6" gutterBottom>Guest Donation</Typography>
@@ -144,7 +130,7 @@ export default function DonationPage() {
               </Alert>
               
               <NonAuthDonation
-                churchId="JNZUfFMKiWI"
+                churchId="AOjIt0W-SeY"
                 recaptchaSiteKey={(import.meta as any).env.VITE_RECAPTCHA_SITE_KEY || ''}
                 churchLogo="https://via.placeholder.com/100x100/0066cc/ffffff?text=Church"
                 showHeader={true}
@@ -170,7 +156,7 @@ export default function DonationPage() {
                       customerId={customerId}
                       paymentMethods={paymentMethodsAll}
                       paymentGateways={paymentGateways}
-                      stripePromise={stripePromise}
+                      stripePromise={stripePromise as Promise<Stripe> | undefined}
                       donationSuccess={(message: string) => alert(`Success: ${message}`)}
                       church={context?.userChurch?.church}
                       churchLogo={undefined}
@@ -200,12 +186,25 @@ export default function DonationPage() {
                       dataUpdate={(_message?: string) => {
                         // Reload methods after add/edit/delete
                         if (context?.person?.id) {
-                          ApiHelper.get(`/paymentmethods/customer/${customerId}`, 'GivingApi')
+                          ApiHelper.get(`/paymentmethods/personid/${context.person.id}`, 'GivingApi')
                             .then((pms: any[]) => {
-                              const stripePMs = (pms || [])
-                                .filter(p => (p.provider || '').toLowerCase() === 'stripe')
-                                .map(p => new StripePaymentMethod(p));
+                              const stripePMs: StripePaymentMethod[] = [];
+                              const allPMs: PaymentMethod[] = [];
+
+                              for (const pm of pms || []) {
+                                if (pm.provider === 'stripe') {
+                                  stripePMs.push(new StripePaymentMethod(pm));
+                                }
+                                allPMs.push(pm);
+
+                                // Extract customer ID if we don't have one
+                                if (pm.customerId && !customerId) {
+                                  setCustomerId(pm.customerId);
+                                }
+                              }
+
                               setStripePaymentMethods(stripePMs);
+                              setPaymentMethodsAll(allPMs);
                             })
                             .catch(() => {/* ignore */});
                         }
@@ -224,11 +223,11 @@ export default function DonationPage() {
                   View and manage your recurring donation subscriptions.
                 </Alert>
                 <Elements stripe={stripePromise}>
-                  {loadingAuthData || !customerId ? (
+                  {loadingAuthData ? (
                     <Alert severity="info">Loading subscriptions…</Alert>
                   ) : (
                     <RecurringDonations
-                      customerId={customerId}
+                      customerId={customerId || ''}
                       paymentMethods={stripePaymentMethods}
                       appName="AppHelper Playground"
                       dataUpdate={(_message?: string) => {/* no-op */}}

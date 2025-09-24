@@ -47,6 +47,7 @@ export const RecurringDonationsEdit: React.FC<Props> = (props) => {
         if (pm) {
           sub.default_payment_method = pm.type === "card" ? (value || "") : "";
           sub.default_source = pm.type === "bank" ? (value || "") : "";
+          sub.gatewayId = pm.gatewayId || sub.gatewayId;
         }
         break;
       case "interval":

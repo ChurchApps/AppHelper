@@ -75,8 +75,9 @@ export const PayPalNonAuthDonationInner: React.FC<Props> = ({ mainContainerCssPr
     ApiHelper.get("/churches/" + props.churchId, "MembershipApi").then((_data: any) => {
       _setChurch(_data);
     });
-    ApiHelper.get("/gateways/churchId/" + props.churchId, "GivingApi").then((data: any) => {
-      const paypalGateway = DonationHelper.findGatewayByProvider(data, "paypal");
+    ApiHelper.get(`/donate/gateways/${props.churchId}`, "GivingApi").then((response: any) => {
+      const gateways = Array.isArray(response?.gateways) ? response.gateways : [];
+      const paypalGateway = DonationHelper.findGatewayByProvider(gateways, "paypal");
       if (paypalGateway) setGateway(paypalGateway);
     });
   };
@@ -151,6 +152,7 @@ export const PayPalNonAuthDonationInner: React.FC<Props> = ({ mainContainerCssPr
       customerId: "", // Will be set by backend
       type: "paypal",
       provider: "paypal",
+      gatewayId: gateway?.id,
       churchId: props.churchId,
       amount: total,
       funds: [],
@@ -180,9 +182,10 @@ export const PayPalNonAuthDonationInner: React.FC<Props> = ({ mainContainerCssPr
     // Capture via existing /donate/charge endpoint (PayPal)
     const compactFunds = (donation.funds || []).map(f => ({ id: f.id, amount: f.amount }));
     const results = await ApiHelper.post(
-      "/donate/charge/",
+      "/donate/charge",
       {
         provider: "paypal",
+        gatewayId: gateway?.id,
         id: hostedOrderId,
         churchId: props.churchId,
         amount: total,
@@ -258,7 +261,11 @@ export const PayPalNonAuthDonationInner: React.FC<Props> = ({ mainContainerCssPr
   const getTransactionFee = async (amount: number) => {
     if (amount > 0) {
       try {
-        const response = await ApiHelper.post("/donate/fee?churchId=" + props.churchId, { type: "paypal", provider: "paypal", amount }, "GivingApi");
+        const response = await ApiHelper.post(
+          "/donate/fee?churchId=" + props.churchId,
+          { amount, provider: "paypal", gatewayId: gateway?.id },
+          "GivingApi"
+        );
         return response.calculatedFee;
       } catch (error) {
         console.log("Error calculating transaction fee: ", error);
@@ -324,20 +331,17 @@ export const PayPalNonAuthDonationInner: React.FC<Props> = ({ mainContainerCssPr
             ref={hostedFieldsRef}
             clientId={props.paypalClientId}
             getClientToken={async () => {
-              // Attempt common client-token endpoints
-              const endpoints = [
-                "/donate/paypal/client-token",
-                "/donate/paypal/clientToken",
-                "/donate/paypal/generate-client-token"
-              ];
-              for (const ep of endpoints) {
-                try {
-                  const resp = await ApiHelper.post(ep, { churchId: props.churchId }, "GivingApi");
-                  const token = resp?.clientToken || resp?.token || resp?.result || resp;
-                  if (typeof token === "string" && token.length > 0) return token;
-                } catch { /* try next */ }
+              try {
+                const resp = await ApiHelper.post(
+                  "/donate/client-token",
+                  { churchId: props.churchId, provider: "paypal", gatewayId: gateway?.id },
+                  "GivingApi"
+                );
+                const token = resp?.clientToken || resp?.token || resp?.result || resp;
+                return typeof token === "string" && token.length > 0 ? token : "";
+              } catch {
+                return "";
               }
-              return "";
             }}
             onValidityChange={setHostedValid}
             onIneligible={() => setUseHostedFields(false)}
@@ -348,9 +352,11 @@ export const PayPalNonAuthDonationInner: React.FC<Props> = ({ mainContainerCssPr
                   .filter(fd => (fd.amount || 0) > 0 && fd.fundId)
                   .map(fd => ({ id: fd.fundId!, amount: fd.amount || 0 }));
                 const response = await ApiHelper.post(
-                  "/donate/paypal/create-order",
+                  "/donate/create-order",
                   {
                     churchId: props.churchId,
+                    provider: "paypal",
+                    gatewayId: gateway?.id,
                     amount: total,
                     currency: "USD",
                     funds: fundsPayload,

@@ -3,8 +3,7 @@
 import React, { forwardRef, useImperativeHandle } from "react";
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { Box, Grid, TextField } from "@mui/material";
-import { QuestionInterface } from "@churchapps/helpers";
-import { ApiHelper, Locale, UserInterface, PersonInterface, StripeDonationInterface, ChurchInterface, FundInterface, ArrayHelper, UserHelper } from "../helpers";
+import { ApiHelper, Locale, UserInterface, PersonInterface, StripeDonationInterface, ChurchInterface, FundInterface, ArrayHelper, UserHelper, QuestionInterface } from "../helpers";
 import { StripePaymentMethod } from "@churchapps/helpers";
 
 interface Props {
@@ -20,19 +19,25 @@ export const FormCardPayment = forwardRef((props: Props, ref) => {
   const [firstName, setFirstName] = React.useState<string>((ApiHelper.isAuthenticated && UserHelper.user.firstName) ? UserHelper.user.firstName : "");
   const [lastName, setLastName] = React.useState<string>((ApiHelper.isAuthenticated && UserHelper.user.lastName) ? UserHelper.user.lastName : "");
   const [church, setChurch] = React.useState<ChurchInterface>();
-  const [fund, setFund] = React.useState<FundInterface>()
-  let amt = Number(props.question.choices.find(c => c.text === "Amount")?.value);
-  let fundId = props.question.choices.find(c => c.text === "FundId")?.value;
+  const [fund, setFund] = React.useState<FundInterface>();
+  const [gateway, setGateway] = React.useState<any>(null);
+  let amt = Number(props.question.choices?.find((c: any) => c.text === "Amount")?.value);
+  let fundId = props.question.choices?.find((c: any) => c.text === "FundId")?.value;
 
   const getChurchData = () => {
-    let fundId = props.question.choices.find(c => c.text === "FundId")?.value;
+    let fundId = props.question.choices?.find((c: any) => c.text === "FundId")?.value;
     ApiHelper.get("/churches/" + props.churchId, "MembershipApi").then((data: any) => {
       setChurch(data);
     });
     ApiHelper.get("/funds/churchId/" + props.churchId, "GivingApi").then((data: any) => {
       const result = ArrayHelper.getOne(data, "id", fundId);
       setFund(result);
-    })
+    });
+    ApiHelper.get(`/donate/gateways/${props.churchId}`, "GivingApi").then((response: any) => {
+      const gateways = Array.isArray(response?.gateways) ? response.gateways : [];
+      const stripeGateway = gateways.find((g: any) => g.provider?.toLowerCase() === "stripe");
+      if (stripeGateway) setGateway(stripeGateway);
+    });
   }
 
   const handlePayment = async () => {
@@ -66,7 +71,15 @@ export const FormCardPayment = forwardRef((props: Props, ref) => {
       if (stripePM.error) {
         return { success: false, errors: [stripePM.error.message] };
       } else {
-        const pm = { id: stripePM.paymentMethod.id, personId: person.id, email: email, name: person.name.display, churchId: props.churchId };
+        const pm = {
+          id: stripePM.paymentMethod.id,
+          personId: person.id,
+          email: email,
+          name: person.name.display,
+          churchId: props.churchId,
+          provider: "stripe",
+          gatewayId: gateway?.id
+        };
         try {
           const result = await ApiHelper.post("/paymentmethods/addcard", pm, "GivingApi");
           if (result?.raw?.message) {
@@ -90,29 +103,31 @@ export const FormCardPayment = forwardRef((props: Props, ref) => {
 
   const savePayment = async (paymentMethod: StripePaymentMethod, customerId: string, person?: PersonInterface) => {
 
-    let payment: StripeDonationInterface = {
+    let payment: any = {
       amount: amt,
       id: paymentMethod.id,
       customerId: customerId,
       type: paymentMethod.type,
       churchId: props.churchId,
-      funds: [{ id: fundId, amount: amt, name: fund.name }],
+      funds: [{ id: fundId, amount: amt, name: fund?.name }],
       person: {
-        id: person.id,
+        id: person?.id,
         email: person?.contactInfo?.email,
         name: person?.name?.display,
-      }
+      },
+      provider: "stripe",
+      gatewayId: gateway?.id || (paymentMethod as any).gatewayId
     }
 
     const churchObj = {
-      name: church.name,
-      subDomain: church.subDomain,
+      name: church?.name,
+      subDomain: church?.subDomain,
       churchURL: typeof window !== "undefined" && window.location.origin,
       logo: ""
     }
 
     try {
-      const result = await ApiHelper.post("/donate/charge/", { ...payment, church: churchObj }, "GivingApi");
+      const result = await ApiHelper.post("/donate/charge", { ...payment, church: churchObj }, "GivingApi");
       if (result?.status === "succeeded" || result?.status === "pending") {
         return { success: true, errors: [] }
       }
