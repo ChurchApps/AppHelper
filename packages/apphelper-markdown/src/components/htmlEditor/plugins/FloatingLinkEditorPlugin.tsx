@@ -23,6 +23,11 @@ export default function FloatingLinkEditorPlugin({ anchorElem, isLinkEditMode, s
   const linkEditorRef = useRef<HTMLDivElement>(null);
 
   const updateLinkEditor = useCallback(() => {
+    // Don't update if we're already in link edit mode
+    if (isLinkEditMode) {
+      return;
+    }
+
     const selection = $getSelection();
     if ($isRangeSelection(selection)) {
       const node = selection.anchor.getNode();
@@ -38,9 +43,90 @@ export default function FloatingLinkEditorPlugin({ anchorElem, isLinkEditMode, s
         setLinkUrl('https://');
       }
     }
-  }, []);
+  }, [isLinkEditMode]);
 
   useEffect(() => {
+    const handleDoubleClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'A' || target.closest('a')) {
+        e.preventDefault();
+        const linkElement = (target.tagName === 'A' ? target : target.closest('a')) as HTMLAnchorElement;
+
+        editor.update(() => {
+          // Find the link node from the DOM element
+          const linkNodes = editor._editorState._nodeMap;
+          let foundLinkNode = null;
+
+          linkNodes.forEach((node: any) => {
+            if ($isLinkNode(node)) {
+              const domElement = editor.getElementByKey(node.__key);
+              if (domElement === linkElement) {
+                foundLinkNode = node;
+              }
+            }
+          });
+
+          if (foundLinkNode) {
+            // Select the link content
+            foundLinkNode.selectStart();
+            foundLinkNode.selectEnd();
+
+            // Get link attributes
+            const url = foundLinkNode.getURL();
+            const target = foundLinkNode.getTarget();
+
+            // Extract class names from the DOM element
+            const classes = Array.from(linkElement.classList);
+
+            // Determine the proper class list structure
+            let newClassList = ['', 'btn-primary', 'btn-medium'];
+
+            if (classes.length > 0) {
+              // Check if it's a button by looking for btn class or btn-* classes
+              const hasBtn = classes.includes('btn');
+              const hasBtnBlock = classes.includes('btn-block');
+
+              // Look for appearance class (first position)
+              let appearanceClass = '';
+              if (hasBtn && hasBtnBlock) {
+                appearanceClass = 'btn btn-block';
+              } else if (hasBtn) {
+                appearanceClass = 'btn';
+              }
+
+              // Look for variant class (second position)
+              const variantClass = classes.find(c =>
+                c.startsWith('btn-') &&
+                c !== 'btn-block' &&
+                !c.match(/btn-(small|medium|large|xl|2x|3x|4x)$/i)
+              ) || 'btn-primary';
+
+              // Look for size class (third position)
+              const sizeClass = classes.find(c =>
+                c.match(/btn-(small|medium|large|xl|2x|3x|4x)$/i)
+              ) || 'btn-medium';
+
+              newClassList = [
+                appearanceClass,
+                variantClass,
+                sizeClass
+              ];
+            }
+
+            setLinkUrl(url || 'https://');
+            setTargetAttribute(target || '_self');
+            setClassNamesList(newClassList);
+            setIsLinkEditMode(true);
+          }
+        });
+      }
+    };
+
+    const rootElement = editor.getRootElement();
+    if (rootElement) {
+      rootElement.addEventListener('dblclick', handleDoubleClick);
+    }
+
     return mergeRegister(
       editor.registerUpdateListener(({ editorState }) => {
         editorState.read(() => {
@@ -54,9 +140,14 @@ export default function FloatingLinkEditorPlugin({ anchorElem, isLinkEditMode, s
           return false;
         },
         COMMAND_PRIORITY_LOW
-      )
+      ),
+      () => {
+        if (rootElement) {
+          rootElement.removeEventListener('dblclick', handleDoubleClick);
+        }
+      }
     );
-  }, [editor, updateLinkEditor]);
+  }, [editor, updateLinkEditor, setIsLinkEditMode, setLinkUrl, setTargetAttribute, setClassNamesList]);
 
   const handleLinkSubmit = () => {
     const appearance = classNamesList[0];

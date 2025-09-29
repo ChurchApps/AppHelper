@@ -173,8 +173,8 @@
     "@babel/helper-string-parser" "^7.27.1"
     "@babel/helper-validator-identifier" "^7.27.1"
 
-"@churchapps/apphelper-donations@*", "@churchapps/apphelper-donations@^0.4.50", "@churchapps/apphelper-donations@file:/home/vboxuser/Code/Packages/AppHelper/packages/donations":
-  version "0.4.50"
+"@churchapps/apphelper-donations@*", "@churchapps/apphelper-donations@^0.5.0", "@churchapps/apphelper-donations@file:/home/vboxuser/Code/Packages/AppHelper/packages/donations":
+  version "0.5.0"
   resolved "file:packages/donations"
   dependencies:
     "@emotion/react" "^11.14.0"
@@ -192,7 +192,7 @@
     rrule "^2.8.1"
 
 "@churchapps/apphelper-forms@*", "@churchapps/apphelper-forms@file:/home/vboxuser/Code/Packages/AppHelper/packages/apphelper-forms":
-  version "0.4.50"
+  version "0.5.0"
   resolved "file:packages/apphelper-forms"
   dependencies:
     "@churchapps/apphelper-donations" "^0.4.50"
@@ -204,7 +204,7 @@
     react-i18next "^15.6.1"
 
 "@churchapps/apphelper-login@*", "@churchapps/apphelper-login@file:/home/vboxuser/Code/Packages/AppHelper/packages/login":
-  version "0.4.50"
+  version "0.5.0"
   resolved "file:packages/login"
   dependencies:
     "@emotion/react" "^11.14.0"
@@ -219,7 +219,7 @@
     react-i18next "^15.6.1"
 
 "@churchapps/apphelper-markdown@*", "@churchapps/apphelper-markdown@file:/home/vboxuser/Code/Packages/AppHelper/packages/apphelper-markdown":
-  version "0.4.50"
+  version "0.5.0"
   resolved "file:packages/apphelper-markdown"
   dependencies:
     "@lexical/code" "^0.33.1"
@@ -236,8 +236,8 @@
     marked "^16.1.2"
     material-symbols "^0.33.0"
 
-"@churchapps/apphelper@*", "@churchapps/apphelper@^0.4.50", "@churchapps/apphelper@file:/home/vboxuser/Code/Packages/AppHelper/packages/apphelper":
-  version "0.4.50"
+"@churchapps/apphelper@*", "@churchapps/apphelper@^0.5.0", "@churchapps/apphelper@file:/home/vboxuser/Code/Packages/AppHelper/packages/apphelper":
+  version "0.5.0"
   resolved "file:packages/apphelper"
   dependencies:
     "@churchapps/helpers" "^1.2.3"
@@ -1042,7 +1042,7 @@ ansi-styles@^6.1.0, ansi-styles@^6.2.1:
   integrity sha512-bN798gFfQX+viw3R7yrGWRqnrN2oRkEkUjjl4JNn4E8GxxbjtG3FbrEIIY3l8/hrwUwIeCZvi4QuOTP4MErVug==
 
 "apphelper-component-playground@file:/home/vboxuser/Code/Packages/AppHelper/playground":
-  version "0.4.50"
+  version "0.5.0"
   resolved "file:playground"
   dependencies:
     "@churchapps/apphelper" "*"
