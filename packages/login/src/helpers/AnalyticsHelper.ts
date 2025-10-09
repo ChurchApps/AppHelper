@@ -5,22 +5,34 @@ export class AnalyticsHelper {
 
   static init = () => {
     if (CommonEnvironmentHelper.GoogleAnalyticsTag !== "" && typeof(window)!=="undefined") {
-      ReactGA.initialize([{trackingId: CommonEnvironmentHelper.GoogleAnalyticsTag}]);
-      AnalyticsHelper.logPageView();
+      try {
+        ReactGA.initialize([{trackingId: CommonEnvironmentHelper.GoogleAnalyticsTag}]);
+        AnalyticsHelper.logPageView();
+      } catch (error) {
+        console.warn('Analytics initialization failed:', error);
+      }
     }
   }
 
   static logPageView = () => {
     if (CommonEnvironmentHelper.GoogleAnalyticsTag !== "" && typeof(window)!=="undefined") {
-      this.setChurchKey();
-      ReactGA.send({ hitType: "pageview", page: window.location.pathname + window.location.search });
+      try {
+        this.setChurchKey();
+        ReactGA.send({ hitType: "pageview", page: window.location.pathname + window.location.search });
+      } catch (error) {
+        console.warn('Analytics page view logging failed:', error);
+      }
     }
   }
 
   static logEvent = (category: string, action: string, label?:string) => {
     if (CommonEnvironmentHelper.GoogleAnalyticsTag !== "" && typeof(window)!=="undefined") {
-      this.setChurchKey();
-      ReactGA.event({ category, action, label });
+      try {
+        this.setChurchKey();
+        ReactGA.event({ category, action, label });
+      } catch (error) {
+        console.warn('Analytics event logging failed:', error);
+      }
     }
   }
 

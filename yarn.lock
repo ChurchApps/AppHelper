@@ -173,7 +173,7 @@
     "@babel/helper-string-parser" "^7.27.1"
     "@babel/helper-validator-identifier" "^7.27.1"
 
-"@churchapps/apphelper-donations@*", "@churchapps/apphelper-donations@^0.5.0", "@churchapps/apphelper-donations@file:/home/vboxuser/Code/Packages/AppHelper/packages/donations":
+"@churchapps/apphelper-donations@*", "@churchapps/apphelper-donations@^0.5.0", "@churchapps/apphelper-donations@file:D:\\Code\\ChurchApps\\Packages\\AppHelper\\packages\\donations":
   version "0.5.0"
   resolved "file:packages/donations"
   dependencies:
@@ -191,11 +191,11 @@
     react-i18next "^15.6.1"
     rrule "^2.8.1"
 
-"@churchapps/apphelper-forms@*", "@churchapps/apphelper-forms@file:/home/vboxuser/Code/Packages/AppHelper/packages/apphelper-forms":
+"@churchapps/apphelper-forms@*", "@churchapps/apphelper-forms@file:D:\\Code\\ChurchApps\\Packages\\AppHelper\\packages\\apphelper-forms":
   version "0.5.0"
   resolved "file:packages/apphelper-forms"
   dependencies:
-    "@churchapps/apphelper-donations" "^0.4.50"
+    "@churchapps/apphelper-donations" "^0.5.0"
     "@emotion/react" "^11.14.0"
     "@emotion/styled" "^11.14.1"
     axios "^1.11.0"
@@ -203,7 +203,7 @@
     i18next "^25.3.2"
     react-i18next "^15.6.1"
 
-"@churchapps/apphelper-login@*", "@churchapps/apphelper-login@file:/home/vboxuser/Code/Packages/AppHelper/packages/login":
+"@churchapps/apphelper-login@*", "@churchapps/apphelper-login@file:D:\\Code\\ChurchApps\\Packages\\AppHelper\\packages\\login":
   version "0.5.0"
   resolved "file:packages/login"
   dependencies:
@@ -218,8 +218,8 @@
     react-google-recaptcha "^3.1.0"
     react-i18next "^15.6.1"
 
-"@churchapps/apphelper-markdown@*", "@churchapps/apphelper-markdown@file:/home/vboxuser/Code/Packages/AppHelper/packages/apphelper-markdown":
-  version "0.5.0"
+"@churchapps/apphelper-markdown@*", "@churchapps/apphelper-markdown@file:D:\\Code\\ChurchApps\\Packages\\AppHelper\\packages\\apphelper-markdown":
+  version "0.5.1"
   resolved "file:packages/apphelper-markdown"
   dependencies:
     "@lexical/code" "^0.33.1"
@@ -236,8 +236,8 @@
     marked "^16.1.2"
     material-symbols "^0.33.0"
 
-"@churchapps/apphelper@*", "@churchapps/apphelper@^0.5.0", "@churchapps/apphelper@file:/home/vboxuser/Code/Packages/AppHelper/packages/apphelper":
-  version "0.5.0"
+"@churchapps/apphelper@*", "@churchapps/apphelper@^0.5.0", "@churchapps/apphelper@file:D:\\Code\\ChurchApps\\Packages\\AppHelper\\packages\\apphelper":
+  version "0.5.1"
   resolved "file:packages/apphelper"
   dependencies:
     "@churchapps/helpers" "^1.2.3"
@@ -480,10 +480,10 @@
   resolved "https://registry.npmjs.org/@emotion/weak-memoize/-/weak-memoize-0.4.0.tgz"
   integrity sha512-snKqtPW01tN0ui7yu9rGv69aJXr/a/Ywvl11sUjNtEcRc+ng/mQriFL0wLXMef74iHa/EkftbDzU9F8iFbH+zg==
 
-"@esbuild/linux-x64@0.25.8":
+"@esbuild/win32-x64@0.25.8":
   version "0.25.8"
-  resolved "https://registry.npmjs.org/@esbuild/linux-x64/-/linux-x64-0.25.8.tgz"
-  integrity sha512-ASFQhgY4ElXh3nDcOMTkQero4b1lgubskNlhIfJrsH5OKZXDpUAKBlNS0Kx81jwOBp+HCeZqmoJuihTv57/jvQ==
+  resolved "https://registry.npmjs.org/@esbuild/win32-x64/-/win32-x64-0.25.8.tgz"
+  integrity sha512-cn3Yr7+OaaZq1c+2pe+8yxC8E144SReCQjN6/2ynubzYjvyqZjTXfQJpAcQpsdJq3My7XADANiYGHoFC69pLQw==
 
 "@floating-ui/core@^1.7.2":
   version "1.7.2"
@@ -879,15 +879,10 @@
   resolved "https://registry.npmjs.org/@rolldown/pluginutils/-/pluginutils-1.0.0-beta.27.tgz"
   integrity sha512-+d0F4MKMCbeVUJwG96uQ4SgAznZNSq93I3V+9NHA4OpvqG8mRCpGdKmK8l/dl02h2CCDHwW2FqilnTyDcAnqjA==
 
-"@rollup/rollup-linux-x64-gnu@4.46.2":
+"@rollup/rollup-win32-x64-msvc@4.46.2":
   version "4.46.2"
-  resolved "https://registry.npmjs.org/@rollup/rollup-linux-x64-gnu/-/rollup-linux-x64-gnu-4.46.2.tgz"
-  integrity sha512-Jj5a9RUoe5ra+MEyERkDKLwTXVu6s3aACP51nkfnK9wJTraCC8IMe3snOfALkrjTYd2G1ViE1hICj0fZ7ALBPA==
-
-"@rollup/rollup-linux-x64-musl@4.46.2":
-  version "4.46.2"
-  resolved "https://registry.npmjs.org/@rollup/rollup-linux-x64-musl/-/rollup-linux-x64-musl-4.46.2.tgz"
-  integrity sha512-7kX69DIrBeD7yNp4A5b81izs8BqoZkCIaxQaOpumcJ1S/kmqNFjPhDu1LHeVXv0SexfHQv5cqHsxLOjETuqDuA==
+  resolved "https://registry.npmjs.org/@rollup/rollup-win32-x64-msvc/-/rollup-win32-x64-msvc-4.46.2.tgz"
+  integrity sha512-CvUo2ixeIQGtF6WvuB87XWqPQkoFAFqW+HUo/WzHwuHDvIwZCtjdWXoYCcr06iKGydiqTclC4jU/TNObC/xKZg==
 
 "@stripe/react-stripe-js@^3.9.0":
   version "3.9.0"
@@ -1041,7 +1036,7 @@ ansi-styles@^6.1.0, ansi-styles@^6.2.1:
   resolved "https://registry.npmjs.org/ansi-styles/-/ansi-styles-6.2.1.tgz"
   integrity sha512-bN798gFfQX+viw3R7yrGWRqnrN2oRkEkUjjl4JNn4E8GxxbjtG3FbrEIIY3l8/hrwUwIeCZvi4QuOTP4MErVug==
 
-"apphelper-component-playground@file:/home/vboxuser/Code/Packages/AppHelper/playground":
+"apphelper-component-playground@file:D:\\Code\\ChurchApps\\Packages\\AppHelper\\playground":
   version "0.5.0"
   resolved "file:playground"
   dependencies:
