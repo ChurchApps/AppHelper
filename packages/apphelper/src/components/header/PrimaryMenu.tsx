@@ -1,3 +1,4 @@
+'use client'
 import React, { useState, useRef } from "react";
 import { Box, Button, Icon, Paper, Popper, Grow, ClickAwayListener } from "@mui/material";
 import { NavItem } from "../wrapper/NavItem";

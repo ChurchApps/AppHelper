@@ -1,3 +1,4 @@
+'use client';
 import React, { useState, useEffect, useCallback } from 'react';
 import { NotificationService, NotificationCounts } from '../helpers/NotificationService';
 import { UserContextInterface } from '@churchapps/helpers';
