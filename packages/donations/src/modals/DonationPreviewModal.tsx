@@ -54,7 +54,7 @@ export const DonationPreviewModal: React.FC<Props> = (props) => {
             {props.donationType === "once"
               && <TableRow><TableCell>{Locale.label("donation.preview.date")}:</TableCell><TableCell>{props.donation.billing_cycle_anchor ? DateHelper.formatHtml5Date(new Date(props.donation.billing_cycle_anchor)) : ""}</TableCell></TableRow>
             }
-            <TableRow><TableCell>{Locale.label("donation.preview.weekly")}:</TableCell><TableCell>{props.donation.notes || ""}</TableCell></TableRow>
+            <TableRow><TableCell>{Locale.label("donation.preview.notes")}:</TableCell><TableCell>{props.donation.notes || ""}</TableCell></TableRow>
             {props.donationType === "recurring"
               && <>
                 <TableRow><TableCell>{Locale.label("donation.preview.startingOn")}:</TableCell><TableCell>{props.donation.billing_cycle_anchor ? DateHelper.formatHtml5Date(new Date(props.donation.billing_cycle_anchor)) : ""}</TableCell></TableRow>
