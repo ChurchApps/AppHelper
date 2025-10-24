@@ -2,7 +2,7 @@ import React from 'react';
 import { Container, Box, Typography, Alert, Stack, Button, Card, CardContent, Chip } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { ErrorBoundary } from '../ErrorBoundary';
-import { ButtonLink, HtmlPreview, IframeElement, ImageElement } from '../../../packages/apphelper-website/src';
+import { ButtonLink, HtmlPreview, IframeElement, ImageElement, TextOnly, TextWithPhoto, VideoElement, WhiteSpaceElement } from '../../../packages/apphelper-website/src';
 
 function ComponentPage({ children, title }: { children: React.ReactNode, title: string }) {
   return (
@@ -46,6 +46,30 @@ const websiteComponents = [
     description: 'Displays images with alignment, linking, and resize options',
     category: 'Element',
     complexity: 'Medium'
+  },
+  {
+    name: 'TextOnly',
+    description: 'Renders text content with optional editing support and text alignment',
+    category: 'Element',
+    complexity: 'Low'
+  },
+  {
+    name: 'TextWithPhoto',
+    description: 'Displays text content with an accompanying photo in various positions (left, right, top, bottom)',
+    category: 'Element',
+    complexity: 'Medium'
+  },
+  {
+    name: 'VideoElement',
+    description: 'Embeds YouTube or Vimeo videos with responsive sizing',
+    category: 'Element',
+    complexity: 'Low'
+  },
+  {
+    name: 'WhiteSpaceElement',
+    description: 'Creates customizable white space with configurable height',
+    category: 'Element',
+    complexity: 'Low'
   }
 ];
 
@@ -161,6 +185,126 @@ export default function WebsiteComponentsPage() {
               <Typography variant="caption" color="textSecondary">
                 First image: centered, no link. Second image: left-aligned, links to ChurchApps.org
               </Typography>
+            </Stack>
+          );
+
+        case 'TextOnly':
+          return (
+            <Stack spacing={2}>
+              <TextOnly
+                element={{
+                  id: 'text-1',
+                  answers: {
+                    text: '<h2>Welcome to Our Church</h2><p>This is a sample text-only element with <strong>formatted content</strong>. It supports HTML formatting and can be aligned as needed.</p>',
+                    textAlignment: 'left'
+                  }
+                }}
+              />
+              <TextOnly
+                element={{
+                  id: 'text-2',
+                  answers: {
+                    text: '<p>This text is <em>centered</em> on the page.</p>',
+                    textAlignment: 'center'
+                  }
+                }}
+              />
+              <Typography variant="caption" color="textSecondary">
+                First text: left-aligned. Second text: centered.
+              </Typography>
+            </Stack>
+          );
+
+        case 'TextWithPhoto':
+          return (
+            <Stack spacing={2}>
+              <TextWithPhoto
+                element={{
+                  id: 'textwithphoto-1',
+                  answers: {
+                    text: '<h3>Photo on Left</h3><p>This demonstrates text with a photo positioned on the left side. The photo and text are displayed side by side in a responsive grid layout.</p>',
+                    photo: 'https://picsum.photos/300/400',
+                    photoAlt: 'Sample photo',
+                    photoPosition: 'left',
+                    textAlignment: 'left'
+                  }
+                }}
+              />
+              <TextWithPhoto
+                element={{
+                  id: 'textwithphoto-2',
+                  answers: {
+                    text: '<h3>Photo on Right</h3><p>This demonstrates text with a photo positioned on the right side. The layout adjusts responsively on smaller screens.</p>',
+                    photo: 'https://picsum.photos/300/400',
+                    photoAlt: 'Sample photo',
+                    photoPosition: 'right',
+                    textAlignment: 'left'
+                  }
+                }}
+              />
+              <Typography variant="caption" color="textSecondary">
+                Examples showing different photo positions: left and right.
+              </Typography>
+            </Stack>
+          );
+
+        case 'VideoElement':
+          return (
+            <Stack spacing={2}>
+              <VideoElement
+                element={{
+                  id: 'video-1',
+                  answers: {
+                    videoType: 'youtube',
+                    videoId: 'dQw4w9WgXcQ'
+                  }
+                }}
+              />
+              <Typography variant="caption" color="textSecondary">
+                Example YouTube video embed (responsive sizing)
+              </Typography>
+              <VideoElement
+                element={{
+                  id: 'video-2',
+                  answers: {
+                    videoType: 'vimeo',
+                    videoId: '76979871'
+                  }
+                }}
+              />
+              <Typography variant="caption" color="textSecondary">
+                Example Vimeo video embed (responsive sizing)
+              </Typography>
+            </Stack>
+          );
+
+        case 'WhiteSpaceElement':
+          return (
+            <Stack spacing={2}>
+              <Box sx={{ border: '1px dashed #ccc', p: 1 }}>
+                <Typography variant="caption" color="textSecondary">Content above</Typography>
+                <WhiteSpaceElement
+                  element={{
+                    id: 'whitespace-1',
+                    answers: {
+                      height: '50'
+                    }
+                  }}
+                />
+                <Typography variant="caption" color="textSecondary">Content below (50px spacing)</Typography>
+              </Box>
+              <Box sx={{ border: '1px dashed #ccc', p: 1 }}>
+                <Typography variant="caption" color="textSecondary">Content above</Typography>
+                <WhiteSpaceElement
+                  element={{
+                    id: 'whitespace-2',
+                    answers: {
+                      height: '100'
+                    }
+                  }}
+                />
+                <Typography variant="caption" color="textSecondary">Content below (100px spacing)</Typography>
+              </Box>
             </Stack>
           );
 
