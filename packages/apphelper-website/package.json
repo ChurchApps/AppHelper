@@ -1,0 +1,42 @@
+{
+  "name": "@churchapps/apphelper-website",
+  "version": "0.1.0",
+  "description": "Website components for ChurchApps AppHelper",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rimraf dist",
+    "tsc": "tsc",
+    "build": "npm-run-all clean tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LiveChurchSolutions/AppHelper.git"
+  },
+  "keywords": [
+    "ChurchApps",
+    "website",
+    "components",
+    "react"
+  ],
+  "author": "ChurchApps.org",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/LiveChurchSolutions/AppHelper/issues"
+  },
+  "homepage": "https://github.com/LiveChurchSolutions/AppHelper#readme",
+  "peerDependencies": {
+    "@mui/material": "^7.3.1",
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.2.0",
+    "@types/react": "^19.1.9",
+    "@types/react-dom": "^19.1.7",
+    "npm-run-all2": "^8.0.4",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.9.2"
+  }
+}

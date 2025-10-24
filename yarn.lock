@@ -174,7 +174,7 @@
     "@babel/helper-validator-identifier" "^7.27.1"
 
 "@churchapps/apphelper-donations@*", "@churchapps/apphelper-donations@^0.5.0", "@churchapps/apphelper-donations@file:D:\\Code\\ChurchApps\\Packages\\AppHelper\\packages\\donations":
-  version "0.5.0"
+  version "0.5.1"
   resolved "file:packages/donations"
   dependencies:
     "@emotion/react" "^11.14.0"
@@ -235,6 +235,10 @@
     lexical "^0.33.1"
     marked "^16.1.2"
     material-symbols "^0.33.0"
+
+"@churchapps/apphelper-website@*", "@churchapps/apphelper-website@file:D:\\Code\\ChurchApps\\Packages\\AppHelper\\packages\\apphelper-website":
+  version "0.1.0"
+  resolved "file:packages/apphelper-website"
 
 "@churchapps/apphelper@*", "@churchapps/apphelper@^0.5.0", "@churchapps/apphelper@file:D:\\Code\\ChurchApps\\Packages\\AppHelper\\packages\\apphelper":
   version "0.5.4"
@@ -1045,6 +1049,7 @@ ansi-styles@^6.1.0, ansi-styles@^6.2.1:
     "@churchapps/apphelper-forms" "*"
     "@churchapps/apphelper-login" "*"
     "@churchapps/apphelper-markdown" "*"
+    "@churchapps/apphelper-website" "*"
     "@churchapps/helpers" "^1.2.3"
     "@emotion/react" "^11.14.0"
     "@emotion/styled" "^11.14.1"
@@ -1079,7 +1084,7 @@ asynckit@^0.4.0:
   resolved "https://registry.npmjs.org/asynckit/-/asynckit-0.4.0.tgz"
   integrity sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==
 
-axios@^1.11.0, axios@^1.12.2:
+axios@^1.11.0:
   version "1.12.2"
   resolved "https://registry.npmjs.org/axios/-/axios-1.12.2.tgz"
   integrity sha512-vMJzPewAlRyOgxV2dU0Cuz2O8zzzx9VYtbJOaBgXFeLc4IV/Eg50n4LowmehOOR61S8ZMpc2K5Sa7g6A4jfkUw==
