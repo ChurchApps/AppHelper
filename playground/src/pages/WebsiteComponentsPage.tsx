@@ -2,7 +2,7 @@ import React from 'react';
 import { Container, Box, Typography, Alert, Stack, Button, Card, CardContent, Chip } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { ErrorBoundary } from '../ErrorBoundary';
-import { ButtonLink } from '../../../packages/apphelper-website/src';
+import { ButtonLink, HtmlPreview, IframeElement, ImageElement } from '../../../packages/apphelper-website/src';
 
 function ComponentPage({ children, title }: { children: React.ReactNode, title: string }) {
   return (
@@ -28,6 +28,24 @@ const websiteComponents = [
     description: 'Material-UI button component for creating clickable links with various styles',
     category: 'Element',
     complexity: 'Low'
+  },
+  {
+    name: 'HtmlPreview',
+    description: 'Renders HTML content with optional editing support',
+    category: 'Element',
+    complexity: 'Low'
+  },
+  {
+    name: 'IframeElement',
+    description: 'Embeds external content via iframe with configurable height',
+    category: 'Element',
+    complexity: 'Low'
+  },
+  {
+    name: 'ImageElement',
+    description: 'Displays images with alignment, linking, and resize options',
+    category: 'Element',
+    complexity: 'Medium'
   }
 ];
 
@@ -75,6 +93,74 @@ export default function WebsiteComponentsPage() {
                   }
                 }}
               />
+            </Stack>
+          );
+
+        case 'HtmlPreview':
+          return (
+            <Stack spacing={2}>
+              <HtmlPreview
+                value="<h3>Sample HTML Content</h3><p>This is a <strong>preview</strong> of HTML content with <em>formatting</em>.</p>"
+                element={{ id: 'html-1' }}
+              />
+              <HtmlPreview
+                value="<p style='color: blue; text-align: center;'>Centered blue text</p>"
+                textAlign="center"
+                element={{ id: 'html-2' }}
+              />
+              <HtmlPreview
+                value="<ul><li>Item 1</li><li>Item 2</li><li>Item 3</li></ul>"
+                element={{ id: 'html-3' }}
+              />
+            </Stack>
+          );
+
+        case 'IframeElement':
+          return (
+            <Stack spacing={2}>
+              <IframeElement
+                element={{
+                  id: 'iframe-1',
+                  answers: {
+                    iframeSrc: 'https://www.openstreetmap.org/export/embed.html?bbox=-0.004017949104309083%2C51.47612752641776%2C0.00030577182769775396%2C51.478569861898606&layer=mapnik',
+                    iframeHeight: '400'
+                  }
+                }}
+              />
+              <Typography variant="caption" color="textSecondary">
+                Example: Embedded map with 400px height
+              </Typography>
+            </Stack>
+          );
+
+        case 'ImageElement':
+          return (
+            <Stack spacing={2}>
+              <ImageElement
+                element={{
+                  id: 'image-1',
+                  answers: {
+                    photo: 'https://picsum.photos/400/300',
+                    photoAlt: 'Sample image',
+                    imageAlign: 'center'
+                  }
+                }}
+              />
+              <ImageElement
+                element={{
+                  id: 'image-2',
+                  answers: {
+                    photo: 'https://picsum.photos/300/200',
+                    photoAlt: 'Linked image',
+                    imageAlign: 'left',
+                    url: 'https://churchapps.org',
+                    external: 'true'
+                  }
+                }}
+              />
+              <Typography variant="caption" color="textSecondary">
+                First image: centered, no link. Second image: left-aligned, links to ChurchApps.org
+              </Typography>
             </Stack>
           );
 
