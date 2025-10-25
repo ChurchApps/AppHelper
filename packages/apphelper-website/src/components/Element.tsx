@@ -17,6 +17,10 @@ import { FaqElement } from "./elementTypes/FaqElement";
 import { CardElement } from "./elementTypes/CardElement";
 import { CarouselElement } from "./elementTypes/CarouselElement";
 import { ElementBlock } from "./elementTypes/ElementBlock";
+import { LogoElement } from "./elementTypes/LogoElement";
+import { MapElement } from "./elementTypes/MapElement";
+import { RawHTMLElement } from "./elementTypes/RawHTMLElement";
+import { RowElement } from "./elementTypes/RowElement";
 
 interface Props {
   element: ElementInterface;
@@ -92,6 +96,18 @@ export const Element: React.FC<Props> = props => {
       break;
     case "block":
       result = <ElementBlock key={props.element.id} element={props.element as ElementInterface} churchSettings={props.churchSettings} textColor={props.textColor} />
+      break;
+    case "row":
+      result = <RowElement key={props.element.id} element={props.element as ElementInterface} churchSettings={props.churchSettings} textColor={props.textColor} onEdit={props.onEdit} onMove={props.onMove} church={props.church} />
+      break;
+    case "logo":
+      result = <LogoElement key={props.element.id} element={props.element as ElementInterface} churchSettings={props.churchSettings} textColor={props.textColor} />
+      break;
+    case "map":
+      result = <MapElement key={props.element.id} element={props.element as ElementInterface} />
+      break;
+    case "rawHTML":
+      result = <RawHTMLElement key={props.element.id} element={props.element as ElementInterface} onEdit={props.onEdit} />
       break;
   }
 

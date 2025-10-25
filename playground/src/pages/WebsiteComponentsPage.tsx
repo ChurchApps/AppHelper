@@ -2,7 +2,7 @@ import React from 'react';
 import { Container, Box, Typography, Alert, Stack, Button, Card, CardContent, Chip } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { ErrorBoundary } from '../ErrorBoundary';
-import { BoxElement, ButtonLink, CalendarElement, CardElement, CarouselElement, ElementBlock, FaqElement, HtmlPreview, IframeElement, ImageElement, TextOnly, TextWithPhoto, VideoElement, WhiteSpaceElement } from '../../../packages/apphelper-website/src';
+import { BoxElement, ButtonLink, CalendarElement, CardElement, CarouselElement, ElementBlock, FaqElement, HtmlPreview, IframeElement, ImageElement, LogoElement, MapElement, RawHTMLElement, RowElement, TextOnly, TextWithPhoto, VideoElement, WhiteSpaceElement } from '../../../packages/apphelper-website/src';
 import UserContext from '../UserContext';
 
 function ComponentPage({ children, title }: { children: React.ReactNode, title: string }) {
@@ -83,6 +83,30 @@ const websiteComponents = [
     description: 'Displays images with alignment, linking, and resize options',
     category: 'Element',
     complexity: 'Medium'
+  },
+  {
+    name: 'LogoElement',
+    description: 'Displays church logo that adapts to light/dark themes',
+    category: 'Element',
+    complexity: 'Low'
+  },
+  {
+    name: 'MapElement',
+    description: 'Embeds Google Maps with custom address, zoom level, and marker labels',
+    category: 'Element',
+    complexity: 'Medium'
+  },
+  {
+    name: 'RawHTMLElement',
+    description: 'Renders raw HTML content with optional JavaScript injection for custom embeds',
+    category: 'Element',
+    complexity: 'Low'
+  },
+  {
+    name: 'RowElement',
+    description: 'Container for creating multi-column layouts with responsive sizing and drag-drop support',
+    category: 'Container',
+    complexity: 'High'
   },
   {
     name: 'TextOnly',
@@ -707,6 +731,241 @@ export default function WebsiteComponentsPage() {
             </Stack>
           );
 
+        case 'LogoElement':
+          return (
+            <Stack spacing={2}>
+              <Alert severity="info" sx={{ mb: 2 }}>
+                LogoElement displays the church logo. It adapts to light/dark themes by switching between logo variants. In this demo, a placeholder logo is used since church settings are not fully configured.
+              </Alert>
+              <Box sx={{ textAlign: 'center', p: 3, bgcolor: '#f5f5f5', borderRadius: 1 }}>
+                <LogoElement
+                  element={{
+                    id: 'logo-1',
+                    elementType: 'logo',
+                    answers: {
+                      photoAlt: 'Church Logo'
+                    }
+                  }}
+                  churchSettings={{
+                    appearance: {
+                      logoLight: '/images/logo.png'
+                    }
+                  }}
+                  textColor="dark"
+                />
+              </Box>
+              <Box sx={{ textAlign: 'center', p: 3, bgcolor: '#333', borderRadius: 1 }}>
+                <LogoElement
+                  element={{
+                    id: 'logo-2',
+                    elementType: 'logo',
+                    answers: {
+                      photoAlt: 'Church Logo (Dark Background)',
+                      url: 'https://churchapps.org'
+                    }
+                  }}
+                  churchSettings={{
+                    appearance: {
+                      logoDark: '/images/logo.png'
+                    }
+                  }}
+                  textColor="light"
+                />
+              </Box>
+              <Typography variant="caption" color="textSecondary">
+                Examples showing logo on light and dark backgrounds. Second logo is clickable.
+              </Typography>
+            </Stack>
+          );
+
+        case 'MapElement':
+          return (
+            <Stack spacing={2}>
+              <Alert severity="info" sx={{ mb: 2 }}>
+                MapElement embeds Google Maps with custom address, zoom level, and optional marker labels. Note: This requires a valid NEXT_PUBLIC_GOOGLE_API_KEY environment variable to function.
+              </Alert>
+              <MapElement
+                element={{
+                  id: 'map-1',
+                  elementType: 'map',
+                  answers: {
+                    mapAddress: '1600 Amphitheatre Parkway, Mountain View, CA',
+                    mapZoom: 15,
+                    mapLabel: 'Google HQ'
+                  }
+                }}
+              />
+              <Typography variant="caption" color="textSecondary">
+                Example map with custom address, zoom level, and marker label.
+              </Typography>
+              <MapElement
+                element={{
+                  id: 'map-2',
+                  elementType: 'map',
+                  answers: {
+                    mapAddress: 'Times Square, New York, NY',
+                    mapZoom: 14
+                  }
+                }}
+              />
+              <Typography variant="caption" color="textSecondary">
+                Example map without a marker label (zoom level 14).
+              </Typography>
+            </Stack>
+          );
+
+        case 'RawHTMLElement':
+          return (
+            <Stack spacing={2}>
+              <Alert severity="warning" sx={{ mb: 2 }}>
+                RawHTMLElement renders raw HTML and can execute JavaScript. Use with caution! Only use trusted HTML content.
+              </Alert>
+              <RawHTMLElement
+                element={{
+                  id: 'rawhtml-1',
+                  elementType: 'rawHTML',
+                  answers: {
+                    rawHTML: '<div style="padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 8px; text-align: center;"><h3>Custom HTML Content</h3><p>This is raw HTML with inline styles and formatting.</p></div>'
+                  }
+                }}
+              />
+              <RawHTMLElement
+                element={{
+                  id: 'rawhtml-2',
+                  elementType: 'rawHTML',
+                  answers: {
+                    rawHTML: '<div style="border: 2px solid #2196f3; padding: 15px; border-radius: 4px;"><strong>Important Notice:</strong> This element can render any HTML content including forms, tables, custom styles, and more.</div>'
+                  }
+                }}
+              />
+              <RawHTMLElement
+                element={{
+                  id: 'rawhtml-3',
+                  elementType: 'rawHTML',
+                  answers: {
+                    rawHTML: '<table style="width: 100%; border-collapse: collapse;"><thead><tr style="background: #f5f5f5;"><th style="padding: 10px; border: 1px solid #ddd;">Column 1</th><th style="padding: 10px; border: 1px solid #ddd;">Column 2</th><th style="padding: 10px; border: 1px solid #ddd;">Column 3</th></tr></thead><tbody><tr><td style="padding: 10px; border: 1px solid #ddd;">Data 1</td><td style="padding: 10px; border: 1px solid #ddd;">Data 2</td><td style="padding: 10px; border: 1px solid #ddd;">Data 3</td></tr><tr><td style="padding: 10px; border: 1px solid #ddd;">Data 4</td><td style="padding: 10px; border: 1px solid #ddd;">Data 5</td><td style="padding: 10px; border: 1px solid #ddd;">Data 6</td></tr></tbody></table>'
+                  }
+                }}
+              />
+              <Typography variant="caption" color="textSecondary">
+                Examples showing gradient box, notice box, and table rendered from raw HTML.
+              </Typography>
+            </Stack>
+          );
+
+        case 'RowElement':
+          return (
+            <Stack spacing={2}>
+              <Alert severity="info" sx={{ mb: 2 }}>
+                RowElement creates multi-column layouts using Material-UI Grid. It supports responsive sizing, nested elements, and drag-drop in edit mode (edit mode disabled in playground).
+              </Alert>
+              <RowElement
+                element={{
+                  id: 'row-1',
+                  elementType: 'row',
+                  sectionId: 'section-1',
+                  elements: [
+                    {
+                      id: 'row-1-col-1',
+                      elementType: 'column',
+                      answers: { size: 6, mobileSize: 12 },
+                      elements: [
+                        {
+                          id: 'row-1-col-1-text',
+                          elementType: 'text',
+                          answers: {
+                            text: '<h4>Column 1 (50%)</h4><p>This is the first column taking up half the width on desktop and full width on mobile.</p>',
+                            textAlignment: 'left'
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      id: 'row-1-col-2',
+                      elementType: 'column',
+                      answers: { size: 6, mobileSize: 12 },
+                      elements: [
+                        {
+                          id: 'row-1-col-2-img',
+                          elementType: 'image',
+                          answers: {
+                            photo: 'https://picsum.photos/400/250',
+                            photoAlt: 'Column 2 image',
+                            imageAlign: 'center'
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }}
+                churchSettings={{}}
+                textColor="dark"
+              />
+              <Typography variant="caption" color="textSecondary" sx={{ display: 'block', mt: 2 }}>
+                Two-column layout: 50/50 split on desktop, stacked on mobile.
+              </Typography>
+              <RowElement
+                element={{
+                  id: 'row-2',
+                  elementType: 'row',
+                  sectionId: 'section-1',
+                  elements: [
+                    {
+                      id: 'row-2-col-1',
+                      elementType: 'column',
+                      answers: { size: 4, mobileSize: 12 },
+                      elements: [
+                        {
+                          id: 'row-2-col-1-text',
+                          elementType: 'text',
+                          answers: {
+                            text: '<h5>Column 1</h5><p>33% width</p>',
+                            textAlignment: 'center'
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      id: 'row-2-col-2',
+                      elementType: 'column',
+                      answers: { size: 4, mobileSize: 12 },
+                      elements: [
+                        {
+                          id: 'row-2-col-2-text',
+                          elementType: 'text',
+                          answers: {
+                            text: '<h5>Column 2</h5><p>33% width</p>',
+                            textAlignment: 'center'
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      id: 'row-2-col-3',
+                      elementType: 'column',
+                      answers: { size: 4, mobileSize: 12 },
+                      elements: [
+                        {
+                          id: 'row-2-col-3-text',
+                          elementType: 'text',
+                          answers: {
+                            text: '<h5>Column 3</h5><p>33% width</p>',
+                            textAlignment: 'center'
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }}
+                churchSettings={{}}
+                textColor="dark"
+              />
+              <Typography variant="caption" color="textSecondary">
+                Three-column layout: 33/33/33 split on desktop, stacked on mobile.
+              </Typography>
+            </Stack>
+          );
+
         default:
           return (
             <Alert severity="info">
@@ -790,7 +1049,7 @@ export default function WebsiteComponentsPage() {
 
         <Box>
           <Typography variant="h5" gutterBottom>
-            Element Components (14 total)
+            Element Components (18 total)
           </Typography>
           <Alert severity="info" sx={{ mb: 2 }}>
             Click "Show Demo" to see live component demonstrations with interactive examples.
