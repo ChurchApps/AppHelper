@@ -2,7 +2,7 @@ import React from 'react';
 import { Container, Box, Typography, Alert, Stack, Button, Card, CardContent, Chip } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { ErrorBoundary } from '../ErrorBoundary';
-import { BoxElement, ButtonLink, CalendarElement, HtmlPreview, IframeElement, ImageElement, TextOnly, TextWithPhoto, VideoElement, WhiteSpaceElement } from '../../../packages/apphelper-website/src';
+import { BoxElement, ButtonLink, CalendarElement, CardElement, CarouselElement, ElementBlock, FaqElement, HtmlPreview, IframeElement, ImageElement, TextOnly, TextWithPhoto, VideoElement, WhiteSpaceElement } from '../../../packages/apphelper-website/src';
 import UserContext from '../UserContext';
 
 function ComponentPage({ children, title }: { children: React.ReactNode, title: string }) {
@@ -41,6 +41,30 @@ const websiteComponents = [
     description: 'Displays church calendar events (group or curated) with customizable views',
     category: 'Element',
     complexity: 'High'
+  },
+  {
+    name: 'CardElement',
+    description: 'Material-UI card with photo, title, and rich text content',
+    category: 'Element',
+    complexity: 'Medium'
+  },
+  {
+    name: 'CarouselElement',
+    description: 'Carousel/slider component with auto-play, fade/slide animations, and nested elements',
+    category: 'Container',
+    complexity: 'High'
+  },
+  {
+    name: 'ElementBlock',
+    description: 'Container for rendering a group of child elements together',
+    category: 'Container',
+    complexity: 'Low'
+  },
+  {
+    name: 'FaqElement',
+    description: 'Accordion-style FAQ item with expandable content',
+    category: 'Element',
+    complexity: 'Medium'
   },
   {
     name: 'HtmlPreview',
@@ -452,6 +476,237 @@ export default function WebsiteComponentsPage() {
             </Stack>
           );
 
+        case 'FaqElement':
+          return (
+            <Stack spacing={2}>
+              <FaqElement
+                element={{
+                  id: 'faq-1',
+                  elementType: 'faq',
+                  answers: {
+                    title: 'What time are Sunday services?',
+                    description: '<p>Our Sunday services are at <strong>9:00 AM</strong> and <strong>11:00 AM</strong>. We also have a Wednesday evening service at 7:00 PM.</p>',
+                    iconColor: '#03a9f4',
+                    headingType: 'default'
+                  }
+                }}
+                textColor="dark"
+              />
+              <FaqElement
+                element={{
+                  id: 'faq-2',
+                  elementType: 'faq',
+                  answers: {
+                    title: 'Is childcare available?',
+                    description: '<p>Yes! We offer childcare for infants through age 5 during both morning services. Our trained staff provides a safe, nurturing environment.</p><ul><li>Infants (0-12 months)</li><li>Toddlers (1-2 years)</li><li>Preschool (3-5 years)</li></ul>',
+                    iconColor: '#4caf50',
+                    headingType: 'default'
+                  }
+                }}
+                textColor="dark"
+              />
+              <FaqElement
+                element={{
+                  id: 'faq-3',
+                  elementType: 'faq',
+                  answers: {
+                    title: 'Simple Link Style FAQ',
+                    description: '<p>This is an example of an FAQ with a <strong>link-style</strong> heading instead of the default accordion style.</p>',
+                    iconColor: '#ff5722',
+                    headingType: 'link'
+                  }
+                }}
+                textColor="dark"
+              />
+              <Typography variant="caption" color="textSecondary">
+                FAQ elements with expandable content. Click to expand/collapse each section.
+              </Typography>
+            </Stack>
+          );
+
+        case 'CardElement':
+          return (
+            <Stack spacing={2} direction="row" flexWrap="wrap">
+              <Box sx={{ flex: '1 1 300px' }}>
+                <CardElement
+                  element={{
+                    id: 'card-1',
+                    elementType: 'card',
+                    answers: {
+                      photo: 'https://picsum.photos/400/300',
+                      photoAlt: 'Card image',
+                      title: 'Welcome to Our Church',
+                      titleAlignment: 'center',
+                      text: '<p>Join us for worship, fellowship, and community service. Everyone is welcome!</p>',
+                      textAlignment: 'center'
+                    }
+                  }}
+                />
+              </Box>
+              <Box sx={{ flex: '1 1 300px' }}>
+                <CardElement
+                  element={{
+                    id: 'card-2',
+                    elementType: 'card',
+                    answers: {
+                      photo: 'https://picsum.photos/400/301',
+                      photoAlt: 'Card image with link',
+                      title: 'Youth Ministry',
+                      titleAlignment: 'center',
+                      text: '<p>Active youth group meeting every Friday evening. Ages 13-18 welcome. Games, worship, and Bible study.</p>',
+                      textAlignment: 'left',
+                      url: 'https://churchapps.org'
+                    }
+                  }}
+                />
+              </Box>
+              <Box sx={{ flex: '1 1 300px' }}>
+                <CardElement
+                  element={{
+                    id: 'card-3',
+                    elementType: 'card',
+                    answers: {
+                      title: 'Small Groups',
+                      titleAlignment: 'left',
+                      text: '<p><strong>Connect with others</strong> in a small group setting. We have groups meeting throughout the week for all ages and interests.</p><ul><li>Bible Study</li><li>Prayer Groups</li><li>Service Projects</li></ul>',
+                      textAlignment: 'left'
+                    }
+                  }}
+                />
+              </Box>
+              <Typography variant="caption" color="textSecondary" sx={{ width: '100%' }}>
+                Card elements with photos, titles, and text content. Click titles/images to navigate (when URL is set).
+              </Typography>
+            </Stack>
+          );
+
+        case 'CarouselElement':
+          return (
+            <Stack spacing={2}>
+              <Alert severity="info" sx={{ mb: 2 }}>
+                Carousel component requires nested elements structure. This demo shows static rendering without edit mode.
+              </Alert>
+              <CarouselElement
+                element={{
+                  id: 'carousel-1',
+                  elementType: 'carousel',
+                  answers: {
+                    interval: '4',
+                    animationOptions: 'slide',
+                    autoplay: 'true',
+                    height: '300'
+                  },
+                  elements: [
+                    {
+                      id: 'carousel-slide-1',
+                      elementType: 'box',
+                      elements: [
+                        {
+                          id: 'carousel-slide-1-content',
+                          elementType: 'text',
+                          answers: {
+                            text: '<div style="text-align: center; padding: 60px 20px;"><h2>Welcome to Our Church</h2><p>Join us for worship every Sunday at 9 AM and 11 AM</p></div>',
+                            textAlignment: 'center'
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      id: 'carousel-slide-2',
+                      elementType: 'box',
+                      elements: [
+                        {
+                          id: 'carousel-slide-2-content',
+                          elementType: 'text',
+                          answers: {
+                            text: '<div style="text-align: center; padding: 60px 20px; background: #e3f2fd;"><h2>Community Events</h2><p>Check out our upcoming events and activities</p></div>',
+                            textAlignment: 'center'
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      id: 'carousel-slide-3',
+                      elementType: 'box',
+                      elements: [
+                        {
+                          id: 'carousel-slide-3-content',
+                          elementType: 'text',
+                          answers: {
+                            text: '<div style="text-align: center; padding: 60px 20px; background: #f3e5f5;"><h2>Get Connected</h2><p>Find a small group or ministry to join</p></div>',
+                            textAlignment: 'center'
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }}
+                churchSettings={{}}
+                textColor="dark"
+              />
+              <Typography variant="caption" color="textSecondary">
+                Auto-playing carousel with slide animation. Use navigation arrows or dots to control slides manually.
+              </Typography>
+            </Stack>
+          );
+
+        case 'ElementBlock':
+          return (
+            <Stack spacing={2}>
+              <Alert severity="info" sx={{ mb: 2 }}>
+                ElementBlock is a container that renders child elements. This demo shows a block with multiple nested elements.
+              </Alert>
+              <ElementBlock
+                element={{
+                  id: 'block-1',
+                  elementType: 'block',
+                  elements: [
+                    {
+                      id: 'block-1-title',
+                      elementType: 'text',
+                      answers: {
+                        text: '<h3 style="text-align: center; color: #1976d2;">About Our Ministry</h3>',
+                        textAlignment: 'center'
+                      }
+                    },
+                    {
+                      id: 'block-1-image',
+                      elementType: 'image',
+                      answers: {
+                        photo: 'https://picsum.photos/600/300',
+                        photoAlt: 'Ministry image',
+                        imageAlign: 'center'
+                      }
+                    },
+                    {
+                      id: 'block-1-text',
+                      elementType: 'text',
+                      answers: {
+                        text: '<p>We are committed to serving our community through various outreach programs, worship services, and fellowship opportunities. Join us as we grow together in faith.</p>',
+                        textAlignment: 'left'
+                      }
+                    },
+                    {
+                      id: 'block-1-button',
+                      elementType: 'buttonLink',
+                      answers: {
+                        buttonLinkText: 'Learn More',
+                        buttonLinkUrl: 'https://churchapps.org',
+                        buttonLinkVariant: 'contained',
+                        buttonLinkColor: 'primary'
+                      }
+                    }
+                  ]
+                }}
+                churchSettings={{}}
+                textColor="dark"
+              />
+              <Typography variant="caption" color="textSecondary">
+                ElementBlock containing multiple child elements: title, image, text, and button.
+              </Typography>
+            </Stack>
+          );
+
         default:
           return (
             <Alert severity="info">
@@ -535,7 +790,7 @@ export default function WebsiteComponentsPage() {
 
         <Box>
           <Typography variant="h5" gutterBottom>
-            Element Components ({websiteComponents.length} total)
+            Element Components (14 total)
           </Typography>
           <Alert severity="info" sx={{ mb: 2 }}>
             Click "Show Demo" to see live component demonstrations with interactive examples.

@@ -13,6 +13,10 @@ import { WhiteSpaceElement } from "./elementTypes/WhiteSpaceElement";
 import { ApiHelper } from "@churchapps/apphelper";
 import { BoxElement } from "./elementTypes/BoxElement";
 import { DraggableWrapper } from "./admin/DraggableWrapper";
+import { FaqElement } from "./elementTypes/FaqElement";
+import { CardElement } from "./elementTypes/CardElement";
+import { CarouselElement } from "./elementTypes/CarouselElement";
+import { ElementBlock } from "./elementTypes/ElementBlock";
 
 interface Props {
   element: ElementInterface;
@@ -76,6 +80,18 @@ export const Element: React.FC<Props> = props => {
       break;
     case "whiteSpace":
       result = <WhiteSpaceElement key={props.element.id} element={props.element as ElementInterface} onEdit={props.onEdit} />
+      break;
+    case "faq":
+      result = <FaqElement key={props.element.id} element={props.element as ElementInterface} textColor={props.textColor} />
+      break;
+    case "card":
+      result = <CardElement key={props.element.id} element={props.element as ElementInterface} onEdit={props.onEdit} />
+      break;
+    case "carousel":
+      result = <CarouselElement key={props.element.id} element={props.element as ElementInterface} churchSettings={props.churchSettings} textColor={props.textColor} onEdit={props.onEdit} onMove={props.onMove} />
+      break;
+    case "block":
+      result = <ElementBlock key={props.element.id} element={props.element as ElementInterface} churchSettings={props.churchSettings} textColor={props.textColor} />
       break;
   }
 
