@@ -1,3 +1,4 @@
+export * from "./BoxElement";
 export * from "./ButtonLink";
 export * from "./HtmlPreview";
 export * from "./IframeElement";

@@ -12,8 +12,14 @@ export interface ElementInterface {
   elementType?: string;
   sort?: number;
   answers?: any;
+  answersJSON?: string;
   elements?: ElementInterface[];
   styles?: StyleSet;
+  animations?: {
+    onShow?: string;
+    onShowSpeed?: string;
+  };
+  churchId?: string;
 }
 
 export interface SectionInterface {

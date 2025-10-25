@@ -2,7 +2,7 @@ import React from 'react';
 import { Container, Box, Typography, Alert, Stack, Button, Card, CardContent, Chip } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { ErrorBoundary } from '../ErrorBoundary';
-import { ButtonLink, HtmlPreview, IframeElement, ImageElement, TextOnly, TextWithPhoto, VideoElement, WhiteSpaceElement } from '../../../packages/apphelper-website/src';
+import { BoxElement, ButtonLink, HtmlPreview, IframeElement, ImageElement, TextOnly, TextWithPhoto, VideoElement, WhiteSpaceElement } from '../../../packages/apphelper-website/src';
 
 function ComponentPage({ children, title }: { children: React.ReactNode, title: string }) {
   return (
@@ -23,6 +23,12 @@ function ComponentPage({ children, title }: { children: React.ReactNode, title: 
 }
 
 const websiteComponents = [
+  {
+    name: 'BoxElement',
+    description: 'Container element with customizable background, colors, and nested child elements',
+    category: 'Container',
+    complexity: 'High'
+  },
   {
     name: 'ButtonLink',
     description: 'Material-UI button component for creating clickable links with various styles',
@@ -79,6 +85,94 @@ export default function WebsiteComponentsPage() {
   const renderComponent = (component: any) => {
     try {
       switch (component.name) {
+        case 'BoxElement':
+          return (
+            <Stack spacing={2}>
+              <BoxElement
+                element={{
+                  id: 'box-1',
+                  elementType: 'box',
+                  answers: {
+                    background: '#f5f5f5',
+                    textColor: '#333',
+                    rounded: 'true'
+                  },
+                  elements: [
+                    {
+                      id: 'box-1-text',
+                      elementType: 'text',
+                      answers: {
+                        text: '<h3>Box with Gray Background</h3><p>This is a rounded box with a gray background. It can contain nested elements.</p>',
+                        textAlignment: 'left'
+                      }
+                    }
+                  ]
+                }}
+                churchSettings={{}}
+                textColor="#333"
+              />
+              <BoxElement
+                element={{
+                  id: 'box-2',
+                  elementType: 'box',
+                  answers: {
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    textColor: '#ffffff',
+                    rounded: 'true',
+                    translucent: 'false'
+                  },
+                  elements: [
+                    {
+                      id: 'box-2-text',
+                      elementType: 'text',
+                      answers: {
+                        text: '<h3>Box with Gradient Background</h3><p>This box has a purple gradient background with white text.</p>',
+                        textAlignment: 'center'
+                      }
+                    }
+                  ]
+                }}
+                churchSettings={{}}
+                textColor="#ffffff"
+              />
+              <BoxElement
+                element={{
+                  id: 'box-3',
+                  elementType: 'box',
+                  answers: {
+                    background: '#e3f2fd',
+                    textColor: '#1565c0',
+                    rounded: 'true'
+                  },
+                  elements: [
+                    {
+                      id: 'box-3-img',
+                      elementType: 'image',
+                      answers: {
+                        photo: 'https://picsum.photos/400/200',
+                        photoAlt: 'Sample image in box',
+                        imageAlign: 'center'
+                      }
+                    },
+                    {
+                      id: 'box-3-text',
+                      elementType: 'text',
+                      answers: {
+                        text: '<h4>Box with Multiple Elements</h4><p>Boxes can contain any element types, including images, text, videos, and even nested boxes.</p>',
+                        textAlignment: 'left'
+                      }
+                    }
+                  ]
+                }}
+                churchSettings={{}}
+                textColor="#1565c0"
+              />
+              <Typography variant="caption" color="textSecondary">
+                Examples showing different box backgrounds, colors, and nested elements.
+              </Typography>
+            </Stack>
+          );
+
         case 'ButtonLink':
           return (
             <Stack spacing={2}>
