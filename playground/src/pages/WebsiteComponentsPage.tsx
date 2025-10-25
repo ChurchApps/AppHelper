@@ -2,7 +2,8 @@ import React from 'react';
 import { Container, Box, Typography, Alert, Stack, Button, Card, CardContent, Chip } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { ErrorBoundary } from '../ErrorBoundary';
-import { BoxElement, ButtonLink, HtmlPreview, IframeElement, ImageElement, TextOnly, TextWithPhoto, VideoElement, WhiteSpaceElement } from '../../../packages/apphelper-website/src';
+import { BoxElement, ButtonLink, CalendarElement, HtmlPreview, IframeElement, ImageElement, TextOnly, TextWithPhoto, VideoElement, WhiteSpaceElement } from '../../../packages/apphelper-website/src';
+import UserContext from '../UserContext';
 
 function ComponentPage({ children, title }: { children: React.ReactNode, title: string }) {
   return (
@@ -34,6 +35,12 @@ const websiteComponents = [
     description: 'Material-UI button component for creating clickable links with various styles',
     category: 'Element',
     complexity: 'Low'
+  },
+  {
+    name: 'CalendarElement',
+    description: 'Displays church calendar events (group or curated) with customizable views',
+    category: 'Element',
+    complexity: 'High'
   },
   {
     name: 'HtmlPreview',
@@ -81,6 +88,7 @@ const websiteComponents = [
 
 export default function WebsiteComponentsPage() {
   const [selectedComponent, setSelectedComponent] = React.useState<string | null>(null);
+  const context = React.useContext(UserContext);
 
   const renderComponent = (component: any) => {
     try {
@@ -211,6 +219,48 @@ export default function WebsiteComponentsPage() {
                   }
                 }}
               />
+            </Stack>
+          );
+
+        case 'CalendarElement':
+          return (
+            <Stack spacing={2}>
+              {context?.user ? (
+                <Alert severity="info" sx={{ mb: 2 }}>
+                  You are logged in. The calendar is now editable (API calls may fail in demo mode).
+                </Alert>
+              ) : (
+                <Alert severity="info" sx={{ mb: 2 }}>
+                  You are not logged in. The calendar is read-only. <Link to="/login">Log in</Link> to enable editing.
+                </Alert>
+              )}
+              <CalendarElement
+                element={{
+                  id: 'calendar-1',
+                  elementType: 'calendar',
+                  answers: {
+                    calendarType: 'group',
+                    calendarId: 'group-123'
+                  }
+                }}
+                churchId="church-456"
+                canEdit={!!context?.user}
+              />
+              <CalendarElement
+                element={{
+                  id: 'calendar-2',
+                  elementType: 'calendar',
+                  answers: {
+                    calendarType: 'curated',
+                    calendarId: 'curated-789'
+                  }
+                }}
+                churchId="church-456"
+                canEdit={!!context?.user}
+              />
+              <Typography variant="caption" color="textSecondary">
+                Calendar editing is {context?.user ? 'enabled' : 'disabled'} based on login status.
+              </Typography>
             </Stack>
           );
 

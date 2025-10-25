@@ -1,5 +1,6 @@
 export * from "./BoxElement";
 export * from "./ButtonLink";
+export * from "./CalendarElement";
 export * from "./HtmlPreview";
 export * from "./IframeElement";
 export * from "./ImageElement";
