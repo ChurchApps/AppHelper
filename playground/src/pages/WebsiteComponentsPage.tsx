@@ -2,7 +2,7 @@ import React from 'react';
 import { Container, Box, Typography, Alert, Stack, Button, Card, CardContent, Chip } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { ErrorBoundary } from '../ErrorBoundary';
-import { BoxElement, ButtonLink, CalendarElement, CardElement, CarouselElement, ElementBlock, FaqElement, HtmlPreview, IframeElement, ImageElement, LogoElement, MapElement, RawHTMLElement, RowElement, TextOnly, TextWithPhoto, VideoElement, WhiteSpaceElement } from '../../../packages/apphelper-website/src';
+import { BoxElement, ButtonLink, CalendarElement, CardElement, CarouselElement, ElementBlock, FaqElement, HtmlPreview, IframeElement, ImageElement, LogoElement, MapElement, RawHTMLElement, RowElement, SermonElement, StreamElement, TextOnly, TextWithPhoto, VideoElement, WhiteSpaceElement } from '../../../packages/apphelper-website/src';
 import UserContext from '../UserContext';
 
 function ComponentPage({ children, title }: { children: React.ReactNode, title: string }) {
@@ -106,6 +106,18 @@ const websiteComponents = [
     name: 'RowElement',
     description: 'Container for creating multi-column layouts with responsive sizing and drag-drop support',
     category: 'Container',
+    complexity: 'High'
+  },
+  {
+    name: 'SermonElement',
+    description: 'Displays church sermons organized by playlists with video playback and breadcrumb navigation',
+    category: 'Element',
+    complexity: 'High'
+  },
+  {
+    name: 'StreamElement',
+    description: 'Displays live stream video with optional interaction features and offline content',
+    category: 'Element',
     complexity: 'High'
   },
   {
@@ -966,6 +978,81 @@ export default function WebsiteComponentsPage() {
             </Stack>
           );
 
+        case 'SermonElement':
+          return (
+            <Stack spacing={2}>
+              <Alert severity="info" sx={{ mb: 2 }}>
+                SermonElement displays church sermons organized by playlists. In a real app, this would fetch data from the ContentApi. This demo shows the component structure with API calls that will fail gracefully.
+              </Alert>
+              <Alert severity="warning" sx={{ mb: 2 }}>
+                API calls will fail in playground mode as no backend is configured. The component will show a loading state or empty content.
+              </Alert>
+              <SermonElement
+                churchId="demo-church-123"
+                appearance={{
+                  logoLight: '/images/logo.png',
+                  logoDark: '/images/logo.png'
+                }}
+              />
+              <Typography variant="caption" color="textSecondary">
+                In production, this component would display playlists, sermons within each playlist, and allow video playback with breadcrumb navigation.
+              </Typography>
+            </Stack>
+          );
+
+        case 'StreamElement':
+          return (
+            <Stack spacing={2}>
+              <Alert severity="info" sx={{ mb: 2 }}>
+                StreamElement displays live stream content with optional interaction features. This demo uses a simplified stub component.
+              </Alert>
+              <StreamElement
+                element={{
+                  id: 'stream-1',
+                  elementType: 'stream',
+                  answers: {
+                    mode: 'video',
+                    offlineContent: 'hide'
+                  }
+                }}
+                churchSettings={{
+                  logoLight: '/images/logo.png'
+                }}
+                church={{
+                  id: 'demo-church-123',
+                  name: 'Demo Church',
+                  subDomain: 'ironwood'
+                }}
+                editMode={false}
+              />
+              <Typography variant="caption" color="textSecondary" sx={{ mt: 2, display: 'block' }}>
+                Video-only mode (no interaction features)
+              </Typography>
+              <StreamElement
+                element={{
+                  id: 'stream-2',
+                  elementType: 'stream',
+                  answers: {
+                    mode: 'full',
+                    offlineContent: 'block'
+                  }
+                }}
+                churchSettings={{
+                  logoLight: '/images/logo.png'
+                }}
+                church={{
+                  id: 'demo-church-123',
+                  name: 'Demo Church',
+                  subDomain: 'ironwood'
+                }}
+                editMode={false}
+              />
+              <Typography variant="caption" color="textSecondary">
+                Full mode with interaction (when live). Shows offline content block when stream is offline.
+              </Typography>
+            </Stack>
+          );
+
         default:
           return (
             <Alert severity="info">
@@ -1049,7 +1136,7 @@ export default function WebsiteComponentsPage() {
 
         <Box>
           <Typography variant="h5" gutterBottom>
-            Element Components (18 total)
+            Element Components (20 total)
           </Typography>
           <Alert severity="info" sx={{ mb: 2 }}>
             Click "Show Demo" to see live component demonstrations with interactive examples.

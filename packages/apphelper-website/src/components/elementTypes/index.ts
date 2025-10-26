@@ -12,6 +12,8 @@ export * from "./LogoElement";
 export * from "./MapElement";
 export * from "./RawHTMLElement";
 export * from "./RowElement";
+export * from "./SermonElement";
+export * from "./StreamElement";
 export * from "./TextOnly";
 export * from "./TextWithPhoto";
 export * from "./VideoElement";

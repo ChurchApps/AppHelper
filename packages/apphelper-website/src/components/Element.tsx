@@ -21,6 +21,8 @@ import { LogoElement } from "./elementTypes/LogoElement";
 import { MapElement } from "./elementTypes/MapElement";
 import { RawHTMLElement } from "./elementTypes/RawHTMLElement";
 import { RowElement } from "./elementTypes/RowElement";
+import { SermonElement } from "./elementTypes/SermonElement";
+import { StreamElement } from "./elementTypes/StreamElement";
 
 interface Props {
   element: ElementInterface;
@@ -108,6 +110,12 @@ export const Element: React.FC<Props> = props => {
       break;
     case "rawHTML":
       result = <RawHTMLElement key={props.element.id} element={props.element as ElementInterface} onEdit={props.onEdit} />
+      break;
+    case "sermons":
+      result = <SermonElement key={props.element.id} churchId={props.church?.id || ""} appearance={props.churchSettings} />
+      break;
+    case "stream":
+      result = <StreamElement key={props.element.id} element={props.element as ElementInterface} churchSettings={props.churchSettings} church={props.church} editMode={!!props.onEdit} />
       break;
   }
 
