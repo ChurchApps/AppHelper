@@ -11,7 +11,7 @@ interface Props {
   textColor: string;
 }
 
-const Accordion = styled((props: AccordionProps) => (<MuiAccordion disableGutters elevation={0} square {...props} />))(({ theme }) => ({
+const Accordion = styled((props: AccordionProps) => (<MuiAccordion disableGutters elevation={0} square {...props} />))(() => ({
   background: "transparent",
   "&:before": { display: "none" },
 }));
@@ -33,7 +33,7 @@ const SimpleAccordionSummary = styled((props: AccordionSummaryProps) => (<MuiAcc
   "& .MuiAccordionSummary-content.Mui-expanded": { marginLeft: theme.spacing(1) }
 }));
 
-const AccordionDetails = styled(MuiAccordionDetails)(({ theme, color }) => ({
+const AccordionDetails = styled(MuiAccordionDetails)<{ color?: string }>(({ theme, color }) => ({
   marginLeft: theme.spacing(1),
   color: color,
 }));
@@ -44,7 +44,7 @@ export const FaqElement = ({ element, textColor }: Props) => {
   const simple = element?.answers?.headingType==="link";
   return (
     <>
-      <Accordion id={"el-" + element.id} style={(simple) ? {marginTop:0} : null }>
+      <Accordion id={"el-" + element.id} style={(simple) ? {marginTop:0} : undefined }>
         {!simple && <AccordionSummary iconColor={element?.answers?.iconColor || "#03a9f4"}>
           <Typography variant="h6" fontWeight={600} color={textColor === "dark" ? "#444" : "#eee"}>
             {element?.answers?.title}

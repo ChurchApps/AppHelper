@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { GoogleMap, useJsApiLoader, Marker } from "@react-google-maps/api";
 import { ElementInterface } from "../../helpers";
 import { Loading } from "@churchapps/apphelper";
@@ -16,16 +16,18 @@ export const MapElement = ({ element }: Props) => {
   const [center, setCenter] = useState();
 
   useEffect(() => {
-    fetch(
-      `https://maps.googleapis.com/maps/api/geocode/json?address=${element.answers.mapAddress}&key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}`
-    )
-      .then((res) => res.json())
-      .then((data) => setCenter(data?.results?.[0]?.geometry?.location));
-  }, [element.answers.mapAddress]);
+    if (element.answers?.mapAddress) {
+      fetch(
+        `https://maps.googleapis.com/maps/api/geocode/json?address=${element.answers.mapAddress}&key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}`
+      )
+        .then((res) => res.json())
+        .then((data) => setCenter(data?.results?.[0]?.geometry?.location));
+    }
+  }, [element.answers?.mapAddress]);
 
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY,
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY || "",
   });
 
   return (

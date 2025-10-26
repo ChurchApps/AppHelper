@@ -36,7 +36,8 @@ export const SermonElement = ({ churchId, appearance }: Props) => {
     });
   }, [churchId]);
 
-  const getFilteredData = (id: string) => {
+  const getFilteredData = (id?: string) => {
+    if (!id) return;
     const filteredData = sermons.filter((item) => item.playlistId === id);
     setActiveSermons(filteredData);
   };
@@ -158,7 +159,7 @@ export const SermonElement = ({ churchId, appearance }: Props) => {
             ))}
           </Grid>
         )}
-        {isActive === "video" && activeVideo && (
+        {isActive === "video" && activeVideo && activeVideo.videoUrl && (
           <div className="videoWrapper">
             <iframe
               src={activeVideo.videoUrl.replace("controls=0", "controls=1")}

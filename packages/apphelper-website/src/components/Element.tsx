@@ -23,6 +23,10 @@ import { RawHTMLElement } from "./elementTypes/RawHTMLElement";
 import { RowElement } from "./elementTypes/RowElement";
 import { SermonElement } from "./elementTypes/SermonElement";
 import { StreamElement } from "./elementTypes/StreamElement";
+import { DonateLinkElement } from "./elementTypes/DonateLinkElement";
+import { FormElement } from "./elementTypes/FormElement";
+import { GroupListElement } from "./elementTypes/GroupListElement";
+import { TableElement } from "./elementTypes/TableElement";
 
 interface Props {
   element: ElementInterface;
@@ -115,7 +119,23 @@ export const Element: React.FC<Props> = props => {
       result = <SermonElement key={props.element.id} churchId={props.church?.id || ""} appearance={props.churchSettings} />
       break;
     case "stream":
-      result = <StreamElement key={props.element.id} element={props.element as ElementInterface} churchSettings={props.churchSettings} church={props.church} editMode={!!props.onEdit} />
+      if (props.church) {
+        result = <StreamElement key={props.element.id} element={props.element as ElementInterface} churchSettings={props.churchSettings} church={props.church} editMode={!!props.onEdit} />
+      }
+      break;
+    case "donate":
+      result = <DonateLinkElement key={props.element.id} element={props.element as ElementInterface} />
+      break;
+    case "form":
+      if (props.church) {
+        result = <FormElement key={props.element.id} element={props.element as ElementInterface} church={props.church} />
+      }
+      break;
+    case "groupList":
+      result = <GroupListElement key={props.element.id} churchId={props.church?.id || ""} element={props.element as ElementInterface} />
+      break;
+    case "table":
+      result = <TableElement key={props.element.id} element={props.element as ElementInterface} />
       break;
   }
 

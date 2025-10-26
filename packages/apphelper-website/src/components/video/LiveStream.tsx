@@ -13,7 +13,6 @@ interface Props {
 }
 
 export const LiveStream: React.FC<Props> = (props) => {
-  const [config, setConfig] = React.useState<StreamConfigInterface | null>(null);
   const [currentService, setCurrentService] = React.useState<StreamingServiceExtendedInterface | null>(null);
 
   const loadData = async (keyName: string) => {
@@ -24,7 +23,6 @@ export const LiveStream: React.FC<Props> = (props) => {
       StreamingServiceHelper.updateServiceTimes(result);
       result.keyName = keyName;
       StreamingServiceHelper.currentConfig = result;
-      setConfig(result);
     } catch (error) {
       console.error("Failed to load streaming data:", error);
     }

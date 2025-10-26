@@ -64,8 +64,8 @@ export function EventCalendar(props: Props) {
   props.events.forEach((event) => {
     if (!event.start || !event.end) return;
     const ev = { ...event };
-    ev.start = new Date(ev.start);
-    ev.end = new Date(ev.end);
+    ev.start = new Date(event.start);
+    ev.end = new Date(event.end);
     if (event.recurrenceRule) {
       const dates = EventHelper.getRange(event, startRange, endRange);
       dates.forEach((date) => {

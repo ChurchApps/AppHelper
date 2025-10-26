@@ -1,4 +1,4 @@
-import type { SermonInterface, StreamingServiceInterface } from "@churchapps/helpers";
+import type { SermonInterface } from "@churchapps/helpers";
 
 export interface StreamingButtonInterface {
   text: string;

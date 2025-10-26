@@ -13,6 +13,7 @@ interface Props {
 export function DisplayCalendarEventModal(props: Props) {
   const getDisplayTime = () => {
     let result = "";
+    if (!props.event.start || !props.event.end) return result;
     if (props.event.allDay) {
       const prettyStartDate = DateHelper.prettyDate(props.event.start);
       const prettyEndDate = DateHelper.prettyDate(props.event.end);
@@ -33,7 +34,7 @@ export function DisplayCalendarEventModal(props: Props) {
   const handleDelete = () => {
     if (confirm("Are you sure you wish to delete this event?")) {
       ApiHelper.delete("/curatedEvents/calendar/" + props.curatedCalendarId + "/event/" + props.event.id, "ContentApi").then(() => {
-        props.onDone();
+        if (props.onDone) props.onDone();
       })
     }
   }

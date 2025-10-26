@@ -41,7 +41,7 @@ export function EditCalendarEventModal(props: Props) {
     setAddType("group");
     setGroupEvents([]);
     setEventIdsList([]);
-    props.onDone();
+    if (props.onDone) props.onDone();
   };
 
   const handleSave = () => {
@@ -54,7 +54,7 @@ export function EditCalendarEventModal(props: Props) {
   };
 
   const handleEventsListChange = (slotInfo: EventInterface) => {
-    const selectedEvent = slotInfo.id;
+    const selectedEvent = slotInfo.id || "";
     const selectedIndex = eventIdsList.indexOf(selectedEvent);
     const list = [...eventIdsList];
 
@@ -88,8 +88,8 @@ export function EditCalendarEventModal(props: Props) {
   groupEvents.forEach((event) => {
     if (!event.start || !event.end) return;
     const ev = { ...event };
-    ev.start = new Date(ev.start);
-    ev.end = new Date(ev.end);
+    ev.start = new Date(event.start);
+    ev.end = new Date(event.end);
     if (ev.recurrenceRule) {
       const dates = EventHelper.getRange(ev, startRange, endRange);
       dates.forEach((date) => {

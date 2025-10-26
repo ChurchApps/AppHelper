@@ -19,7 +19,7 @@ export const ElementBlock: React.FC<Props> = (props) => {
   }
 
   let result = <>
-    {getChildren(props.element.elements)}
+    {props.element.elements && getChildren(props.element.elements)}
   </>;
   return result;
 };

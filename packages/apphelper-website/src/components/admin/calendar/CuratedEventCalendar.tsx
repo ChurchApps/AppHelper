@@ -78,8 +78,8 @@ export function CuratedEventCalendar(props: Props) {
   props.events.forEach((event) => {
     if (!event.start || !event.end) return;
     const ev = { ...event };
-    ev.start = new Date(ev.start);
-    ev.end = new Date(ev.end);
+    ev.start = new Date(event.start);
+    ev.end = new Date(event.end);
     if (ev.recurrenceRule) {
       const dates = EventHelper.getRange(ev, startRange, endRange);
       dates.forEach((date) => {
@@ -113,7 +113,7 @@ export function CuratedEventCalendar(props: Props) {
         {props.mode === "edit" && <Button endIcon={<EventNoteIcon />} size="small" variant="contained" onClick={() => { setOpen(true); }} data-testid="calendar-add-event-button">Add</Button>}
       </Stack>
       <Calendar localizer={localizer} events={expandedEvents} startAccessor="start" endAccessor="end" style={{ height: 500 }} onSelectEvent={handleEventClick} />
-      {open && props.mode === "edit" && <EditCalendarEventModal onDone={handleDone} churchId={props.churchId} curatedCalendarId={props.curatedCalendarId} />}
+      {open && props.mode === "edit" && <EditCalendarEventModal onDone={handleDone} churchId={props.churchId || ""} curatedCalendarId={props.curatedCalendarId || ""} />}
       {displayCalendarEvent && <DisplayCalendarEventModal event={displayCalendarEvent} curatedCalendarId={props.curatedCalendarId} mode={props.mode} onDone={handleDone} />}
       <Snackbar open={ShowCopy} onClose={() => setShowCopy(false)} autoHideDuration={2000} message={"Copied to clipboard!"} anchorOrigin={{ vertical: "bottom", horizontal: "center" }} ContentProps={{ sx: { background: "green" } }} />
     </div>

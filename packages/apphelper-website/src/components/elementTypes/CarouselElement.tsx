@@ -8,7 +8,7 @@ interface Props {
   element: ElementInterface;
   churchSettings: any;
   textColor: string;
-  onEdit?: (section: SectionInterface, element: ElementInterface) => void;
+  onEdit?: (section: SectionInterface | null, element: ElementInterface) => void;
   onMove?: () => void;
 }
 
@@ -35,10 +35,10 @@ export const CarouselElement = ({ element, churchSettings, textColor, onEdit, on
       const e: ElementInterface = data.data;
       e.sort = sort;
       e.parentId = column.id;
-      ApiHelper.post("/elements", [e], "ContentApi").then(() => { onMove() });
+      ApiHelper.post("/elements", [e], "ContentApi").then(() => { if (onMove) onMove() });
     } else {
       const e: ElementInterface = { sectionId: element.sectionId, elementType: data.elementType, sort, parentId: column.id, blockId: element.blockId };
-      onEdit(null, e);
+      if (onEdit) onEdit(null, e);
     }
   }
 
@@ -86,7 +86,7 @@ export const CarouselElement = ({ element, churchSettings, textColor, onEdit, on
 
   const getFadeSlides = () => (
     <div style={{ position: "relative", width: "100%", height: "100%" }}>
-      {element.elements?.map((c, idx) => (
+      {element.elements && element.elements.map((c, idx) => (
         <div
           key={c.id}
           style={{
@@ -100,7 +100,7 @@ export const CarouselElement = ({ element, churchSettings, textColor, onEdit, on
             zIndex: idx === current ? 1 : 0,
           }}
         >
-          <div style={{ height: "100%" }}>{getElements(c, c.elements)}</div>
+          <div style={{ height: "100%" }}>{getElements(c, c.elements || [])}</div>
         </div>
       ))}
     </div>
@@ -116,9 +116,9 @@ export const CarouselElement = ({ element, churchSettings, textColor, onEdit, on
         // width: `${length * 100}%`,
       }}
     >
-      {element.elements?.map((c, idx) => (
+      {element.elements && element.elements.map((c) => (
         <div key={c.id} style={{ flex: "0 0 100%", height: "100%" }}>
-          <div style={{ height: "100%" }}>{getElements(c, c.elements)}</div>
+          <div style={{ height: "100%" }}>{getElements(c, c.elements || [])}</div>
         </div>
       ))}
     </div>
@@ -165,7 +165,7 @@ export const CarouselElement = ({ element, churchSettings, textColor, onEdit, on
           zIndex: 2,
         }}
       >
-        {element.elements?.map((_, idx) => (
+        {element.elements && element.elements.map((_, idx) => (
           <button
             key={idx}
             onClick={() => goTo(idx)}

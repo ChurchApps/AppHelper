@@ -2,7 +2,7 @@ import React from 'react';
 import { Container, Box, Typography, Alert, Stack, Button, Card, CardContent, Chip } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { ErrorBoundary } from '../ErrorBoundary';
-import { BoxElement, ButtonLink, CalendarElement, CardElement, CarouselElement, ElementBlock, FaqElement, HtmlPreview, IframeElement, ImageElement, LogoElement, MapElement, RawHTMLElement, RowElement, SermonElement, StreamElement, TextOnly, TextWithPhoto, VideoElement, WhiteSpaceElement } from '../../../packages/apphelper-website/src';
+import { BoxElement, ButtonLink, CalendarElement, CardElement, CarouselElement, DonateLinkElement, ElementBlock, FaqElement, GroupListElement, HtmlPreview, IframeElement, ImageElement, LogoElement, MapElement, RawHTMLElement, RowElement, SermonElement, StreamElement, TableElement, TextOnly, TextWithPhoto, VideoElement, WhiteSpaceElement } from '../../../packages/apphelper-website/src';
 import UserContext from '../UserContext';
 
 function ComponentPage({ children, title }: { children: React.ReactNode, title: string }) {
@@ -55,6 +55,12 @@ const websiteComponents = [
     complexity: 'High'
   },
   {
+    name: 'DonateLinkElement',
+    description: 'Displays donation buttons with preset amounts and custom donation links',
+    category: 'Element',
+    complexity: 'Low'
+  },
+  {
     name: 'ElementBlock',
     description: 'Container for rendering a group of child elements together',
     category: 'Container',
@@ -63,6 +69,18 @@ const websiteComponents = [
   {
     name: 'FaqElement',
     description: 'Accordion-style FAQ item with expandable content',
+    category: 'Element',
+    complexity: 'Medium'
+  },
+  {
+    name: 'FormElement',
+    description: 'Displays and handles form submissions with validation and thank-you messages',
+    category: 'Element',
+    complexity: 'High'
+  },
+  {
+    name: 'GroupListElement',
+    description: 'Displays a list of church groups with photos, meeting info, and descriptions',
     category: 'Element',
     complexity: 'Medium'
   },
@@ -119,6 +137,12 @@ const websiteComponents = [
     description: 'Displays live stream video with optional interaction features and offline content',
     category: 'Element',
     complexity: 'High'
+  },
+  {
+    name: 'TableElement',
+    description: 'Displays tabular data with customizable headers and optional markdown rendering',
+    category: 'Element',
+    complexity: 'Medium'
   },
   {
     name: 'TextOnly',
@@ -1049,6 +1073,112 @@ export default function WebsiteComponentsPage() {
               />
               <Typography variant="caption" color="textSecondary">
                 Full mode with interaction (when live). Shows offline content block when stream is offline.
+              </Typography>
+            </Stack>
+          );
+
+        case 'DonateLinkElement':
+          return (
+            <Stack spacing={2}>
+              <Alert severity="info" sx={{ mb: 2 }}>
+                DonateLinkElement displays donation buttons with preset amounts.
+              </Alert>
+              <DonateLinkElement
+                element={{
+                  id: 'donate-1',
+                  elementType: 'donate',
+                  answers: {
+                    text: 'Support Our Mission',
+                    amounts: '[25, 50, 100, 250]',
+                    url: 'https://donate.example.com',
+                    fundId: 'general-fund-123'
+                  }
+                }}
+              />
+              <Typography variant="caption" color="textSecondary">
+                Preset donation amounts with custom fund targeting.
+              </Typography>
+            </Stack>
+          );
+
+        case 'FormElement':
+          return (
+            <Stack spacing={2}>
+              <Alert severity="warning" sx={{ mb: 2 }}>
+                FormElement requires form data from the API. This demo shows a loading state as no actual form is configured.
+              </Alert>
+              <Typography variant="caption" color="textSecondary">
+                In production, this component displays customizable forms with validation, field types, and submission handling.
+              </Typography>
+            </Stack>
+          );
+
+        case 'GroupListElement':
+          return (
+            <Stack spacing={2}>
+              <Alert severity="warning" sx={{ mb: 2 }}>
+                GroupListElement displays church groups from the API. This demo may show "No groups found" if the API is unavailable.
+              </Alert>
+              <GroupListElement
+                churchId="demo-church-123"
+                element={{
+                  id: 'groups-1',
+                  elementType: 'groupList',
+                  answers: {
+                    label: 'Small Groups'
+                  }
+                }}
+              />
+              <Typography variant="caption" color="textSecondary">
+                Displays groups filtered by label with photos, meeting times, and descriptions.
+              </Typography>
+            </Stack>
+          );
+
+        case 'TableElement':
+          return (
+            <Stack spacing={2}>
+              <Alert severity="info" sx={{ mb: 2 }}>
+                TableElement displays tabular data with optional headers and markdown support.
+              </Alert>
+              <TableElement
+                element={{
+                  id: 'table-1',
+                  elementType: 'table',
+                  answers: {
+                    head: true,
+                    size: 'small',
+                    markdown: false,
+                    contents: [
+                      ['Name', 'Role', 'Email'],
+                      ['John Doe', 'Pastor', 'john@church.org'],
+                      ['Jane Smith', 'Worship Leader', 'jane@church.org'],
+                      ['Bob Johnson', 'Youth Pastor', 'bob@church.org']
+                    ]
+                  }
+                }}
+              />
+              <Typography variant="caption" color="textSecondary" sx={{ mt: 2, display: 'block' }}>
+                Table with header row
+              </Typography>
+              <TableElement
+                element={{
+                  id: 'table-2',
+                  elementType: 'table',
+                  answers: {
+                    head: false,
+                    size: 'medium',
+                    markdown: true,
+                    contents: [
+                      ['<strong>Sunday Service</strong>', '9:00 AM & 11:00 AM'],
+                      ['<strong>Wednesday Prayer</strong>', '7:00 PM'],
+                      ['<strong>Friday Youth</strong>', '6:30 PM']
+                    ]
+                  }
+                }}
+              />
+              <Typography variant="caption" color="textSecondary">
+                Table with markdown content (no header)
               </Typography>
             </Stack>
           );

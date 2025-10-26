@@ -4,7 +4,7 @@ import { HtmlPreview } from "./HtmlPreview";
 import { Card, CardContent } from "@mui/material";
 
 
-interface Props { element: ElementInterface; onEdit?: (section: SectionInterface, element: ElementInterface) => void; }
+interface Props { element: ElementInterface; onEdit?: (section: SectionInterface | null, element: ElementInterface) => void; }
 
 export const CardElement: React.FC<Props> = (props) => {
   const textContent = props.element.answers?.text || "";
