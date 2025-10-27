@@ -8,8 +8,12 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "clean": "rimraf dist",
     "tsc": "tsc",
-    "build": "npm-run-all clean tsc"
+    "copy-styles": "node -e \"const fs=require('fs');const path=require('path');const src='src/styles';const dest='dist/styles';if(!fs.existsSync(dest)){fs.mkdirSync(dest,{recursive:true});}fs.readdirSync(src).forEach(file=>fs.copyFileSync(path.join(src,file),path.join(dest,file)));\"",
+    "build": "npm-run-all clean tsc copy-styles"
   },
+  "files": [
+    "dist"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/LiveChurchSolutions/AppHelper.git"

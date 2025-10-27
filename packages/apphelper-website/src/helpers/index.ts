@@ -34,3 +34,4 @@ export * from "./StyleHelper";
 export * from "./EnvironmentHelper";
 export * from "./interfaces";
 export * from "./StreamingServiceHelper";
+export * from "./AnimationHelper";
