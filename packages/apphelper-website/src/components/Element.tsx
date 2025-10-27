@@ -53,6 +53,7 @@ export const Element: React.FC<Props> = props => {
     else { // New element dropped
       const newElement: ElementInterface = { sectionId: props.element.sectionId, elementType: data.elementType, sort, blockId: props.element.blockId, parentId: props.parentId };
       if (data.blockId) newElement.answersJSON = JSON.stringify({ targetBlockId: data.blockId });
+      else if (data.elementType === "row") newElement.answersJSON = JSON.stringify({ columns: "6,6" });
       if (props.onEdit) props.onEdit(null, newElement);
     }
   }
