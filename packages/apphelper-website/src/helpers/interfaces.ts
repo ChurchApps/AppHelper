@@ -48,3 +48,12 @@ export interface StreamConfigInterface {
   switchToConversationId?: string;
   jitsiRoom?: string;
 }
+
+export interface GlobalStyleInterface {
+  id?: string;
+  churchId?: string;
+  fonts?: string;
+  palette?: any;
+  customCss?: string;
+  customJS?: string;
+}
