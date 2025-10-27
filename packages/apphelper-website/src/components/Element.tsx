@@ -27,6 +27,8 @@ import { DonateLinkElement } from "./elementTypes/DonateLinkElement";
 import { FormElement } from "./elementTypes/FormElement";
 import { GroupListElement } from "./elementTypes/GroupListElement";
 import { TableElement } from "./elementTypes/TableElement";
+import { CalendarElement } from "./elementTypes/CalendarElement";
+import { NonAuthDonationWrapper } from "./donate/NonAuthDonationWrapper";
 
 interface Props {
   element: ElementInterface;
@@ -123,7 +125,10 @@ export const Element: React.FC<Props> = props => {
         result = <StreamElement key={props.element.id} element={props.element as ElementInterface} churchSettings={props.churchSettings} church={props.church} editMode={!!props.onEdit} />
       }
       break;
-    case "donate":
+    case "donation":
+      result = <NonAuthDonationWrapper key={props.element.id} churchId={props.church?.id ?? props.element.churchId} mainContainerCssProps={{ sx: { boxShadow: "none", padding: 3 } }} showHeader={false} />
+      break;
+    case "donateLink":
       result = <DonateLinkElement key={props.element.id} element={props.element as ElementInterface} />
       break;
     case "form":
@@ -136,6 +141,9 @@ export const Element: React.FC<Props> = props => {
       break;
     case "table":
       result = <TableElement key={props.element.id} element={props.element as ElementInterface} />
+      break;
+    case "calendar":
+      result = <CalendarElement key={props.element.id} element={props.element as ElementInterface} churchId={props.church?.id || props.element.churchId || ""} />
       break;
   }
 

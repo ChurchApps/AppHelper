@@ -94,7 +94,7 @@ export const SermonElement = ({ churchId, appearance }: Props) => {
       <div style={{ marginTop: 15 }}>
         {isActive === "playlists" && (
           <Grid container spacing={3} style={{ paddingBottom: 20, paddingTop: 20 }}>
-            {playlists.map((item) => (
+            {playlists && Array.isArray(playlists) && playlists.map((item) => (
               <Grid size={{ md: 4, xs: 12, sm: 6 }} key={item.id}>
                 <Card
                   key={item.id}
@@ -128,7 +128,7 @@ export const SermonElement = ({ churchId, appearance }: Props) => {
         )}
         {isActive === "sermons" && activeSermons && (
           <Grid container spacing={3} style={{ paddingBottom: 20, paddingTop: 20 }}>
-            {activeSermons.map((item) => (
+            {activeSermons && Array.isArray(activeSermons) && activeSermons.map((item) => (
               <Grid size={{ md: 4, xs: 12 }} key={item.id}>
                 <Card
                   key={item.id}
