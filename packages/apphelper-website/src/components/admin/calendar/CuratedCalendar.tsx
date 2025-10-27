@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import { ApiHelper } from "@churchapps/apphelper";
 import type { CuratedEventWithEventInterface } from "@churchapps/helpers";

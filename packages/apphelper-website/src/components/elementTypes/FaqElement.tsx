@@ -1,3 +1,5 @@
+"use client";
+
 import { Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import MuiAccordionSummary, { AccordionSummaryProps } from "@mui/material/AccordionSummary";
@@ -17,7 +19,10 @@ const Accordion = styled((props: AccordionProps) => (<MuiAccordion disableGutter
 }));
 
 
-const AccordionSummary = styled((props: AccordionSummaryProps & { iconColor: string }) => (<MuiAccordionSummary expandIcon={<DoubleArrowIcon sx={{ color: props.iconColor }} />} {...props} />))(({ theme }) => ({
+const AccordionSummary = styled((props: AccordionSummaryProps & { iconColor: string }) => {
+  const { iconColor, ...accordionProps } = props;
+  return <MuiAccordionSummary expandIcon={<DoubleArrowIcon sx={{ color: iconColor }} />} {...accordionProps} />;
+})(({ theme }) => ({
   flexDirection: "row-reverse",
   backgroundColor: "transparent",
   marginTop: 10,

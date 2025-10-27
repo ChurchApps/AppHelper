@@ -1,3 +1,5 @@
+"use client";
+
 import { MarkdownPreviewLight } from "@churchapps/apphelper-markdown";
 import type { GroupInterface } from "@churchapps/helpers";
 import { useState } from "react";

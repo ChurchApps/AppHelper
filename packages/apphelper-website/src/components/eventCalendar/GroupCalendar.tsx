@@ -1,3 +1,5 @@
+"use client";
+
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { ApiHelper } from "@churchapps/apphelper";
 import type { EventInterface } from "@churchapps/helpers";

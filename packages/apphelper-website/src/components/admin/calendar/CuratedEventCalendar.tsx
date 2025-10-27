@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import moment from "moment";

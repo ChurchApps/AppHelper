@@ -1,3 +1,5 @@
+"use client";
+
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, Radio, RadioGroup } from "@mui/material";
 import { useState } from "react";

@@ -1,3 +1,5 @@
+"use client";
+
 import { Dialog, DialogContent, DialogActions, Typography, Box, Button } from "@mui/material";
 import { DateHelper, ApiHelper } from "@churchapps/apphelper";
 import { MarkdownPreviewLight } from "@churchapps/apphelper-markdown";

@@ -1,3 +1,5 @@
+"use client";
+
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { Button, ButtonGroup, FormControl, Grid, InputLabel, MenuItem, Select, SelectChangeEvent, TextField } from "@mui/material";
