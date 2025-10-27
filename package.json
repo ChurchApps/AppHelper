@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "build": "npm run build --workspaces",
+    "build:packages": "npm run build --workspaces --workspace=packages/apphelper --workspace=packages/donations --workspace=packages/apphelper-forms --workspace=packages/login --workspace=packages/apphelper-markdown --workspace=packages/apphelper-website",
     "clean": "npm run clean --workspaces",
     "test": "npm run test --workspaces",
     "build:apphelper": "npm run build --workspace=packages/apphelper",
@@ -16,16 +17,18 @@
     "build:forms": "npm run build --workspace=packages/apphelper-forms",
     "build:login": "npm run build --workspace=packages/login",
     "build:markdown": "npm run build --workspace=packages/apphelper-markdown",
+    "build:website": "npm run build --workspace=packages/apphelper-website",
     "playground": "npm run dev --workspace=playground",
     "playground:apphelper": "npm run build:apphelper && npm run dev --workspace=playground",
-    "playground:reload": "npm run build && npm run dev --workspace=playground",
+    "playground:reload": "npm run build:packages && npm run dev --workspace=playground",
     "test:login": "npm run build:apphelper && npm run build:login && npm run dev --workspace=playground",
-    "publish:all": "npm run build && npm publish --workspace=packages/apphelper --access=public && npm publish --workspace=packages/login --access=public && npm publish --workspace=packages/donations --access=public && npm publish --workspace=packages/apphelper-markdown --access=public && npm publish --workspace=packages/apphelper-forms --access=public",
+    "publish:all": "npm run build && npm publish --workspace=packages/apphelper --access=public && npm publish --workspace=packages/login --access=public && npm publish --workspace=packages/donations --access=public && npm publish --workspace=packages/apphelper-markdown --access=public && npm publish --workspace=packages/apphelper-forms --access=public && npm publish --workspace=packages/apphelper-website --access=public",
     "publish:apphelper": "npm run build:apphelper && npm publish --workspace=packages/apphelper --access=public",
     "publish:donations": "npm run build:donations && npm publish --workspace=packages/donations --access=public",
     "publish:forms": "npm run build:forms && npm publish --workspace=packages/apphelper-forms --access=public",
     "publish:login": "npm run build:login && npm publish --workspace=packages/login --access=public",
-    "publish:markdown": "npm run build:markdown && npm publish --workspace=packages/apphelper-markdown --access=public"
+    "publish:markdown": "npm run build:markdown && npm publish --workspace=packages/apphelper-markdown --access=public",
+    "publish:website": "npm run build:website && npm publish --workspace=packages/apphelper-website --access=public"
   },
   "devDependencies": {
     "copyfiles": "^2.4.1",

@@ -28,6 +28,7 @@ import LoginComponentsPage from './pages/LoginComponentsPage';
 import FormsComponentsPage from './pages/FormsComponentsPage';
 import MarkdownComponentsPage from './pages/MarkdownComponentsPage';
 import { HtmlComponentsPage } from './pages/HtmlComponentsPage';
+import WebsiteComponentsPage from './pages/WebsiteComponentsPage';
 import ModernLayoutPage from './pages/ModernLayoutPage';
 import PrivateMessageTestPage from './pages/PrivateMessageTestPage';
 import WebSocketTestPage from './pages/WebSocketTestPage';
@@ -185,6 +186,20 @@ function HomePage() {
               </CardContent>
             </Card>
           </Grid>
+
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Card sx={{ height: '100%' }}>
+              <CardContent>
+                <Typography variant="h6" color="primary">@churchapps/apphelper-website</Typography>
+                <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+                  Website element components for building dynamic church websites
+                </Typography>
+                <Stack spacing={1}>
+                  <Link to="/website-components">Website Components</Link>
+                </Stack>
+              </CardContent>
+            </Card>
+          </Grid>
         </Grid>
         
       </Box>
@@ -321,6 +336,7 @@ function AppContent() {
     { url: '/forms-components', icon: 'assignment', label: 'Forms' },
     { url: '/donations', icon: 'attach_money', label: 'Donations' },
     { url: '/markdown-components', icon: 'edit_note', label: 'Markdown' },
+    { url: '/website-components', icon: 'language', label: 'Website' },
     { url: '/apphelper-reporting', icon: 'analytics', label: 'Reporting' }
   ];
 
@@ -408,6 +424,7 @@ function AppContent() {
         <Route path="/forms-components" element={<FormsComponentsPage />} />
         <Route path="/markdown-components" element={<MarkdownComponentsPage />} />
         <Route path="/html-components" element={<HtmlComponentsPage />} />
+        <Route path="/website-components" element={<WebsiteComponentsPage />} />
         
         {/* Modern Layout demo combining SiteHeader + PageHeader */}
         <Route path="/modern-layout" element={<ModernLayoutPage />} />
