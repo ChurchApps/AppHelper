@@ -67,7 +67,7 @@ export const Element: React.FC<Props> = props => {
     if (props.element.animations?.onShow) return "animated " + props.element.animations.onShow + " " + props.element.animations.onShowSpeed;
   }
 
-  let result = <div style={{ minHeight: 100 }}>Unknown type: {props.element.elementType}</div>
+  let result = <></>
 
   switch (props.element.elementType) {
     case "text":
@@ -145,6 +145,9 @@ export const Element: React.FC<Props> = props => {
       break;
     case "calendar":
       result = <CalendarElement key={props.element.id} element={props.element as ElementInterface} churchId={props.church?.id || props.element.churchId || ""} />
+      break;
+    default:
+      console.log("Unknown element type:", props.element.elementType);
       break;
   }
 
