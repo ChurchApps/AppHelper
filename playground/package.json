@@ -15,7 +15,7 @@
     "@churchapps/apphelper-login": "*",
     "@churchapps/apphelper-markdown": "*",
     "@churchapps/apphelper-website": "*",
-    "@churchapps/helpers": "^1.2.3",
+    "@churchapps/helpers": "^1.2.4",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@lexical/code": "^0.33.1",
