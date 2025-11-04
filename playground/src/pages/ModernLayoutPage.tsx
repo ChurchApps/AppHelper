@@ -249,7 +249,7 @@ export default function ModernLayoutPage() {
 								<Alert severity="success" sx={{ mb: 2 }}>
 									<strong>Features Demonstrated:</strong>
 									<br />• Dynamic section switching with contextual PageHeader content
-									<br />• SiteHeader with ChumsApp's darker blue color scheme (#1565C0)
+									<br />• SiteHeader with B1Admin's darker blue color scheme (#1565C0)
 									<br />• Selected state badge in secondary menu (darker blue #114A99)
 									<br />• Responsive behavior: secondary menu hidden on mobile, shown in dropdown
 									<br />• PageHeader with statistics, actions, and theming

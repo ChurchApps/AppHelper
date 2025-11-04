@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Box, Typography, Alert, Stack, Button, Card, CardContent, Chip } from '@mui/material';
+import { Container, Box, Typography, Alert, Stack, Button, Card, CardContent } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { ErrorBoundary } from '../ErrorBoundary';
 
@@ -24,38 +24,23 @@ function ComponentPage({ children, title }: { children: React.ReactNode, title: 
 const loginComponents = [
   {
     name: 'LoginPage',
-    description: 'Complete login page with integrated authentication flow',
-    usage: ['B1App: 1 file', 'ChumsApp: 1 file', 'LessonsApp: yes'],
-    category: 'Page',
-    complexity: 'High'
+    description: 'Complete login page with integrated authentication flow'
   },
   {
     name: 'LogoutPage',
-    description: 'Logout page with cleanup and redirect functionality',
-    usage: ['B1App: 2 files', 'ChumsApp: 1 file', 'LessonsApp: yes'],
-    category: 'Page',
-    complexity: 'Low'
+    description: 'Logout page with cleanup and redirect functionality'
   },
   {
     name: 'Login',
-    description: 'Basic login form component',
-    usage: ['B1App: 14 files', 'ChumsApp: 3 files', 'LessonsApp: none'],
-    category: 'Form',
-    complexity: 'Medium'
+    description: 'Basic login form component'
   },
   {
     name: 'Register',
-    description: 'User registration form component',
-    usage: ['B1App: none', 'ChumsApp: none', 'LessonsApp: yes'],
-    category: 'Form',
-    complexity: 'Medium'
+    description: 'User registration form component'
   },
   {
     name: 'Forgot',
-    description: 'Forgot password form component',
-    usage: ['B1App: none', 'ChumsApp: none', 'LessonsApp: none'],
-    category: 'Form',
-    complexity: 'Low'
+    description: 'Forgot password form component'
   }
 ];
 
@@ -81,40 +66,18 @@ export default function LoginComponentsPage() {
           <Typography variant="h6" component="h3">
             {component.name}
           </Typography>
-          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-            <Chip label={component.category} color="primary" variant="outlined" size="small" />
-            <Chip 
-              label={component.complexity} 
-              color={component.complexity === 'High' ? 'error' : component.complexity === 'Medium' ? 'warning' : 'success'} 
-              variant="outlined" 
-              size="small" 
-            />
-            <Button
-              variant={selectedComponent === component.name ? 'contained' : 'outlined'}
-              size="small"
-              onClick={() => setSelectedComponent(selectedComponent === component.name ? null : component.name)}
-            >
-              {selectedComponent === component.name ? 'Hide' : 'Show'} Demo
-            </Button>
-          </Box>
+          <Button
+            variant={selectedComponent === component.name ? 'contained' : 'outlined'}
+            size="small"
+            onClick={() => setSelectedComponent(selectedComponent === component.name ? null : component.name)}
+          >
+            {selectedComponent === component.name ? 'Hide' : 'Show'} Demo
+          </Button>
         </Box>
         
         <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
           {component.description}
         </Typography>
-        
-        <Typography variant="subtitle2" gutterBottom>Usage Across Apps:</Typography>
-        <Stack direction="row" spacing={1} sx={{ mb: 2, flexWrap: 'wrap', gap: 0.5 }}>
-          {component.usage.map((usage: string, index: number) => (
-            <Chip 
-              key={index} 
-              label={usage} 
-              size="small" 
-              color={usage.includes('none') ? 'error' : 'success'}
-              variant="outlined"
-            />
-          ))}
-        </Stack>
 
         {selectedComponent === component.name && (
           <Box sx={{ 
@@ -153,21 +116,6 @@ export default function LoginComponentsPage() {
           {loginComponents.map(component => renderComponentCard(component))}
         </Box>
 
-        <Box>
-          <Typography variant="h5" gutterBottom>Usage Analysis</Typography>
-          <Stack spacing={2}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>Adoption Patterns</Typography>
-                <Typography variant="body2">
-                  Universal Components: LoginPage and LogoutPage used by all 3 applications.
-                  Login component has heavy usage in B1App (14 files) and moderate in ChumsApp (3 files).
-                  Register component only used in LessonsApp for educational user registration.
-                </Typography>
-              </CardContent>
-            </Card>
-          </Stack>
-        </Box>
       </Stack>
     </ComponentPage>
   );

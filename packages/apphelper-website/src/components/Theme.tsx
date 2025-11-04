@@ -1,5 +1,4 @@
 import React from "react";
-import { AppearanceHelper } from "@churchapps/apphelper";
 import type { GlobalStyleInterface } from "../helpers";
 
 interface Props {

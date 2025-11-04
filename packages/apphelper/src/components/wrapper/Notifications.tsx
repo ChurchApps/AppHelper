@@ -53,7 +53,7 @@ export const Notifications: React.FC<Props> = (props) => {
   const getAppUrl = (appName:string) => {
     switch (appName) {
       case props.appName.toLowerCase(): return "";
-      case "chums": return "https://app.chums.org";
+      case "b1admin": return "https://admin.b1.church";
       case "b1": return "https://" + props.context.userChurch.church.subDomain + ".b1.church";
       default: return "";
     }
@@ -63,7 +63,7 @@ export const Notifications: React.FC<Props> = (props) => {
     let app = "";
     let path = "";
     switch (notification.contentType) {
-      case "task": app = "chums"; path = "/tasks/" + notification.contentId; break;
+      case "task": app = "b1admin"; path = "/tasks/" + notification.contentId; break;
       case "assignment": app = "b1"; path = "/my/plans/" + notification.contentId; break;
     }
 

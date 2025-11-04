@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Box, Typography, Alert, Stack, Button, Card, CardContent, Chip } from '@mui/material';
+import { Container, Box, Typography, Alert, Stack, Button, Card, CardContent } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { ErrorBoundary } from '../ErrorBoundary';
 import { DonationForm, PaymentMethods, RecurringDonations, FundDonations, NonAuthDonation, StripePaymentMethod } from '@churchapps/apphelper-donations';
@@ -27,38 +27,23 @@ function ComponentPage({ children, title }: { children: React.ReactNode, title: 
 const donationComponents = [
   {
     name: 'DonationForm',
-    description: 'Main donation form with Stripe integration',
-    usage: ['B1App: 1 file', 'ChumsApp: 1 file', 'LessonsApp: none'],
-    category: 'Form',
-    complexity: 'High'
+    description: 'Main donation form with Stripe integration'
   },
   {
     name: 'PaymentMethods',
-    description: 'Manage saved payment methods',
-    usage: ['B1App: 1 file', 'ChumsApp: 1 file', 'LessonsApp: none'],
-    category: 'Management',
-    complexity: 'Medium'
+    description: 'Manage saved payment methods'
   },
   {
     name: 'RecurringDonations',
-    description: 'Display and manage recurring donations',
-    usage: ['B1App: 1 file', 'ChumsApp: 1 file', 'LessonsApp: none'],
-    category: 'Management',
-    complexity: 'Medium'
+    description: 'Display and manage recurring donations'
   },
   {
     name: 'FundDonations',
-    description: 'Display donations grouped by fund',
-    usage: ['B1App: 1 file', 'ChumsApp: 4 files', 'LessonsApp: none'],
-    category: 'Display',
-    complexity: 'Medium'
+    description: 'Display donations grouped by fund'
   },
   {
     name: 'NonAuthDonation',
-    description: 'Donation form for non-authenticated users',
-    usage: ['B1App: 3 files', 'ChumsApp: 4 files', 'LessonsApp: none'],
-    category: 'Form',
-    complexity: 'High'
+    description: 'Donation form for non-authenticated users'
   }
 ];
 
@@ -201,40 +186,18 @@ export default function DonationComponentsPage() {
           <Typography variant="h6" component="h3">
             {component.name}
           </Typography>
-          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-            <Chip label={component.category} color="primary" variant="outlined" size="small" />
-            <Chip 
-              label={component.complexity} 
-              color={component.complexity === 'High' ? 'error' : component.complexity === 'Medium' ? 'warning' : 'success'} 
-              variant="outlined" 
-              size="small" 
-            />
-            <Button
-              variant={selectedComponent === component.name ? 'contained' : 'outlined'}
-              size="small"
-              onClick={() => setSelectedComponent(selectedComponent === component.name ? null : component.name)}
-            >
-              {selectedComponent === component.name ? 'Hide' : 'Show'} Demo
-            </Button>
-          </Box>
+          <Button
+            variant={selectedComponent === component.name ? 'contained' : 'outlined'}
+            size="small"
+            onClick={() => setSelectedComponent(selectedComponent === component.name ? null : component.name)}
+          >
+            {selectedComponent === component.name ? 'Hide' : 'Show'} Demo
+          </Button>
         </Box>
         
         <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
           {component.description}
         </Typography>
-        
-        <Typography variant="subtitle2" gutterBottom>Usage Across Apps:</Typography>
-        <Stack direction="row" spacing={1} sx={{ mb: 2, flexWrap: 'wrap', gap: 0.5 }}>
-          {component.usage.map((usage: string, index: number) => (
-            <Chip 
-              key={index} 
-              label={usage} 
-              size="small" 
-              color={usage.includes('none') ? 'error' : 'success'}
-              variant="outlined"
-            />
-          ))}
-        </Stack>
 
         {selectedComponent === component.name && (
           <Box sx={{ 
@@ -279,20 +242,6 @@ export default function DonationComponentsPage() {
           {donationComponents.map(component => renderComponentCard(component))}
         </Box>
 
-        <Box>
-          <Typography variant="h5" gutterBottom>Usage Analysis</Typography>
-          <Stack spacing={2}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>Adoption by Application</Typography>
-                <Typography variant="body2">
-                  Strong adoption in B1App (61.5%) and ChumsApp (76.9%) for revenue-generating applications.
-                  LessonsApp has no donation functionality (0% adoption).
-                </Typography>
-              </CardContent>
-            </Card>
-          </Stack>
-        </Box>
       </Stack>
     </ComponentPage>
   );

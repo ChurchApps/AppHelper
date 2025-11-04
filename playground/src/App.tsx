@@ -181,7 +181,7 @@ function HomePage() {
                 </Typography>
                 <Stack spacing={1}>
                   <Link to="/markdown-components">Markdown Components</Link>
-                  <Link to="/html-components">HTML Components (NEW)</Link>
+                  <Link to="/html-components">HTML Components</Link>
                 </Stack>
               </CardContent>
             </Card>

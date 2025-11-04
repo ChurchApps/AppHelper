@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Box, Typography, Alert, Stack, Button, Card, CardContent, Chip } from '@mui/material';
+import { Container, Box, Typography, Alert, Stack, Button, Card, CardContent } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { ErrorBoundary } from '../ErrorBoundary';
 import { MarkdownEditor, MarkdownPreview, MarkdownPreviewLight } from '@churchapps/apphelper-markdown';
@@ -25,31 +25,19 @@ function ComponentPage({ children, title }: { children: React.ReactNode, title: 
 const markdownComponents = [
   {
     name: 'MarkdownEditor',
-    description: 'Rich text editor built on Lexical framework with markdown support',
-    usage: ['B1App: 5 files', 'ChumsApp: 1 file', 'LessonsApp: extensive'],
-    category: 'Editor',
-    complexity: 'High'
+    description: 'Rich text editor built on Lexical framework with markdown support'
   },
   {
     name: 'MarkdownPreview',
-    description: 'Full-featured markdown renderer with complete styling',
-    usage: ['B1App: 11 files', 'ChumsApp: 1 file', 'LessonsApp: none'],
-    category: 'Preview',
-    complexity: 'Medium'
+    description: 'Full-featured markdown renderer with complete styling'
   },
   {
     name: 'MarkdownPreviewLight',
-    description: 'Lightweight markdown preview optimized for performance',
-    usage: ['B1App: 11 files', 'ChumsApp: none', 'LessonsApp: extensive'],
-    category: 'Preview',
-    complexity: 'Low'
+    description: 'Lightweight markdown preview optimized for performance'
   },
   {
     name: 'MarkdownModal',
-    description: 'Modal wrapper component for markdown editor',
-    usage: ['B1App: none', 'ChumsApp: none', 'LessonsApp: none'],
-    category: 'Modal',
-    complexity: 'Low'
+    description: 'Modal wrapper component for markdown editor'
   }
 ];
 
@@ -171,40 +159,18 @@ export default function MarkdownComponentsPage() {
           <Typography variant="h6" component="h3">
             {component.name}
           </Typography>
-          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-            <Chip label={component.category} color="primary" variant="outlined" size="small" />
-            <Chip 
-              label={component.complexity} 
-              color={component.complexity === 'High' ? 'error' : component.complexity === 'Medium' ? 'warning' : 'success'} 
-              variant="outlined" 
-              size="small" 
-            />
-            <Button
-              variant={selectedComponent === component.name ? 'contained' : 'outlined'}
-              size="small"
-              onClick={() => setSelectedComponent(selectedComponent === component.name ? null : component.name)}
-            >
-              {selectedComponent === component.name ? 'Hide' : 'Show'} Demo
-            </Button>
-          </Box>
+          <Button
+            variant={selectedComponent === component.name ? 'contained' : 'outlined'}
+            size="small"
+            onClick={() => setSelectedComponent(selectedComponent === component.name ? null : component.name)}
+          >
+            {selectedComponent === component.name ? 'Hide' : 'Show'} Demo
+          </Button>
         </Box>
         
         <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
           {component.description}
         </Typography>
-        
-        <Typography variant="subtitle2" gutterBottom>Usage Across Apps:</Typography>
-        <Stack direction="row" spacing={1} sx={{ mb: 2, flexWrap: 'wrap', gap: 0.5 }}>
-          {component.usage.map((usage: string, index: number) => (
-            <Chip 
-              key={index} 
-              label={usage} 
-              size="small" 
-              color="info"
-              variant="outlined"
-            />
-          ))}
-        </Stack>
 
         {selectedComponent === component.name && (
           <Box sx={{ 
@@ -243,20 +209,6 @@ export default function MarkdownComponentsPage() {
           {markdownComponents.map(component => renderComponentCard(component))}
         </Box>
 
-        <Box>
-          <Typography variant="h5" gutterBottom>Usage Analysis</Typography>
-          <Stack spacing={2}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>Component Adoption</Typography>
-                <Typography variant="body2">
-                  Variable adoption (50-75%) across applications based on content management needs.
-                  B1App and LessonsApp show heavy usage for content creation and display.
-                </Typography>
-              </CardContent>
-            </Card>
-          </Stack>
-        </Box>
       </Stack>
     </ComponentPage>
   );

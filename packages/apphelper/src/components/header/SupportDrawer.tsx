@@ -15,8 +15,7 @@ export const SupportDrawer = (props: Props) => {
   const supportHref = "https://support.churchapps.org/";
 
   let currentAppName = "";
-  if (props.appName === "CHUMS") currentAppName = "chums";
-  if (props.appName === "B1") currentAppName = "b1";
+  currentAppName = props.appName.toLowerCase();
 
   const validateEmail = (email: string) => {
     return email.match(

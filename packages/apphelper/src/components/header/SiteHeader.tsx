@@ -95,23 +95,23 @@ export const SiteHeader = React.memo((props:Props) => {
 
   const getRelatedArticles = () => {
     let result: any [] = [];
-    if (props.appName === "CHUMS") {
+    if (props.appName === "B1Admin") {
       if (props.primaryMenuLabel === "People") {
-        if (props.secondaryMenuLabel === "People") result = ["chums/adding-people", "chums/advanced-search", "chums/assigning-roles"];
-        else if (props.secondaryMenuLabel === "Groups") result = ["chums/group-roster", "chums/groups", "chums/group-calendar"];
-        else if (props.secondaryMenuLabel === "Attendance") result = ["chums/attendance", "chums/checkin"];
+        if (props.secondaryMenuLabel === "People") result = ["b1admin/adding-people", "b1admin/advanced-search", "b1admin/assigning-roles"];
+        else if (props.secondaryMenuLabel === "Groups") result = ["b1admin/group-roster", "b1admin/groups", "b1admin/group-calendar"];
+        else if (props.secondaryMenuLabel === "Attendance") result = ["b1admin/attendance", "b1admin/checkin"];
       }
       else if (props.primaryMenuLabel === "Donations") {
-        if (props.secondaryMenuLabel === "Summary") result = ["chums/donation-report"];
-        else if (props.secondaryMenuLabel === "Batches" || props.secondaryMenuLabel === "Funds") result = ["chums/giving", "chums/manual-input"];
+        if (props.secondaryMenuLabel === "Summary") result = ["b1admin/donation-report"];
+        else if (props.secondaryMenuLabel === "Batches" || props.secondaryMenuLabel === "Funds") result = ["b1admin/giving", "b1admin/manual-input"];
       }
       else if (props.primaryMenuLabel === "Serving") {
-        if (props.secondaryMenuLabel === "Plans") result = ["chums/plans"];
-        else if (props.secondaryMenuLabel === "Tasks") result = ["chums/tasks", "chums/automations"];
+        if (props.secondaryMenuLabel === "Plans") result = ["b1admin/plans"];
+        else if (props.secondaryMenuLabel === "Tasks") result = ["b1admin/tasks", "b1admin/automations"];
       }
       else if (props.primaryMenuLabel === "Settings") {
-        if (props.secondaryMenuLabel === "Settings") result = ["chums/assigning-roles", "chums/exporting-data", "chums/import-csv", "chums/import-from-breeze"];
-        else if (props.secondaryMenuLabel === "Forms") result = ["chums/forms"];
+        if (props.secondaryMenuLabel === "Settings") result = ["b1admin/assigning-roles", "b1admin/exporting-data", "b1admin/import-csv", "b1admin/import-from-breeze"];
+        else if (props.secondaryMenuLabel === "Forms") result = ["b1admin/forms"];
       }
     } else if (props.appName === "B1") {
       if (props.primaryMenuLabel === "Mobile App") result = ["b1/admin/portal", "b1/mobile/setup"];

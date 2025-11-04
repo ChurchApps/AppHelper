@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Box, Typography, Alert, Stack, Button, Card, CardContent, Chip } from '@mui/material';
+import { Container, Box, Typography, Alert, Stack, Button, Card, CardContent } from '@mui/material';
 import { Link } from 'react-router-dom';
 import UserContext from '../UserContext';
 import { ErrorBoundary } from '../ErrorBoundary';
@@ -120,27 +120,19 @@ const mockFunds = [
 const authDonationComponents = [
   {
     name: 'DonationForm',
-    description: 'Main donation form with Stripe integration',
-    category: 'Form',
-    complexity: 'High'
+    description: 'Main donation form with Stripe integration'
   },
   {
     name: 'PaymentMethods',
-    description: 'Manage saved payment methods',
-    category: 'Management',
-    complexity: 'Medium'
+    description: 'Manage saved payment methods'
   },
   {
     name: 'RecurringDonations',
-    description: 'Display and manage recurring donations',
-    category: 'Management',
-    complexity: 'Medium'
+    description: 'Display and manage recurring donations'
   },
   {
     name: 'FundDonations',
-    description: 'Display donations grouped by fund',
-    category: 'Display',
-    complexity: 'Medium'
+    description: 'Display donations grouped by fund'
   }
 ];
 
@@ -240,22 +232,13 @@ export default function ConsolidatedDonationsPage() {
           <Typography variant="h6" component="h3">
             {component.name}
           </Typography>
-          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-            <Chip label={component.category} color="primary" variant="outlined" size="small" />
-            <Chip 
-              label={component.complexity} 
-              color={component.complexity === 'High' ? 'error' : component.complexity === 'Medium' ? 'warning' : 'success'} 
-              variant="outlined" 
-              size="small" 
-            />
-            <Button
-              variant={selectedComponent === component.name ? 'contained' : 'outlined'}
-              size="small"
-              onClick={() => setSelectedComponent(selectedComponent === component.name ? null : component.name)}
-            >
-              {selectedComponent === component.name ? 'Hide' : 'Show'} Demo
-            </Button>
-          </Box>
+          <Button
+            variant={selectedComponent === component.name ? 'contained' : 'outlined'}
+            size="small"
+            onClick={() => setSelectedComponent(selectedComponent === component.name ? null : component.name)}
+          >
+            {selectedComponent === component.name ? 'Hide' : 'Show'} Demo
+          </Button>
         </Box>
         
         <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
@@ -405,20 +388,6 @@ export default function ConsolidatedDonationsPage() {
         </Card>
       </Box>
 
-      <Box>
-        <Typography variant="h5" gutterBottom>Usage Analysis</Typography>
-        <Stack spacing={2}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>Donation Component Adoption</Typography>
-              <Typography variant="body2">
-                Strong adoption in B1App (61.5%) and ChumsApp (76.9%) for revenue-generating applications.
-                LessonsApp has no donation functionality (0% adoption).
-              </Typography>
-            </CardContent>
-          </Card>
-        </Stack>
-      </Box>
     </Stack>
   );
 

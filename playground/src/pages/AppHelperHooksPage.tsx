@@ -28,10 +28,7 @@ const hooksData = [
   {
     name: 'useMountedState',
     hook: useMountedState,
-    description: 'React hook that prevents state updates on unmounted components to avoid memory leaks',
-    usage: ['B1App: 3 files', 'ChumsApp: 21 files', 'LessonsApp: none'],
-    category: 'State Management',
-    complexity: 'Low'
+    description: 'React hook that prevents state updates on unmounted components to avoid memory leaks'
   }
 ];
 
@@ -101,40 +98,18 @@ export default function AppHelperHooksPage() {
           <Typography variant="h6" component="h3">
             {hookData.name}
           </Typography>
-          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-            <Chip label={hookData.category} color="primary" variant="outlined" size="small" />
-            <Chip 
-              label={hookData.complexity} 
-              color={hookData.complexity === 'High' ? 'error' : hookData.complexity === 'Medium' ? 'warning' : 'success'} 
-              variant="outlined" 
-              size="small" 
-            />
-            <Button
-              variant={selectedHook === hookData.name ? 'contained' : 'outlined'}
-              size="small"
-              onClick={() => setSelectedHook(selectedHook === hookData.name ? null : hookData.name)}
-            >
-              {selectedHook === hookData.name ? 'Hide' : 'Show'} Demo
-            </Button>
-          </Box>
+          <Button
+            variant={selectedHook === hookData.name ? 'contained' : 'outlined'}
+            size="small"
+            onClick={() => setSelectedHook(selectedHook === hookData.name ? null : hookData.name)}
+          >
+            {selectedHook === hookData.name ? 'Hide' : 'Show'} Demo
+          </Button>
         </Box>
         
         <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
           {hookData.description}
         </Typography>
-        
-        <Typography variant="subtitle2" gutterBottom>Usage Across Apps:</Typography>
-        <Stack direction="row" spacing={1} sx={{ mb: 2, flexWrap: 'wrap', gap: 0.5 }}>
-          {hookData.usage.map((usage: string, index: number) => (
-            <Chip 
-              key={index} 
-              label={usage} 
-              size="small" 
-              color={usage.includes('none') ? 'error' : 'success'}
-              variant="outlined"
-            />
-          ))}
-        </Stack>
 
         {selectedHook === hookData.name && (
           <Box sx={{ 
@@ -173,21 +148,6 @@ export default function AppHelperHooksPage() {
           {hooksData.map(hook => renderHookCard(hook))}
         </Box>
 
-        <Box>
-          <Typography variant="h5" gutterBottom>Usage Analysis</Typography>
-          <Stack spacing={2}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>Adoption Patterns</Typography>
-                <Typography variant="body2">
-                  useMountedState: 24 files total across applications.
-                  ChumsApp shows heavy adoption (21 files) indicating complex async operations.
-                  B1App has selective usage (3 files). LessonsApp has opportunity for improvement.
-                </Typography>
-              </CardContent>
-            </Card>
-          </Stack>
-        </Box>
       </Stack>
     </ComponentPage>
   );

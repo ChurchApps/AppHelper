@@ -39,5 +39,5 @@ export const NonAuthDonationWrapper: React.FC<Props> = (props) => {
     );
   }
 
-  return <NonAuthDonation {...props} churchId={props.churchId} recaptchaSiteKey={siteKey} />;
+  return <NonAuthDonation {...props} churchId={props.churchId || ""} recaptchaSiteKey={siteKey} />;
 };
