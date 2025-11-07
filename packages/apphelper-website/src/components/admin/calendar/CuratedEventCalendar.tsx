@@ -93,6 +93,7 @@ export function CuratedEventCalendar(props: Props) {
         evt.end = new Date(date.getTime() + diff);
         expandedEvents.push(evt);
       });
+      EventHelper.removeExcludeDates(expandedEvents);
     } else expandedEvents.push(ev);
   });
 
