@@ -16,6 +16,7 @@ export const SupportDrawer = (props: Props) => {
 
   let currentAppName = "";
   currentAppName = props.appName.toLowerCase();
+  if (currentAppName==="b1admin") currentAppName="b1Admin"
 
   const validateEmail = (email: string) => {
     return email.match(
