@@ -42,6 +42,22 @@ export class CustomLinkNode extends LinkNode {
     return new CustomLinkNode(url, target, classNames);
   }
 
+  static importDOM() {
+    return {
+      a: (node: Node) => ({
+        conversion: (domNode: HTMLElement) => {
+          const url = domNode.getAttribute("href") || "https://";
+          const target = domNode.getAttribute("target") || "_self";
+          const classNames = domNode.className ? domNode.className.split(" ").filter(c => c.length > 0) : [];
+          return {
+            node: new CustomLinkNode(url, target, classNames)
+          };
+        },
+        priority: 1 as 0 | 1 | 2 | 3 | 4
+      })
+    };
+  }
+
   createDOM() {
     const link = document.createElement("a");
     link.href = this.__url;

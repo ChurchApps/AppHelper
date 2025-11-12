@@ -4,8 +4,8 @@ import { $isLinkNode } from '@lexical/link';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { mergeRegister } from '@lexical/utils';
 import { createPortal } from 'react-dom';
-import { Box, TextField, IconButton, FormControl, InputLabel, Select, MenuItem, Button, Checkbox, FormControlLabel } from '@mui/material';
-import { Check, Close } from '@mui/icons-material';
+import { Box, TextField, IconButton, FormControl, InputLabel, Select, MenuItem, Button, Checkbox, FormControlLabel, Typography, Divider } from '@mui/material';
+import { Check, Close, Link as LinkIcon } from '@mui/icons-material';
 import { TOGGLE_CUSTOM_LINK_NODE_COMMAND } from './customLink/CustomLinkNode';
 
 interface Props {
@@ -217,137 +217,207 @@ export default function FloatingLinkEditorPlugin({ anchorElem, isLinkEditMode, s
   };
 
   return createPortal(
-    <Box
-      ref={linkEditorRef}
-      sx={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        background: '#fff',
-        padding: 1.5,
-        borderRadius: 1,
-        boxShadow: '0px 5px 10px rgba(0, 0, 0, 0.3)',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 1,
-        minWidth: 360,
-        zIndex: 1500
-      }}
-    >
-      <TextField label="Url" value={linkUrl} onChange={(e) => setLinkUrl(e.target.value)} size="small" />
-
-      <FormControl fullWidth size="small">
-        <InputLabel>Appearance</InputLabel>
-        <Select
-          name="classNames"
-          fullWidth
-          label="Appearance"
-          size="small"
-          value={appearance}
-          onChange={(e) => {
-            let className = '';
-            if (e.target.value.toString() !== 'link') className = e.target.value.toString();
-            setClassNamesList([className, 'btn-primary', 'btn-medium']);
-          }}
-          MenuProps={{
-            disablePortal: true,
-            slotProps: { paper: { sx: { zIndex: 2500 } } }
-          }}
-        >
-          <MenuItem value="link">Standard Link</MenuItem>
-          <MenuItem value="btn">Button</MenuItem>
-          <MenuItem value="btn btn-block">Full Width Button</MenuItem>
-        </Select>
-      </FormControl>
-
-      {appearance !== 'link' && (
-        <>
-          <FormControl fullWidth size="small">
-            <InputLabel>Variant</InputLabel>
-            <Select
-              name="classNames"
-              fullWidth
-              label="Variant"
-              size="small"
-              value={classNamesList[1]}
-              onChange={(e) => {
-                const newArray = [...classNamesList];
-                let index = 0;
-                newArray.forEach((item, i) => {
-                  variants.forEach((element) => {
-                    if (item.includes(getVariantKeyName(element))) {
-                      index = i;
-                    }
-                  });
-                });
-                newArray.splice(index, 1, e.target.value.toString());
-                setClassNamesList(newArray);
-              }}
-              MenuProps={{
-                disablePortal: true,
-                slotProps: { paper: { sx: { zIndex: 2500 } } }
-              }}
-            >
-              {getVariantItems()}
-            </Select>
-          </FormControl>
-
-          <FormControl fullWidth size="small">
-            <InputLabel>Size</InputLabel>
-            <Select
-              name="classNames"
-              fullWidth
-              label="Size"
-              size="small"
-              value={classNamesList[2]}
-              onChange={(e) => {
-                const newArray = [...classNamesList];
-                let index = 0;
-                newArray.forEach((item, i) => {
-                  sizes.forEach((element) => {
-                    if (item.includes(element.toLowerCase())) {
-                      index = i;
-                    }
-                  });
-                });
-                newArray.splice(index, 1, e.target.value.toString());
-                setClassNamesList(newArray);
-              }}
-              MenuProps={{
-                disablePortal: true,
-                slotProps: { paper: { sx: { zIndex: 2500 } } }
-              }}
-            >
-              {sizes.map((optionValue: string) => (
-                <MenuItem key={appearance + ' btn-' + optionValue.toLowerCase()} value={'btn-' + optionValue.toLowerCase()}>
-                  {optionValue}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </>
-      )}
-
-      <FormControlLabel
-        control={
-          <Checkbox
-            checked={targetAttribute === '_blank'}
-            onChange={() => setTargetAttribute((v) => (v === '_blank' ? '_self' : '_blank'))}
-            size="small"
-          />
-        }
-        label="Open in new window"
+    <>
+      <Box
+        onClick={(e) => {
+          if (e.target === e.currentTarget) {
+            handleCancel();
+          }
+        }}
+        sx={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          zIndex: 1499
+        }}
       />
+      <Box
+        ref={linkEditorRef}
+        sx={{
+          position: 'fixed',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          background: '#fff',
+          borderRadius: 2,
+          boxShadow: '0px 11px 15px -7px rgba(0,0,0,0.2), 0px 24px 38px 3px rgba(0,0,0,0.14), 0px 9px 46px 8px rgba(0,0,0,0.12)',
+          minWidth: 420,
+          maxWidth: 500,
+          zIndex: 1500
+        }}
+      >
+        <Box sx={{ p: 3, pb: 2 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+            <LinkIcon color="primary" />
+            <Typography variant="h6" component="h2" sx={{ fontWeight: 600 }}>
+              Edit Link
+            </Typography>
+          </Box>
 
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
-        <IconButton onClick={handleLinkSubmit} size="small" color="primary">
-          <Check />
-        </IconButton>
-        <IconButton onClick={handleCancel} size="small">
-          <Close />
-        </IconButton>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <TextField
+              label="URL"
+              value={linkUrl}
+              onChange={(e) => setLinkUrl(e.target.value)}
+              size="small"
+              fullWidth
+              placeholder="https://example.com"
+            />
+
+            <FormControl fullWidth size="small">
+              <InputLabel>Appearance</InputLabel>
+              <Select
+                name="classNames"
+                fullWidth
+                label="Appearance"
+                size="small"
+                value={appearance}
+                onChange={(e) => {
+                  let className = '';
+                  if (e.target.value.toString() !== 'link') className = e.target.value.toString();
+                  setClassNamesList([className, 'btn-primary', 'btn-medium']);
+                }}
+                MenuProps={{
+                  slotProps: {
+                    paper: {
+                      sx: {
+                        zIndex: 9999
+                      }
+                    },
+                    root: {
+                      sx: {
+                        zIndex: 9999
+                      }
+                    }
+                  },
+                  style: { zIndex: 9999 }
+                }}
+              >
+                <MenuItem value="link">Standard Link</MenuItem>
+                <MenuItem value="btn">Button</MenuItem>
+                <MenuItem value="btn btn-block">Full Width Button</MenuItem>
+              </Select>
+            </FormControl>
+
+            {appearance !== 'link' && (
+              <>
+                <FormControl fullWidth size="small">
+                  <InputLabel>Variant</InputLabel>
+                  <Select
+                    name="classNames"
+                    fullWidth
+                    label="Variant"
+                    size="small"
+                    value={classNamesList[1]}
+                    onChange={(e) => {
+                      const newArray = [...classNamesList];
+                      let index = 0;
+                      newArray.forEach((item, i) => {
+                        variants.forEach((element) => {
+                          if (item.includes(getVariantKeyName(element))) {
+                            index = i;
+                          }
+                        });
+                      });
+                      newArray.splice(index, 1, e.target.value.toString());
+                      setClassNamesList(newArray);
+                    }}
+                    MenuProps={{
+                      slotProps: {
+                        paper: {
+                          sx: {
+                            zIndex: 9999
+                          }
+                        },
+                        root: {
+                          sx: {
+                            zIndex: 9999
+                          }
+                        }
+                      },
+                      style: { zIndex: 9999 }
+                    }}
+                  >
+                    {getVariantItems()}
+                  </Select>
+                </FormControl>
+
+                <FormControl fullWidth size="small">
+                  <InputLabel>Size</InputLabel>
+                  <Select
+                    name="classNames"
+                    fullWidth
+                    label="Size"
+                    size="small"
+                    value={classNamesList[2]}
+                    onChange={(e) => {
+                      const newArray = [...classNamesList];
+                      let index = 0;
+                      newArray.forEach((item, i) => {
+                        sizes.forEach((element) => {
+                          if (item.includes(element.toLowerCase())) {
+                            index = i;
+                          }
+                        });
+                      });
+                      newArray.splice(index, 1, e.target.value.toString());
+                      setClassNamesList(newArray);
+                    }}
+                    MenuProps={{
+                      slotProps: {
+                        paper: {
+                          sx: {
+                            zIndex: 9999
+                          }
+                        },
+                        root: {
+                          sx: {
+                            zIndex: 9999
+                          }
+                        }
+                      },
+                      style: { zIndex: 9999 }
+                    }}
+                  >
+                    {sizes.map((optionValue: string) => (
+                      <MenuItem key={appearance + ' btn-' + optionValue.toLowerCase()} value={'btn-' + optionValue.toLowerCase()}>
+                        {optionValue}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </>
+            )}
+
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={targetAttribute === '_blank'}
+                  onChange={() => setTargetAttribute((v) => (v === '_blank' ? '_self' : '_blank'))}
+                  size="small"
+                />
+              }
+              label="Open in new window"
+              sx={{ mt: -0.5 }}
+            />
+          </Box>
+        </Box>
+
+        <Divider />
+
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1.5, p: 2 }}>
+          <Button onClick={handleCancel} variant="outlined" size="medium">
+            Cancel
+          </Button>
+          <Button onClick={handleLinkSubmit} variant="contained" color="primary" size="medium" startIcon={<Check />}>
+            Save
+          </Button>
+        </Box>
       </Box>
-    </Box>,
-    anchorElem
+    </>,
+    document.body
   );
 }

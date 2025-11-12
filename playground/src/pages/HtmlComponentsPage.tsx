@@ -41,7 +41,7 @@ const htmlComponents = [
 
 export function HtmlComponentsPage() {
   const [selectedComponent, setSelectedComponent] = useState('HtmlEditor');
-  const [htmlContent, setHtmlContent] = useState('<h2>Welcome to the HTML Editor!</h2><p>This editor supports <strong>bold text</strong>, <em>italic text</em>, <u>underlined text</u>, and <span style="color: #ff6b6b;">colored text</span>!</p><ul><li>Bullet lists</li><li>Numbered lists</li><li>Check lists</li></ul><blockquote>Blockquotes for important information</blockquote><p>You can also create <a href="https://example.com">links</a> and much more!</p>');
+  const [htmlContent, setHtmlContent] = useState('<h2>Welcome to the HTML Editor!</h2><p>This editor supports <strong>bold text</strong>, <em>italic text</em>, <u>underlined text</u>, and <span style="color: #ff6b6b;">colored text</span>!</p><ul><li>Bullet lists</li><li>Numbered lists</li><li>Check lists</li></ul><blockquote>Blockquotes for important information</blockquote><p>You can also create <a href="https://example.com" class="btn btn-primary btn-medium">links</a> and much more!</p>');
   const [modalOpen, setModalOpen] = useState(false);
   const [htmlDialogOpen, setHtmlDialogOpen] = useState(false);
   // const [activeTab, setActiveTab] = useState(0); // Removed unused state
