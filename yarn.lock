@@ -173,7 +173,7 @@
     "@babel/helper-string-parser" "^7.27.1"
     "@babel/helper-validator-identifier" "^7.27.1"
 
-"@churchapps/apphelper-donations@*", "@churchapps/apphelper-donations@^0.5.6", "@churchapps/apphelper-donations@file:D:\\Code\\ChurchApps\\Packages\\AppHelper\\packages\\donations":
+"@churchapps/apphelper-donations@*", "@churchapps/apphelper-donations@^0.5.6", "@churchapps/apphelper-donations@file:D:\\Code\\ChurchApps\\AppHelper\\packages\\donations":
   version "0.5.6"
   resolved "file:packages/donations"
   dependencies:
@@ -191,7 +191,7 @@
     react-i18next "^15.6.1"
     rrule "^2.8.1"
 
-"@churchapps/apphelper-forms@*", "@churchapps/apphelper-forms@file:D:\\Code\\ChurchApps\\Packages\\AppHelper\\packages\\apphelper-forms":
+"@churchapps/apphelper-forms@*", "@churchapps/apphelper-forms@file:D:\\Code\\ChurchApps\\AppHelper\\packages\\apphelper-forms":
   version "0.5.6"
   resolved "file:packages/apphelper-forms"
   dependencies:
@@ -203,7 +203,7 @@
     i18next "^25.3.2"
     react-i18next "^15.6.1"
 
-"@churchapps/apphelper-login@*", "@churchapps/apphelper-login@file:D:\\Code\\ChurchApps\\Packages\\AppHelper\\packages\\login":
+"@churchapps/apphelper-login@*", "@churchapps/apphelper-login@file:D:\\Code\\ChurchApps\\AppHelper\\packages\\login":
   version "0.5.6"
   resolved "file:packages/login"
   dependencies:
@@ -218,7 +218,7 @@
     react-google-recaptcha "^3.1.0"
     react-i18next "^15.6.1"
 
-"@churchapps/apphelper-markdown@*", "@churchapps/apphelper-markdown@file:D:\\Code\\ChurchApps\\Packages\\AppHelper\\packages\\apphelper-markdown":
+"@churchapps/apphelper-markdown@*", "@churchapps/apphelper-markdown@file:D:\\Code\\ChurchApps\\AppHelper\\packages\\apphelper-markdown":
   version "0.5.6"
   resolved "file:packages/apphelper-markdown"
   dependencies:
@@ -236,14 +236,14 @@
     marked "^16.1.2"
     material-symbols "^0.33.0"
 
-"@churchapps/apphelper-website@*", "@churchapps/apphelper-website@file:D:\\Code\\ChurchApps\\Packages\\AppHelper\\packages\\apphelper-website":
-  version "0.5.6"
+"@churchapps/apphelper-website@*", "@churchapps/apphelper-website@file:D:\\Code\\ChurchApps\\AppHelper\\packages\\apphelper-website":
+  version "0.5.7"
   resolved "file:packages/apphelper-website"
   dependencies:
     rrule "^2.8.1"
 
-"@churchapps/apphelper@*", "@churchapps/apphelper@^0.5.6", "@churchapps/apphelper@file:D:\\Code\\ChurchApps\\Packages\\AppHelper\\packages\\apphelper":
-  version "0.5.6"
+"@churchapps/apphelper@*", "@churchapps/apphelper@^0.5.6", "@churchapps/apphelper@file:D:\\Code\\ChurchApps\\AppHelper\\packages\\apphelper":
+  version "0.5.8"
   resolved "file:packages/apphelper"
   dependencies:
     "@churchapps/helpers" "^1.2.4"
@@ -1123,7 +1123,7 @@ ansi-styles@^6.1.0, ansi-styles@^6.2.1:
   resolved "https://registry.npmjs.org/ansi-styles/-/ansi-styles-6.2.1.tgz"
   integrity sha512-bN798gFfQX+viw3R7yrGWRqnrN2oRkEkUjjl4JNn4E8GxxbjtG3FbrEIIY3l8/hrwUwIeCZvi4QuOTP4MErVug==
 
-"apphelper-component-playground@file:D:\\Code\\ChurchApps\\Packages\\AppHelper\\playground":
+"apphelper-component-playground@file:D:\\Code\\ChurchApps\\AppHelper\\playground":
   version "0.5.0"
   resolved "file:playground"
   dependencies:

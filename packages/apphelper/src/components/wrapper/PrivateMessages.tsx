@@ -70,11 +70,12 @@ export const PrivateMessages: React.FC<Props> = React.memo((props) => {
   const loadData = async () => {
     setIsLoading(true);
     const pms: PrivateMessageInterface[] = await ApiHelper.get("/privateMessages", "MessagingApi");
-    
+
     // Store the current selected conversation ID if dialog is open
-    const currentSelectedPersonId = selectedMessage ? 
-      (selectedMessage.fromPersonId === props.context.person.id) ? 
-        selectedMessage.toPersonId : selectedMessage.fromPersonId 
+    // Read directly from store to get the current value, not the closure variable
+    const currentSelectedPersonId = privateMessagesStateStore.selectedMessage ?
+      (privateMessagesStateStore.selectedMessage.fromPersonId === props.context.person.id) ?
+        privateMessagesStateStore.selectedMessage.toPersonId : privateMessagesStateStore.selectedMessage.fromPersonId
       : null;
     
     
