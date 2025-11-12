@@ -56,7 +56,6 @@ function HtmlOnChangePlugin({ onChange }: { onChange?: (html: string) => void })
       editor.update(() => {
         const rawHtml = $generateHtmlFromNodes(editor);
         const cleanedHtml = cleanHtml(rawHtml);
-        console.log('HtmlOnChangePlugin: Generated HTML:', cleanedHtml.substring(0, 100) + '...');
         onChange(cleanedHtml);
       });
     });

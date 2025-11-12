@@ -21,6 +21,7 @@ export default function FloatingLinkEditorPlugin({ anchorElem, isLinkEditMode, s
   const [targetAttribute, setTargetAttribute] = useState<string>('_self');
   const [isEditingLink, setIsEditingLink] = useState(false);
   const linkEditorRef = useRef<HTMLDivElement>(null);
+  const currentLinkNodeKey = useRef<string | null>(null);
 
   const updateLinkEditor = useCallback(() => {
     // Don't update if we're already in link edit mode
@@ -67,9 +68,11 @@ export default function FloatingLinkEditorPlugin({ anchorElem, isLinkEditMode, s
           });
 
           if (foundLinkNode) {
-            // Select the link content
-            foundLinkNode.selectStart();
-            foundLinkNode.selectEnd();
+            // Store the link node key for later use
+            currentLinkNodeKey.current = foundLinkNode.__key;
+
+            // Select the entire link node
+            foundLinkNode.select();
 
             // Get link attributes
             const url = foundLinkNode.getURL();
@@ -157,19 +160,42 @@ export default function FloatingLinkEditorPlugin({ anchorElem, isLinkEditMode, s
       classes.push(classNamesList[1]);
       classes.push(classNamesList[2]);
     }
-    editor.dispatchCommand(TOGGLE_CUSTOM_LINK_NODE_COMMAND, {
-      url: linkUrl,
-      classNames: classes,
-      target: targetAttribute
-    });
+
+    // Update the specific link node directly using its stored key
+    if (currentLinkNodeKey.current) {
+      editor.update(() => {
+        const lexicalNode = editor._editorState._nodeMap.get(currentLinkNodeKey.current!);
+
+        if (lexicalNode && $isLinkNode(lexicalNode)) {
+          // Get a writable version of the node
+          const writableNode = lexicalNode.getWritable() as any;
+
+          // Update the node's properties using the writable node
+          writableNode.__url = linkUrl;
+          writableNode.__target = targetAttribute;
+          writableNode.__classNames = classes;
+
+          // Manually update the DOM element since updateDOM returns false
+          const domElement = editor.getElementByKey(currentLinkNodeKey.current!);
+          if (domElement && domElement instanceof HTMLAnchorElement) {
+            domElement.href = linkUrl;
+            domElement.target = targetAttribute;
+            domElement.className = classes.join(' ');
+          }
+        }
+      });
+    }
+
     setIsLinkEditMode(false);
     setIsEditingLink(false);
+    currentLinkNodeKey.current = null;
   };
 
   const handleCancel = () => {
     setIsLinkEditMode(false);
     setIsEditingLink(false);
     setLinkUrl('');
+    currentLinkNodeKey.current = null;
   };
 
   if (!isLinkEditMode) return null;
