@@ -40,8 +40,9 @@ export function DraggableWrapper(props: Props) {
             onDoubleClick={props.onDoubleClick}
             style={{
               opacity,
-              transition: "opacity 0.2s ease-in-out",
-              position: "relative" // Ensure this is present
+              transition: "opacity 0.2s ease-in-out, z-index 0s",
+              position: "relative", // Ensure this is present
+              zIndex: isHovered ? 1001 : 1 // Bring to front on hover
             }}
           >
             {/* Drag Handle - Now hover-triggered and absolutely positioned */}
