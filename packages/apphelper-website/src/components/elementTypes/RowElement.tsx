@@ -22,10 +22,9 @@ export function RowElement(props: Props) {
     }
   }
 
-  const getAddElement = (column: ElementInterface, s: number, droppableAreaText?: string) => {
+  const getAddElement = (column: ElementInterface, s: number) => {
     const sort = s;
-    return (<DroppableArea key={"add" + column.id} accept={["element", "elementBlock"]} text={droppableAreaText} onDrop={(data) => handleDrop(data, sort, column)} dndDeps={column} />);
-    //return (<div style={{ textAlign: "center", background: "rgba(230,230,230,0.25)" }}><SmallButton icon="add" onClick={() => props.onEdit(null, { sectionId: props.element.sectionId, elementType: "textWithPhoto", sort, parentId: column.id })} toolTip="Add Element" /></div>)
+    return (<DroppableArea key={"add" + column.id} accept={["element", "elementBlock"]} text="Drop here to add to row" onDrop={(data) => handleDrop(data, sort, column)} dndDeps={column} />);
   }
 
   const getElements = (column: ElementInterface, elements: ElementInterface[]) => {
@@ -53,25 +52,22 @@ export function RowElement(props: Props) {
       let xs = 12;
       if (c.answers?.mobileSize) xs = c.answers?.mobileSize;
 
-      //{props.onEdit && <div style={{ height: "31px", paddingTop: "31px", paddingBottom: "31px" }}>{getAddElement(c, c?.elements?.[c?.elements.length - 1]?.sort + 0.1, "Drop at the bottom of column")}</div>}
       result.push(<Grid key={c.id} size={{ md: c.answers.size, xs: xs }} order={getMobileOrder(c,idx)} className={getClassName()} style={((c.elements && c.elements.length > 0) || !props.onEdit ? {} : emptyStyle)}>
         <div style={{ minHeight: "inherit" }}>
           {c.elements && getElements(c, c.elements)}
         </div>
-        {props.onEdit && <div style={{ height: "31px"}}></div>}
       </Grid>);
     });
     return result;
   }
 
-  let result = (<>
-    {props.onEdit && <div style={{ height: 40 }}></div>}
+  let result = (
     <div id={"el-" + props.element.id}>
       <Grid container columnSpacing={3}>
         {getColumns()}
       </Grid>
     </div>
-  </>);
+  );
 
   return result;
 }

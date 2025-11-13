@@ -3,6 +3,10 @@ import { Container, Box, Typography, Alert, Stack, Button, Card, CardContent, Ch
 import { Link } from 'react-router-dom';
 import { ErrorBoundary } from '../ErrorBoundary';
 import { BoxElement, ButtonLink, CalendarElement, CardElement, CarouselElement, DonateLinkElement, ElementBlock, FaqElement, GroupListElement, HtmlPreview, IframeElement, ImageElement, LogoElement, MapElement, RawHTMLElement, RowElement, SermonElement, StreamElement, TableElement, TextOnly, TextWithPhoto, VideoElement, WhiteSpaceElement } from '../../../packages/apphelper-website/src';
+import { DraggableWrapper } from '../../../packages/apphelper-website/src/components/admin/DraggableWrapper';
+import { DroppableArea } from '../../../packages/apphelper-website/src/components/admin/DroppableArea';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import UserContext from '../UserContext';
 
 function ComponentPage({ children, title }: { children: React.ReactNode, title: string }) {
@@ -172,6 +176,8 @@ const websiteComponents = [
 
 export default function WebsiteComponentsPage() {
   const [selectedComponent, setSelectedComponent] = React.useState<string | null>(null);
+  const [droppedItems, setDroppedItems] = React.useState<any[]>([]);
+  const [editingElement, setEditingElement] = React.useState<any>(null);
   const context = React.useContext(UserContext);
 
   const renderComponent = (component: any) => {
@@ -1255,14 +1261,172 @@ export default function WebsiteComponentsPage() {
   );
 
   return (
-    <ComponentPage title="@churchapps/apphelper-website - Website Components">
-      <Stack spacing={4}>
-        <Alert severity="info">
-          <strong>Website Components from @churchapps/apphelper-website Package</strong>
-          <br />
-          This page demonstrates website element components that can be used to build dynamic church websites.
-          More components will be added as the package is extended.
-        </Alert>
+    <DndProvider backend={HTML5Backend}>
+      <ComponentPage title="@churchapps/apphelper-website - Website Components">
+        <Stack spacing={4}>
+          <Alert severity="info">
+            <strong>Website Components from @churchapps/apphelper-website Package</strong>
+            <br />
+            This page demonstrates website element components that can be used to build dynamic church websites.
+            More components will be added as the package is extended.
+          </Alert>
+
+          {/* Drag and Drop Testing Section */}
+          <Box>
+            <Typography variant="h5" gutterBottom>
+              Drag & Drop Testing
+            </Typography>
+            <Alert severity="info" sx={{ mb: 2 }}>
+              Test the draggable and droppable components used in the website editor. Drag items from the palette to the drop zones below.
+            </Alert>
+
+            <Card sx={{ mb: 3 }}>
+              <CardContent>
+                <Typography variant="h6" gutterBottom>
+                  Simple Drag & Drop Demo
+                </Typography>
+
+                {/* Draggable Elements Palette */}
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="subtitle2" gutterBottom>
+                    Draggable Elements (drag these):
+                  </Typography>
+                  <Stack direction="row" spacing={2} sx={{ flexWrap: 'wrap', gap: 2 }}>
+                    <DraggableWrapper dndType="element" elementType="text" data={{ elementType: 'text' }}>
+                      <Chip label="Text Element" color="primary" />
+                    </DraggableWrapper>
+                    <DraggableWrapper dndType="element" elementType="image" data={{ elementType: 'image' }}>
+                      <Chip label="Image Element" color="secondary" />
+                    </DraggableWrapper>
+                    <DraggableWrapper dndType="element" elementType="video" data={{ elementType: 'video' }}>
+                      <Chip label="Video Element" color="success" />
+                    </DraggableWrapper>
+                    <DraggableWrapper dndType="elementBlock" elementType="buttonLink" data={{ elementType: 'buttonLink' }}>
+                      <Chip label="Button Element" color="warning" />
+                    </DraggableWrapper>
+                  </Stack>
+                </Box>
+
+                {/* Drop Zone */}
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="subtitle2" gutterBottom>
+                    Drop Zone (drop elements here):
+                  </Typography>
+                  <DroppableArea
+                    accept={["element", "elementBlock"]}
+                    text="Drop an element here"
+                    onDrop={(data) => {
+                      console.log("Dropped:", data);
+                      setDroppedItems([...droppedItems, { type: data.elementType, time: new Date().toISOString() }]);
+                    }}
+                    hideWhenInactive={false}
+                  />
+                </Box>
+
+                {/* Dropped Items Display */}
+                {droppedItems.length > 0 && (
+                  <Box>
+                    <Typography variant="subtitle2" gutterBottom>
+                      Dropped Items ({droppedItems.length}):
+                    </Typography>
+                    <Stack spacing={1}>
+                      {droppedItems.map((item, index) => (
+                        <Alert key={index} severity="success" sx={{ py: 0.5 }}>
+                          <strong>{item.type}</strong> dropped at {new Date(item.time).toLocaleTimeString()}
+                        </Alert>
+                      ))}
+                    </Stack>
+                    <Button
+                      size="small"
+                      onClick={() => setDroppedItems([])}
+                      sx={{ mt: 2 }}
+                    >
+                      Clear Dropped Items
+                    </Button>
+                  </Box>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card sx={{ mb: 3 }}>
+              <CardContent>
+                <Typography variant="h6" gutterBottom>
+                  BoxElement with Drag & Drop (Edit Mode)
+                </Typography>
+                <Alert severity="info" sx={{ mb: 2 }}>
+                  When <code>onEdit</code> prop is provided, BoxElement shows drop zones. Drag elements from the palette above to add them to the box.
+                </Alert>
+                <BoxElement
+                  element={{
+                    id: 'drag-drop-box',
+                    elementType: 'box',
+                    sectionId: 'test-section',
+                    answers: {
+                      background: '#f5f5f5',
+                      textColor: '#333',
+                      rounded: 'true'
+                    },
+                    elements: []
+                  }}
+                  churchSettings={{}}
+                  textColor="#333"
+                  onEdit={(section, element) => {
+                    console.log("Edit element:", element);
+                    setEditingElement(element);
+                  }}
+                  onMove={() => {
+                    console.log("Element moved");
+                  }}
+                />
+                {editingElement && (
+                  <Alert severity="info" sx={{ mt: 2 }}>
+                    Editing element: <code>{JSON.stringify(editingElement, null, 2)}</code>
+                  </Alert>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card sx={{ mb: 3 }}>
+              <CardContent>
+                <Typography variant="h6" gutterBottom>
+                  RowElement with Drag & Drop (Edit Mode)
+                </Typography>
+                <Alert severity="info" sx={{ mb: 2 }}>
+                  RowElement in edit mode shows drop zones in each column. Drag elements to add them to specific columns.
+                </Alert>
+                <RowElement
+                  element={{
+                    id: 'drag-drop-row',
+                    elementType: 'row',
+                    sectionId: 'test-section',
+                    elements: [
+                      {
+                        id: 'col-1',
+                        elementType: 'column',
+                        answers: { size: 6, mobileSize: 12 },
+                        elements: []
+                      },
+                      {
+                        id: 'col-2',
+                        elementType: 'column',
+                        answers: { size: 6, mobileSize: 12 },
+                        elements: []
+                      }
+                    ]
+                  }}
+                  churchSettings={{}}
+                  textColor="dark"
+                  onEdit={(section, element) => {
+                    console.log("Edit element:", element);
+                    setEditingElement(element);
+                  }}
+                  onMove={() => {
+                    console.log("Element moved");
+                  }}
+                />
+              </CardContent>
+            </Card>
+          </Box>
 
         <Box>
           <Typography variant="h5" gutterBottom>
@@ -1290,5 +1454,6 @@ export default function WebsiteComponentsPage() {
         </Box>
       </Stack>
     </ComponentPage>
+    </DndProvider>
   );
 }

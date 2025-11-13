@@ -20,9 +20,9 @@ export function BoxElement(props: Props) {
     }
   }
 
-  const getAddElement = (s: number, droppableAreaText?: string) => {
+  const getAddElement = (s: number) => {
     const sort = s;
-    return (<DroppableArea key={"addToBox"} accept={["element", "elementBlock"]} text={droppableAreaText} onDrop={(data) => handleDrop(data, sort)} dndDeps={props.element?.elements} />);
+    return (<DroppableArea key={"addToBox"} accept={["element", "elementBlock"]} text="Drop here to add to box" onDrop={(data) => handleDrop(data, sort)} dndDeps={props.element?.elements} />);
   }
 
   const getElements = () => {
@@ -69,16 +69,12 @@ export function BoxElement(props: Props) {
     return result;
   }
 
-  //{props.onEdit && <div style={{ height: "31px" }}>{getAddElement(props.element?.elements?.[props.element?.elements.length - 1]?.sort + 0.1, "Drop at the bottom of box")}</div>}
-  let result = (<>
-    {props.onEdit && <div style={{ height: 40 }}></div>}
+  let result = (
     <div id={"el-" + props.element.id} style={getStyle()} className={getClass()}>
       {props.onEdit && (!props.element.elements || props.element.elements?.length===0) && <p>Box: Add elements</p>}
       {getElements()}
-
-      {props.onEdit && <div style={{ height: "31px"}}></div>}
     </div>
-  </>);
+  );
 
   return result;
 }

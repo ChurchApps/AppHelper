@@ -27,11 +27,6 @@ export const CarouselElement = ({ element, churchSettings, textColor, onEdit, on
   const prev = () => setCurrent((prev) => (prev - 1 + length) % length);
   const next = () => setCurrent((prev) => (prev + 1) % length);
 
-  // const getClassName = () => {
-  //   if (onEdit) return "columnWrapper";
-  //   else return "";
-  // };
-
   const handleDrop = (data: any, sort: number, column: ElementInterface) => {
     if (data.data) {
       const e: ElementInterface = data.data;
@@ -44,10 +39,10 @@ export const CarouselElement = ({ element, churchSettings, textColor, onEdit, on
     }
   }
 
-  const getAddElement = (column: ElementInterface, s: number, droppableAreaText?: string) => {
+  const getAddElement = (column: ElementInterface, s: number) => {
     const sort = s;
     return (
-      <DroppableArea key={"add" + column.id} accept={["element", "elementBlock"]} text={droppableAreaText} onDrop={(data) => handleDrop(data, sort, column)} dndDeps={column} />
+      <DroppableArea key={"add" + column.id} accept={["element", "elementBlock"]} text="Drop here to add slide" onDrop={(data) => handleDrop(data, sort, column)} dndDeps={column} />
     );
   };
 
@@ -61,30 +56,6 @@ export const CarouselElement = ({ element, churchSettings, textColor, onEdit, on
     });
     return result;
   };
-
-  // const getColumns = () => {
-  //   const emptyStyle = { minHeight: 100, border: "1px solid #999" };
-  //   const result: React.ReactElement[] = [];
-  //   element.elements?.forEach((c) => {
-  //     result.push(
-  //       <div
-  //         key={c.id}
-  //         className={getClassName()}
-  //         style={
-  //           c?.elements?.length > 0 || !onEdit
-  //             ? { height: "100%" }
-  //             : { ...emptyStyle, height: "100%" }
-  //         }
-  //       >
-  //         <div style={{ minHeight: "inherit", height: "100%" }}>
-  //           {getElements(c, c.elements)}
-  //         </div>
-  //         {onEdit && <div style={{ height: "31px" }}></div>}
-  //       </div>
-  //     );
-  //   });
-  //   return result;
-  // };
 
   const getFadeSlides = () => (
     <div style={{ position: "relative", width: "100%", height: "100%" }}>
@@ -206,7 +177,6 @@ export const CarouselElement = ({ element, churchSettings, textColor, onEdit, on
         overflow: "hidden",
       }}
     >
-      {onEdit && <div style={{ height: 40 }}></div>}
       {fade ? getFadeSlides() : getSlideAnimation()}
       {length > 1 && getNavigation()}
     </div>
