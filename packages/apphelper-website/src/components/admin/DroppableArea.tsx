@@ -17,17 +17,22 @@ type Props = {
 export function DroppableArea(props: Props) {
   const { accept, onDrop, text, updateIsDragging, dndDeps, hideWhenInactive = true } = props;
   const [isDragging, setIsDragging] = useState(false);
+  const [justDropped, setJustDropped] = useState(false);
 
   const [{ isOver, canDrop }, drop] = useDrop(
     () => ({
       accept,
-      drop: (data) => onDrop(data),
+      drop: (data) => {
+        onDrop(data);
+        setJustDropped(true);
+        setTimeout(() => setJustDropped(false), 600);
+      },
       collect: (monitor) => ({
         isOver: !!monitor.isOver(),
         canDrop: !!monitor.canDrop(),
       }),
     }),
-    [dndDeps]
+    [dndDeps, onDrop]
   );
 
   // Update dragging state via effect to avoid state updates during render
@@ -73,6 +78,7 @@ export function DroppableArea(props: Props) {
       width: "100%",
       minHeight: "60px",
       padding: "20px 10px",
+      margin: "8px 0",
       borderRadius: "8px",
       transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
       display: "flex",
@@ -85,13 +91,23 @@ export function DroppableArea(props: Props) {
       overflow: "hidden",
     };
 
+    if (justDropped) {
+      return {
+        ...baseStyle,
+        border: "2px solid rgba(76, 175, 80, 1)",
+        backgroundColor: "rgba(76, 175, 80, 0.2)",
+        transform: "scale(1)",
+        boxShadow: "0 4px 12px rgba(76, 175, 80, 0.3)",
+      };
+    }
+
     if (isOver) {
       return {
         ...baseStyle,
-        border: "2px dashed rgba(25, 118, 210, 0.8)",
-        backgroundColor: "rgba(25, 118, 210, 0.12)",
-        transform: "scale(1.01)",
-        boxShadow: "0 4px 12px rgba(25, 118, 210, 0.15)",
+        border: "2px solid rgba(25, 118, 210, 1)",
+        backgroundColor: "rgba(25, 118, 210, 0.15)",
+        transform: "scale(1.02)",
+        boxShadow: "0 4px 12px rgba(25, 118, 210, 0.25)",
       };
     }
 

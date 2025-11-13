@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import type { ChurchInterface } from "@churchapps/helpers";
 import { ElementInterface, SectionInterface } from "../helpers";
 import { DroppableArea } from "./admin/DroppableArea";
@@ -41,6 +42,7 @@ interface Props {
 }
 
 export const Element: React.FC<Props> = props => {
+  const [isHovered, setIsHovered] = React.useState(false);
 
   const handleDrop = (data: any, sort: number) => {
     if (data.data) { // Existing element dropped
@@ -160,7 +162,16 @@ export const Element: React.FC<Props> = props => {
         data={props.element}
         onDoubleClick={() => props.onEdit(null, props.element)}
       >
-        <div className={"elementWrapper " + props.element.elementType}>
+        <div
+          className={"elementWrapper " + props.element.elementType}
+          style={{
+            transition: "box-shadow 0.2s ease",
+            boxShadow: isHovered ? "0 2px 8px rgba(0, 0, 0, 0.08)" : "none",
+            borderRadius: "4px"
+          }}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
           {result}
         </div>
       </DraggableWrapper>
