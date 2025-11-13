@@ -2,7 +2,7 @@ import React from 'react';
 import { Container, Box, Typography, Alert, Stack, Button, Card, CardContent, Chip } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { ErrorBoundary } from '../ErrorBoundary';
-import { BoxElement, ButtonLink, CalendarElement, CardElement, CarouselElement, DonateLinkElement, ElementBlock, FaqElement, GroupListElement, HtmlPreview, IframeElement, ImageElement, LogoElement, MapElement, RawHTMLElement, RowElement, SermonElement, StreamElement, TableElement, TextOnly, TextWithPhoto, VideoElement, WhiteSpaceElement } from '../../../packages/apphelper-website/src';
+import { BoxElement, ButtonLink, CalendarElement, CardElement, CarouselElement, DonateLinkElement, Element, ElementBlock, FaqElement, GroupListElement, HtmlPreview, IframeElement, ImageElement, LogoElement, MapElement, RawHTMLElement, RowElement, SermonElement, StreamElement, TableElement, TextOnly, TextWithPhoto, VideoElement, WhiteSpaceElement } from '../../../packages/apphelper-website/src';
 import { DraggableWrapper } from '../../../packages/apphelper-website/src/components/admin/DraggableWrapper';
 import { DroppableArea } from '../../../packages/apphelper-website/src/components/admin/DroppableArea';
 import { DndProvider } from 'react-dnd';
@@ -178,6 +178,29 @@ export default function WebsiteComponentsPage() {
   const [selectedComponent, setSelectedComponent] = React.useState<string | null>(null);
   const [droppedItems, setDroppedItems] = React.useState<any[]>([]);
   const [editingElement, setEditingElement] = React.useState<any>(null);
+  const [testElements, setTestElements] = React.useState<any[]>([
+    {
+      id: 'test-element-1',
+      elementType: 'text',
+      sort: 1,
+      sectionId: 'test-section',
+      answers: {
+        text: '<h4>Text Element 1</h4><p>This is a draggable text element. Hover to see the drag handle.</p>',
+        textAlignment: 'left'
+      }
+    },
+    {
+      id: 'test-element-2',
+      elementType: 'image',
+      sort: 2,
+      sectionId: 'test-section',
+      answers: {
+        photo: 'https://picsum.photos/400/200',
+        photoAlt: 'Test image',
+        imageAlign: 'center'
+      }
+    }
+  ]);
   const context = React.useContext(UserContext);
 
   const renderComponent = (component: any) => {
@@ -1424,6 +1447,65 @@ export default function WebsiteComponentsPage() {
                     console.log("Element moved");
                   }}
                 />
+              </CardContent>
+            </Card>
+
+            <Card sx={{ mb: 3 }}>
+              <CardContent>
+                <Typography variant="h6" gutterBottom>
+                  Element Component with Drag & Drop (Edit Mode)
+                </Typography>
+                <Alert severity="success" sx={{ mb: 2 }}>
+                  <strong>Testing the fix for element drag/drop!</strong>
+                  <br />
+                  This section tests the Element component with drag/drop enabled. Hover over each element to see the drag indicator icon (top-left corner).
+                  The drag handle should:
+                  <ul style={{ marginTop: 8, marginBottom: 0 }}>
+                    <li>Appear on hover with a dark background</li>
+                    <li>Have a grab cursor</li>
+                    <li>Be draggable to reorder elements</li>
+                    <li>Show proper z-index (not hidden behind content)</li>
+                  </ul>
+                </Alert>
+
+                <Box sx={{ border: '2px dashed #ccc', borderRadius: 1, p: 2, minHeight: 200 }}>
+                  {testElements.map((element) => (
+                    <Element
+                      key={element.id}
+                      element={element}
+                      churchSettings={{}}
+                      textColor="dark"
+                      onEdit={(section, el) => {
+                        console.log("Edit element:", el);
+                        setEditingElement(el);
+                      }}
+                      onMove={() => {
+                        console.log("Element moved - reordering...");
+                        // In a real app, this would update the backend
+                      }}
+                    />
+                  ))}
+                </Box>
+
+                {editingElement && (
+                  <Alert severity="info" sx={{ mt: 2 }}>
+                    Double-clicked element: <code>{editingElement.elementType}</code> (ID: {editingElement.id})
+                    <Button size="small" onClick={() => setEditingElement(null)} sx={{ ml: 2 }}>
+                      Clear
+                    </Button>
+                  </Alert>
+                )}
+
+                <Alert severity="info" sx={{ mt: 2 }}>
+                  <strong>How to test:</strong>
+                  <ol style={{ marginTop: 8, marginBottom: 0 }}>
+                    <li>Hover over an element to see the drag indicator (top-left corner)</li>
+                    <li>The icon should be visible with a dark background</li>
+                    <li>Cursor should change to "grab" when hovering the icon</li>
+                    <li>Drag the element by the icon to reorder (functionality may be limited in playground)</li>
+                    <li>Double-click an element to trigger the edit callback</li>
+                  </ol>
+                </Alert>
               </CardContent>
             </Card>
           </Box>

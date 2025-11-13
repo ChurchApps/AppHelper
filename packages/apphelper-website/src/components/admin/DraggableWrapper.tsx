@@ -57,6 +57,7 @@ export function DraggableWrapper(props: Props) {
                   position: "absolute",
                   top: "5px",
                   left: "5px",
+                  zIndex: 1000, // Ensure drag handle is above other content
                   backgroundColor: "rgba(0, 0, 0, 0.5)", // Dark background
                   color: "#fff", // White icon color
                   padding: "8px", // Updated padding

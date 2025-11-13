@@ -154,8 +154,13 @@ export const Element: React.FC<Props> = props => {
   /*<DraggableIcon dndType="element" elementType={props.element.elementType} data={props.element} />*/
   if (props.onEdit) {
     result = <>
-      <DraggableWrapper dndType="element" elementType={props.element.elementType || ""} data={props.element}>
-        <div className={"elementWrapper " + props.element.elementType } onDoubleClick={(e) => { e.stopPropagation(); if (props.onEdit) props.onEdit(null, props.element); }}>
+      <DraggableWrapper
+        dndType="element"
+        elementType={props.element.elementType || ""}
+        data={props.element}
+        onDoubleClick={() => props.onEdit(null, props.element)}
+      >
+        <div className={"elementWrapper " + props.element.elementType}>
           {result}
         </div>
       </DraggableWrapper>
