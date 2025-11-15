@@ -231,7 +231,7 @@ export const Login: React.FC<Props> = ({ mainContainerCssProps = {}, ...props })
 								{Locale.label("login.forgot")}
 							</button>
 							<div style={{ fontSize: '14px', color: '#6b7280' }}>
-								Don't have an account?{' '}
+								{Locale.label("login.noAcc")}{' '}
 								<button
 									id="register-link"
 									type="button"
