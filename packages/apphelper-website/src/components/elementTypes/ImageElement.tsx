@@ -1,8 +1,9 @@
 import React, { CSSProperties } from "react";
-import { ElementInterface } from "../../helpers";
+import { ElementInterface, SectionInterface } from "../../helpers";
 
 interface Props {
   element: ElementInterface;
+  onEdit?: (section: SectionInterface | null, element: ElementInterface) => void;
 }
 
 // The user has confirmed the logic from the previous turn is correct.

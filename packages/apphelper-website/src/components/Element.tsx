@@ -91,7 +91,7 @@ export const Element: React.FC<Props> = props => {
       result = <VideoElement key={props.element.id} element={props.element as ElementInterface} />
       break;
     case "image":
-      result = <ImageElement key={props.element.id} element={props.element as ElementInterface} />
+      result = <ImageElement key={props.element.id} element={props.element as ElementInterface} onEdit={props.onEdit} />
       break;
     case "whiteSpace":
       result = <WhiteSpaceElement key={props.element.id} element={props.element as ElementInterface} onEdit={props.onEdit} />
