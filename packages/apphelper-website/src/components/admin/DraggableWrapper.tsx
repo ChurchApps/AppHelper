@@ -9,7 +9,7 @@ type Props = {
   dndType: string;
   elementType?: string;
   data: any;
-  onDoubleClick?: () => void;
+  onDoubleClick?: (e: React.MouseEvent) => void;
 };
 
 export function DraggableWrapper(props: Props) {

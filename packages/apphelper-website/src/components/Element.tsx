@@ -69,6 +69,15 @@ export const Element: React.FC<Props> = props => {
     if (props.element.animations?.onShow) return "animated " + props.element.animations.onShow + " " + props.element.animations.onShowSpeed;
   }
 
+  const handleDoubleClick = (e: React.MouseEvent) => {
+    if (!props.onEdit) return;
+    const target = e.target as HTMLElement;
+    const closestWrapper = target.closest('.elementWrapper');
+    // Only open edit if the closest wrapper belongs to THIS element (matches the element type)
+    if (closestWrapper && props.element.elementType && !closestWrapper.classList.contains(props.element.elementType)) return;
+    props.onEdit(null, props.element);
+  }
+
   let result = <></>
 
   switch (props.element.elementType) {
@@ -160,7 +169,7 @@ export const Element: React.FC<Props> = props => {
         dndType="element"
         elementType={props.element.elementType || ""}
         data={props.element}
-        onDoubleClick={() => props.onEdit(null, props.element)}
+        onDoubleClick={handleDoubleClick}
       >
         <div
           className={"elementWrapper " + props.element.elementType}
