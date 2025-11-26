@@ -13,27 +13,13 @@ export class SlugHelper {
     return verfiedSlug;
   }
 
-  //remove multiple numbers in sequence (e.g., 1-2-3 becomes 1), but allow standalone 1-2 digit numbers
+  //remove long sequences of single-digit numbers (e.g., 1-2-3-4 becomes 1), but preserve normal number patterns
   static numerifySlug(slug: string) {
     let initialString = slug;
-    const regex = /\d+(?:-\d+)+|\d+/g;
-    const matchedArray = initialString.match(regex);
-
-    if (matchedArray) {
-      matchedArray.forEach((data) => {
-        const length = data.length;
-        let splitResult = data;
-        if (data.includes("-")) {
-          splitResult = data.split("-")[0];
-        } else if (length > 2) {
-          splitResult = data.substring(0, 2);
-        }
-        if (splitResult !== data) {
-          const replacedString = initialString.replace(data, splitResult);
-          initialString = replacedString;
-        }
-      });
-    }
+    // Only match sequences of 3+ single-digit numbers separated by hyphens (e.g., 1-2-3, 1-2-3-4)
+    // This avoids mangling things like chapter-verse references (6-11) or dates
+    const regex = /\b(\d)-(\d)-(\d)(?:-\d)*\b/g;
+    initialString = initialString.replace(regex, "$1");
 
     return initialString;
   }
