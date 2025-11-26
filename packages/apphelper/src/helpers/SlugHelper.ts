@@ -13,7 +13,7 @@ export class SlugHelper {
     return verfiedSlug;
   }
 
-  //remove multiple numbers in sequence
+  //remove multiple numbers in sequence (e.g., 1-2-3 becomes 1), but allow standalone 1-2 digit numbers
   static numerifySlug(slug: string) {
     let initialString = slug;
     const regex = /\d+(?:-\d+)+|\d+/g;
@@ -23,15 +23,18 @@ export class SlugHelper {
       matchedArray.forEach((data) => {
         const length = data.length;
         let splitResult = data;
-        if (length > 1) {
-          const array = data.split("");
-          splitResult = array[0];
+        if (data.includes("-")) {
+          splitResult = data.split("-")[0];
+        } else if (length > 2) {
+          splitResult = data.substring(0, 2);
         }
-        const replacedString = initialString.replace(data, splitResult);
-        initialString = replacedString;
+        if (splitResult !== data) {
+          const replacedString = initialString.replace(data, splitResult);
+          initialString = replacedString;
+        }
       });
     }
-    
+
     return initialString;
   }
 
