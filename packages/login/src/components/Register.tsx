@@ -193,8 +193,8 @@ export const Register: React.FC<Props> = (props) => {
                 padding: '12px',
                 textAlign: 'left'
               }}>
-                {errors.map((error, index) => (
-                  <div key={index} style={{ color: '#dc2626', fontSize: '14px' }}>{error}</div>
+                {errors.map((error) => (
+                  <div key={error} style={{ color: '#dc2626', fontSize: '14px' }}>{error}</div>
                 ))}
               </div>
             )}

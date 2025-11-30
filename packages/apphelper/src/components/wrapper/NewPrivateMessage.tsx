@@ -160,7 +160,7 @@ export const NewPrivateMessage: React.FC<Props> = (props) => {
           {isSearching && (
             <Box>
               {[...Array(3)].map((_, index) => (
-                <Box key={index} sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <Box key={`skeleton-${index}`} sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                   <Skeleton variant="circular" width={48} height={48} sx={{ mr: 2 }} />
                   <Skeleton variant="text" width="60%" height={24} />
                 </Box>

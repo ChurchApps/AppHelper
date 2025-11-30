@@ -20,7 +20,7 @@ export const FundDonation: React.FC<Props> = (props) => {
     const result = [];
     for (let i = 0; i < props.funds.length; i++) {
       const getDisabled = (props?.params?.fundId && props.params.fundId !== "") ? props.params.fundId !== props.funds[i].id : false;
-      result.push(<MenuItem key={i} value={props.funds[i].id} disabled={getDisabled}>{props.funds[i].name}</MenuItem>);
+      result.push(<MenuItem key={props.funds[i].id} value={props.funds[i].id} disabled={getDisabled}>{props.funds[i].name}</MenuItem>);
     }
     return result;
   };

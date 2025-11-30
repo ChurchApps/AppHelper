@@ -527,7 +527,7 @@ export const PrivateMessages: React.FC<Props> = React.memo((props) => {
         {isLoading ? (
           <Box sx={{ p: 2 }}>
             {[...Array(3)].map((_, index) => (
-              <Box key={index} sx={{ px: 2, py: 0.5, mb: 1 }}>
+              <Box key={`skeleton-${index}`} sx={{ px: 2, py: 0.5, mb: 1 }}>
                 <Box sx={{
                   p: 3,
                   borderRadius: 3,

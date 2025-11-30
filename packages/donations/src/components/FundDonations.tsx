@@ -26,7 +26,7 @@ export const FundDonations: React.FC<Props> = (props) => {
     const result = [];
     for (let i = 0; i < props.fundDonations.length; i++) {
       const fd = props.fundDonations[i];
-      result.push(<FundDonation fundDonation={fd} funds={props.funds} updatedFunction={handleUpdated} params={props?.params} key={i} index={i} />);
+      result.push(<FundDonation fundDonation={fd} funds={props.funds} updatedFunction={handleUpdated} params={props?.params} key={fd.fundId || i} index={i} />);
     }
 
     return result;

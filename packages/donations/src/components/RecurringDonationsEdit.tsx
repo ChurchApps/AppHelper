@@ -69,7 +69,7 @@ export const RecurringDonationsEdit: React.FC<Props> = (props) => {
           <FormControl fullWidth>
             <InputLabel>{Locale.label("donation.donationForm.method")}</InputLabel>
             <Select label={Locale.label("donation.donationForm.method")} name="method" aria-label="method" value={editSubscription.default_payment_method || editSubscription.default_source || ""} className="capitalize" onChange={handleChange}>
-              {props.paymentMethods.map((paymentMethod: any, i: number) => <MenuItem key={i} value={paymentMethod.id}>{paymentMethod.name} ****{paymentMethod.last4}</MenuItem>)}
+              {props.paymentMethods.map((paymentMethod: any) => <MenuItem key={paymentMethod.id} value={paymentMethod.id}>{paymentMethod.name} ****{paymentMethod.last4}</MenuItem>)}
             </Select>
           </FormControl>
         </Grid>

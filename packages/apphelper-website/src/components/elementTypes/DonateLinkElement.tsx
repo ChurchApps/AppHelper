@@ -21,11 +21,11 @@ export function DonateLinkElement({ element }: Props) {
         <h4 style={{ marginTop: 10, marginBottom: 15 }}>
           {element.answers?.text?.toUpperCase() || "DONATE NOW"}
         </h4>
-        {amounts?.map((a: number, index: number) => (
+        {amounts?.map((a: number) => (
           <Button
             variant="outlined"
             size="small"
-            key={index}
+            key={a}
             sx={{ minWidth: "70px", marginRight: "10px", marginTop: "5px", borderWidth: "2px", borderRadius: "10px", fontWeight: "bold" }}
             href={`${element.answers?.url}?amount=${a}&fundId=${element.answers?.fundId}`}
             target="_blank"
