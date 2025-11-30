@@ -15,10 +15,15 @@ const FONT_SIZES = ['12px', '14px', '16px', '18px', '20px', '24px', '28px', '32p
 export function BlockAndFontControls({ blockType, onFormatHeading, onFormatParagraph, onFormatCode, onApplyFontSize }: Props) {
   const [fontSizeAnchor, setFontSizeAnchor] = useState<null | HTMLElement>(null);
 
+  // Normalize block type to a valid dropdown value
+  // When in lists (bullet/number) or quotes, show "Normal" as the base block type
+  const validBlockTypes = ['paragraph', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'code'];
+  const normalizedBlockType = validBlockTypes.includes(blockType) ? blockType : 'paragraph';
+
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
       <Select
-        value={blockType}
+        value={normalizedBlockType}
         size="small"
         sx={{ minWidth: 100 }}
         onChange={(e) => {

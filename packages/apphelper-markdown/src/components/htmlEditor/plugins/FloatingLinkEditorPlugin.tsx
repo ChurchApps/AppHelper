@@ -184,6 +184,13 @@ export default function FloatingLinkEditorPlugin({ anchorElem, isLinkEditMode, s
           }
         }
       });
+    } else {
+      // Creating a new link - dispatch the command to wrap selected text
+      editor.dispatchCommand(TOGGLE_CUSTOM_LINK_NODE_COMMAND, {
+        url: linkUrl,
+        classNames: classes,
+        target: targetAttribute
+      });
     }
 
     setIsLinkEditMode(false);

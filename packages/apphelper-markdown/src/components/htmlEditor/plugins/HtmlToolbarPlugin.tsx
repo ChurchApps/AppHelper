@@ -72,6 +72,7 @@ export default function HtmlToolbarPlugin({ setIsLinkEditMode, isSourceMode = fa
   const [fontSize, setFontSize] = useState('16px');
   const [textColor, setTextColor] = useState('#000000');
   const [bgColor, setBgColor] = useState('#ffffff');
+  const [elementFormat, setElementFormat] = useState<string>('left');
 
   const updateToolbar = useCallback(() => {
     const selection = $getSelection();
@@ -112,6 +113,11 @@ export default function HtmlToolbarPlugin({ setIsLinkEditMode, isSourceMode = fa
       } else {
         setIsLink(false);
       }
+
+      // Get element format/alignment
+      const elementNode = anchorNode.getTopLevelElementOrThrow();
+      const format = (elementNode as any).getFormatType ? (elementNode as any).getFormatType() : 'left';
+      setElementFormat(format || 'left');
     }
   }, [editor]);
 
@@ -337,11 +343,11 @@ export default function HtmlToolbarPlugin({ setIsLinkEditMode, isSourceMode = fa
 
       <Divider orientation="vertical" flexItem sx={{ mx: 0.5 }} />
 
-      <AlignmentControls editor={editor} />
+      <AlignmentControls editor={editor} elementFormat={elementFormat} />
 
       <Divider orientation="vertical" flexItem sx={{ mx: 0.5 }} />
 
-      <ListsAndElementsControls editor={editor} />
+      <ListsAndElementsControls editor={editor} blockType={blockType} />
       
       {setIsSourceMode && (
         <>

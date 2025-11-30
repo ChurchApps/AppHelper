@@ -430,6 +430,11 @@
   opacity: 1;
 }
 
+/* Active state for MUI IconButton components */
+.toolbar .MuiIconButton-root.active {
+  background-color: rgba(25, 118, 210, 0.12);
+}
+
 .toolbar .toolbar-item:hover:not([disabled]) {
   background-color: #eee;
 }
