@@ -112,26 +112,23 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 
 	const handleSave = async () => {
 		if (validate()) {
-			// CAPTCHA TEMPORARILY DISABLED - Remove this bypass in production
-			console.warn("CAPTCHA VALIDATION BYPASSED - This should only be temporary!");
-			
 			// Validate captcha first
-			// if (!_captchaResponse) {
-			// 	setErrors(["Please complete the reCAPTCHA verification"]);
-			// 	return;
-			// }
-			// if (_captchaResponse === "robot") {
-			// 	setErrors(["reCAPTCHA verification failed - detected as robot. Please try again."]);
-			// 	return;
-			// }
-			// if (_captchaResponse === "error") {
-			// 	setErrors(["reCAPTCHA verification error. Please try again."]);
-			// 	return;
-			// }
-			// if (_captchaResponse !== "success") {
-			// 	setErrors([`reCAPTCHA verification unexpected response: ${_captchaResponse}`]);
-			// 	return;
-			// }
+			if (!_captchaResponse) {
+				setErrors(["Please complete the reCAPTCHA verification"]);
+				return;
+			}
+			if (_captchaResponse === "robot") {
+				setErrors(["reCAPTCHA verification failed - detected as robot. Please try again."]);
+				return;
+			}
+			if (_captchaResponse === "error") {
+				setErrors(["reCAPTCHA verification error. Please try again."]);
+				return;
+			}
+			if (_captchaResponse !== "success") {
+				setErrors([`reCAPTCHA verification unexpected response: ${_captchaResponse}`]);
+				return;
+			}
 
 			setProcessing(true);
 			ApiHelper.post("/users/loadOrCreate", { userEmail: email, firstName, lastName }, "MembershipApi")
@@ -242,7 +239,7 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 		if (!email) result.push(Locale.label("donation.donationForm.validate.email"));
 		if (fundsTotal === 0) result.push(Locale.label("donation.donationForm.validate.amount"));
 		if (result.length === 0) {
-			if (!email.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w+)+$/)) result.push(Locale.label("donation.donationForm.validate.validEmail"));  //eslint-disable-line
+			if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) result.push(Locale.label("donation.donationForm.validate.validEmail"));
 		}
 		//Todo - make sure the account doesn't exist. (loadOrCreate?)
 		setErrors(result);

@@ -123,7 +123,7 @@ export const FormCardPayment = forwardRef((props: Props, ref) => {
     const churchObj = {
       name: church?.name || "",
       subDomain: church?.subDomain || "",
-      churchURL: typeof window !== "undefined" && window.location.origin,
+      churchURL: typeof window !== "undefined" ? window.location.origin : "",
       logo: ""
     }
 
@@ -149,7 +149,7 @@ export const FormCardPayment = forwardRef((props: Props, ref) => {
     if (!lastName) result.push(Locale.label("donation.donationForm.validate.lastName"));
     if (!email) result.push(Locale.label("donation.donationForm.validate.email"));
     if (result.length === 0) {
-      if (!email.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)) result.push(Locale.label("donation.donationForm.validate.validEmail"));  //eslint-disable-line
+      if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) result.push(Locale.label("donation.donationForm.validate.validEmail"));
     }
     return result;
   }

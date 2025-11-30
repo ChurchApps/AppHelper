@@ -75,10 +75,10 @@ export const GalleryModal: React.FC<Props> = (props: Props) => {
 
   const getImages = () => {
     let result: React.ReactElement[] = [];
-    images.forEach((img: any) => {
+    images.forEach((img: any, index: number) => {
       const parts = img.split("/");
 
-      result.push(<Grid size={{ xs: 12, md: 4 }}>
+      result.push(<Grid key={img || index} size={{ xs: 12, md: 4 }}>
         <Box sx={{ position: "relative", ":hover #deleteIcon": { visibility: "visible" } }}>
           <a href="about:blank" onClick={(e) => { e.preventDefault(); props.onSelect(contentRoot + "/" + img) }} aria-label="Select image" data-testid="select-image">
             <Box 

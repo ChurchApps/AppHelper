@@ -10,40 +10,48 @@ export const Theme: React.FC<Props> = (props) => {
   const lines: string[] = [];
 
   if (props.globalStyles?.palette) {
-    const palette = JSON.parse(props.globalStyles.palette);
-    lines.push("--light: " + palette.light + ";");
-    lines.push("--lightAccent: " + palette.lightAccent + ";");
-    lines.push("--accent: " + palette.accent + ";");
-    lines.push("--darkAccent: " + palette.darkAccent + ";");
-    lines.push("--dark: " + palette.dark + ";");
+    try {
+      const palette = JSON.parse(props.globalStyles.palette);
+      lines.push("--light: " + palette.light + ";");
+      lines.push("--lightAccent: " + palette.lightAccent + ";");
+      lines.push("--accent: " + palette.accent + ";");
+      lines.push("--darkAccent: " + palette.darkAccent + ";");
+      lines.push("--dark: " + palette.dark + ";");
+    } catch (e) {
+      console.error("Failed to parse palette JSON:", e);
+    }
   }
 
   if (props.globalStyles?.fonts) {
-    const fonts = JSON.parse(props.globalStyles.fonts);
-    lines.push("--headingFont: '" + fonts.heading + "';");
-    lines.push("--bodyFont: '" + fonts.body + "';");
+    try {
+      const fonts = JSON.parse(props.globalStyles.fonts);
+      lines.push("--headingFont: '" + fonts.heading + "';");
+      lines.push("--bodyFont: '" + fonts.body + "';");
 
-    // Dynamically load Google Fonts
-    const googleFonts: string[] = [];
-    if (fonts.heading !== "Roboto") googleFonts.push(fonts.heading);
-    if (fonts.body !== fonts.heading) googleFonts.push(fonts.body);
+      // Dynamically load Google Fonts
+      const googleFonts: string[] = [];
+      if (fonts.heading !== "Roboto") googleFonts.push(fonts.heading);
+      if (fonts.body !== fonts.heading) googleFonts.push(fonts.body);
 
-    React.useEffect(() => {
-      if (googleFonts.length > 0) {
-        const fontList: string[] = [];
-        googleFonts.forEach(f => fontList.push(f.replace(" ", "+") + ":wght@400"));
-        const googleFontsUrl = "https://fonts.googleapis.com/css2?family=" + fontList.join("&family=") + "&display=swap";
+      React.useEffect(() => {
+        if (googleFonts.length > 0) {
+          const fontList: string[] = [];
+          googleFonts.forEach(f => fontList.push(f.replace(" ", "+") + ":wght@400"));
+          const googleFontsUrl = "https://fonts.googleapis.com/css2?family=" + fontList.join("&family=") + "&display=swap";
 
-        const existingLink = document.querySelector(`link[href="${googleFontsUrl}"]`);
-        if (!existingLink) {
-          const link = document.createElement('link');
-          link.href = googleFontsUrl;
-          link.rel = 'stylesheet';
-          link.type = 'text/css';
-          document.head.appendChild(link);
+          const existingLink = document.querySelector(`link[href="${googleFontsUrl}"]`);
+          if (!existingLink) {
+            const link = document.createElement('link');
+            link.href = googleFontsUrl;
+            link.rel = 'stylesheet';
+            link.type = 'text/css';
+            document.head.appendChild(link);
+          }
         }
-      }
-    }, [googleFonts.join(",")]);
+      }, [googleFonts.join(",")]);
+    } catch (e) {
+      console.error("Failed to parse fonts JSON:", e);
+    }
   }
 
   if (props.globalStyles?.customCss) lines.push(props.globalStyles.customCss);

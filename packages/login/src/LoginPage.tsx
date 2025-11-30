@@ -263,7 +263,20 @@ const LoginPageContent: React.FC<Props> = ({ showLogo = true, loginContainerCssP
 		}
 	};;
 
-	const getWelcomeBack = () => { if (welcomeBackName !== "") return (<><Alert severity="info"><div dangerouslySetInnerHTML={{ __html: Locale.label("login.welcomeName")?.replace("{}", welcomeBackName) }} /></Alert><Loading /></>); }
+	const getWelcomeBack = () => {
+		if (welcomeBackName !== "") {
+			const label = Locale.label("login.welcomeName") || "Welcome back, {}!";
+			const parts = label.split("{}");
+			return (
+				<>
+					<Alert severity="info">
+						{parts[0]}{welcomeBackName}{parts[1] || ""}
+					</Alert>
+					<Loading />
+				</>
+			);
+		}
+	}
 	const getCheckEmail = () => { if (new URLSearchParams(location?.search).get("checkEmail") === "1") return <Alert severity="info">{Locale.label("login.registerThankYou")}</Alert> }
 	const handleRegisterCallback = () => { setShowForgot(false); setShowRegister(true); }
 	const handleLoginCallback = () => { setShowForgot(false); setShowRegister(false); }

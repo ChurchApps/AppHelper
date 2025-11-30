@@ -217,7 +217,7 @@ export const PayPalNonAuthDonationInner: React.FC<Props> = ({ mainContainerCssPr
     } else result.push("PayPal Hosted Fields not available");
     
     if (result.length === 0) {
-      if (!email.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w+)+$/)) result.push(Locale.label("donation.donationForm.validate.validEmail"));  //eslint-disable-line
+      if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) result.push(Locale.label("donation.donationForm.validate.validEmail"));
     }
     
     setErrors(result);

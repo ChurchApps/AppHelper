@@ -6,7 +6,14 @@ interface Props {
 }
 
 export function DonateLinkElement({ element }: Props) {
-  const amounts = (element.answers?.amounts && element.answers.amounts.length > 0) ? JSON.parse(element.answers.amounts) : [];
+  let amounts: number[] = [];
+  if (element.answers?.amounts && element.answers.amounts.length > 0) {
+    try {
+      amounts = JSON.parse(element.answers.amounts);
+    } catch (e) {
+      console.error("Failed to parse donation amounts JSON:", e);
+    }
+  }
 
   return (
     <div id={"el-" + element.id} data-testid={`donate-link-element-${element.id}`} aria-label="Donation options">
