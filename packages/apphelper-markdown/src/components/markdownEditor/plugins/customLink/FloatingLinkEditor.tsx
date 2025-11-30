@@ -136,7 +136,7 @@ const FloatingLinkEditor: FC<FloatingLinkEditorProps> = ({
           editor.getEditorState().read(() => {
             updateLinkEditor();
           });
-          return true;
+          return false;
         },
         LowPriority
       )

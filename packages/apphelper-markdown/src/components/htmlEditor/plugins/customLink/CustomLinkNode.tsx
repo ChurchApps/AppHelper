@@ -109,7 +109,7 @@ export function $createCustomLinkNode(
 export function $isCustomLinkNode(
   node: LexicalNode | null | undefined | any
 ): node is CustomLinkNode {
-  return node instanceof LinkNode;
+  return node instanceof CustomLinkNode;
 }
 
 export const toggleCustomLinkNode = (

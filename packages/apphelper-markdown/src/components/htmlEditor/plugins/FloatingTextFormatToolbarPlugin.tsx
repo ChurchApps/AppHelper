@@ -187,6 +187,11 @@ function useFloatingTextFormatToolbar(editor: any, anchorElem: any) {
 
   const updatePopup = useCallback(() => {
     editor.getEditorState().read(() => {
+      // Don't update during IME composition (for CJK languages)
+      if (editor.isComposing()) {
+        return;
+      }
+
       const selection = $getSelection();
       const nativeSelection = window.getSelection();
       const rootElement = editor.getRootElement();
@@ -213,7 +218,9 @@ function useFloatingTextFormatToolbar(editor: any, anchorElem: any) {
       setIsSuperscript(selection.hasFormat("superscript"));
       setIsCode(selection.hasFormat("code"));
 
-      if (!$isRangeSelection(selection) || selection.getTextContent() === "") {
+      // Check for actual text content (ignore whitespace-only selections)
+      const textContent = selection.getTextContent().replace(/\n/g, "");
+      if (!$isRangeSelection(selection) || textContent === "") {
         setIsText(false);
       } else {
         setIsText(true);

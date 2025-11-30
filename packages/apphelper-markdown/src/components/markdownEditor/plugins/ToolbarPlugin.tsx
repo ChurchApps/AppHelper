@@ -6,7 +6,7 @@ import { $wrapNodes, $isAtNodeEnd } from "@lexical/selection";
 import { $getNearestNodeOfType, mergeRegister } from "@lexical/utils";
 import { INSERT_ORDERED_LIST_COMMAND, INSERT_UNORDERED_LIST_COMMAND, REMOVE_LIST_COMMAND, $isListNode, ListNode } from "@lexical/list";
 import { createPortal } from "react-dom";
-import { $createHeadingNode, $createQuoteNode, $isHeadingNode } from "@lexical/rich-text";
+import { $createHeadingNode, $createQuoteNode, $isHeadingNode, $isQuoteNode } from "@lexical/rich-text";
 import { $isCodeNode, getDefaultCodeLanguage, getCodeLanguages, $createCodeNode } from "@lexical/code";
 import { Icon } from "@mui/material";
 import FloatingLinkEditor from "./customLink/FloatingLinkEditor";
@@ -188,15 +188,16 @@ function BlockOptionsDropdownList({ editor, blockType, toolbarRef, setShowBlockO
   };
 
   const formatQuote = () => {
-    if (blockType !== "quote") {
-      editor.update(() => {
-        const selection = $getSelection();
-
-        if ($isRangeSelection(selection)) {
+    editor.update(() => {
+      const selection = $getSelection();
+      if ($isRangeSelection(selection)) {
+        if (blockType === "quote") {
+          $wrapNodes(selection, () => $createParagraphNode());
+        } else {
           $wrapNodes(selection, () => $createQuoteNode());
         }
-      });
-    }
+      }
+    });
     setShowBlockOptionsDropDown(false);
   };
 
@@ -230,7 +231,7 @@ function BlockOptionsDropdownList({ editor, blockType, toolbarRef, setShowBlockO
       <button className="item" onClick={formatHeading3}>
         <span className="icon h3" />
         <span className="text">Heading 3</span>
-        {blockType === "h4" && <span className="active" />}
+        {blockType === "h3" && <span className="active" />}
       </button>
       <button className="item" onClick={formatHeading4}>
         <span className="icon h4" />

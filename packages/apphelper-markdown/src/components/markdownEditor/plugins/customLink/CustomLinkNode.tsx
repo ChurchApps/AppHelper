@@ -25,11 +25,23 @@ export class CustomLinkNode extends LinkNode {
   }
 
   static importJSON(serializedNode: any) {
-    return super.importJSON(serializedNode);
+    const {
+      url = "https://",
+      target = "_self",
+      classNames = []
+    } = serializedNode || {};
+    return new CustomLinkNode(url, target, classNames);
   }
 
   exportJSON() {
-    return super.exportJSON();
+    return {
+      ...super.exportJSON(),
+      type: CustomLinkNode.getType(),
+      url: this.__url,
+      target: this.__target,
+      classNames: this.__classNames,
+      version: 1
+    };
   }
 
   static getType() : string {
@@ -49,7 +61,9 @@ export class CustomLinkNode extends LinkNode {
 
     link.setAttribute("target", this.__target || "_blank");
 
-    addClassNamesToElement(link, (this.__classNames || []).join(" "));
+    if (Array.isArray(this.__classNames) && this.__classNames.length > 0) {
+      addClassNamesToElement(link, ...this.__classNames);
+    }
 
     return link;
   }
@@ -78,7 +92,7 @@ export function $createCustomLinkNode(
 export function $isCustomLinkNode(
   node: LexicalNode | null | undefined | any
 ): node is CustomLinkNode {
-  return node instanceof LinkNode;
+  return node instanceof CustomLinkNode;
 }
 
 export const toggleCustomLinkNode = (

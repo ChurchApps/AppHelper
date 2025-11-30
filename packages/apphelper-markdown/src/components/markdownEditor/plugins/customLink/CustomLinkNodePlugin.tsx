@@ -12,7 +12,7 @@ const CustomLinkNodePlugin: FC = () => {
   const [editor] = useLexicalComposerContext();
 
   useEffect(() => {
-    editor.registerCommand(
+    return editor.registerCommand(
       TOGGLE_CUSTOM_LINK_NODE_COMMAND,
       (props: LinkCustomizationAttributes) => {
         toggleCustomLinkNode({

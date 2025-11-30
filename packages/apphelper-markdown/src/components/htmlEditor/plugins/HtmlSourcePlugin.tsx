@@ -28,15 +28,18 @@ export default function HtmlSourcePlugin({ isSourceMode }: Props) {
 
   // Update editor when leaving source mode
   useEffect(() => {
-    if (!isSourceMode && prevIsSourceMode && htmlSource) {
+    if (!isSourceMode && prevIsSourceMode && htmlSource !== undefined) {
       editor.update(() => {
-        const root = $getRoot();
-        root.clear();
-        
         const parser = new DOMParser();
-        const dom = parser.parseFromString(htmlSource, 'text/html');
+        const dom = parser.parseFromString(htmlSource || '', 'text/html');
         const nodes = $generateNodesFromDOM(editor, dom);
-        $insertNodes(nodes);
+
+        // Only clear and insert if we got valid nodes
+        if (nodes && nodes.length > 0) {
+          const root = $getRoot();
+          root.clear();
+          $insertNodes(nodes);
+        }
       });
     }
   }, [isSourceMode, prevIsSourceMode, htmlSource, editor]);
