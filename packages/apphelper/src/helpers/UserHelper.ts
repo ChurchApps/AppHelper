@@ -16,7 +16,6 @@ export class UserHelper {
 			console.error('UserHelper.userChurches is not initialized or not an array:', UserHelper.userChurches);
 			// Try to get userChurches from context if available
 			if (context?.userChurches && Array.isArray(context.userChurches)) {
-				console.log('Using userChurches from context');
 				UserHelper.userChurches = context.userChurches;
 			} else {
 				console.error('Cannot select church: no valid userChurches available');
@@ -38,18 +37,15 @@ export class UserHelper {
 			// TODO - remove context code from here and perform the logic in the component itself.
 			if (context) {
 				if (context.userChurch !== null) UserHelper.churchChanged = true;
-				console.log('UserHelper.selectChurch - Setting userChurch in context:', userChurch);
 				context.setUserChurch(UserHelper.currentUserChurch);
-				
+
 				// Also ensure user is still set in context
 				if (UserHelper.user && context.setUser) {
-					console.log('UserHelper.selectChurch - Ensuring user is set in context:', UserHelper.user);
 					context.setUser(UserHelper.user);
 				}
-				
+
 				// Update person if available
 				if (UserHelper.person && context.setPerson) {
-					console.log('UserHelper.selectChurch - Ensuring person is set in context:', UserHelper.person);
 					context.setPerson(UserHelper.person);
 				}
 			}

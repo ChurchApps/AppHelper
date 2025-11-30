@@ -178,7 +178,7 @@ export default function WebsiteComponentsPage() {
   const [selectedComponent, setSelectedComponent] = React.useState<string | null>(null);
   const [droppedItems, setDroppedItems] = React.useState<any[]>([]);
   const [editingElement, setEditingElement] = React.useState<any>(null);
-  const [testElements, setTestElements] = React.useState<any[]>([
+  const [testElements, _setTestElements] = React.useState<any[]>([
     {
       id: 'test-element-1',
       elementType: 'text',
@@ -1393,7 +1393,7 @@ export default function WebsiteComponentsPage() {
                   }}
                   churchSettings={{}}
                   textColor="#333"
-                  onEdit={(section, element) => {
+                  onEdit={(_section, element) => {
                     console.log("Edit element:", element);
                     setEditingElement(element);
                   }}
@@ -1439,7 +1439,7 @@ export default function WebsiteComponentsPage() {
                   }}
                   churchSettings={{}}
                   textColor="dark"
-                  onEdit={(section, element) => {
+                  onEdit={(_section, element) => {
                     console.log("Edit element:", element);
                     setEditingElement(element);
                   }}
@@ -1475,7 +1475,7 @@ export default function WebsiteComponentsPage() {
                       element={element}
                       churchSettings={{}}
                       textColor="dark"
-                      onEdit={(section, el) => {
+                      onEdit={(_section, el) => {
                         console.log("Edit element:", el);
                         setEditingElement(el);
                       }}

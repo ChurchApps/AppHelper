@@ -158,7 +158,6 @@ export const Element: React.FC<Props> = props => {
       result = <CalendarElement key={props.element.id} element={props.element as ElementInterface} churchId={props.church?.id || props.element.churchId || ""} />
       break;
     default:
-      console.log("Unknown element type:", props.element.elementType);
       break;
   }
 

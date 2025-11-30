@@ -62,7 +62,6 @@ export const NewPrivateMessage: React.FC<Props> = (props) => {
       }
     } catch (error) {
       // No existing conversation found, continue to create new one
-      console.log("No existing conversation found for person:", person.id);
     }
     setSelectedPerson(person);
   }

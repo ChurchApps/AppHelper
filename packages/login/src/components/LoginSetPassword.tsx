@@ -43,8 +43,6 @@ export const LoginSetPassword: React.FC<Props> = props => {
 
   const loadUser = () => {
     ApiHelper.postAnonymous("/users/login", { authGuid: props.auth }, "MembershipApi").then((resp: LoginResponseInterface) => {
-
-      console.log("RESPONSE", resp);
       if (resp.user) setUser(resp.user);
       else props.setShowForgot(true);
     }).catch(() => {
