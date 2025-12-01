@@ -163,6 +163,7 @@ export const Element: React.FC<Props> = props => {
 
   /*<DraggableIcon dndType="element" elementType={props.element.elementType} data={props.element} />*/
   if (props.onEdit) {
+    const showDroppableAfter = props.element.elementType !== "row";
     result = <>
       <DraggableWrapper
         dndType="element"
@@ -183,7 +184,7 @@ export const Element: React.FC<Props> = props => {
           {result}
         </div>
       </DraggableWrapper>
-      {getAddElement((props.element.sort || 0) + 0.1)}
+      {showDroppableAfter && getAddElement((props.element.sort || 0) + 0.1)}
     </>
 
     /*
