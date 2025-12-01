@@ -1,6 +1,6 @@
 {
   "name": "@churchapps/apphelper-workspace",
-  "version": "0.5.6",
+  "version": "0.5.7",
   "description": "Workspace for ChurchApps AppHelper packages",
   "private": true,
   "workspaces": [

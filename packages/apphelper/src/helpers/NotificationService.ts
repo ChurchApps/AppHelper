@@ -26,20 +26,10 @@ export class NotificationService {
   /**
    * Initialize the notification service with user context
    */
-  /**
-   * Initialize the notification service with user context
-   */
   async initialize(context: UserContextInterface): Promise<void> {
     if (this.isInitialized) {
       return;
     }
-
-      hasUser: !!context?.user,
-      hasPerson: !!context?.person,
-      hasUserChurch: !!context?.userChurch,
-      personId: context?.person?.id,
-      churchId: context?.userChurch?.church?.id
-    });
 
     try {
       // Store current person ID for conversation counting
@@ -75,12 +65,6 @@ export class NotificationService {
   /**
    * Register websocket handlers for real-time notification updates
    */
-  /**
-   * Register websocket handlers for real-time notification updates
-   */
-  /**
-   * Register websocket handlers for real-time notification updates
-   */
   private registerWebSocketHandlers(): void {
     // Handler for new private messages
     SocketHelper.addHandler("privateMessage", "NotificationService-PM", (data: any) => {
@@ -110,7 +94,6 @@ export class NotificationService {
         } catch (error) {
           console.error('❌ NotificationService: Error calling debouncedLoadNotificationCounts:', error);
         }
-      } else {
       }
     });
 
@@ -120,9 +103,6 @@ export class NotificationService {
     });
   }
 
-  /**
-   * Load notification counts from the API with debouncing
-   */
   /**
    * Load notification counts from the API with debouncing
    */
@@ -137,9 +117,6 @@ export class NotificationService {
     }, 300); // 300ms debounce
   }
 
-  /**
-   * Load notification counts from the API
-   */
   /**
    * Load notification counts from the API
    */
@@ -172,9 +149,6 @@ export class NotificationService {
   /**
    * Update counts and notify all listeners
    */
-  /**
-   * Update counts and notify all listeners
-   */
   private updateCounts(newCounts: NotificationCounts): void {
     
     const countsChanged = 
@@ -193,7 +167,6 @@ export class NotificationService {
           console.error(`❌ Error in notification listener ${index}:`, error);
         }
       });
-    } else {
     }
   }
 

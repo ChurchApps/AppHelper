@@ -76,10 +76,10 @@ export function DroppableArea(props: Props) {
     // When dragging - show full drop zone UI
     const baseStyle: CSSProperties = {
       width: "100%",
-      minHeight: "60px",
-      padding: "20px 10px",
-      margin: "8px 0",
-      borderRadius: "8px",
+      minHeight: "32px",
+      padding: "6px 10px",
+      margin: "2px 0",
+      borderRadius: "6px",
       transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
       display: "flex",
       alignItems: "center",
@@ -89,6 +89,7 @@ export function DroppableArea(props: Props) {
       left: hideWhenInactive ? undefined : 0,
       zIndex: hideWhenInactive ? undefined : 1,
       overflow: "hidden",
+      boxSizing: "border-box",
     };
 
     if (justDropped) {

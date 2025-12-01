@@ -116,14 +116,7 @@ export class SocketHelper {
 				};
 
 				SocketHelper.socket.onclose = async (e) => {
-						code: e.code,
-						reason: e.reason,
-						wasClean: e.wasClean,
-						timestamp: new Date().toISOString(),
-						totalMessagesReceived: messageCount
-					});
-
-					// Log common close codes for debugging
+					// Socket closed
 				};
 
 				SocketHelper.socket.onerror = (error) => {
