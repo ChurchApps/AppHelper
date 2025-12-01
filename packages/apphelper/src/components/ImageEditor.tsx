@@ -23,10 +23,18 @@ export function ImageEditor(props: Props) {
   const [photoSrc, setPhotoSrc] = useState<string>("");
   const [croppedImageDataUrl, setCroppedImageDataUrl] = useState<string>("");
   const cropperRef = useRef<HTMLImageElement>(null);
-  let timeout: number | null = null;
+  const timeoutRef = useRef<number | null>(null);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current !== null) {
+        window.clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleSave = () => {
-    console.log('ImageEditor handleSave called, croppedImageDataUrl:', croppedImageDataUrl ? 'Data URL available' : 'No data URL');
     props.onUpdate(croppedImageDataUrl);
   };
 
@@ -43,7 +51,6 @@ export function ImageEditor(props: Props) {
     const reader = new FileReader();
     reader.onload = () => {
       const url = reader.result.toString();
-      console.log('ImageEditor file uploaded, setting photoSrc');
       setPhotoSrc(url);
       setCroppedImageDataUrl("");
     };
@@ -85,12 +92,12 @@ export function ImageEditor(props: Props) {
   }
 
   const handleCrop = () => {
-    if (timeout !== null) {
-      window.clearTimeout(timeout);
-      timeout = null;
+    if (timeoutRef.current !== null) {
+      window.clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
     }
 
-    timeout = window.setTimeout(() => {
+    timeoutRef.current = window.setTimeout(() => {
       if (cropperRef.current !== null) {
         const imageElement: any = cropperRef?.current;
         const cropper: any = imageElement?.cropper;
@@ -105,7 +112,6 @@ export function ImageEditor(props: Props) {
         }
 
         const url = cropper.getCroppedCanvas({ width, height }).toDataURL("image/png", 0.4);
-        console.log('ImageEditor handleCrop setting croppedImageDataUrl');
         setCroppedImageDataUrl(url);
       }
     }, 200);

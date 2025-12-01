@@ -429,8 +429,8 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
                         value={selectedGateway} 
                         onChange={handleChange}
                       >
-                        {availableGateways.map((gw, i) => (
-                          <MenuItem key={i} value={DonationHelper.normalizeProvider(gw.provider)}>
+                        {availableGateways.map((gw) => (
+                          <MenuItem key={gw.provider} value={DonationHelper.normalizeProvider(gw.provider)}>
                             {DonationHelper.isProvider(gw.provider, "stripe") ? "Stripe" : "PayPal"}
                           </MenuItem>
                         ))}
@@ -451,8 +451,8 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
                         className="capitalize" 
                         onChange={handleChange}
                       >
-                        {availablePaymentMethods.map((paymentMethod: PaymentMethod, i: number) => (
-                          <MenuItem key={i} value={paymentMethod.id}>
+                        {availablePaymentMethods.map((paymentMethod: PaymentMethod) => (
+                          <MenuItem key={paymentMethod.id} value={paymentMethod.id}>
                             {paymentMethod.name} {paymentMethod.last4 ? `****${paymentMethod.last4}` : paymentMethod.email || ''}
                           </MenuItem>
                         ))}

@@ -92,8 +92,8 @@ export const PageHeader: React.FC<PageHeaderProps> = ({ icon, title, subtitle, c
       {/* Statistics row */}
       {statistics && statistics.length > 0 && (
         <Stack id="page-header-statistics" direction={{ xs: "column", sm: "row" }} spacing={3} sx={{ mt: 3 }}>
-          {statistics.map((stat, index) => (
-            <Stack key={index} direction="row" spacing={1} alignItems="center">
+          {statistics.map((stat) => (
+            <Stack key={stat.label} direction="row" spacing={1} alignItems="center">
               {React.cloneElement(stat.icon as React.ReactElement<any>, { sx: { color: "#FFF", fontSize: 20 } })}
               <Typography variant="h6" sx={{ color: "#FFF", fontWeight: 600, mr: 1 }}>
                 {stat.value}

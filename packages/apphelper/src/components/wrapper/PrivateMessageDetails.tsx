@@ -31,17 +31,13 @@ export const PrivateMessageDetails: React.FC<Props> = (props) => {
     const clearNotification = async () => {
       if (props.privateMessage.notifyPersonId === props.context.person.id) {
         try {
-          console.log("Marking private message as read:", props.privateMessage.id);
-          
           // Clear the notification by getting the private message details
           await ApiHelper.get(`/privateMessages/${props.privateMessage.id}`, "MessagingApi");
-          
+
           // Manually refresh notification counts to ensure immediate UI update
           const notificationService = NotificationService.getInstance();
           await notificationService.refresh();
-          
-          console.log("Private message marked as read and notifications refreshed");
-          
+
           // Notify parent component that message was marked as read
           if (props.onMessageRead) {
             props.onMessageRead();

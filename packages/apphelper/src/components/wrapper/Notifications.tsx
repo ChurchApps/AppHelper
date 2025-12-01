@@ -205,7 +205,7 @@ export const Notifications: React.FC<Props> = (props) => {
         {isLoading ? (
           <Box sx={{ p: 2 }}>
             {[...Array(3)].map((_, index) => (
-              <Box key={index} sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+              <Box key={`skeleton-${index}`} sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <Skeleton variant="circular" width={48} height={48} sx={{ mr: 2 }} />
                 <Box sx={{ flex: 1 }}>
                   <Skeleton variant="text" width="80%" height={24} />

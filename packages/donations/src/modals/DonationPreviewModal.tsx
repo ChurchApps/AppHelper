@@ -61,7 +61,7 @@ export const DonationPreviewModal: React.FC<Props> = (props) => {
                 <TableRow><TableCell>{Locale.label("donation.preview.every")}:</TableCell><TableCell className="capitalize">{formatInterval()}</TableCell></TableRow>
               </>
             }
-            <TableRow><TableCell>{Locale.label("donation.preview.funds")}:</TableCell><TableCell>{props.donation.funds?.map((fund: any, i: number) => <p key={i}>{CurrencyHelper.formatCurrency(fund.amount)} - {fund.name}</p>)}</TableCell></TableRow>
+            <TableRow><TableCell>{Locale.label("donation.preview.funds")}:</TableCell><TableCell>{props.donation.funds?.map((fund: any) => <p key={fund.id || fund.name}>{CurrencyHelper.formatCurrency(fund.amount)} - {fund.name}</p>)}</TableCell></TableRow>
             {props.payFee > 0 && <TableRow><TableCell>{Locale.label("donation.preview.fee")}:</TableCell><TableCell>{CurrencyHelper.formatCurrency(props.payFee)}</TableCell></TableRow>}
             <TableRow><TableCell>{Locale.label("donation.preview.total")}:</TableCell><TableCell><h4>{CurrencyHelper.formatCurrency(props.donation.amount || 0)}</h4></TableCell></TableRow>
           </TableBody>

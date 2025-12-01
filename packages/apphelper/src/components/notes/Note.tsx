@@ -59,11 +59,11 @@ export const Note: React.FC<Props> = (props) => {
             </Stack>
             <Box>
               {contents.map((c, i) => c ? (
-                <Typography key={i} variant="body2" sx={{ mb: 0.5 }}>
+                <Typography key={`content-${i}-${c.substring(0, 20)}`} variant="body2" sx={{ mb: 0.5 }}>
                   {c}
                 </Typography>
               ) : (
-                <Box key={i} sx={{ height: '1em' }} />
+                <Box key={`empty-${i}`} sx={{ height: '1em' }} />
               ))}
             </Box>
           </Box>

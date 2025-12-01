@@ -13,7 +13,7 @@ export const ErrorMessages: React.FC<Props> = props => {
     if (props.errors.length > 0) {
       const _items: React.ReactNode[] = [];
       for (let i = 0; i < props.errors.length; i++) {
-        _items.push(<div key={i}>{props.errors[i]}</div>);
+        _items.push(<div key={props.errors[i]}>{props.errors[i]}</div>);
       }
       setItems(_items);
       setOpen(true);

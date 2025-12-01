@@ -248,8 +248,8 @@ export default function DonationPage() {
                 )}
                 {Array.isArray(history) && history.length > 0 && (
                   <ul>
-                    {history.slice(0, 10).map((d: any, i: number) => (
-                      <li key={i}>
+                    {history.slice(0, 10).map((d: any) => (
+                      <li key={d.id || d.donationId || `${d.date}-${d.amount}`}>
                         {new Date(d.date || d.created || d.timestamp || Date.now()).toLocaleDateString()} —
                         {` $${(d.amount || d.total || 0) / (d.amount && d.amount > 1000 ? 100 : 1)}`}
                         {d.funds && Array.isArray(d.funds) && d.funds.length > 0 && (

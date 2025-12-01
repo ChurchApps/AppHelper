@@ -138,9 +138,9 @@ export const CarouselElement = ({ element, churchSettings, textColor, onEdit, on
           zIndex: 2,
         }}
       >
-        {element.elements && element.elements.map((_, idx) => (
+        {element.elements && element.elements.map((el, idx) => (
           <button
-            key={idx}
+            key={el.id || `carousel-dot-${idx}`}
             onClick={() => goTo(idx)}
             style={{
               margin: 2,

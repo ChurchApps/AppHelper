@@ -22,7 +22,7 @@ export const SmallButton = React.forwardRef<HTMLDivElement, Props>((props, ref) 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     if (props.href) setRedirectUrl(props.href);
-    else props.onClick(e);
+    else if (props.onClick) props.onClick(e);
   }
 
   const style = (props.text)

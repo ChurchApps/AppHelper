@@ -84,12 +84,8 @@ export const PayPalNonAuthDonationInner: React.FC<Props> = ({ mainContainerCssPr
 
   const handleCaptchaChange = (value: string | null) => {
     if (value) {
-      console.log("Captcha token received, length:", value.length);
-      console.log("Token preview:", value.substring(0, 50) + "...");
-      
       ApiHelper.postAnonymous("/donate/captcha-verify", { token: value }, "GivingApi")
         .then((data: any) => {
-          console.log("Captcha verification response:", data);
           // Check for various success indicators
           if (data.response === "success" || data.success === true || data.score >= 0.5) {
             setCaptchaResponse("success");
@@ -102,7 +98,6 @@ export const PayPalNonAuthDonationInner: React.FC<Props> = ({ mainContainerCssPr
           setCaptchaResponse("error");
         });
     } else {
-      console.log("Captcha expired or reset");
       setCaptchaResponse("");
     }
   };
@@ -116,8 +111,6 @@ export const PayPalNonAuthDonationInner: React.FC<Props> = ({ mainContainerCssPr
   const handleSave = async () => {
     if (validate()) {
       // CAPTCHA TEMPORARILY DISABLED - Remove this bypass in production
-      console.warn("CAPTCHA VALIDATION BYPASSED - This should only be temporary!");
-      
       setProcessing(true);
       ApiHelper.post("/users/loadOrCreate", { userEmail: email, firstName, lastName }, "MembershipApi")
         .catch((ex: any) => { setErrors([ex.toString()]); setProcessing(false); })
@@ -217,7 +210,7 @@ export const PayPalNonAuthDonationInner: React.FC<Props> = ({ mainContainerCssPr
     } else result.push("PayPal Hosted Fields not available");
     
     if (result.length === 0) {
-      if (!email.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w+)+$/)) result.push(Locale.label("donation.donationForm.validate.validEmail"));  //eslint-disable-line
+      if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) result.push(Locale.label("donation.donationForm.validate.validEmail"));
     }
     
     setErrors(result);

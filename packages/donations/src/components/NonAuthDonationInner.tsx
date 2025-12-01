@@ -75,12 +75,9 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 
 	const handleCaptchaChange = (value: string | null) => {
 		if (value) {
-			console.log("Captcha token received, length:", value.length);
-			console.log("Token preview:", value.substring(0, 50) + "...");
 			
 			ApiHelper.postAnonymous("/donate/captcha-verify", { token: value }, "GivingApi")
 				.then((data: any) => {
-					console.log("Captcha verification response:", data);
 					// Check for various success indicators
 					if (data.response === "success" || data.success === true || data.score >= 0.5) {
 						setCaptchaResponse("success");
@@ -98,7 +95,6 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 					setCaptchaResponse("error");
 				});
 		} else {
-			console.log("Captcha expired or reset");
 			setCaptchaResponse("");
 		}
 	};
@@ -112,26 +108,23 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 
 	const handleSave = async () => {
 		if (validate()) {
-			// CAPTCHA TEMPORARILY DISABLED - Remove this bypass in production
-			console.warn("CAPTCHA VALIDATION BYPASSED - This should only be temporary!");
-			
 			// Validate captcha first
-			// if (!_captchaResponse) {
-			// 	setErrors(["Please complete the reCAPTCHA verification"]);
-			// 	return;
-			// }
-			// if (_captchaResponse === "robot") {
-			// 	setErrors(["reCAPTCHA verification failed - detected as robot. Please try again."]);
-			// 	return;
-			// }
-			// if (_captchaResponse === "error") {
-			// 	setErrors(["reCAPTCHA verification error. Please try again."]);
-			// 	return;
-			// }
-			// if (_captchaResponse !== "success") {
-			// 	setErrors([`reCAPTCHA verification unexpected response: ${_captchaResponse}`]);
-			// 	return;
-			// }
+			if (!_captchaResponse) {
+				setErrors(["Please complete the reCAPTCHA verification"]);
+				return;
+			}
+			if (_captchaResponse === "robot") {
+				setErrors(["reCAPTCHA verification failed - detected as robot. Please try again."]);
+				return;
+			}
+			if (_captchaResponse === "error") {
+				setErrors(["reCAPTCHA verification error. Please try again."]);
+				return;
+			}
+			if (_captchaResponse !== "success") {
+				setErrors([`reCAPTCHA verification unexpected response: ${_captchaResponse}`]);
+				return;
+			}
 
 			setProcessing(true);
 			ApiHelper.post("/users/loadOrCreate", { userEmail: email, firstName, lastName }, "MembershipApi")
@@ -242,7 +235,7 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 		if (!email) result.push(Locale.label("donation.donationForm.validate.email"));
 		if (fundsTotal === 0) result.push(Locale.label("donation.donationForm.validate.amount"));
 		if (result.length === 0) {
-			if (!email.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w+)+$/)) result.push(Locale.label("donation.donationForm.validate.validEmail"));  //eslint-disable-line
+			if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) result.push(Locale.label("donation.donationForm.validate.validEmail"));
 		}
 		//Todo - make sure the account doesn't exist. (loadOrCreate?)
 		setErrors(result);
@@ -293,7 +286,6 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 				);
 				return response.calculatedFee;
 			} catch (error) {
-				console.log("Error calculating transaction fee: ", error);
 				return 0;
 			}
 		} else {
@@ -341,11 +333,9 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 							ref={captchaRef} 
 							onChange={handleCaptchaChange}
 							onExpired={() => {
-								console.log("Captcha expired");
 								setCaptchaResponse("");
 							}}
 							onErrored={() => {
-								console.log("Captcha error");
 								setCaptchaResponse("error");
 							}}
 						/>

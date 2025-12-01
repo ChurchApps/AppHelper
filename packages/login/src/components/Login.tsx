@@ -29,8 +29,6 @@ export const Login: React.FC<Props> = ({ mainContainerCssProps = {}, ...props })
 		if (!email) result.push(Locale.label("login.validate.email"));
 		else if (!validateEmail(email)) result.push(Locale.label("login.validate.email"));
 		if (!password) result.push(Locale.label("login.validate.password"));
-		console.log('Validation errors:', result);
-		console.log('setErrors function:', props.setErrors);
 		props.setErrors(result);
 		return result.length === 0;
 	}

@@ -29,7 +29,6 @@ export const GalleryModal: React.FC<Props> = (props: Props) => {
   const loadData = () => { ApiHelper.get("/gallery/" + aspectRatio.toString(), "ContentApi").then((data: any) => setImages(data.images)); }
 
   const handleImageUpdated = async (dataUrl: string) => {
-    console.log('handleImageUpdated called with dataUrl:', dataUrl ? 'Data URL received' : 'Empty dataUrl');
     
     if (!dataUrl) {
       console.warn('No dataUrl provided to handleImageUpdated');
@@ -42,15 +41,12 @@ export const GalleryModal: React.FC<Props> = (props: Props) => {
       const file = new File([blob], "file_name");
 
       const params = { folder: aspectRatio.toString(), fileName };
-      console.log('Attempting to upload image with params:', params);
       
       const presigned = await ApiHelper.post("/gallery/requestUpload", params, "ContentApi");
       const doUpload = presigned.key !== undefined;
       
       if (doUpload) {
-        console.log('Upload successful, uploading to presigned URL');
         await FileHelper.postPresignedFile(presigned, file, () => { });
-        console.log('Image uploaded successfully');
       } else {
         console.warn('Upload failed - no presigned key received');
       }
@@ -75,10 +71,10 @@ export const GalleryModal: React.FC<Props> = (props: Props) => {
 
   const getImages = () => {
     let result: React.ReactElement[] = [];
-    images.forEach((img: any) => {
+    images.forEach((img: any, index: number) => {
       const parts = img.split("/");
 
-      result.push(<Grid size={{ xs: 12, md: 4 }}>
+      result.push(<Grid key={img || index} size={{ xs: 12, md: 4 }}>
         <Box sx={{ position: "relative", ":hover #deleteIcon": { visibility: "visible" } }}>
           <a href="about:blank" onClick={(e) => { e.preventDefault(); props.onSelect(contentRoot + "/" + img) }} aria-label="Select image" data-testid="select-image">
             <Box 

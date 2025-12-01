@@ -199,7 +199,6 @@ const LoginPageContent: React.FC<Props> = ({ showLogo = true, loginContainerCssP
 			person = await ApiHelper.get(`/people/${UserHelper.currentUserChurch.person?.id}`, "MembershipApi");
 			if (person) props.context.setPerson(person);
 		} catch {
-			console.log("claiming person");
 			person = await ApiHelper.get("/people/claim/" + UserHelper.currentUserChurch.church.id, "MembershipApi");
 			props.context.setPerson(person);
 		}
@@ -210,7 +209,6 @@ const LoginPageContent: React.FC<Props> = ({ showLogo = true, loginContainerCssP
 		if (returnUrl && typeof window !== "undefined") {
 			// Use handleRedirect function if available, otherwise fallback to window.location
 			if (props.handleRedirect) {
-				console.log('Login handleRedirect - Passing userChurches:', UserHelper.userChurches);
 				props.handleRedirect(returnUrl, UserHelper.user, person, UserHelper.currentUserChurch, UserHelper.userChurches);
 			} else {
 				window.location.href = returnUrl;
@@ -243,7 +241,6 @@ const LoginPageContent: React.FC<Props> = ({ showLogo = true, loginContainerCssP
 
 	const handleLoginErrors = (errors: string[]) => {
 		setWelcomeBackName("");
-		console.log(errors);
 		setErrors([Locale.label("login.validate.invalid")]);
 	}
 
@@ -251,7 +248,6 @@ const LoginPageContent: React.FC<Props> = ({ showLogo = true, loginContainerCssP
 		setErrors([])
 		setIsSubmitting(true);
 		try {
-			console.log("Logging in with data: ", data, "/users/login", ApiHelper.getConfig("MembershipApi"));
 			const resp: LoginResponseInterface = await ApiHelper.postAnonymous("/users/login", data, "MembershipApi");
 			setIsSubmitting(false);
 			handleLoginSuccess(resp);
@@ -263,11 +259,24 @@ const LoginPageContent: React.FC<Props> = ({ showLogo = true, loginContainerCssP
 		}
 	};;
 
-	const getWelcomeBack = () => { if (welcomeBackName !== "") return (<><Alert severity="info"><div dangerouslySetInnerHTML={{ __html: Locale.label("login.welcomeName")?.replace("{}", welcomeBackName) }} /></Alert><Loading /></>); }
+	const getWelcomeBack = () => {
+		if (welcomeBackName !== "") {
+			const label = Locale.label("login.welcomeName") || "Welcome back, {}!";
+			const parts = label.split("{}");
+			return (
+				<>
+					<Alert severity="info">
+						{parts[0]}{welcomeBackName}{parts[1] || ""}
+					</Alert>
+					<Loading />
+				</>
+			);
+		}
+	}
 	const getCheckEmail = () => { if (new URLSearchParams(location?.search).get("checkEmail") === "1") return <Alert severity="info">{Locale.label("login.registerThankYou")}</Alert> }
 	const handleRegisterCallback = () => { setShowForgot(false); setShowRegister(true); }
 	const handleLoginCallback = () => { setShowForgot(false); setShowRegister(false); }
-	const handleChurchRegistered = (church: ChurchInterface) => { registeredChurch = church; setShowRegister(false); console.log("Updated VERSION********") }
+	const handleChurchRegistered = (church: ChurchInterface) => { registeredChurch = church; setShowRegister(false); }
 
 	const getInputBox = () => {
 		if (showRegister) return (

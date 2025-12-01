@@ -10,18 +10,15 @@ import { Locale } from "../../helpers";
 export interface Props { userChurches: LoginUserChurchInterface[], currentUserChurch: LoginUserChurchInterface, context: UserContextInterface, onDelete?: () => void, onChurchChange?: () => void }
 
 export const ChurchList: React.FC<Props> = props => {
-	console.log('ChurchList - Rendering with props:', props);
-	
 	const [userChurches, setUserChurches] = useState(() => {
 		try {
 			// If we have currentUserChurch, use it as fallback
 			if (props.currentUserChurch && (!props.userChurches || !Array.isArray(props.userChurches))) {
-				console.log('ChurchList - Using currentUserChurch as single item array');
 				return [props.currentUserChurch];
 			}
-			
+
 			let churches = props.userChurches;
-			
+
 			// Ensure we have an array
 			if (!Array.isArray(churches)) {
 				console.warn('ChurchList - Expected array but got:', typeof churches, churches);
@@ -31,9 +28,7 @@ export const ChurchList: React.FC<Props> = props => {
 				}
 				churches = [];
 			}
-			
-			console.log('ChurchList - Processing churches array:', churches);
-			
+
 			// Filter for valid userChurch objects (should have church property)
 			const validChurches = churches.filter(uc => {
 				const isValid = uc && uc.church && uc.church.id;
@@ -42,14 +37,12 @@ export const ChurchList: React.FC<Props> = props => {
 				}
 				return isValid;
 			});
-			
+
 			// If no valid churches but we have currentUserChurch, use it
 			if (validChurches.length === 0 && props.currentUserChurch) {
-				console.log('ChurchList - No valid churches found, using currentUserChurch');
 				return [props.currentUserChurch];
 			}
-			
-			console.log('ChurchList - Valid churches:', validChurches);
+
 			return validChurches;
 		} catch (error) {
 			console.error('ChurchList - Error processing churches:', error);
@@ -133,9 +126,7 @@ export const ChurchList: React.FC<Props> = props => {
 			key={userChurch.church.id}
 			selected={(uc.church.id === props.currentUserChurch.church.id) && true}
 			onClick={async () => {
-				console.log('ChurchList - Selecting church:', userChurch.church.name);
 				await UserHelper.selectChurch(props.context, userChurch.church.id, null);
-				console.log('ChurchList - Church selected');
 				
 				// Call the onChurchChange callback if provided
 				if (props.onChurchChange) {

@@ -22,7 +22,7 @@ export const GroupList = (props: Props) => {
     ApiHelper.getAnonymous("/groups/public/" + props.churchId + "/label?label=" + encodeURIComponent(props.label), "MembershipApi").then((data: any) => {
       setGroups(data);
     });
-  }, []);
+  }, [props.churchId, props.label]);
 
 
   if (!groups) return <Loading />;
@@ -30,7 +30,7 @@ export const GroupList = (props: Props) => {
     <Grid container spacing={3}>
       {
         groups?.length > 0
-          ? (groups.map((group) => (<Grid size={{ xs: 4 }}><GroupCard group={group} /></Grid>)))
+          ? (groups.map((group) => (<Grid key={group.id} size={{ xs: 4 }}><GroupCard group={group} /></Grid>)))
           : (<p>No groups found</p>)
       }
     </Grid>
