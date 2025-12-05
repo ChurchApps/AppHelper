@@ -22,12 +22,9 @@ export class StyleHelper {
   private static getStyle = (id:string, styles:any) => {
     let result:string[] = [];
     Object.keys(styles).forEach((key:string) => {
-      const val = styles[key];
-      const noQuote = val.endsWith("px") || val.endsWith("em") || val.endsWith("pt") || val.startsWith("#") || val.startsWith("--");
-      if (noQuote) result.push(`${key}: ${styles[key]};`);
-      else result.push(`${key}: ${styles[key]};`);
+      result.push(`${key}: ${styles[key]} !important;`);
     });
-    if (result.length > 0) return `#${id} { ${result.join(" ")} }`;
+    if (result.length > 0) return `#${id}, #${id} * { ${result.join(" ")} }`;
   }
 
   private static getSectionCss = (section:SectionInterface, all:string[], desktop:string[], mobile:string[]) => {
