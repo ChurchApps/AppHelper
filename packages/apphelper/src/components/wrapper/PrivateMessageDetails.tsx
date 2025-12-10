@@ -1,13 +1,12 @@
 "use client";
 
 import React from "react";
-import { 
-  Paper, 
-  Box, 
-  Typography, 
-  Stack, 
-  IconButton, 
-  useTheme 
+import {
+  Paper,
+  Box,
+  Typography,
+  Stack,
+  IconButton
 } from "@mui/material";
 import { ArrowBack as ArrowBackIcon } from "@mui/icons-material";
 import { PrivateMessageInterface, UserContextInterface } from "@churchapps/helpers";
@@ -24,7 +23,6 @@ interface Props {
 }
 
 export const PrivateMessageDetails: React.FC<Props> = (props) => {
-  const theme = useTheme();
   
   // Clear notification when conversation is opened
   React.useEffect(() => {
