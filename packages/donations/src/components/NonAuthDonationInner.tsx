@@ -79,7 +79,7 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 			ApiHelper.postAnonymous("/donate/captcha-verify", { token: value }, "GivingApi")
 				.then((data: any) => {
 					// Check for various success indicators
-					if (data.response === "success" || data.success === true || data.score >= 0.5) {
+					if (data.response === "success" || data.response === "human" || data.success === true || data.score >= 0.5) {
 						setCaptchaResponse("success");
 					} else {
 						setCaptchaResponse(data.response || "robot");
