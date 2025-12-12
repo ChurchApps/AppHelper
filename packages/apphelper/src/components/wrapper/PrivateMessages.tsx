@@ -2,20 +2,19 @@
 
 import React, { useState, useEffect } from "react";
 import { ApiHelper } from "@churchapps/helpers";
-import { 
-  Box, 
-  Stack, 
-  List, 
-  ListItem, 
-  ListItemAvatar, 
-  ListItemText, 
-  Typography, 
-  IconButton, 
+import {
+  Box,
+  Stack,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Typography,
+  IconButton,
   Chip,
   Divider,
   Paper,
-  Skeleton,
-  useTheme
+  Skeleton
 } from "@mui/material";
 import { Add as AddIcon, ChatBubbleOutline as ChatIcon } from "@mui/icons-material";
 import { PersonAvatar } from "../PersonAvatar";
@@ -457,8 +456,6 @@ export const PrivateMessages: React.FC<Props> = React.memo((props) => {
     privateMessagesStateStore.setSelectedMessage(null);
     loadData();
   }
-
-  const theme = useTheme();
 
   if (inAddMode) return <NewPrivateMessage context={props.context} onSelectMessage={(pm: PrivateMessageInterface) => { privateMessagesStateStore.setSelectedMessage(pm); privateMessagesStateStore.setInAddMode(false); }} onBack={handleBack} />
   if (selectedMessage) return <PrivateMessageDetails privateMessage={selectedMessage} context={props.context} onBack={handleBack} refreshKey={props.refreshKey} onMessageRead={loadData} />

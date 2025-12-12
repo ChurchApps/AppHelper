@@ -3,7 +3,8 @@ import { mergeRegister } from "@lexical/utils";
 import { $getSelection, $isRangeSelection, FORMAT_TEXT_COMMAND, SELECTION_CHANGE_COMMAND, COMMAND_PRIORITY_LOW } from "lexical";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { Box, styled, IconButton } from "@mui/material";
+import { Box, IconButton } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import { 
   FormatBold, 
   FormatItalic, 

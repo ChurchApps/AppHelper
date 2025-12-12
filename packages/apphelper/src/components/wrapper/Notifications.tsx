@@ -2,22 +2,20 @@
 
 import React, { useState } from "react";
 import { ApiHelper } from "@churchapps/helpers";
-import { 
-  Box, 
-  Icon, 
-  Stack, 
-  Typography, 
-  Paper, 
-  List, 
-  ListItem, 
-  ListItemAvatar, 
-  ListItemText, 
-  Avatar, 
-  Chip, 
-  Divider, 
-  IconButton, 
-  Skeleton, 
-  useTheme 
+import {
+  Box,
+  Stack,
+  Typography,
+  Paper,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Avatar,
+  Chip,
+  Divider,
+  IconButton,
+  Skeleton
 } from "@mui/material";
 import { 
   Notifications as NotificationsIcon, 
@@ -38,7 +36,6 @@ interface Props {
 export const Notifications: React.FC<Props> = (props) => {
   const [notifications, setNotifications] = useState<NotificationInterface[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const theme = useTheme();
 
   const loadData = async () => {
     setIsLoading(true);

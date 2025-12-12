@@ -1,5 +1,6 @@
 import React from "react";
-import { AppBar, Link, styled, Toolbar } from "@mui/material";
+import { AppBar, Link, Toolbar } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import { UserMenu } from "../wrapper/UserMenu";
 import { PersonHelper } from "../../helpers/PersonHelper";
 import { PrimaryMenu } from "./PrimaryMenu";

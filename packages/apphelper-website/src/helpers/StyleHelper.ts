@@ -19,12 +19,15 @@ export class StyleHelper {
     return textColor;
   };
 
-  private static getStyle = (id:string, styles:any) => {
+  private static getStyle = (id:string, styles:Record<string, string>) => {
     let result:string[] = [];
     Object.keys(styles).forEach((key:string) => {
-      result.push(`${key}: ${styles[key]} !important;`);
+      const val = styles[key];
+      const noQuote = val.endsWith("px") || val.endsWith("em") || val.endsWith("pt") || val.startsWith("#") || val.startsWith("--");
+      if (noQuote) result.push(`${key}: ${styles[key]};`);
+      else result.push(`${key}: ${styles[key]};`);
     });
-    if (result.length > 0) return `#${id}, #${id} * { ${result.join(" ")} }`;
+    if (result.length > 0) return `#${id} { ${result.join(" ")} }`;
   }
 
   private static getSectionCss = (section:SectionInterface, all:string[], desktop:string[], mobile:string[]) => {

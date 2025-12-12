@@ -1,22 +1,20 @@
 "use client";
 
-import { 
-  Button, 
-  TextField, 
-  Paper, 
-  Box, 
-  Typography, 
-  Stack, 
-  IconButton, 
-  List, 
-  ListItem, 
-  ListItemAvatar, 
-  ListItemText, 
+import {
+  Button,
+  TextField,
+  Paper,
+  Box,
+  Typography,
+  Stack,
+  IconButton,
+  List,
+  ListItemAvatar,
+  ListItemText,
   ListItemButton,
   InputAdornment,
   Divider,
-  Skeleton,
-  useTheme
+  Skeleton
 } from "@mui/material";
 import { 
   ArrowBack as ArrowBackIcon, 
@@ -90,7 +88,6 @@ export const NewPrivateMessage: React.FC<Props> = (props) => {
   }, [props.selectedPerson]);
 
 
-  const theme = useTheme();
   const [isSearching, setIsSearching] = useState(false);
 
   const handleSearchSubmit = async (e: React.MouseEvent) => {

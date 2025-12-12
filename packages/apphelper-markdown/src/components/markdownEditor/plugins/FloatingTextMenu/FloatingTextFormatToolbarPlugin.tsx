@@ -8,7 +8,8 @@ import { $createHeadingNode, $isHeadingNode } from "@lexical/rich-text";
 import { $wrapNodes } from "@lexical/selection";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { Box, styled, IconButton, Icon, Select, MenuItem } from "@mui/material";
+import { Box, IconButton, Icon, Select, MenuItem } from "@mui/material";
+import { styled } from "@mui/material/styles";
 
 import { getDOMRangeRect } from "./getDOMRangeRect";
 import { getSelectedNode } from "./getSelectNode";
