@@ -3,6 +3,49 @@ import { ElementInterface, SectionInterface } from "./index";
 
 export class StyleHelper {
 
+  // Get CSS variable for a token
+  static getTokenVariable(tokenName: string): string {
+    if (!tokenName) return "";
+    // If it's already a CSS variable, return as-is
+    if (tokenName.startsWith("var(--")) return tokenName;
+    // Otherwise wrap it in var()
+    return `var(--${tokenName})`;
+  }
+
+  // Get all available tokens by category
+  static getAvailableTokens(): {
+    colors: string[];
+    spacing: string[];
+    typography: string[];
+    borderRadius: string[];
+  } {
+    return {
+      colors: [
+        "light", "lightAccent", "accent", "darkAccent", "dark",
+        "primary", "secondary", "success", "warning", "error"
+      ],
+      spacing: ["spacing-xs", "spacing-sm", "spacing-md", "spacing-lg", "spacing-xl", "spacing-xxl"],
+      typography: ["font-heading", "font-body", "font-size-base", "font-scale", "line-height"],
+      borderRadius: ["radius-none", "radius-sm", "radius-md", "radius-lg", "radius-full"]
+    };
+  }
+
+  // Check if a value is a token reference
+  static isTokenValue(value: string): boolean {
+    if (!value) return false;
+    // Check if it's a CSS variable
+    if (value.startsWith("var(--")) return true;
+    // Check if it matches any known token names
+    const tokens = this.getAvailableTokens();
+    const allTokens = [
+      ...tokens.colors,
+      ...tokens.spacing,
+      ...tokens.typography,
+      ...tokens.borderRadius
+    ];
+    return allTokens.includes(value);
+  }
+
   static getTextColor = (textColor:string, globalStyles:any, _churchSettings?:any) => {
     if (!textColor) textColor = "#FFF";
     if (textColor.indexOf("var(--") > -1) {
