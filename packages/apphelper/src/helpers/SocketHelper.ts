@@ -71,27 +71,14 @@ export class SocketHelper {
 					if (SocketHelper.isCleanedUp) return;
 
 					messageCount++;
+					console.log("[SocketHelper.onmessage] Received message #" + messageCount + ":", event.data.substring(0, 200));
 
 					try {
 						const payload = JSON.parse(event.data);
+						console.log("[SocketHelper.onmessage] Parsed payload - action:", payload.action, "data:", JSON.stringify(payload.data).substring(0, 100));
 
 						if (payload.action === 'socketId') {
 							hasReceivedSocketId = true;
-						}
-
-						// Log all message types we receive
-						switch (payload.action) {
-							case 'socketId':
-								break;
-							case 'privateMessage':
-								break;
-							case 'notification':
-								break;
-							case 'message':
-								break;
-							case 'reconnect':
-								break;
-							default:
 						}
 
 						SocketHelper.handleMessage(payload);
@@ -157,16 +144,21 @@ export class SocketHelper {
 		if (SocketHelper.isCleanedUp) return;
 
 		try {
+			console.log("[SocketHelper.handleMessage] Processing action:", payload.action);
+			console.log("[SocketHelper.handleMessage] Registered handlers:", SocketHelper.actionHandlers.map(h => ({ id: h.id, action: h.action })));
 
 			if (payload.action === "socketId") {
 				SocketHelper.socketId = payload.data;
+				console.log("[SocketHelper.handleMessage] Set socketId:", SocketHelper.socketId);
 				SocketHelper.createAlertConnection();
 			}
 			else {
 				const matchingHandlers = ArrayHelper.getAll(SocketHelper.actionHandlers, "action", payload.action);
+				console.log("[SocketHelper.handleMessage] Found", matchingHandlers.length, "matching handlers for action:", payload.action);
 
 				matchingHandlers.forEach((handler) => {
 					try {
+						console.log("[SocketHelper.handleMessage] Calling handler:", handler.id);
 						handler.handleMessage(payload.data);
 					} catch (error) {
 						console.error(`❌ Error in handler ${handler.id}:`, error);

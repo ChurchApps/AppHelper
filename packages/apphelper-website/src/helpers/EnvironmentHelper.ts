@@ -35,6 +35,6 @@ export class EnvironmentHelper {
   };
 
   static initProd = () => {
-    EnvironmentHelper.Common.GoogleAnalyticsTag = "G-XYCPBKWXB5";
+    //EnvironmentHelper.Common.GoogleAnalyticsTag = "G-XYCPBKWXB5";
   };
 }
