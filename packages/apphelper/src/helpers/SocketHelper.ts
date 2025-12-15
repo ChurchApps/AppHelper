@@ -17,7 +17,6 @@ export class SocketHelper {
 	}
 
 	static createAlertConnection = () => {
-
 		if (SocketHelper.personIdChurchId.personId && SocketHelper.socketId) {
 			const connection: ConnectionInterface = {
 				conversationId: "alerts",
@@ -27,23 +26,7 @@ export class SocketHelper {
 				personId: SocketHelper.personIdChurchId.personId
 			}
 
-
-			ApiHelper.postAnonymous("/connections", [connection], "MessagingApi").then((response: any) => {
-			}).catch((error: any) => {
-				console.error("❌ Failed to create alert connection:", error);
-				console.error("❌ Error details:", {
-					status: error.status,
-					message: error.message,
-					response: error.response
-				});
-			});
-		} else {
-			console.warn('⚠️ SocketHelper: Cannot create alert connection - missing data:', {
-				hasPersonId: !!SocketHelper.personIdChurchId.personId,
-				hasSocketId: !!SocketHelper.socketId,
-				personId: SocketHelper.personIdChurchId.personId,
-				socketId: SocketHelper.socketId
-			});
+			ApiHelper.postAnonymous("/connections", [connection], "MessagingApi");
 		}
 	}
 
@@ -54,66 +37,37 @@ export class SocketHelper {
 		if (SocketHelper.socket && SocketHelper.socket.readyState !== SocketHelper.socket.CLOSED) {
 			try {
 				SocketHelper.socket.close();
-			} catch (e) {
-				console.error("❌ Error closing existing socket:", e);
-			}
+			} catch { /* ignore */ }
 		}
 
-
 		await new Promise((resolve, reject) => {
-			let hasReceivedSocketId = false;
-			let messageCount = 0;
-
 			try {
 				SocketHelper.socket = new WebSocket(CommonEnvironmentHelper.MessagingApiSocket);
 
 				SocketHelper.socket.onmessage = (event) => {
 					if (SocketHelper.isCleanedUp) return;
 
-					messageCount++;
-					console.log("[SocketHelper.onmessage] Received message #" + messageCount + ":", event.data.substring(0, 200));
-
 					try {
 						const payload = JSON.parse(event.data);
-						console.log("[SocketHelper.onmessage] Parsed payload - action:", payload.action, "data:", JSON.stringify(payload.data).substring(0, 100));
-
-						if (payload.action === 'socketId') {
-							hasReceivedSocketId = true;
-						}
-
 						SocketHelper.handleMessage(payload);
-					} catch (error) {
-						console.error("❌ Error parsing socket message:", error);
-						console.error("❌ Raw message was:", event.data);
-					}
+					} catch { /* ignore parse errors */ }
 				};
 
-				SocketHelper.socket.onopen = async (e) => {
-
-					// Send the getId request
+				SocketHelper.socket.onopen = async () => {
 					SocketHelper.socket.send("getId");
 
-					// Wait longer to see if we get a response
 					setTimeout(() => {
-						if (!hasReceivedSocketId) {
-							console.warn('⚠️ SocketHelper: No socket ID received after 3 seconds');
-						}
 						resolve(null);
 					}, 3000);
 				};
 
-				SocketHelper.socket.onclose = async (e) => {
-					// Socket closed
-				};
+				SocketHelper.socket.onclose = async () => { };
 
 				SocketHelper.socket.onerror = (error) => {
-					console.error('❌ SocketHelper: WebSocket connection error:', error);
-					console.error('❌ SocketHelper: Messages received before error:', messageCount);
 					reject(error);
 				};
 
 			} catch (error) {
-				console.error('❌ SocketHelper: Error initializing socket:', error);
 				reject(error);
 			}
 		});
@@ -144,29 +98,22 @@ export class SocketHelper {
 		if (SocketHelper.isCleanedUp) return;
 
 		try {
-			console.log("[SocketHelper.handleMessage] Processing action:", payload.action);
-			console.log("[SocketHelper.handleMessage] Registered handlers:", SocketHelper.actionHandlers.map(h => ({ id: h.id, action: h.action })));
-
 			if (payload.action === "socketId") {
 				SocketHelper.socketId = payload.data;
-				console.log("[SocketHelper.handleMessage] Set socketId:", SocketHelper.socketId);
 				SocketHelper.createAlertConnection();
 			}
 			else {
 				const matchingHandlers = ArrayHelper.getAll(SocketHelper.actionHandlers, "action", payload.action);
-				console.log("[SocketHelper.handleMessage] Found", matchingHandlers.length, "matching handlers for action:", payload.action);
-
 				matchingHandlers.forEach((handler) => {
 					try {
-						console.log("[SocketHelper.handleMessage] Calling handler:", handler.id);
 						handler.handleMessage(payload.data);
 					} catch (error) {
-						console.error(`❌ Error in handler ${handler.id}:`, error);
+						console.error(`Error in handler ${handler.id}:`, error);
 					}
 				});
 			}
 		} catch (error) {
-			console.error("❌ Error handling socket message:", error);
+			console.error("Error handling socket message:", error);
 		}
 	}
 
@@ -177,15 +124,12 @@ export class SocketHelper {
 		if (SocketHelper.socket && SocketHelper.socket.readyState !== SocketHelper.socket.CLOSED) {
 			try {
 				SocketHelper.socket.close();
-			} catch (error) {
-				console.error("Error closing socket:", error);
-			}
+			} catch { /* ignore */ }
 		}
 
-		// Clear references
+		// Clear references but preserve handlers - they should persist across reconnects
 		SocketHelper.socket = null;
 		SocketHelper.socketId = null;
-		SocketHelper.actionHandlers = [];
 		SocketHelper.personIdChurchId = { personId: "", churchId: "" };
 	}
 

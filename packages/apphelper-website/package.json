@@ -1,6 +1,6 @@
 {
   "name": "@churchapps/apphelper-website",
-  "version": "0.6.5",
+  "version": "0.6.6",
   "description": "Website components for ChurchApps AppHelper",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -41,8 +41,8 @@
   },
   "homepage": "https://github.com/LiveChurchSolutions/AppHelper#readme",
   "peerDependencies": {
-    "@churchapps/apphelper": "^0.6.0",
-    "@churchapps/helpers": "^1.2.4",
+    "@churchapps/apphelper": "^0.6.5",
+    "@churchapps/helpers": "^1.2.5",
     "@mui/icons-material": "^7.3.4",
     "@mui/material": "^7.3.1",
     "@react-google-maps/api": "^2.20.0",
