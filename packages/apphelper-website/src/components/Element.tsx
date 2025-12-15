@@ -69,6 +69,37 @@ export const Element: React.FC<Props> = props => {
     if (props.element.animations?.onShow) return "animated " + props.element.animations.onShow + " " + props.element.animations.onShowSpeed;
   }
 
+  const getElementStyles = (): React.CSSProperties => {
+    const styles: React.CSSProperties = { position: "relative" };
+    const SPACING_VALUES: Record<string, number> = {
+      "xs": 4, "sm": 8, "md": 16, "lg": 24, "xl": 32, "xxl": 48
+    };
+    const getSpacingValue = (token: string) => {
+      const px = SPACING_VALUES[token] || 0;
+      return `var(--spacing-${token}, ${px}px)`;
+    };
+    if (props.element.stylesJSON) {
+      try {
+        const parsed = JSON.parse(props.element.stylesJSON);
+        if (parsed.margin) {
+          if (parsed.margin.top && parsed.margin.top !== "0") styles.marginTop = getSpacingValue(parsed.margin.top);
+          if (parsed.margin.right && parsed.margin.right !== "0") styles.marginRight = getSpacingValue(parsed.margin.right);
+          if (parsed.margin.bottom && parsed.margin.bottom !== "0") styles.marginBottom = getSpacingValue(parsed.margin.bottom);
+          if (parsed.margin.left && parsed.margin.left !== "0") styles.marginLeft = getSpacingValue(parsed.margin.left);
+        }
+        if (parsed.padding) {
+          if (parsed.padding.top && parsed.padding.top !== "0") styles.paddingTop = getSpacingValue(parsed.padding.top);
+          if (parsed.padding.right && parsed.padding.right !== "0") styles.paddingRight = getSpacingValue(parsed.padding.right);
+          if (parsed.padding.bottom && parsed.padding.bottom !== "0") styles.paddingBottom = getSpacingValue(parsed.padding.bottom);
+          if (parsed.padding.left && parsed.padding.left !== "0") styles.paddingLeft = getSpacingValue(parsed.padding.left);
+        }
+      } catch (e) {
+        console.error("Failed to parse stylesJSON:", e);
+      }
+    }
+    return styles;
+  }
+
   const handleDoubleClick = (e: React.MouseEvent) => {
     if (!props.onEdit) return;
     const target = e.target as HTMLElement;
@@ -209,5 +240,5 @@ export const Element: React.FC<Props> = props => {
     </>
     */
   }
-  return <div style={{ position: "relative" }} className={getAnimationClasses()}>{result}</div>;
+  return <div style={getElementStyles()} className={getAnimationClasses()}>{result}</div>;
 }

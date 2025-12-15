@@ -13,6 +13,7 @@ export interface ElementInterface {
   sort?: number;
   answers?: any;
   answersJSON?: string;
+  stylesJSON?: string;
   elements?: ElementInterface[];
   styles?: StyleSet;
   animations?: {
