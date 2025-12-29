@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { FundDonationInterface, FundInterface } from "@churchapps/helpers";
-import { FormControl, Grid, InputLabel, MenuItem, Select, TextField } from "@mui/material";
+import { FundDonationInterface, FundInterface, CurrencyHelper } from "@churchapps/helpers";
+import { FormControl, Grid, Icon, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material";
 import { Locale } from "../helpers";
 
@@ -12,6 +12,7 @@ interface Props {
   index: number,
   updatedFunction: (fundDonation: FundDonationInterface, index: number) => void,
   params?: any,
+  currency?: string,
 }
 
 export const FundDonation: React.FC<Props> = (props) => {
@@ -42,7 +43,7 @@ export const FundDonation: React.FC<Props> = (props) => {
     <>
       <Grid container spacing={3}>
         <Grid size={{ xs: 12, md: 6 }}>
-          <TextField fullWidth name="amount" label={Locale.label("donation.fundDonations.amount")} type="number" disabled={props.params?.amount && props.params.amount !== ""} aria-label="amount" lang="en-150" value={props.fundDonation.amount || ""} onChange={handleChange} />
+          <TextField fullWidth name="amount" label={Locale.label("donation.fundDonations.amount")} type="number" disabled={props.params?.amount && props.params.amount !== ""} aria-label="amount" lang="en-150" value={props.fundDonation.amount || ""} onChange={handleChange} InputProps={{ startAdornment: <Icon><Typography>{CurrencyHelper.getCurrencySymbol(props.currency)}</Typography></Icon> }} />
         </Grid>
         <Grid size={{ xs: 12, md: 6 }}>
           <FormControl fullWidth>

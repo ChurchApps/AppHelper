@@ -5,7 +5,7 @@ import { FundDonation } from ".";
 import { FundDonationInterface, FundInterface } from "@churchapps/helpers";
 import { Locale } from "../helpers";
 
-interface Props { fundDonations: FundDonationInterface[], funds: FundInterface[], params?: any, updatedFunction: (fundDonations: FundDonationInterface[]) => void }
+interface Props { fundDonations: FundDonationInterface[], funds: FundInterface[], params?: any, updatedFunction: (fundDonations: FundDonationInterface[]) => void, currency?: string }
 
 export const FundDonations: React.FC<Props> = (props) => {
   const handleUpdated = (fundDonation: FundDonationInterface, index: number) => {
@@ -26,7 +26,7 @@ export const FundDonations: React.FC<Props> = (props) => {
     const result = [];
     for (let i = 0; i < props.fundDonations.length; i++) {
       const fd = props.fundDonations[i];
-      result.push(<FundDonation fundDonation={fd} funds={props.funds} updatedFunction={handleUpdated} params={props?.params} key={fd.fundId || i} index={i} />);
+      result.push(<FundDonation fundDonation={fd} funds={props.funds} updatedFunction={handleUpdated} params={props?.params} key={fd.fundId || i} index={i} currency={props?.currency} />);
     }
 
     return result;
