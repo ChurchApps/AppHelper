@@ -9,7 +9,7 @@ import { ApiHelper, DateHelper, CurrencyHelper } from "@churchapps/helpers";
 import { Locale, DonationHelper, StripePaymentMethod } from "../helpers";
 import { FundDonationInterface, FundInterface, PersonInterface, StripeDonationInterface, UserInterface, ChurchInterface } from "@churchapps/helpers";
 import {
-	Grid, Alert, TextField, Button, FormControl, InputLabel, Select, MenuItem, FormGroup, FormControlLabel, Checkbox, Typography
+  Grid, Alert, TextField, Button, FormControl, InputLabel, Select, MenuItem, FormGroup, FormControlLabel, Checkbox, Typography
 } from "@mui/material";
 import type { PaperProps } from "@mui/material/Paper";
 
@@ -208,7 +208,8 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 			...donation,
 			church: churchObj,
 			provider: gateway?.provider || "stripe",
-			gatewayId: gateway?.id
+			gatewayId: gateway?.id,
+      currency: gateway?.currency || "USD"
 		};
 		if (donationType === "once") results = await ApiHelper.post("/donate/charge", donationPayload, "GivingApi");
 		if (donationType === "recurring") results = await ApiHelper.post("/donate/subscribe", donationPayload, "GivingApi");
@@ -281,7 +282,7 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 			try {
 				const response = await ApiHelper.post(
 					"/donate/fee?churchId=" + props.churchId,
-					{ amount, provider: gateway?.provider || "stripe", gatewayId: gateway?.id },
+					{ amount, provider: gateway?.provider || "stripe", gatewayId: gateway?.id, currency: gateway?.currency || "USD" },
 					"GivingApi"
 				);
 				return response.calculatedFee;
@@ -298,7 +299,7 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 			return (<>
 				<hr />
 				<h4>{Locale.label("donation.donationForm.funds")}</h4>
-				<FundDonations fundDonations={fundDonations} funds={funds} params={searchParams} updatedFunction={handleFundDonationsChange} />
+				<FundDonations fundDonations={fundDonations} funds={funds} params={searchParams} updatedFunction={handleFundDonationsChange} currency={gateway?.currency} />
 			</>);
 		}
 	};
@@ -306,96 +307,96 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 	useEffect(init, []); //eslint-disable-line
 
 
-	if (donationComplete) return <Alert severity="success">{Locale.label("donation.donationForm.thankYou")}</Alert>;
-	else {
-		return (
-			<InputBox headerIcon={showHeader ? "volunteer_activism" : ""} headerText={showHeader ? "Donate" : ""} saveFunction={handleSave} saveText="Donate" isSubmitting={processing} mainContainerCssProps={mainContainerCssProps}>
-				<ErrorMessages errors={errors} />
-				<Grid container spacing={3}>
-					<Grid size={{ xs: 12, md: 6 }}>
-						<Button aria-label="single-donation" size="small" fullWidth style={{ minHeight: "50px" }} variant={donationType === "once" ? "contained" : "outlined"} onClick={() => setDonationType("once")}>{Locale.label("donation.donationForm.make")}</Button>
-					</Grid>
-					<Grid size={{ xs: 12, md: 6 }}>
-						<Button aria-label="recurring-donation" size="small" fullWidth style={{ minHeight: "50px" }} variant={donationType === "recurring" ? "contained" : "outlined"} onClick={() => setDonationType("recurring")}>{Locale.label("donation.donationForm.makeRecurring")}</Button>
-					</Grid>
-					<Grid size={{ xs: 12, md: 6 }}>
-						<TextField fullWidth label={Locale.label("person.firstName")} name="firstName" value={firstName} onChange={handleChange} />
-					</Grid>
-					<Grid size={{ xs: 12, md: 6 }}>
-						<TextField fullWidth label={Locale.label("person.lastName")} name="lastName" value={lastName} onChange={handleChange} />
-					</Grid>
-					<Grid size={{ xs: 12, md: 6 }}>
-						<TextField fullWidth label={Locale.label("person.email")} name="email" value={email} onChange={handleChange} />
-					</Grid>
-					<Grid size={{ xs: 12, md: 6 }}>
-						<ReCAPTCHA 
-							sitekey={props.recaptchaSiteKey} 
-							ref={captchaRef} 
-							onChange={handleCaptchaChange}
-							onExpired={() => {
-								setCaptchaResponse("");
-							}}
-							onErrored={() => {
-								setCaptchaResponse("error");
-							}}
-						/>
-					</Grid>
-				</Grid>
-				{gateway?.provider?.toLowerCase() === "stripe" && (
-					<Grid container spacing={3} style={{ marginTop: 10 }}>
-						<Grid size={12}>
-							<div style={{ padding: 10, border: "1px solid #CCC", borderRadius: 5 }}>
-								<CardNumberElement options={formStyling} />
-							</div>
-						</Grid>
-						<Grid size={{ xs: 12, md: 6 }}>
-							<div style={{ padding: 10, border: "1px solid #CCC", borderRadius: 5 }}>
-								<CardExpiryElement options={formStyling} />
-							</div>
-						</Grid>
-						<Grid size={{ xs: 12, md: 6 }}>
-							<div style={{ padding: 10, border: "1px solid #CCC", borderRadius: 5 }}>
-								<CardCvcElement options={formStyling} />
-							</div>
-						</Grid>
-					</Grid>
-				)}
-				{donationType === "recurring"
-					&& <Grid container spacing={3} style={{ marginTop: 0 }}>
-						<Grid size={{ xs: 12, md: 6 }}>
-							<FormControl fullWidth>
-								<InputLabel>{Locale.label("donation.donationForm.frequency")}</InputLabel>
-								<Select label="Frequency" name="interval" aria-label="interval" value={interval} onChange={(e) => { setInterval(e.target.value); }}>
-									<MenuItem value="one_week">{Locale.label("donation.donationForm.weekly")}</MenuItem>
-									<MenuItem value="two_week">{Locale.label("donation.donationForm.biWeekly")}</MenuItem>
-									<MenuItem value="one_month">{Locale.label("donation.donationForm.monthly")}</MenuItem>
-									<MenuItem value="three_month">{Locale.label("donation.donationForm.quarterly")}</MenuItem>
-									<MenuItem value="one_year">{Locale.label("donation.donationForm.annually")}</MenuItem>
-								</Select>
-							</FormControl>
-						</Grid>
-						<Grid size={{ xs: 12, md: 6 }}>
-							<TextField fullWidth name="startDate" type="date" aria-label="startDate" label={Locale.label("donation.donationForm.startDate")} value={DateHelper.formatHtml5Date(startDate ? new Date(startDate) : new Date())} onChange={handleChange} />
-						</Grid>
-					</Grid>
-				}
-				{getFundList()}
-				<TextField fullWidth label="Memo (optional)" multiline aria-label="note" name="notes" value={notes} onChange={handleChange} style={{ marginTop: 10, marginBottom: 10 }} />
-				<div>
-					{fundsTotal > 0
-						&& <>
-							{(gateway?.payFees === true)
-								? <Typography fontSize={14} fontStyle="italic">*{Locale.label("donation.donationForm.fees").replace("{}", CurrencyHelper.formatCurrency(transactionFee))}</Typography>
-								: (
-									<FormGroup>
-										<FormControlLabel control={<Checkbox checked={coverFees} />} name="transaction-fee" label={Locale.label("donation.donationForm.cover").replace("{}", CurrencyHelper.formatCurrency(transactionFee))} onChange={handleCheckChange} />
-									</FormGroup>
-								)}
-							<p>Total Donation Amount: ${total}</p>
-						</>
-					}
-				</div>
-			</InputBox>
-		);
-	}
+  if (donationComplete) return <Alert severity="success">{Locale.label("donation.donationForm.thankYou")}</Alert>;
+  else {
+    return (
+      <InputBox headerIcon={showHeader ? "volunteer_activism" : ""} headerText={showHeader ? "Donate" : ""} saveFunction={handleSave} saveText="Donate" isSubmitting={processing} mainContainerCssProps={mainContainerCssProps}>
+        <ErrorMessages errors={errors} />
+        <Grid container spacing={3}>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Button aria-label="single-donation" size="small" fullWidth style={{ minHeight: "50px" }} variant={donationType === "once" ? "contained" : "outlined"} onClick={() => setDonationType("once")}>{Locale.label("donation.donationForm.make")}</Button>
+          </Grid>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Button aria-label="recurring-donation" size="small" fullWidth style={{ minHeight: "50px" }} variant={donationType === "recurring" ? "contained" : "outlined"} onClick={() => setDonationType("recurring")}>{Locale.label("donation.donationForm.makeRecurring")}</Button>
+          </Grid>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <TextField fullWidth label={Locale.label("person.firstName")} name="firstName" value={firstName} onChange={handleChange} />
+          </Grid>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <TextField fullWidth label={Locale.label("person.lastName")} name="lastName" value={lastName} onChange={handleChange} />
+          </Grid>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <TextField fullWidth label={Locale.label("person.email")} name="email" value={email} onChange={handleChange} />
+          </Grid>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <ReCAPTCHA
+              sitekey={props.recaptchaSiteKey}
+              ref={captchaRef}
+              onChange={handleCaptchaChange}
+              onExpired={() => {
+                setCaptchaResponse("");
+              }}
+              onErrored={() => {
+                setCaptchaResponse("error");
+              }}
+            />
+          </Grid>
+        </Grid>
+        {gateway?.provider?.toLowerCase() === "stripe" && (
+          <Grid container spacing={3} style={{ marginTop: 10 }}>
+            <Grid size={12}>
+              <div style={{ padding: 10, border: "1px solid #CCC", borderRadius: 5 }}>
+                <CardNumberElement options={formStyling} />
+              </div>
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <div style={{ padding: 10, border: "1px solid #CCC", borderRadius: 5 }}>
+                <CardExpiryElement options={formStyling} />
+              </div>
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <div style={{ padding: 10, border: "1px solid #CCC", borderRadius: 5 }}>
+                <CardCvcElement options={formStyling} />
+              </div>
+            </Grid>
+          </Grid>
+        )}
+        {donationType === "recurring"
+        && <Grid container spacing={3} style={{ marginTop: 0 }}>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <FormControl fullWidth>
+                <InputLabel>{Locale.label("donation.donationForm.frequency")}</InputLabel>
+                <Select label="Frequency" name="interval" aria-label="interval" value={interval} onChange={(e) => { setInterval(e.target.value); }}>
+                  <MenuItem value="one_week">{Locale.label("donation.donationForm.weekly")}</MenuItem>
+                  <MenuItem value="two_week">{Locale.label("donation.donationForm.biWeekly")}</MenuItem>
+                  <MenuItem value="one_month">{Locale.label("donation.donationForm.monthly")}</MenuItem>
+                  <MenuItem value="three_month">{Locale.label("donation.donationForm.quarterly")}</MenuItem>
+                  <MenuItem value="one_year">{Locale.label("donation.donationForm.annually")}</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <TextField fullWidth name="startDate" type="date" aria-label="startDate" label={Locale.label("donation.donationForm.startDate")} value={DateHelper.formatHtml5Date(startDate ? new Date(startDate) : new Date())} onChange={handleChange} />
+            </Grid>
+          </Grid>
+        }
+        {getFundList()}
+        <TextField fullWidth label="Memo (optional)" multiline aria-label="note" name="notes" value={notes} onChange={handleChange} style={{ marginTop: 10, marginBottom: 10 }} />
+        <div>
+          {fundsTotal > 0
+            && <>
+              {(gateway?.payFees === true)
+                ? <Typography fontSize={14} fontStyle="italic">*{Locale.label("donation.donationForm.fees").replace("{}", CurrencyHelper.formatCurrencyWithLocale(transactionFee, gateway?.currency || "USD"))}</Typography>
+                : (
+                <FormGroup>
+                  <FormControlLabel control={<Checkbox checked={coverFees} />} name="transaction-fee" label={Locale.label("donation.donationForm.cover").replace("{}", CurrencyHelper.formatCurrencyWithLocale(transactionFee, gateway?.currency || "USD"))} onChange={handleCheckChange} />
+                </FormGroup>
+              )}
+              <p>Total Donation Amount: {CurrencyHelper.formatCurrencyWithLocale(total, gateway?.currency || "USD")}</p>
+            </>
+          }
+        </div>
+      </InputBox>
+    );
+  }
 };

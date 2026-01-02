@@ -15,4 +15,5 @@ export interface PaymentGateway {
   productId?: string;
   payFees?: boolean;
   enabled?: boolean;
+  currency?: string;
 }
