@@ -43,7 +43,7 @@ export const FundDonation: React.FC<Props> = (props) => {
     <>
       <Grid container spacing={3}>
         <Grid size={{ xs: 12, md: 6 }}>
-          <TextField fullWidth name="amount" label={Locale.label("donation.fundDonations.amount")} type="number" disabled={props.params?.amount && props.params.amount !== ""} aria-label="amount" lang="en-150" value={props.fundDonation.amount || ""} onChange={handleChange} InputProps={{ startAdornment: <Icon><Typography>{CurrencyHelper.getCurrencySymbol(props.currency)}</Typography></Icon> }} />
+          <TextField fullWidth name="amount" label={Locale.label("donation.fundDonations.amount")} type="number" disabled={props.params?.amount && props.params.amount !== ""} aria-label="amount" lang="en-150" value={props.fundDonation.amount || ""} onChange={handleChange} InputProps={{ startAdornment: <Icon><Typography>{props.currency ? CurrencyHelper.getCurrencySymbol(props.currency) : "$"}</Typography></Icon> }} />
         </Grid>
         <Grid size={{ xs: 12, md: 6 }}>
           <FormControl fullWidth>

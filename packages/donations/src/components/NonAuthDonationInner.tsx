@@ -208,7 +208,8 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 			...donation,
 			church: churchObj,
 			provider: gateway?.provider || "stripe",
-			gatewayId: gateway?.id
+			gatewayId: gateway?.id,
+      currency: gateway?.currency || "USD"
 		};
 		if (donationType === "once") results = await ApiHelper.post("/donate/charge", donationPayload, "GivingApi");
 		if (donationType === "recurring") results = await ApiHelper.post("/donate/subscribe", donationPayload, "GivingApi");
@@ -281,7 +282,7 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 			try {
 				const response = await ApiHelper.post(
 					"/donate/fee?churchId=" + props.churchId,
-					{ amount, provider: gateway?.provider || "stripe", gatewayId: gateway?.id },
+					{ amount, provider: gateway?.provider || "stripe", gatewayId: gateway?.id, currency: gateway?.currency || "USD" },
 					"GivingApi"
 				);
 				return response.calculatedFee;
@@ -385,13 +386,13 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
           {fundsTotal > 0
             && <>
               {(gateway?.payFees === true)
-                ? <Typography fontSize={14} fontStyle="italic">*{Locale.label("donation.donationForm.fees").replace("{}", CurrencyHelper.formatCurrency(transactionFee, gateway?.currency || "USD"))}</Typography>
+                ? <Typography fontSize={14} fontStyle="italic">*{Locale.label("donation.donationForm.fees").replace("{}", CurrencyHelper.formatCurrencyWithLocale(transactionFee, gateway?.currency || "USD"))}</Typography>
                 : (
                 <FormGroup>
-                  <FormControlLabel control={<Checkbox checked={coverFees} />} name="transaction-fee" label={Locale.label("donation.donationForm.cover").replace("{}", CurrencyHelper.formatCurrency(transactionFee, gateway?.currency || "USD"))} onChange={handleCheckChange} />
+                  <FormControlLabel control={<Checkbox checked={coverFees} />} name="transaction-fee" label={Locale.label("donation.donationForm.cover").replace("{}", CurrencyHelper.formatCurrencyWithLocale(transactionFee, gateway?.currency || "USD"))} onChange={handleCheckChange} />
                 </FormGroup>
               )}
-              <p>Total Donation Amount: {CurrencyHelper.formatCurrency(total, gateway?.currency || "USD")}</p>
+              <p>Total Donation Amount: {CurrencyHelper.formatCurrencyWithLocale(total, gateway?.currency || "USD")}</p>
             </>
           }
         </div>
