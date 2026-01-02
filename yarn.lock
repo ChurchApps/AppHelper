@@ -173,7 +173,7 @@
     "@babel/helper-string-parser" "^7.27.1"
     "@babel/helper-validator-identifier" "^7.27.1"
 
-"@churchapps/apphelper-donations@*", "@churchapps/apphelper-donations@^0.6.0", "@churchapps/apphelper-donations@file:D:\\code\\churchapps\\apphelper\\packages\\donations":
+"@churchapps/apphelper-donations@*", "@churchapps/apphelper-donations@^0.6.0", "@churchapps/apphelper-donations@file:D:\\Code\\ChurchApps\\apphelper\\packages\\donations":
   version "0.6.1"
   resolved "file:packages/donations"
   dependencies:
@@ -191,11 +191,11 @@
     react-i18next "^15.6.1"
     rrule "^2.8.1"
 
-"@churchapps/apphelper-forms@*", "@churchapps/apphelper-forms@file:D:\\code\\churchapps\\apphelper\\packages\\apphelper-forms":
+"@churchapps/apphelper-forms@*", "@churchapps/apphelper-forms@file:D:\\Code\\ChurchApps\\apphelper\\packages\\apphelper-forms":
   version "0.6.0"
   resolved "file:packages/apphelper-forms"
   dependencies:
-    "@churchapps/apphelper-donations" "^0.5.6"
+    "@churchapps/apphelper-donations" "^0.6.0"
     "@emotion/react" "^11.14.0"
     "@emotion/styled" "^11.14.1"
     axios "^1.11.0"
@@ -203,7 +203,7 @@
     i18next "^25.3.2"
     react-i18next "^15.6.1"
 
-"@churchapps/apphelper-login@*", "@churchapps/apphelper-login@file:D:\\code\\churchapps\\apphelper\\packages\\login":
+"@churchapps/apphelper-login@*", "@churchapps/apphelper-login@file:D:\\Code\\ChurchApps\\apphelper\\packages\\login":
   version "0.6.0"
   resolved "file:packages/login"
   dependencies:
@@ -218,7 +218,7 @@
     react-google-recaptcha "^3.1.0"
     react-i18next "^15.6.1"
 
-"@churchapps/apphelper-markdown@*", "@churchapps/apphelper-markdown@file:D:\\code\\churchapps\\apphelper\\packages\\apphelper-markdown":
+"@churchapps/apphelper-markdown@*", "@churchapps/apphelper-markdown@file:D:\\Code\\ChurchApps\\apphelper\\packages\\apphelper-markdown":
   version "0.6.1"
   resolved "file:packages/apphelper-markdown"
   dependencies:
@@ -236,14 +236,14 @@
     marked "^16.1.2"
     material-symbols "^0.33.0"
 
-"@churchapps/apphelper-website@*", "@churchapps/apphelper-website@file:D:\\code\\churchapps\\apphelper\\packages\\apphelper-website":
+"@churchapps/apphelper-website@*", "@churchapps/apphelper-website@file:D:\\Code\\ChurchApps\\apphelper\\packages\\apphelper-website":
   version "0.6.6"
   resolved "file:packages/apphelper-website"
   dependencies:
     rrule "^2.8.1"
 
-"@churchapps/apphelper@*", "@churchapps/apphelper@^0.6.0", "@churchapps/apphelper@^0.6.5", "@churchapps/apphelper@file:D:\\code\\churchapps\\apphelper\\packages\\apphelper":
-  version "0.6.5"
+"@churchapps/apphelper@*", "@churchapps/apphelper@^0.6.0", "@churchapps/apphelper@^0.6.5", "@churchapps/apphelper@file:D:\\Code\\ChurchApps\\apphelper\\packages\\apphelper":
+  version "0.6.6"
   resolved "file:packages/apphelper"
   dependencies:
     "@churchapps/helpers" "^1.2.4"
@@ -272,10 +272,10 @@
     react-to-print "^3.1.1"
     slug "^11.0.0"
 
-"@churchapps/helpers@^1.2.4", "@churchapps/helpers@^1.2.5", "@churchapps/helpers@^1.2.6":
-  version "1.2.6"
-  resolved "https://registry.npmjs.org/@churchapps/helpers/-/helpers-1.2.6.tgz"
-  integrity sha512-SAiy2hTqGRoVolPKRbfjuECDQrog0LOgg1SExyCA+LF5a7EemomdIi4MuJSe78mvlc8fu6liDxfjh0sLFGZErA==
+"@churchapps/helpers@^1.2.15", "@churchapps/helpers@^1.2.4", "@churchapps/helpers@^1.2.5":
+  version "1.2.15"
+  resolved "https://registry.npmjs.org/@churchapps/helpers/-/helpers-1.2.15.tgz"
+  integrity sha512-Ba3gFZWN30AO/BTzDxgB5GChG0F3Zk0wxiGfccWSJidB8gP/Ht/f7IfR1fF4kDUvGBsCpbRu5MwhIx8G4RuzEw==
   dependencies:
     dayjs "^1.11.18"
     rrule "^2.8.1"
@@ -1123,7 +1123,7 @@ ansi-styles@^6.1.0, ansi-styles@^6.2.1:
   resolved "https://registry.npmjs.org/ansi-styles/-/ansi-styles-6.2.1.tgz"
   integrity sha512-bN798gFfQX+viw3R7yrGWRqnrN2oRkEkUjjl4JNn4E8GxxbjtG3FbrEIIY3l8/hrwUwIeCZvi4QuOTP4MErVug==
 
-"apphelper-component-playground@file:D:\\code\\churchapps\\apphelper\\playground":
+"apphelper-component-playground@file:D:\\Code\\ChurchApps\\apphelper\\playground":
   version "0.5.0"
   resolved "file:playground"
   dependencies:

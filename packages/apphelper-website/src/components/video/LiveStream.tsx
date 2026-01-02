@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect } from "react";
-import type { AppearanceInterface } from "@churchapps/helpers/dist/AppearanceHelper";
+import type { AppearanceInterface } from "@churchapps/apphelper";
 import { StreamConfigInterface, StreamingServiceExtendedInterface, EnvironmentHelper, StreamingServiceHelper } from "../../helpers";
 import { VideoContainer } from "./VideoContainer";
 

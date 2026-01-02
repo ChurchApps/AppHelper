@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect } from "react";
 import { StreamingServiceExtendedInterface } from "../../helpers";
-import type { AppearanceInterface } from "@churchapps/helpers/dist/AppearanceHelper";
+import type { AppearanceInterface } from "@churchapps/apphelper";
 
 interface Props {
   currentService: StreamingServiceExtendedInterface | null;

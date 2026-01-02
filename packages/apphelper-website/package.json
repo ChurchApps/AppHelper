@@ -1,6 +1,6 @@
 {
   "name": "@churchapps/apphelper-website",
-  "version": "0.6.6",
+  "version": "0.6.7",
   "description": "Website components for ChurchApps AppHelper",
   "main": "dist/index.js",
   "module": "dist/index.js",
