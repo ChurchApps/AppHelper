@@ -1,6 +1,6 @@
 {
   "name": "@churchapps/apphelper-workspace",
-  "version": "0.6.10",
+  "version": "0.6.11",
   "description": "Workspace for ChurchApps AppHelper packages",
   "private": true,
   "workspaces": [
@@ -37,6 +37,6 @@
     "typescript": "^5.9.2"
   },
   "dependencies": {
-    "@churchapps/helpers": "^1.2.18"
+    "@churchapps/helpers": "^1.2.19"
   }
 }

@@ -174,7 +174,7 @@
     "@babel/helper-validator-identifier" "^7.27.1"
 
 "@churchapps/apphelper-donations@*", "@churchapps/apphelper-donations@^0.6.0", "@churchapps/apphelper-donations@file:D:\\Code\\ChurchApps\\apphelper\\packages\\donations":
-  version "0.6.9"
+  version "0.6.11"
   resolved "file:packages/donations"
   dependencies:
     "@emotion/react" "^11.14.0"
@@ -192,7 +192,7 @@
     rrule "^2.8.1"
 
 "@churchapps/apphelper-forms@*", "@churchapps/apphelper-forms@file:D:\\Code\\ChurchApps\\apphelper\\packages\\apphelper-forms":
-  version "0.6.9"
+  version "0.6.11"
   resolved "file:packages/apphelper-forms"
   dependencies:
     "@churchapps/apphelper-donations" "^0.6.0"
@@ -204,7 +204,7 @@
     react-i18next "^15.6.1"
 
 "@churchapps/apphelper-login@*", "@churchapps/apphelper-login@file:D:\\Code\\ChurchApps\\apphelper\\packages\\login":
-  version "0.6.9"
+  version "0.6.11"
   resolved "file:packages/login"
   dependencies:
     "@emotion/react" "^11.14.0"
@@ -219,7 +219,7 @@
     react-i18next "^15.6.1"
 
 "@churchapps/apphelper-markdown@*", "@churchapps/apphelper-markdown@file:D:\\Code\\ChurchApps\\apphelper\\packages\\apphelper-markdown":
-  version "0.6.9"
+  version "0.6.11"
   resolved "file:packages/apphelper-markdown"
   dependencies:
     "@lexical/code" "^0.33.1"
@@ -237,13 +237,13 @@
     material-symbols "^0.33.0"
 
 "@churchapps/apphelper-website@*", "@churchapps/apphelper-website@file:D:\\Code\\ChurchApps\\apphelper\\packages\\apphelper-website":
-  version "0.6.9"
+  version "0.6.11"
   resolved "file:packages/apphelper-website"
   dependencies:
     rrule "^2.8.1"
 
 "@churchapps/apphelper@*", "@churchapps/apphelper@^0.6.0", "@churchapps/apphelper@^0.6.5", "@churchapps/apphelper@file:D:\\Code\\ChurchApps\\apphelper\\packages\\apphelper":
-  version "0.6.9"
+  version "0.6.11"
   resolved "file:packages/apphelper"
   dependencies:
     "@churchapps/helpers" "^1.2.4"
@@ -272,12 +272,11 @@
     react-to-print "^3.1.1"
     slug "^11.0.0"
 
-"@churchapps/helpers@^1.2.18", "@churchapps/helpers@^1.2.4", "@churchapps/helpers@^1.2.5":
-  version "1.2.18"
+"@churchapps/helpers@^1.2.19", "@churchapps/helpers@^1.2.4", "@churchapps/helpers@^1.2.5":
+  version "1.2.19"
   resolved "file:../Helpers"
   dependencies:
     dayjs "^1.11.18"
-    rrule "^2.8.1"
 
 "@cropper/element-canvas@^2.0.1":
   version "2.0.1"
