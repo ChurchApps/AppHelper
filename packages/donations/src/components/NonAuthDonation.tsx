@@ -121,6 +121,11 @@ export const NonAuthDonation: React.FC<Props> = ({ mainContainerCssProps, showHe
       )}
       {renderGatewaySelector()}
       {renderDonationForm()}
+      <Box sx={{ marginTop: "15px", fontSize: "14px" }}>
+        <a href="/my/donate" style={{ color: "#1976d2" }}>
+          Login to manage existing donations or donate via ACH
+        </a>
+      </Box>
     </Box>
   );
 };

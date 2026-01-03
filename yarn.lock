@@ -174,7 +174,7 @@
     "@babel/helper-validator-identifier" "^7.27.1"
 
 "@churchapps/apphelper-donations@*", "@churchapps/apphelper-donations@^0.6.0", "@churchapps/apphelper-donations@file:D:\\Code\\ChurchApps\\apphelper\\packages\\donations":
-  version "0.6.1"
+  version "0.6.9"
   resolved "file:packages/donations"
   dependencies:
     "@emotion/react" "^11.14.0"
@@ -192,7 +192,7 @@
     rrule "^2.8.1"
 
 "@churchapps/apphelper-forms@*", "@churchapps/apphelper-forms@file:D:\\Code\\ChurchApps\\apphelper\\packages\\apphelper-forms":
-  version "0.6.0"
+  version "0.6.9"
   resolved "file:packages/apphelper-forms"
   dependencies:
     "@churchapps/apphelper-donations" "^0.6.0"
@@ -204,7 +204,7 @@
     react-i18next "^15.6.1"
 
 "@churchapps/apphelper-login@*", "@churchapps/apphelper-login@file:D:\\Code\\ChurchApps\\apphelper\\packages\\login":
-  version "0.6.0"
+  version "0.6.9"
   resolved "file:packages/login"
   dependencies:
     "@emotion/react" "^11.14.0"
@@ -219,7 +219,7 @@
     react-i18next "^15.6.1"
 
 "@churchapps/apphelper-markdown@*", "@churchapps/apphelper-markdown@file:D:\\Code\\ChurchApps\\apphelper\\packages\\apphelper-markdown":
-  version "0.6.1"
+  version "0.6.9"
   resolved "file:packages/apphelper-markdown"
   dependencies:
     "@lexical/code" "^0.33.1"
@@ -237,13 +237,13 @@
     material-symbols "^0.33.0"
 
 "@churchapps/apphelper-website@*", "@churchapps/apphelper-website@file:D:\\Code\\ChurchApps\\apphelper\\packages\\apphelper-website":
-  version "0.6.6"
+  version "0.6.9"
   resolved "file:packages/apphelper-website"
   dependencies:
     rrule "^2.8.1"
 
 "@churchapps/apphelper@*", "@churchapps/apphelper@^0.6.0", "@churchapps/apphelper@^0.6.5", "@churchapps/apphelper@file:D:\\Code\\ChurchApps\\apphelper\\packages\\apphelper":
-  version "0.6.6"
+  version "0.6.9"
   resolved "file:packages/apphelper"
   dependencies:
     "@churchapps/helpers" "^1.2.4"
@@ -272,10 +272,9 @@
     react-to-print "^3.1.1"
     slug "^11.0.0"
 
-"@churchapps/helpers@^1.2.15", "@churchapps/helpers@^1.2.4", "@churchapps/helpers@^1.2.5":
-  version "1.2.15"
-  resolved "https://registry.npmjs.org/@churchapps/helpers/-/helpers-1.2.15.tgz"
-  integrity sha512-Ba3gFZWN30AO/BTzDxgB5GChG0F3Zk0wxiGfccWSJidB8gP/Ht/f7IfR1fF4kDUvGBsCpbRu5MwhIx8G4RuzEw==
+"@churchapps/helpers@^1.2.18", "@churchapps/helpers@^1.2.4", "@churchapps/helpers@^1.2.5":
+  version "1.2.18"
+  resolved "file:../Helpers"
   dependencies:
     dayjs "^1.11.18"
     rrule "^2.8.1"
@@ -1359,7 +1358,7 @@ date-fns@^4.1.0:
   resolved "https://registry.npmjs.org/date-fns/-/date-fns-4.1.0.tgz"
   integrity sha512-Ukq0owbQXxa/U3EGtsdVBkR1w7KOQ5gIBqdH2hkvknzZPYvBxb/aa6E8L7tmjFtkwZBu3UXBbjIgPo/Ez4xaNg==
 
-dayjs@^1.11.18, dayjs@^1.11.7:
+dayjs@^1.11.7:
   version "1.11.18"
   resolved "https://registry.npmjs.org/dayjs/-/dayjs-1.11.18.tgz"
   integrity sha512-zFBQ7WFRvVRhKcWoUh+ZA1g2HVgUbsZm9sbddh8EC5iv93sui8DVVz1Npvz+r6meo9VKfa8NyLWBsQK1VvIKPA==

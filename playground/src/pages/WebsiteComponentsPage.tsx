@@ -1110,7 +1110,7 @@ export default function WebsiteComponentsPage() {
           return (
             <Stack spacing={2}>
               <Alert severity="info" sx={{ mb: 2 }}>
-                DonateLinkElement displays donation buttons with preset amounts.
+                DonateLinkElement displays donation buttons with preset amounts that link to an external donation page.
               </Alert>
               <DonateLinkElement
                 element={{

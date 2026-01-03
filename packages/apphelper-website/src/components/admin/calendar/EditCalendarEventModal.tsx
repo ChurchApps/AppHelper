@@ -94,7 +94,7 @@ export function EditCalendarEventModal(props: Props) {
     ev.end = new Date(event.end);
     if (ev.recurrenceRule) {
       const dates = EventHelper.getRange(ev, startRange, endRange);
-      dates.forEach((date) => {
+      dates.forEach((date: Date) => {
         const evt = { ...event };
         if (!evt.start || !evt.end) return;
         const diff
