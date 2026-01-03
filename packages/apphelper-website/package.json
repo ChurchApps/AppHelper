@@ -1,19 +1,10 @@
 {
   "name": "@churchapps/apphelper-website",
-  "version": "0.6.7",
+  "version": "0.6.8",
   "description": "Website components for ChurchApps AppHelper",
+  "type": "module",
   "main": "dist/index.js",
-  "module": "dist/index.js",
   "types": "dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.js",
-      "default": "./dist/index.js"
-    },
-    "./dist/*": "./dist/*"
-  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "clean": "rimraf dist",

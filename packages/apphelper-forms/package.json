@@ -1,7 +1,8 @@
 {
   "name": "@churchapps/apphelper-forms",
-  "version": "0.6.7",
+  "version": "0.6.8",
   "description": "Form components for ChurchApps AppHelper - general forms without payment processing",
+  "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
