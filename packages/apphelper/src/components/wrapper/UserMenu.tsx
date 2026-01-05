@@ -105,17 +105,11 @@ const UserMenuContent: React.FC<Props> = React.memo((props) => {
     const churchId = UserHelper.currentUserChurch.church.id;
     let result: React.ReactElement[] = [];
 
-    // Helper function to get label with fallback
-    const getLabel = (key: string, fallback: string) => {
-      const label = Locale.label(key);
-      return label && label !== key ? label : fallback;
-    };
-
     result.push(<NavItem onClick={() => {modalStateStore.setShowPM(true)}} label={getLabel("wrapper.messages", "Messages")} icon="mail" key="/messages" onNavigate={props.onNavigate} badgeCount={directNotificationCounts.pmCount} />);
 
     result.push(<NavItem onClick={() => {modalStateStore.setShowNotifications(true)}} label={getLabel("wrapper.notifications", "Notifications")} icon="notifications" key="/notifications" onNavigate={props.onNavigate} badgeCount={directNotificationCounts.notificationCount} />);
 
-    result.push(<NavItem url={"/profile"} key="/profile" label={getLabel("wrapper.profile", "Profile")} icon="person" onNavigate={props.onNavigate} />);
+    result.push(<NavItem label={getLabel("wrapper.editProfile", "Edit Profile")} key="EditProfile" icon="person" onClick={() => { setTabIndex(3); }} />);
     // Create logout URL with current page as return URL
     const currentPath = typeof window !== 'undefined' ? window.location.pathname + window.location.search : '/';
     const logoutUrl = `/login?action=logout&returnUrl=${encodeURIComponent(currentPath)}`;
@@ -147,6 +141,12 @@ const UserMenuContent: React.FC<Props> = React.memo((props) => {
   }
 
   const [tabIndex, setTabIndex] = React.useState(0);
+
+  // Helper function to get label with fallback
+  const getLabel = (key: string, fallback: string) => {
+    const label = Locale.label(key);
+    return label && label !== key ? label : fallback;
+  };
 
   const getTabs = () => {
     return (
@@ -191,17 +191,33 @@ const UserMenuContent: React.FC<Props> = React.memo((props) => {
             })()}
           </div>
         </TabPanel>
+        <TabPanel value={tabIndex} index={3}>
+          <NavItem label="Back" key="EditBack" icon="arrow_back" onClick={() => { setTabIndex(0); }} />
+          <NavItem url={"/profile"} key="/profile" label={getLabel("wrapper.editAccount", "Edit Account")} icon="settings" onNavigate={props.onNavigate} />
+          {getChurchProfileLink()}
+        </TabPanel>
       </Box>
     );
   };
 
+  const getChurchProfileLink = () => {
+    const personId = props.context?.person?.id;
+    if (!personId) return null;
+
+    const isB1App = props.appName === "B1.church" || props.appName === "B1App" || props.appName === "B1";
+
+    if (isB1App) return <NavItem url={`/my/community/${personId}`} label={getLabel("wrapper.editChurchProfile", "Edit Church Profile")} icon="church" onNavigate={props.onNavigate} />;
+    else {
+      const jwt = ApiHelper.getConfig("MembershipApi").jwt;
+      const churchId = props.context?.userChurch?.church?.id;
+      const subDomain = props.context?.userChurch?.church?.subDomain;
+      const b1Url = CommonEnvironmentHelper.B1Root.replace("{key}", subDomain);
+      const returnUrl = encodeURIComponent(`/my/community/${personId}`);
+      return <NavItem url={`${b1Url}/login?jwt=${jwt}&churchId=${churchId}&returnUrl=${returnUrl}`} external={true} label={getLabel("wrapper.editChurchProfile", "Edit Church Profile")} icon="church" onNavigate={props.onNavigate} />;
+    }
+  };
+
   const getModals = () => {
-    // Helper function to get label with fallback
-    const getLabel = (key: string, fallback: string) => {
-      const label = Locale.label(key);
-      return label && label !== key ? label : fallback;
-    };
-    
     return (
       <>
         <Dialog 
