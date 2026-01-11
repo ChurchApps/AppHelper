@@ -14,8 +14,17 @@ interface Props {
   onMove?: () => void;
 }
 
+// Module-level storage for carousel positions (persists across remounts)
+const carouselPositions = new Map<string, number>();
+
 export const CarouselElement = ({ element, churchSettings, textColor, onEdit, onMove }: Props) => {
-  const [current, setCurrent] = useState(0);
+  // Initialize from stored position or default to 0
+  const [current, setCurrent] = useState(() => carouselPositions.get(element.id) || 0);
+
+  // Persist position changes to the Map so they survive remounts
+  useEffect(() => {
+    carouselPositions.set(element.id, current);
+  }, [element.id, current]);
 
   const interval = (parseInt(element.answers.interval) || 4) * 1000;
   const timerRef = useRef<NodeJS.Timeout | null>(null);
