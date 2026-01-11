@@ -194,7 +194,7 @@ export const Element: React.FC<Props> = props => {
 
   /*<DraggableIcon dndType="element" elementType={props.element.elementType} data={props.element} />*/
   if (props.onEdit) {
-    const showDroppableAfter = props.element.elementType !== "row";
+    const showDroppableAfter = props.element.elementType !== "row" && props.element.elementType !== "carousel";
     result = <>
       <DraggableWrapper
         dndType="element"
