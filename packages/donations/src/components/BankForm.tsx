@@ -86,7 +86,7 @@ export const BankForm: React.FC<Props> = (props) => {
       const { clientSecret } = setupIntentResponse;
 
       // Step 2: Collect bank account using Financial Connections
-      const { error: collectError } = await stripe.collectBankAccountForSetup({
+      const { error: collectError, setupIntent: collectedSetupIntent } = await stripe.collectBankAccountForSetup({
         clientSecret,
         params: {
           payment_method_type: "us_bank_account",
@@ -101,6 +101,14 @@ export const BankForm: React.FC<Props> = (props) => {
 
       if (collectError) {
         setErrorMessage(collectError.message || "Failed to connect bank account");
+        setIsConnecting(false);
+        setShowSave(true);
+        return;
+      }
+
+      // Check if user closed the modal without completing
+      if (!collectedSetupIntent?.payment_method) {
+        setErrorMessage("Bank account connection was not completed. Please try again.");
         setIsConnecting(false);
         setShowSave(true);
         return;
