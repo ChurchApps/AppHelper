@@ -9,11 +9,18 @@ import { ApiHelper, DateHelper, CurrencyHelper } from "@churchapps/helpers";
 import { Locale, DonationHelper, StripePaymentMethod } from "../helpers";
 import { FundDonationInterface, FundInterface, PersonInterface, StripeDonationInterface, UserInterface, ChurchInterface } from "@churchapps/helpers";
 import {
-  Grid, Alert, TextField, Button, FormControl, InputLabel, Select, MenuItem, FormGroup, FormControlLabel, Checkbox, Typography
+  Grid, Alert, TextField, Button, FormControl, InputLabel, Select, MenuItem, FormGroup, FormControlLabel, Checkbox, Typography, Box, CircularProgress
 } from "@mui/material";
 import type { PaperProps } from "@mui/material/Paper";
 
-interface Props { churchId: string, mainContainerCssProps?: PaperProps, showHeader?: boolean, recaptchaSiteKey: string, churchLogo?: string }
+interface Props {
+  churchId: string;
+  mainContainerCssProps?: PaperProps;
+  showHeader?: boolean;
+  recaptchaSiteKey: string;
+  churchLogo?: string;
+  paymentType?: "card" | "bank";
+}
 
 export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, showHeader = true, ...props }) => {
 	const stripe = useStripe();
@@ -39,7 +46,11 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 	const [searchParams, setSearchParams] = useState<any>(null);
 	const [notes, setNotes] = useState("");
 	const [coverFees, setCoverFees] = useState(false);
+	const [bankConnecting, setBankConnecting] = useState(false);
 	const captchaRef = useRef<ReCAPTCHA>(null);
+
+	// Use paymentType from props, defaulting to "card"
+	const paymentType = props.paymentType || "card";
 
 	const getUrlParam = (param: string) => {
 		if (typeof window === "undefined") return null;
@@ -132,7 +143,11 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 				.then(async (userData: any) => {
 					const personData = { churchId: props.churchId, firstName, lastName, email };
 					const person = await ApiHelper.post("/people/loadOrCreate", personData, "MembershipApi");
-					saveCard(userData, person);
+					if (paymentType === "bank") {
+						saveBank(userData, person);
+					} else {
+						saveCard(userData, person);
+					}
 				});
 		}
 	};
@@ -167,6 +182,116 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 				}
 			});
 		}
+	};
+
+	const saveBank = async (_user: UserInterface, person: PersonInterface) => {
+		if (!stripe) {
+			setErrors(["Payment processing unavailable"]);
+			setProcessing(false);
+			return;
+		}
+
+		setBankConnecting(true);
+
+		try {
+			// Get ACH setup intent from anonymous endpoint
+			const setupResponse = await ApiHelper.postAnonymous("/paymentmethods/ach-setup-intent-anon", {
+				email,
+				name: `${firstName} ${lastName}`,
+				churchId: props.churchId,
+				gatewayId: gateway?.id
+			}, "GivingApi");
+
+			if (setupResponse?.error) {
+				setErrors([setupResponse.error]);
+				setProcessing(false);
+				setBankConnecting(false);
+				return;
+			}
+
+			// Use Financial Connections to collect bank account
+			const { error: collectError, setupIntent: collectedSetupIntent } = await stripe.collectBankAccountForSetup({
+				clientSecret: setupResponse.clientSecret,
+				params: {
+					payment_method_type: "us_bank_account",
+					payment_method_data: {
+						billing_details: {
+							name: `${firstName} ${lastName}`,
+							email
+						}
+					}
+				}
+			});
+
+			if (collectError) {
+				setErrors([collectError.message || "Failed to connect bank account"]);
+				setProcessing(false);
+				setBankConnecting(false);
+				return;
+			}
+
+			// Check if user completed the flow
+			if (!collectedSetupIntent?.payment_method) {
+				setErrors(["Bank account connection was not completed. Please try again."]);
+				setProcessing(false);
+				setBankConnecting(false);
+				return;
+			}
+
+			// Confirm the SetupIntent
+			const { error: confirmError, setupIntent } = await stripe.confirmUsBankAccountSetup(setupResponse.clientSecret);
+
+			if (confirmError) {
+				setErrors([confirmError.message || "Failed to confirm bank account"]);
+				setProcessing(false);
+				setBankConnecting(false);
+				return;
+			}
+
+			setBankConnecting(false);
+
+			// Process the donation
+			const donation: StripeDonationInterface = {
+				amount: total,
+				id: setupIntent?.payment_method as string,
+				customerId: setupResponse.customerId,
+				type: "bank",
+				churchId: props.churchId,
+				funds: fundDonations.map(fd => ({ id: fd.fundId || "", amount: fd.amount || 0 })),
+				person: {
+					id: person?.id || "",
+					email: person?.contactInfo?.email || "",
+					name: person?.name?.display || ""
+				},
+				notes
+			};
+
+			const churchObj = {
+				name: church?.name || "",
+				subDomain: church?.subDomain || "",
+				churchURL: typeof window !== "undefined" ? window.location.origin : "",
+				logo: props?.churchLogo || ""
+			};
+
+			const results = await ApiHelper.post("/donate/charge", {
+				...donation,
+				church: churchObj,
+				provider: "stripe",
+				gatewayId: gateway?.id,
+				currency: gateway?.currency || "USD"
+			}, "GivingApi");
+
+			if (results?.status === "succeeded" || results?.status === "pending" || results?.status === "processing") {
+				setDonationComplete(true);
+			} else {
+				setErrors([results?.raw?.message || results?.error || "An unexpected error occurred"]);
+			}
+		} catch (error: any) {
+			setErrors([error.message || "Error processing bank donation"]);
+		}
+
+		setProcessing(false);
+		setBankConnecting(false);
 	};
 
 	const saveDonation = async (paymentMethod: StripePaymentMethod, customerId: string, person?: PersonInterface) => {
@@ -310,15 +435,20 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
   if (donationComplete) return <Alert severity="success">{Locale.label("donation.donationForm.thankYou")}</Alert>;
   else {
     return (
-      <InputBox headerIcon={showHeader ? "volunteer_activism" : ""} headerText={showHeader ? "Donate" : ""} saveFunction={handleSave} saveText="Donate" isSubmitting={processing} mainContainerCssProps={mainContainerCssProps}>
+      <InputBox headerIcon={showHeader ? "volunteer_activism" : ""} headerText={showHeader ? "Donate" : ""} saveFunction={handleSave} saveText="Donate" isSubmitting={processing || bankConnecting} mainContainerCssProps={mainContainerCssProps}>
         <ErrorMessages errors={errors} />
         <Grid container spacing={3}>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Button aria-label="single-donation" size="small" fullWidth style={{ minHeight: "50px" }} variant={donationType === "once" ? "contained" : "outlined"} onClick={() => setDonationType("once")}>{Locale.label("donation.donationForm.make")}</Button>
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Button aria-label="recurring-donation" size="small" fullWidth style={{ minHeight: "50px" }} variant={donationType === "recurring" ? "contained" : "outlined"} onClick={() => setDonationType("recurring")}>{Locale.label("donation.donationForm.makeRecurring")}</Button>
-          </Grid>
+          {/* Only show recurring option for card payments */}
+          {paymentType !== "bank" && (
+            <>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Button aria-label="single-donation" size="small" fullWidth style={{ minHeight: "50px" }} variant={donationType === "once" ? "contained" : "outlined"} onClick={() => setDonationType("once")}>{Locale.label("donation.donationForm.make")}</Button>
+              </Grid>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Button aria-label="recurring-donation" size="small" fullWidth style={{ minHeight: "50px" }} variant={donationType === "recurring" ? "contained" : "outlined"} onClick={() => setDonationType("recurring")}>{Locale.label("donation.donationForm.makeRecurring")}</Button>
+              </Grid>
+            </>
+          )}
           <Grid size={{ xs: 12, md: 6 }}>
             <TextField fullWidth label={Locale.label("person.firstName")} name="firstName" value={firstName} onChange={handleChange} />
           </Grid>
@@ -342,7 +472,23 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
             />
           </Grid>
         </Grid>
-        {gateway?.provider?.toLowerCase() === "stripe" && (
+        {/* Show bank connection UI or card elements based on payment type */}
+        {gateway?.provider?.toLowerCase() === "stripe" && paymentType === "bank" ? (
+          <Box sx={{ textAlign: "center", py: 3, px: 2, mt: 2, border: "1px solid #CCC", borderRadius: 1 }}>
+            <Typography variant="body1" sx={{ mb: 2 }}>
+              Securely connect your bank account using Stripe Financial Connections.
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              You'll log in to your bank to authorize the connection. Your credentials are never shared.
+            </Typography>
+            {bankConnecting && (
+              <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 2, mt: 2 }}>
+                <CircularProgress size={24} />
+                <Typography>Connecting to your bank...</Typography>
+              </Box>
+            )}
+          </Box>
+        ) : gateway?.provider?.toLowerCase() === "stripe" && (
           <Grid container spacing={3} style={{ marginTop: 10 }}>
             <Grid size={12}>
               <div style={{ padding: 10, border: "1px solid #CCC", borderRadius: 5 }}>
@@ -361,7 +507,7 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
             </Grid>
           </Grid>
         )}
-        {donationType === "recurring"
+        {donationType === "recurring" && paymentType !== "bank"
         && <Grid container spacing={3} style={{ marginTop: 0 }}>
             <Grid size={{ xs: 12, md: 6 }}>
               <FormControl fullWidth>

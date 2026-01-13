@@ -8,7 +8,7 @@ import { ApiHelper } from "@churchapps/helpers";
 import { NonAuthDonationInner } from "./NonAuthDonationInner";
 import { PayPalNonAuthDonationInner } from "./PayPalNonAuthDonationInner";
 import { DonationHelper } from "../helpers";
-import { FormControl, InputLabel, Select, MenuItem, Box, Typography } from "@mui/material";
+import { FormControl, InputLabel, Select, MenuItem, Box, Typography, ToggleButtonGroup, ToggleButton } from "@mui/material";
 import type { PaperProps } from "@mui/material/Paper";
 
 interface Props { 
@@ -23,6 +23,7 @@ export const NonAuthDonation: React.FC<Props> = ({ mainContainerCssProps, showHe
   const [stripePromise, setStripe] = useState<Promise<Stripe | null> | null>(null);
   const [availableGateways, setAvailableGateways] = useState<any[]>([]);
   const [selectedGateway, setSelectedGateway] = useState<string>("stripe");
+  const [paymentType, setPaymentType] = useState<"card" | "bank">("card");
   const [loading, setLoading] = useState(true);
 
   const init = () => {
@@ -61,13 +62,13 @@ export const NonAuthDonation: React.FC<Props> = ({ mainContainerCssProps, showHe
 
   const renderGatewaySelector = () => {
     if (availableGateways.length <= 1) return null;
-    
+
     return (
       <Box sx={{ mb: 3 }}>
         <FormControl fullWidth>
           <InputLabel>Payment Method</InputLabel>
-          <Select 
-            value={selectedGateway} 
+          <Select
+            value={selectedGateway}
             label="Payment Method"
             onChange={handleGatewayChange}
           >
@@ -78,6 +79,27 @@ export const NonAuthDonation: React.FC<Props> = ({ mainContainerCssProps, showHe
             ))}
           </Select>
         </FormControl>
+      </Box>
+    );
+  };
+
+  const renderPaymentTypeSelector = () => {
+    // Only show if Stripe is available (ACH requires Stripe)
+    const stripeGateway = DonationHelper.findGatewayByProvider(availableGateways, "stripe");
+    if (!stripeGateway || selectedGateway !== "stripe") return null;
+
+    return (
+      <Box sx={{ mb: 3 }}>
+        <ToggleButtonGroup
+          value={paymentType}
+          exclusive
+          onChange={(_, value) => value && setPaymentType(value)}
+          fullWidth
+          size="small"
+        >
+          <ToggleButton value="card">Credit/Debit Card</ToggleButton>
+          <ToggleButton value="bank">Bank Account (ACH)</ToggleButton>
+        </ToggleButtonGroup>
       </Box>
     );
   };
@@ -98,12 +120,13 @@ export const NonAuthDonation: React.FC<Props> = ({ mainContainerCssProps, showHe
     } else {
       return (
         <Elements stripe={stripePromise}>
-          <NonAuthDonationInner 
-            churchId={props.churchId} 
-            mainContainerCssProps={mainContainerCssProps} 
+          <NonAuthDonationInner
+            churchId={props.churchId}
+            mainContainerCssProps={mainContainerCssProps}
             showHeader={false} // We'll show our own header with gateway selector
-            recaptchaSiteKey={props.recaptchaSiteKey} 
-            churchLogo={props?.churchLogo} 
+            recaptchaSiteKey={props.recaptchaSiteKey}
+            churchLogo={props?.churchLogo}
+            paymentType={paymentType}
           />
         </Elements>
       );
@@ -120,10 +143,11 @@ export const NonAuthDonation: React.FC<Props> = ({ mainContainerCssProps, showHe
         </Box>
       )}
       {renderGatewaySelector()}
+      {renderPaymentTypeSelector()}
       {renderDonationForm()}
       <Box sx={{ marginTop: "15px", fontSize: "14px" }}>
         <a href="/my/donate" style={{ color: "#1976d2" }}>
-          Login to manage existing donations or donate via ACH
+          Login to manage existing donations
         </a>
       </Box>
     </Box>
