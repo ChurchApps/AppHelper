@@ -214,7 +214,7 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 		if (donationType === "once") results = await ApiHelper.post("/donate/charge", donationPayload, "GivingApi");
 		if (donationType === "recurring") results = await ApiHelper.post("/donate/subscribe", donationPayload, "GivingApi");
 
-		if (results?.status === "succeeded" || results?.status === "pending" || results?.status === "active") {
+		if (results?.status === "succeeded" || results?.status === "pending" || results?.status === "active" || results?.status === "processing") {
 			setDonationComplete(true);
 		} else {
 			// Handle any error case

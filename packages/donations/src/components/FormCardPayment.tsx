@@ -129,7 +129,7 @@ export const FormCardPayment = forwardRef((props: Props, ref) => {
 
     try {
       const result = await ApiHelper.post("/donate/charge", { ...payment, church: churchObj }, "GivingApi");
-      if (result?.status === "succeeded" || result?.status === "pending") {
+      if (result?.status === "succeeded" || result?.status === "pending" || result?.status === "processing") {
         return { success: true, errors: [] }
       }
 

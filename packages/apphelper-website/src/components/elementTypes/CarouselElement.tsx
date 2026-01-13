@@ -19,11 +19,11 @@ const carouselPositions = new Map<string, number>();
 
 export const CarouselElement = ({ element, churchSettings, textColor, onEdit, onMove }: Props) => {
   // Initialize from stored position or default to 0
-  const [current, setCurrent] = useState(() => carouselPositions.get(element.id) || 0);
+  const [current, setCurrent] = useState(() => (element.id ? carouselPositions.get(element.id) : undefined) || 0);
 
   // Persist position changes to the Map so they survive remounts
   useEffect(() => {
-    carouselPositions.set(element.id, current);
+    if (element.id) carouselPositions.set(element.id, current);
   }, [element.id, current]);
 
   const interval = (parseInt(element.answers.interval) || 4) * 1000;

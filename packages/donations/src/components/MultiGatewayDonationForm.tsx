@@ -239,7 +239,7 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
       if (donationType === "recurring") results = await ApiHelper.post("/donate/subscribe", payload, "GivingApi");
     }
 
-    if (results?.status === "succeeded" || results?.status === "pending" || results?.status === "active" || results?.status === "CREATED") {
+    if (results?.status === "succeeded" || results?.status === "pending" || results?.status === "active" || results?.status === "processing" || results?.status === "CREATED") {
       setShowDonationPreviewModal(false);
       setDonationType(undefined);
       props.donationSuccess(message);

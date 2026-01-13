@@ -139,7 +139,7 @@ export const DonationForm: React.FC<Props> = (props) => {
     if (donationType === "once") results = await ApiHelper.post("/donate/charge", payload, "GivingApi");
     if (donationType === "recurring") results = await ApiHelper.post("/donate/subscribe", payload, "GivingApi");
 
-    if (results?.status === "succeeded" || results?.status === "pending" || results?.status === "active") {
+    if (results?.status === "succeeded" || results?.status === "pending" || results?.status === "active" || results?.status === "processing") {
       setShowDonationPreviewModal(false);
       setDonationType(undefined);
       props.donationSuccess(message);
