@@ -56,19 +56,25 @@ export const SelectChurchRegister: React.FC<Props> = (props) => {
       setIsSubmitting(true);
       const c = { ...church };
       if (!c.subDomain) c.subDomain = suggestSubDomain(c.name);
-      ApiHelper.post("/churches/add", church, "MembershipApi").then(async (resp: any) => {
-        setIsSubmitting(false);
-        if (resp.errors !== undefined) setErrors(resp.errors);
-        else {
-          if (props.registeredChurchCallback) props.registeredChurchCallback(resp);
-          props.selectChurch(resp.id);
-        }
-      });
+      ApiHelper.post("/churches/add", church, "MembershipApi")
+        .then(async (resp: any) => {
+          if (resp.errors !== undefined) setErrors(resp.errors);
+          else {
+            if (props.registeredChurchCallback) props.registeredChurchCallback(resp);
+            props.selectChurch(resp.id);
+          }
+        })
+        .catch((e: any) => {
+          setErrors([e.toString()]);
+        })
+        .finally(() => {
+          setIsSubmitting(false);
+        });
     }
   }
 
   return (
-    <InputBox id="churchBox" saveFunction={handleSave} headerText={Locale.label("selectChurch.register")} headerIcon="church" isSubmitting={isSubmitting}>
+    <InputBox id="churchBox" saveFunction={handleSave} headerText={Locale.label("selectChurch.register")} headerIcon="church" isSubmitting={isSubmitting} saveTextSubmitting={Locale.label("common.pleaseWait")}>
       <ErrorMessages errors={errors} />
       <TextField required fullWidth name="churchName" label={Locale.label("selectChurch.name")} value={church.name} onChange={handleChange} />
 

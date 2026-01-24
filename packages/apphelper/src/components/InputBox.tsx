@@ -24,6 +24,7 @@ interface Props {
   headerText?: string;
   help?: string;
   saveText?: string;
+  saveTextSubmitting?: string;
   deleteText?: string;
   cancelText?: string;
   headerActionContent?: React.ReactNode;
@@ -64,7 +65,7 @@ export function InputBox({ mainContainerCssProps = {}, ...props }: Props) {
   let buttons = [];
   if (props.cancelFunction) buttons.push(<Button key="cancel" onClick={props.cancelFunction} color="warning" sx={{ "&:focus": { outline: "none" } }}>{props.cancelText || Locale.label("common.cancel")}</Button>);
   if (props.deleteFunction) buttons.push(<Button key="delete" id="delete" variant="outlined" aria-label={props.ariaLabelDelete} onClick={props.deleteFunction} color="error" sx={{ "&:focus": { outline: "none" } }}>{props.deleteText || Locale.label("common.delete")}</Button>);
-  if (props.saveFunction) buttons.push(<Button key="save" type={props.saveButtonType || "button"} variant="contained" disableElevation aria-label={props.ariaLabelSave} onClick={props.saveFunction} disabled={props.isSubmitting} sx={{ "&:focus": { outline: "none" } }}>{props.saveText || Locale.label("common.save")}</Button>);
+  if (props.saveFunction) buttons.push(<Button key="save" type={props.saveButtonType || "button"} variant="contained" disableElevation aria-label={props.ariaLabelSave} onClick={props.saveFunction} disabled={props.isSubmitting} sx={{ "&:focus": { outline: "none" } }}>{props.isSubmitting && props.saveTextSubmitting ? props.saveTextSubmitting : (props.saveText || Locale.label("common.save"))}</Button>);
 
   let classNames = ["inputBox"];
   if (props.className) {
