@@ -3,6 +3,7 @@ export class DonationHelper {
   static getInterval(intervalName:string) {
     let intervalCount = 1;
     let intervalType = "month";
+    if (!intervalName) return { interval_count: intervalCount, interval: intervalType };
     let parts = intervalName.split("_");
     if (parts.length === 2) {
       switch (parts[0])

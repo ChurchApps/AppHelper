@@ -239,6 +239,7 @@ export class Locale {
 
 	// Helper method to get value from nested object using dot notation
 	private static getNestedValue(obj: Record<string, any>, path: string): any {
+		if (!path) return undefined;
 		return path.split('.').reduce((current, key) => {
 			return current && current[key] !== undefined ? current[key] : undefined;
 		}, obj);
