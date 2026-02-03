@@ -31,6 +31,7 @@
     "publish:website": "npm run build:website && npm publish --workspace=packages/apphelper-website --access=public"
   },
   "devDependencies": {
+    "@types/node": "^25.2.0",
     "copyfiles": "^2.4.1",
     "npm-run-all2": "^8.0.4",
     "rimraf": "^6.0.1",

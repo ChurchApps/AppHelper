@@ -40,7 +40,8 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 	const [donationType, setDonationType] = useState<"once" | "recurring">("once");
 	const [interval, setInterval] = useState("one_month");
 	const [startDate, setStartDate] = useState(new Date().toDateString());
-	const [_captchaResponse, setCaptchaResponse] = useState("");
+	const bypassRecaptcha = typeof process !== "undefined" && process.env?.NEXT_PUBLIC_BYPASS_RECAPTCHA === "true";
+	const [_captchaResponse, setCaptchaResponse] = useState(bypassRecaptcha ? "success" : "");
 	const [church, setChurch] = useState<ChurchInterface>();
 	const [gateway, setGateway] = useState<any>(null);
 	const [searchParams, setSearchParams] = useState<any>(null);
@@ -470,19 +471,21 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
           <Grid size={{ xs: 12, md: 6 }}>
             <TextField fullWidth label={Locale.label("person.email")} name="email" value={email} onChange={handleChange} />
           </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <ReCAPTCHA
-              sitekey={props.recaptchaSiteKey}
-              ref={captchaRef}
-              onChange={handleCaptchaChange}
-              onExpired={() => {
-                setCaptchaResponse("");
-              }}
-              onErrored={() => {
-                setCaptchaResponse("error");
-              }}
-            />
-          </Grid>
+          {!bypassRecaptcha && (
+            <Grid size={{ xs: 12, md: 6 }}>
+              <ReCAPTCHA
+                sitekey={props.recaptchaSiteKey}
+                ref={captchaRef}
+                onChange={handleCaptchaChange}
+                onExpired={() => {
+                  setCaptchaResponse("");
+                }}
+                onErrored={() => {
+                  setCaptchaResponse("error");
+                }}
+              />
+            </Grid>
+          )}
         </Grid>
         {/* Show bank connection UI or card elements based on payment type */}
         {gateway?.provider?.toLowerCase() === "stripe" && paymentType === "bank" ? (
