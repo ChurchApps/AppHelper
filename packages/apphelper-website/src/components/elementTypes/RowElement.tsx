@@ -1,10 +1,10 @@
 import React from "react";
 import { ElementInterface, SectionInterface } from "../../helpers";
-import { Grid } from "@mui/material";
 import { DroppableArea } from "../admin/DroppableArea";
 import { Element } from "../Element";
 import { ApiHelper } from "@churchapps/apphelper";
 import type { ChurchInterface } from "@churchapps/helpers";
+
 
 interface Props { element: ElementInterface, churchSettings: any, textColor: string, onEdit?: (section: SectionInterface | null, element: ElementInterface) => void, onMove?: () => void, church?: ChurchInterface }
 
@@ -46,26 +46,37 @@ export function RowElement(props: Props) {
   }
 
   const getColumns = () => {
-    const emptyStyle = { minHeight: 100, border: "1px solid #999" }
+    const emptyStyle: React.CSSProperties = { minHeight: 100, border: "1px solid #999" }
     const result: React.ReactElement[] = []
     props.element.elements?.forEach((c:ElementInterface, idx:number) => {
-      let xs = 12;
-      if (c.answers?.mobileSize) xs = c.answers?.mobileSize;
+      const hasElements = c.elements && c.elements.length > 0;
+      // Calculate width based on column size (out of 12)
+      const colSize = c.answers?.size || 6;
+      const widthPercent = (colSize / 12) * 100;
 
-      result.push(<Grid key={c.id} size={{ md: c.answers.size, xs: xs }} order={getMobileOrder(c,idx)} className={getClassName()} style={((c.elements && c.elements.length > 0) || !props.onEdit ? {} : emptyStyle)}>
-        <div style={{ minHeight: "inherit" }}>
-          {c.elements && getElements(c, c.elements)}
+      const colStyle: React.CSSProperties = {
+        width: `calc(${widthPercent}% - 12px)`,
+        marginRight: "12px",
+        ...(props.onEdit && !hasElements ? emptyStyle : {}),
+        ...(props.onEdit ? { overflow: "visible" } : {}),
+      };
+
+      result.push(
+        <div key={c.id} className={getClassName()} style={colStyle}>
+          <div style={{ minHeight: "inherit" }}>
+            {c.elements && getElements(c, c.elements)}
+          </div>
         </div>
-      </Grid>);
+      );
     });
     return result;
   }
 
   let result = (
     <div id={"el-" + props.element.id}>
-      <Grid container columnSpacing={3}>
+      <div style={{ display: "flex", flexWrap: "wrap" }}>
         {getColumns()}
-      </Grid>
+      </div>
     </div>
   );
 

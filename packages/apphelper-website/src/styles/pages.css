@@ -751,3 +751,8 @@ code {
 .linksAccent a { color: var(--accent); }
 .linksDarkAccent a { color: var(--darkAccent); }
 .linksDark a { color: var(--dark); }
+
+/* DraggableWrapper - show drag indicator on hover (CSS-only, no React state) */
+.draggable-wrapper:hover .drag-indicator {
+  opacity: 1 !important;
+}

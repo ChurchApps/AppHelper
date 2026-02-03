@@ -45,17 +45,20 @@ export function DroppableArea(props: Props) {
   }, [isDragging, updateIsDragging]);
 
   // Enhanced droppable zone styling
+  // IMPORTANT: Keep height consistent between active/inactive to prevent layout shifts.
+  // Layout shifts would push draggable elements out from under the mouse, breaking drag.
   const getDroppableStyle = (): CSSProperties => {
-    // When nothing is being dragged - completely invisible/minimal (new behavior)
+    const fixedHeight = "20px"; // Consistent height for spacing
+
+    // When nothing is being dragged - invisible spacer
     if (hideWhenInactive && !canDrop) {
       return {
         width: "100%",
-        minHeight: "4px",
-        padding: "2px",
+        height: fixedHeight,
         border: "none",
         backgroundColor: "transparent",
-        borderRadius: "4px",
-        transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
+        pointerEvents: "none",
+        boxSizing: "border-box",
       };
     }
 
@@ -73,21 +76,15 @@ export function DroppableArea(props: Props) {
       };
     }
 
-    // When dragging - show full drop zone UI
+    // When dragging - same height, just show the styling
     const baseStyle: CSSProperties = {
       width: "100%",
-      minHeight: "32px",
-      padding: "6px 10px",
-      margin: "2px 0",
+      height: fixedHeight,
+      padding: "0 10px",
       borderRadius: "6px",
-      transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      position: hideWhenInactive ? "relative" : "absolute",
-      top: hideWhenInactive ? undefined : 0,
-      left: hideWhenInactive ? undefined : 0,
-      zIndex: hideWhenInactive ? undefined : 1,
       overflow: "hidden",
       boxSizing: "border-box",
     };
@@ -96,9 +93,8 @@ export function DroppableArea(props: Props) {
       return {
         ...baseStyle,
         border: "2px solid rgba(76, 175, 80, 1)",
-        backgroundColor: "rgba(76, 175, 80, 0.2)",
-        transform: "scale(1)",
-        boxShadow: "0 4px 12px rgba(76, 175, 80, 0.3)",
+        backgroundColor: "rgba(76, 175, 80, 1)",
+        boxShadow: "0 4px 12px rgba(76, 175, 80, 0.6)",
       };
     }
 
@@ -106,16 +102,15 @@ export function DroppableArea(props: Props) {
       return {
         ...baseStyle,
         border: "2px solid rgba(25, 118, 210, 1)",
-        backgroundColor: "rgba(25, 118, 210, 0.15)",
-        transform: "scale(1.02)",
-        boxShadow: "0 4px 12px rgba(25, 118, 210, 0.25)",
+        backgroundColor: "rgba(25, 118, 210, 1)",
+        boxShadow: "0 4px 12px rgba(25, 118, 210, 0.6)",
       };
     }
 
     return {
       ...baseStyle,
-      border: "2px dashed rgba(25, 118, 210, 0.4)",
-      backgroundColor: "rgba(25, 118, 210, 0.06)",
+      border: "2px dashed rgba(25, 118, 210, 1)",
+      backgroundColor: "rgba(25, 118, 210, 0.7)",
     };
   };
 
@@ -135,13 +130,13 @@ export function DroppableArea(props: Props) {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          gap: "8px",
-          color: "rgba(25, 118, 210, 0.8)",
-          fontSize: "0.875rem",
-          fontWeight: 500,
+          gap: "6px",
+          color: "#fff",
+          fontSize: "0.75rem",
+          fontWeight: 600,
         }}>
           <Icon style={{
-            fontSize: "1.25rem",
+            fontSize: "1rem",
             transition: "transform 0.2s ease",
             transform: isOver ? "scale(1.1)" : "scale(1)",
           }}>

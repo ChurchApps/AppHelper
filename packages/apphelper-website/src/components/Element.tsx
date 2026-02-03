@@ -42,8 +42,6 @@ interface Props {
 }
 
 export const Element: React.FC<Props> = props => {
-  const [isHovered, setIsHovered] = React.useState(false);
-
   const handleDrop = (data: any, sort: number) => {
     if (data.data) { // Existing element dropped
       const draggedElement: ElementInterface = data.data;
@@ -62,7 +60,7 @@ export const Element: React.FC<Props> = props => {
 
   const getAddElement = (s: number) => {
     const sort = s;
-    return (<DroppableArea accept={["element", "elementBlock"]} onDrop={(data) => handleDrop(data, sort)} dndDeps={props.element} hideWhenInactive={false} />);
+    return (<DroppableArea accept={["element", "elementBlock"]} onDrop={(data) => handleDrop(data, sort)} dndDeps={props.element} />);
   }
 
   const getAnimationClasses = () => {
@@ -206,11 +204,8 @@ export const Element: React.FC<Props> = props => {
           className={"elementWrapper " + props.element.elementType}
           style={{
             transition: "box-shadow 0.2s ease",
-            boxShadow: isHovered ? "0 2px 8px rgba(0, 0, 0, 0.08)" : "none",
             borderRadius: "4px"
           }}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
         >
           {result}
         </div>
