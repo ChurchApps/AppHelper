@@ -128,6 +128,22 @@ export const FormCardPayment = forwardRef((props: Props, ref) => {
 
     try {
       const result = await ApiHelper.post("/donate/charge", { ...payment, church: churchObj }, "GivingApi");
+
+      // Handle 3D Secure authentication if required
+      if (result?.status === "requires_action" && result?.client_secret) {
+        if (!stripe) {
+          return { success: false, errors: ["Payment processor not available. Please try again."] };
+        }
+        const { error: confirmError, paymentIntent } = await stripe.confirmCardPayment(result.client_secret);
+        if (confirmError) {
+          return { success: false, errors: [confirmError.message || "Authentication failed. Please try again."] };
+        }
+        if (paymentIntent?.status === "succeeded") {
+          return { success: true, errors: [] };
+        }
+        return { success: false, errors: ["Payment authentication was not completed."] };
+      }
+
       if (result?.status === "succeeded" || result?.status === "pending") {
         return { success: true, errors: [] }
       }
@@ -136,6 +152,7 @@ export const FormCardPayment = forwardRef((props: Props, ref) => {
         return { success: false, errors: [result.raw.message] }
       }
 
+      return { success: false, errors: ["Payment was not successful."] }
     } catch (err) {
       return { success: false, errors: ["An error occurred while saving your payment."] }
     }

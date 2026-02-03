@@ -2,6 +2,7 @@
 
 import React, { useCallback, useState, useEffect, useMemo, useRef } from "react";
 import type { Stripe } from "@stripe/stripe-js";
+import { useStripe } from "@stripe/react-stripe-js";
 import { InputBox, ErrorMessages } from "@churchapps/apphelper";
 import { FundDonations } from ".";
 import { PayPalHostedFields, PayPalHostedFieldsHandle } from "./PayPalHostedFields";
@@ -38,6 +39,7 @@ interface Props {
 }
 
 export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
+  const stripe = useStripe();
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
   const [fundDonations, setFundDonations] = useState<FundDonationInterface[]>();
   const [funds, setFunds] = useState<FundInterface[]>([]);
@@ -239,6 +241,21 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
       if (donationType === "recurring") results = await ApiHelper.post("/donate/subscribe", payload, "GivingApi");
     }
 
+    // Handle 3D Secure authentication if required (Stripe only)
+    if (selectedGateway === "stripe") {
+      const threeDSResult = await DonationHelper.handle3DSIfRequired(results, stripe);
+      if (threeDSResult.requiresAction) {
+        setShowDonationPreviewModal(false);
+        if (threeDSResult.success) {
+          setDonationType(undefined);
+          props.donationSuccess(message);
+        } else {
+          setErrorMessage(Locale.label("donation.common.error") + ": " + threeDSResult.error);
+        }
+        return;
+      }
+    }
+
     if (results?.status === "succeeded" || results?.status === "pending" || results?.status === "active" || results?.status === "processing" || results?.status === "CREATED") {
       setShowDonationPreviewModal(false);
       setDonationType(undefined);
@@ -248,7 +265,7 @@ export const MultiGatewayDonationForm: React.FC<Props> = (props) => {
       setShowDonationPreviewModal(false);
       setErrorMessage(Locale.label("donation.common.error") + ": " + (results?.raw?.message || results?.message));
     }
-  }, [donation, donationType, gateway?.id, paypalClientId, props.church?.name, props.church?.subDomain, props.churchLogo, props.donationSuccess, selectedGateway, selectedGatewayObj?.id, total]);
+  }, [donation, donationType, gateway?.id, paypalClientId, props.church?.name, props.church?.subDomain, props.churchLogo, props.donationSuccess, selectedGateway, selectedGatewayObj?.id, total, stripe]);
 
   const getTransactionFee = useCallback(async (amount: number, activeGatewayId?: string, provider: "stripe" | "paypal" = "stripe") => {
     if (amount > 0) {

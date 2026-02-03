@@ -3,21 +3,22 @@
  
 import React, { useCallback, useState, useEffect } from "react";
 import type { Stripe } from "@stripe/stripe-js";
+import { useStripe } from "@stripe/react-stripe-js";
 import { InputBox, ErrorMessages } from "@churchapps/apphelper";
 import { FundDonations } from ".";
 import { DonationPreviewModal } from "../modals/DonationPreviewModal";
 import { ApiHelper, CurrencyHelper, DateHelper } from "@churchapps/helpers";
-import { Locale } from "../helpers";
+import { Locale, DonationHelper, StripePaymentMethod, PaymentGateway } from "../helpers";
 import { PersonInterface, StripeDonationInterface, FundDonationInterface, FundInterface, ChurchInterface } from "@churchapps/helpers";
 import {
- Grid, InputLabel, MenuItem, Select, TextField, FormControl, Button, FormControlLabel, Checkbox, FormGroup, Typography 
+ Grid, InputLabel, MenuItem, Select, TextField, FormControl, Button, FormControlLabel, Checkbox, FormGroup, Typography
 } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material";
-import { DonationHelper, StripePaymentMethod, PaymentGateway } from "../helpers";
 
 interface Props { person: PersonInterface, customerId: string, paymentMethods: StripePaymentMethod[], stripePromise: Promise<Stripe>, donationSuccess: (message: string) => void, church?: ChurchInterface, churchLogo?: string }
 
 export const DonationForm: React.FC<Props> = (props) => {
+  const stripe = useStripe();
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
   const [fundDonations, setFundDonations] = useState<FundDonationInterface[]>();
   const [funds, setFunds] = useState<FundInterface[]>([]);
@@ -139,6 +140,19 @@ export const DonationForm: React.FC<Props> = (props) => {
     if (donationType === "once") results = await ApiHelper.post("/donate/charge", payload, "GivingApi");
     if (donationType === "recurring") results = await ApiHelper.post("/donate/subscribe", payload, "GivingApi");
 
+    // Handle 3D Secure authentication if required
+    const threeDSResult = await DonationHelper.handle3DSIfRequired(results, stripe);
+    if (threeDSResult.requiresAction) {
+      setShowDonationPreviewModal(false);
+      if (threeDSResult.success) {
+        setDonationType(undefined);
+        props.donationSuccess(message);
+      } else {
+        setErrorMessage(Locale.label("donation.common.error") + ": " + threeDSResult.error);
+      }
+      return;
+    }
+
     if (results?.status === "succeeded" || results?.status === "pending" || results?.status === "active" || results?.status === "processing") {
       setShowDonationPreviewModal(false);
       setDonationType(undefined);
@@ -154,7 +168,7 @@ export const DonationForm: React.FC<Props> = (props) => {
         setErrorMessage(Locale.label("donation.common.error") + ": An unexpected error occurred. Please try again.");
       }
     }
-  }, [donation, donationType, gateway?.id, props.church?.name, props.church?.subDomain, props.churchLogo, props.donationSuccess]);
+  }, [donation, donationType, gateway?.id, props.church?.name, props.church?.subDomain, props.churchLogo, props.donationSuccess, stripe, props.paymentMethods]);
 
   const handleFundDonationsChange = useCallback(async (fd: FundDonationInterface[]) => {
     setErrorMessage(undefined);

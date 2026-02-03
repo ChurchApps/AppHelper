@@ -334,10 +334,22 @@ export const NonAuthDonationInner: React.FC<Props> = ({ mainContainerCssProps, s
 			church: churchObj,
 			provider: gateway?.provider || "stripe",
 			gatewayId: gateway?.id,
-      currency: gateway?.currency || "USD"
+			currency: gateway?.currency || "USD"
 		};
 		if (donationType === "once") results = await ApiHelper.post("/donate/charge", donationPayload, "GivingApi");
 		if (donationType === "recurring") results = await ApiHelper.post("/donate/subscribe", donationPayload, "GivingApi");
+
+		// Handle 3D Secure authentication if required
+		const threeDSResult = await DonationHelper.handle3DSIfRequired(results, stripe);
+		if (threeDSResult.requiresAction) {
+			if (threeDSResult.success) {
+				setDonationComplete(true);
+			} else {
+				setErrors([threeDSResult.error || "Authentication failed."]);
+			}
+			setProcessing(false);
+			return;
+		}
 
 		if (results?.status === "succeeded" || results?.status === "pending" || results?.status === "active" || results?.status === "processing") {
 			setDonationComplete(true);

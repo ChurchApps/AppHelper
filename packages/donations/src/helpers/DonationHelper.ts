@@ -1,4 +1,38 @@
+import type { Stripe, PaymentIntent } from "@stripe/stripe-js";
+
+// Result of 3D Secure authentication attempt
+export interface ThreeDSResult {
+  success: boolean;
+  requiresAction: boolean;
+  error?: string;
+  paymentIntent?: PaymentIntent;
+}
+
 export class DonationHelper {
+
+  // Handles Stripe 3D Secure authentication when required by the payment
+  static async handle3DSIfRequired(apiResult: any, stripe: Stripe | null): Promise<ThreeDSResult> {
+    if (apiResult?.status !== "requires_action" || !apiResult?.client_secret) {
+      return { success: false, requiresAction: false };
+    }
+
+    if (!stripe) {
+      return { success: false, requiresAction: true, error: "Payment processor not available. Please try again." };
+    }
+
+    try {
+      const { error: confirmError, paymentIntent } = await stripe.confirmCardPayment(apiResult.client_secret);
+      if (confirmError) {
+        return { success: false, requiresAction: true, error: confirmError.message || "Authentication failed. Please try again." };
+      }
+      if (paymentIntent?.status === "succeeded") {
+        return { success: true, requiresAction: true, paymentIntent };
+      }
+      return { success: false, requiresAction: true, error: "Payment authentication was not completed." };
+    } catch (err: any) {
+      return { success: false, requiresAction: true, error: err?.message || "An error occurred during authentication." };
+    }
+  }
 
   static getInterval(intervalName:string) {
     let intervalCount = 1;
@@ -24,24 +58,14 @@ export class DonationHelper {
     return firstPart + "_" + intervalType;
   }
 
-  /**
-   * Normalizes provider names to lowercase for consistent comparison
-   * Handles various capitalizations like "Stripe", "PayPal", "Paypal", etc.
-   */
   static normalizeProvider(provider: string): string {
     return provider?.toLowerCase() || "";
   }
 
-  /**
-   * Checks if a provider matches the expected provider name (case-insensitive)
-   */
   static isProvider(provider: string, expectedProvider: "stripe" | "paypal"): boolean {
     return this.normalizeProvider(provider) === expectedProvider;
   }
 
-  /**
-   * Finds a gateway with the specified provider (case-insensitive)
-   */
   static findGatewayByProvider(gateways: any[], provider: "stripe" | "paypal"): any {
     return gateways.find(g => this.isProvider(g.provider, provider));
   }

@@ -5,7 +5,7 @@ import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { Box, Grid, TextField } from "@mui/material";
 import { QuestionInterface } from "@churchapps/helpers";
 import { ApiHelper, UserInterface, PersonInterface, StripeDonationInterface, ChurchInterface, FundInterface, ArrayHelper, UserHelper } from "@churchapps/helpers";
-import { Locale, StripePaymentMethod, PaymentGateway } from "../helpers";
+import { Locale, StripePaymentMethod, PaymentGateway, DonationHelper } from "../helpers";
 
 interface Props {
 	churchId: string,
@@ -129,6 +129,13 @@ export const FormCardPayment = forwardRef((props: Props, ref) => {
 
     try {
       const result = await ApiHelper.post("/donate/charge", { ...payment, church: churchObj }, "GivingApi");
+
+      // Handle 3D Secure authentication if required
+      const threeDSResult = await DonationHelper.handle3DSIfRequired(result, stripe);
+      if (threeDSResult.requiresAction) {
+        return { success: threeDSResult.success, errors: threeDSResult.error ? [threeDSResult.error] : [] };
+      }
+
       if (result?.status === "succeeded" || result?.status === "pending" || result?.status === "processing") {
         return { success: true, errors: [] }
       }
@@ -137,6 +144,7 @@ export const FormCardPayment = forwardRef((props: Props, ref) => {
         return { success: false, errors: [result.raw.message] }
       }
 
+      return { success: false, errors: ["Payment was not successful."] }
     } catch (err) {
       return { success: false, errors: ["An error occurred while saving your payment."] }
     }
