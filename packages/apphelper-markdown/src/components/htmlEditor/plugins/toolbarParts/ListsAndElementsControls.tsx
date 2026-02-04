@@ -16,7 +16,9 @@ export function ListsAndElementsControls({ editor, blockType }: Props) {
       const selection = $getSelection();
       if ($isRangeSelection(selection)) {
         const anchorNode = selection.anchor.getNode();
-        const element = anchorNode.getTopLevelElementOrThrow();
+        const element = anchorNode.getKey() === 'root'
+          ? anchorNode
+          : anchorNode.getTopLevelElementOrThrow();
         const parentList = $getNearestNodeOfType(anchorNode, ListNode);
         const type = $isListNode(element) ? element.getListType() : parentList?.getListType();
 
@@ -34,7 +36,9 @@ export function ListsAndElementsControls({ editor, blockType }: Props) {
       const selection = $getSelection();
       if ($isRangeSelection(selection)) {
         const anchorNode = selection.anchor.getNode();
-        const element = anchorNode.getTopLevelElementOrThrow();
+        const element = anchorNode.getKey() === 'root'
+          ? anchorNode
+          : anchorNode.getTopLevelElementOrThrow();
         const parentList = $getNearestNodeOfType(anchorNode, ListNode);
         const type = $isListNode(element) ? element.getListType() : parentList?.getListType();
 
@@ -52,7 +56,9 @@ export function ListsAndElementsControls({ editor, blockType }: Props) {
       const selection = $getSelection();
       if ($isRangeSelection(selection)) {
         const anchorNode = selection.anchor.getNode();
-        const element = anchorNode.getTopLevelElementOrThrow();
+        const element = anchorNode.getKey() === 'root'
+          ? anchorNode
+          : anchorNode.getTopLevelElementOrThrow();
 
         if ($isQuoteNode(element)) {
           $setBlocksType(selection, () => $createParagraphNode());

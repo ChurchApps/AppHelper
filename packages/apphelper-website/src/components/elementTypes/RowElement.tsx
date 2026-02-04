@@ -41,14 +41,10 @@ export function RowElement(props: Props) {
     else return "";
   }
 
-  const getMobileOrder = (c:ElementInterface, idx:number) => {
-    if (c.answers?.mobileOrder) return {xs: c.answers?.mobileOrder, md: idx};
-  }
-
   const getColumns = () => {
     const emptyStyle: React.CSSProperties = { minHeight: 100, border: "1px solid #999" }
     const result: React.ReactElement[] = []
-    props.element.elements?.forEach((c:ElementInterface, idx:number) => {
+    props.element.elements?.forEach((c:ElementInterface, _idx:number) => {
       const hasElements = c.elements && c.elements.length > 0;
       // Calculate width based on column size (out of 12)
       const colSize = c.answers?.size || 6;

@@ -115,7 +115,9 @@ export default function HtmlToolbarPlugin({ setIsLinkEditMode, isSourceMode = fa
       }
 
       // Get element format/alignment
-      const elementNode = anchorNode.getTopLevelElementOrThrow();
+      const elementNode = anchorNode.getKey() === 'root'
+        ? anchorNode
+        : anchorNode.getTopLevelElementOrThrow();
       const format = (elementNode as any).getFormatType ? (elementNode as any).getFormatType() : 'left';
       setElementFormat(format || 'left');
     }
