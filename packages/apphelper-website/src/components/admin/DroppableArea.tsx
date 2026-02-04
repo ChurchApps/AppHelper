@@ -87,6 +87,7 @@ export function DroppableArea(props: Props) {
       justifyContent: "center",
       overflow: "hidden",
       boxSizing: "border-box",
+      transition: "all 0.15s ease-out",
     };
 
     if (justDropped) {
@@ -101,9 +102,11 @@ export function DroppableArea(props: Props) {
     if (isOver) {
       return {
         ...baseStyle,
-        border: "2px solid rgba(25, 118, 210, 1)",
+        border: "3px solid rgba(25, 118, 210, 1)",
         backgroundColor: "rgba(25, 118, 210, 1)",
-        boxShadow: "0 4px 12px rgba(25, 118, 210, 0.6)",
+        boxShadow: "0 0 20px rgba(25, 118, 210, 0.9), 0 0 40px rgba(25, 118, 210, 0.5)",
+        transform: "scaleY(1.3)",
+        transition: "all 0.15s ease-out",
       };
     }
 
