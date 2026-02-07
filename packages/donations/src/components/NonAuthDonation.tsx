@@ -85,7 +85,9 @@ export const NonAuthDonation: React.FC<Props> = ({ mainContainerCssProps, showHe
 
   const renderPaymentTypeSelector = () => {
     // Only show if Stripe is available (ACH requires Stripe)
+    // Only show ACH if the currency is USD
     const stripeGateway = DonationHelper.findGatewayByProvider(availableGateways, "stripe");
+    const currency = stripeGateway?.currency || "usd";
     if (!stripeGateway || selectedGateway !== "stripe") return null;
 
     return (
@@ -98,7 +100,7 @@ export const NonAuthDonation: React.FC<Props> = ({ mainContainerCssProps, showHe
           size="small"
         >
           <ToggleButton value="card">Credit/Debit Card</ToggleButton>
-          <ToggleButton value="bank">Bank Account (ACH)</ToggleButton>
+          {currency === "usd" && <ToggleButton value="bank">Bank Account (ACH)</ToggleButton>}
         </ToggleButtonGroup>
       </Box>
     );
